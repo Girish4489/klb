@@ -54,11 +54,7 @@ export async function POST(request: NextRequest) {
 
     response.cookies.set("token", token, {
       httpOnly: true,
-      secure: true,
-      sameSite: "strict",
-      path: "/",
       expires: new Date(Date.now() + 86400000),
-      priority: "high",
     });
 
     return response;

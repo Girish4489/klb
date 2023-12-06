@@ -4,10 +4,11 @@ import Link from "next/link";
 import { ThemeSwitcher } from "@/app/components/ThemeSwitcher";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-  // const router = useRouter();
+  const router = useRouter();
   const [user, setUser] = React.useState({
     email: "",
     password: "",
@@ -15,6 +16,10 @@ export default function LoginPage() {
 
   const handleShowPassword = () => {
     setShowPassword(!showPassword);
+  };
+
+  const reload = () => {
+    window.location.reload();
   };
 
   const handleLogin = async () => {
@@ -28,9 +33,13 @@ export default function LoginPage() {
       toast.loading("Logging in...");
       const response = await axios.post("/api/auth/login", user);
       toast.remove();
-      toast.success(response.data.message);
       // Reload the page to trigger middleware redirection to the dashboard
-      window.location.reload();
+      toast.success(response.data.message);
+      setTimeout(() => {
+        router.push("/dashboard");
+        return;
+      }, 5000);
+      reload();
     } catch (error: any) {
       toast.remove();
       toast.error(error.response.data.error);
@@ -54,7 +63,7 @@ export default function LoginPage() {
       toast.remove();
       toast.success(response.data.message);
       // Reload the page to trigger middleware redirection to the dashboard
-      window.location.reload();
+      // window.location.reload();
     } catch (error: any) {
       toast.remove();
       toast.error(error.response.data.error);
