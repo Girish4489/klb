@@ -23,10 +23,6 @@ export default function LoginPage() {
   };
 
   const handleLogin = async () => {
-    if (user.email.length === 0 || user.password.length === 0) {
-      toast.error("Please enter email and password");
-      return;
-    }
     user.email = user.email.trim();
     user.password = user.password.trim();
     try {
@@ -37,8 +33,7 @@ export default function LoginPage() {
       toast.success(response.data.message);
       setTimeout(() => {
         router.push("/dashboard");
-        return;
-      }, 5000);
+      }, 3000);
       reload();
     } catch (error: any) {
       toast.remove();
