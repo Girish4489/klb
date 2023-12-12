@@ -1,3 +1,28 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Default width */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+/* Default track */
+::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 5px;
+}
+
+/* Default handle (thumb) */
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 5px;
+  transition:
+    width 0.3s ease,
+    background 0.3s ease;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

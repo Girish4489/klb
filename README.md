@@ -31,7 +31,7 @@ npm i -D daisyui@latest
 
 ```bash
 # create .env in root(/) directory
-# .env file should have 
+# .env file should have
 #MONGO_URI=mongodb+srv://<username>:<password>@cluster0.zawyfkq.mongodb.net/
 MONGO_URI=mongodb://localhost:27017/ # for local mongo server
 TOKEN_SECRET=<set-your-secret-string> # keep same for local and mongo
@@ -68,4 +68,4 @@ You can check out [GitHub repository](https://github.com/Girish4489/kalamandir/)
 
 ## Credits
 
-- [Authentication](https://youtube.com/playlist?list=PLRAV69dS1uWR7KF-zV6YPYtKYEHENETyE&si=fWih85bZai-wrBHY)  and verification ideas by [Hitesh Choudhary](https://www.youtube.com/@HiteshChoudharydotcom)
+- [Authentication](https://youtube.com/playlist?list=PLRAV69dS1uWR7KF-zV6YPYtKYEHENETyE&si=fWih85bZai-wrBHY) and verification ideas by [Hitesh Choudhary](https://www.youtube.com/@HiteshChoudharydotcom)

@@ -1,8 +1,8 @@
-import { connect } from "@/dbConfig/dbConfig";
-import User from "@/models/userModel";
-import { NextRequest, NextResponse } from "next/server";
-import bcryptjs from "bcryptjs";
-import jwt from "jsonwebtoken";
+import { connect } from '@/dbConfig/dbConfig';
+import User from '@/models/userModel';
+import { NextRequest, NextResponse } from 'next/server';
+import bcryptjs from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 connect();
 
@@ -14,25 +14,19 @@ export async function POST(request: NextRequest) {
     //check if user exists
     const user = await User.findOne({ email });
     if (!user) {
-      return NextResponse.json(
-        { error: "User does not exist" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'User does not exist' }, { status: 400 });
     }
 
     // check if user is verified
     const isVerified = user.isVerified;
     if (isVerified === false || null || undefined) {
-      return NextResponse.json(
-        { error: "User is not verified" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'User is not verified' }, { status: 400 });
     }
 
     //check if password is correct
     const validPassword = await bcryptjs.compare(password, user.password);
     if (!validPassword) {
-      return NextResponse.json({ error: "Invalid password" }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid password' }, { status: 400 });
     }
 
     //create token data
@@ -44,15 +38,15 @@ export async function POST(request: NextRequest) {
 
     //create token
     const token = await jwt.sign(tokenData, process.env.TOKEN_SECRET!, {
-      expiresIn: "1d",
+      expiresIn: '1d',
     });
 
     const response = NextResponse.json({
-      message: "Login successful",
+      message: 'Login successful',
       success: true,
     });
 
-    response.cookies.set("token", token, {
+    response.cookies.set('token', token, {
       httpOnly: true,
       expires: new Date(Date.now() + 86400000),
     });

@@ -1,6 +1,6 @@
-import { connect } from "@/dbConfig/dbConfig";
-import { NextRequest, NextResponse } from "next/server";
-import User from "@/models/userModel";
+import { connect } from '@/dbConfig/dbConfig';
+import { NextRequest, NextResponse } from 'next/server';
+import User from '@/models/userModel';
 
 connect();
 
@@ -12,9 +12,9 @@ export async function POST(request: NextRequest) {
     // Check if token is provided
     if (!token) {
       return NextResponse.json({
-        message: "Token is missing",
+        message: 'Token is missing',
         success: false,
-        type: "missing-token",
+        type: 'missing-token',
       });
     }
 
@@ -24,34 +24,30 @@ export async function POST(request: NextRequest) {
       isVerified: false,
     });
 
-    if (
-      user == null ||
-      user == undefined ||
-      user.verifyTokenExpiry < Date.now()
-    ) {
+    if (user == null || user == undefined || user.verifyTokenExpiry < Date.now()) {
       return NextResponse.json({
-        message: "Link expired",
+        message: 'Link expired',
         success: false,
-        type: "token-expired",
+        type: 'token-expired',
       });
     } else if (user.verifyToken !== token) {
       return NextResponse.json({
-        message: "Invalid token",
+        message: 'Invalid token',
         success: false,
-        type: "invalid-token",
+        type: 'invalid-token',
       });
     } else if (user.isVerified) {
       return NextResponse.json({
-        message: "Email already verified",
+        message: 'Email already verified',
         success: false,
-        type: "already-verified",
+        type: 'already-verified',
       });
     }
     if (!user) {
       return NextResponse.json({
-        message: "Invalid token",
+        message: 'Invalid token',
         success: false,
-        type: "invalid-token",
+        type: 'invalid-token',
       });
     }
 
@@ -61,7 +57,7 @@ export async function POST(request: NextRequest) {
     await user.save();
 
     return NextResponse.json({
-      message: "Email verified Successfully",
+      message: 'Email verified Successfully',
       success: true,
     });
   } catch (error: any) {

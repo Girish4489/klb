@@ -1,8 +1,8 @@
-import { connect } from "@/dbConfig/dbConfig";
-import User from "@/models/userModel";
-import { NextRequest, NextResponse } from "next/server";
-import bcryptjs from "bcryptjs";
-import { sendEmail } from "@/helpers/mailer";
+import { connect } from '@/dbConfig/dbConfig';
+import User from '@/models/userModel';
+import { NextRequest, NextResponse } from 'next/server';
+import bcryptjs from 'bcryptjs';
+import { sendEmail } from '@/helpers/mailer';
 
 connect();
 
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
 
     if (user) {
       return NextResponse.json({
-        message: "User already exists",
+        message: 'User already exists',
         success: false,
       });
     }
@@ -34,10 +34,10 @@ export async function POST(request: NextRequest) {
     const savedUser = await newUser.save();
 
     //send verification email
-    await sendEmail({ email, emailType: "VERIFY", userId: savedUser._id });
+    await sendEmail({ email, emailType: 'VERIFY', userId: savedUser._id });
 
     return NextResponse.json({
-      message: "User created successfully",
+      message: 'User created successfully',
       success: true,
       savedUser,
     });

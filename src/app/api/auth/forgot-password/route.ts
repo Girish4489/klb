@@ -1,7 +1,7 @@
-import { connect } from "@/dbConfig/dbConfig";
-import User from "@/models/userModel";
-import { NextRequest, NextResponse } from "next/server";
-import { sendEmail } from "@/helpers/mailer";
+import { connect } from '@/dbConfig/dbConfig';
+import User from '@/models/userModel';
+import { NextRequest, NextResponse } from 'next/server';
+import { sendEmail } from '@/helpers/mailer';
 
 connect();
 
@@ -10,13 +10,13 @@ export async function POST(request: NextRequest) {
   const { email } = reqBody;
 
   // fetch user password by email
-  const user = await User.findOne({ email }).select("-password");
+  const user = await User.findOne({ email }).select('-password');
   if (!user || user == null || user == undefined) {
-    return NextResponse.json({ error: "User not found" }, { status: 400 });
+    return NextResponse.json({ error: 'User not found' }, { status: 400 });
   } else if (user.email !== email) {
-    return NextResponse.json({ error: "Invalid email" }, { status: 400 });
+    return NextResponse.json({ error: 'Invalid email' }, { status: 400 });
   } else if (user.isVerified === false) {
-    return NextResponse.json({ error: "Email not verified" }, { status: 400 });
+    return NextResponse.json({ error: 'Email not verified' }, { status: 400 });
   }
 
   try {
@@ -24,11 +24,11 @@ export async function POST(request: NextRequest) {
       // send email
       await sendEmail({
         email,
-        emailType: "RESET",
+        emailType: 'RESET',
         userId: user._id,
       });
       return NextResponse.json({
-        message: "check mail to reset password",
+        message: 'check mail to reset password',
         success: true,
       });
     }

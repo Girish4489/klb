@@ -1,80 +1,78 @@
-"use client";
-import Link from "next/link";
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import { toast, Toaster } from "react-hot-toast";
-import axios from "axios";
-import { ThemeSwitcher } from "@/app/components/ThemeSwitcher";
+'use client';
+import Link from 'next/link';
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { toast, Toaster } from 'react-hot-toast';
+import axios from 'axios';
+import { ThemeSwitcher } from '@/app/components/ThemeSwitcher';
 
 export default function SignupPage() {
   const router = useRouter();
   const [user, setUser] = useState({
-    username: "",
-    email: "",
-    password: "",
+    username: '',
+    email: '',
+    password: '',
   });
 
   const handleSignup = async () => {
     // Logic to handle signup form submission
     try {
-      toast.loading("Signing up");
-      const response = await axios.post("/api/auth/signup", user);
+      toast.loading('Signing up');
+      const response = await axios.post('/api/auth/signup', user);
       // console.log("Signup success", response.data);
       toast.remove();
       if (response.data.success === false) {
         toast.error(response.data.message);
         return;
       }
-      toast.success("Signup Successfull \n Please verify your email");
+      toast.success('Signup Successfull \n Please verify your email');
       setTimeout(() => {
-        router.push("/auth/login");
+        router.push('/auth/login');
       }, 2000);
     } catch (error: any) {
       // console.log("Signup failed", error.message);
       toast.remove();
       toast.error(error.message);
     } finally {
-      setUser({ username: "", email: "", password: "" });
+      setUser({ username: '', email: '', password: '' });
     }
   };
 
-  const [resendUser, setResendUser] = useState({ email: "" });
+  const [resendUser, setResendUser] = useState({ email: '' });
   const handleResendVerification = async () => {
     // Logic to resend verification mail
     resendUser.email = resendUser.email.trim();
     try {
-      toast.loading("Sending verification email");
-      const response = await axios.post("/api/auth/resend-email", resendUser);
+      toast.loading('Sending verification email');
+      const response = await axios.post('/api/auth/resend-email', resendUser);
       // console.log("Resend email success", response.data);
       toast.remove();
       if (response.data.success === false) {
         toast.error(response.data.message);
         return;
       }
-      toast.success("Verification email sent");
+      toast.success('Verification email sent');
       setTimeout(() => {
-        router.push("/auth/login");
+        router.push('/auth/login');
       }, 2000);
     } catch (error: any) {
       // console.log("Resend email failed", error.message);
       toast.remove();
       toast.error(error.message);
     } finally {
-      setResendUser({ email: "" });
+      setResendUser({ email: '' });
     }
   };
 
   return (
     <div className="hero min-h-screen bg-base-200">
       <Toaster />
-      <div className="flex-col justify-center shadow-2xl rounded-box hero-content lg:flex-row-reverse">
+      <div className="hero-content flex-col justify-center rounded-box shadow-2xl lg:flex-row-reverse">
         <div className="text-center lg:text-left">
           <h1 className="mb-5 text-5xl font-bold">Sign up now!</h1>
-          <p className="mb-5">
-            Welcome to Kalamandir! Please enter your details to continue.
-          </p>
+          <p className="mb-5">Welcome to Kalamandir! Please enter your details to continue.</p>
         </div>
-        <div className="card flex-shrink-0 w-full m-3 max-w-sm shadow-xl shadow-neutral bg-base-100">
+        <div className="card m-3 w-full max-w-sm flex-shrink-0 bg-base-100 shadow-xl shadow-neutral">
           <div className="card-body pb-5">
             <div className="flex justify-center">
               <ThemeSwitcher />
@@ -92,7 +90,7 @@ export default function SignupPage() {
                 className="input input-bordered"
                 required
                 value={user.username}
-                onChange={(e) => setUser({ ...user, username: e.target.value })}
+                onChange={e => setUser({ ...user, username: e.target.value })}
               />
             </div>
             <div className="form-control">
@@ -108,7 +106,7 @@ export default function SignupPage() {
                 className="input input-bordered"
                 required
                 value={user.email}
-                onChange={(e) => setUser({ ...user, email: e.target.value })}
+                onChange={e => setUser({ ...user, email: e.target.value })}
               />
             </div>
             <div className="form-control">
@@ -124,7 +122,7 @@ export default function SignupPage() {
                 className="input input-bordered"
                 required
                 value={user.password}
-                onChange={(e) => setUser({ ...user, password: e.target.value })}
+                onChange={e => setUser({ ...user, password: e.target.value })}
               />
             </div>
             <div className="form-control mt-3">
@@ -135,10 +133,10 @@ export default function SignupPage() {
           </div>
           <div className="card-body pt-3">
             <div className="flex flex-col justify-center">
-              <details className="collapse bg-base-200 collapse-arrow">
+              <details className="collapse collapse-arrow bg-base-200">
                 <summary
-                  className="collapse-title py-1 text-xs flex items-center align-middle font-normal"
-                  style={{ display: "flex" }}
+                  className="collapse-title flex items-center py-1 align-middle text-xs font-normal"
+                  style={{ display: 'flex' }}
                 >
                   Verify your Account?
                 </summary>
@@ -164,25 +162,18 @@ export default function SignupPage() {
                       className="input input-bordered"
                       required
                       value={resendUser.email}
-                      onChange={(e) =>
-                        setResendUser({ ...resendUser, email: e.target.value })
-                      }
+                      onChange={e => setResendUser({ ...resendUser, email: e.target.value })}
                     />
                   </div>
                   <div className="form-control mt-3">
-                    <button
-                      className="btn btn-primary"
-                      onClick={handleResendVerification}
-                    >
+                    <button className="btn btn-primary" onClick={handleResendVerification}>
                       Resend
                     </button>
                   </div>
                 </div>
               </details>
               <div className="flex items-center justify-center">
-                <p className="label font-normal py-0.5 text-secondary">
-                  Already have an account?
-                </p>
+                <p className="label py-0.5 font-normal text-secondary">Already have an account?</p>
                 <Link href="/auth/login" className="btn btn-link">
                   Login here
                 </Link>

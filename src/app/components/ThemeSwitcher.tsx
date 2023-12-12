@@ -1,90 +1,24 @@
 // /components/ThemeSwitcher.tsx
-"use client";
-import { trace } from "console";
-import { useTheme, Theme } from "./ThemeContext";
+'use client';
+import { useTheme, Theme, themes } from './ThemeContext';
 
 export function ThemeSwitcher() {
   const { theme, setTheme } = useTheme();
 
   const changeTheme = (newTheme: Theme) => {
-    document.documentElement.setAttribute("data-theme", newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
     setTheme(newTheme);
   };
 
-  const themes: Theme[] = [
-    "light",
-    "dark",
-    "cupcake",
-    "bumblebee",
-    "emerald",
-    "corporate",
-    "synthwave",
-    "retro",
-    "cyberpunk",
-    "valentine",
-    "halloween",
-    "garden",
-    "forest",
-    "aqua",
-    "lofi",
-    "pastel",
-    "fantasy",
-    "wireframe",
-    "black",
-    "luxury",
-    "dracula",
-    "cmyk",
-    "autumn",
-    "business",
-    "acid",
-    "lemonade",
-    "night",
-    "coffee",
-    "winter",
-    "dim",
-    "nord",
-    "sunset",
-  ];
-
   return (
     <>
-      <style jsx>
-        {`
-          .customScroll {
-            scrrollbar-margin-y: 10px;
-          }
-          .customScroll::-webkit-scrollbar {
-            width: 8px;
-          }
-          .customScroll::-webkit-scrollbar-track {
-            width: 8px;
-            margin: 10px 0;
-            padding-right: 10px;
-          }
-          .customScroll::-webkit-scrollbar-track:hover {
-            width: 18px;
-          }
-          .customScroll::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 4px;
-            width: 8px;
-          }
-          .customScroll::-webkit-scrollbar-thumb:hover {
-            background: #555;
-            width: 18px;
-          }
-          .themeDropdown:hover svg {
-            transform: rotate(180deg);
-          }
-        `}
-      </style>
-      <div className="dropdown dropdown-hover themeDropdown">
+      <div className="themeDropdown dropdown dropdown-hover">
         <span tabIndex={0} className="btn m-1">
           Theme
           <svg
             width="12px"
             height="12px"
-            className="h-2 w-2 fill-current opacity-60 inline-block"
+            className="inline-block h-2 w-2 fill-current opacity-60"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 2048 2048"
           >
@@ -94,32 +28,25 @@ export function ThemeSwitcher() {
 
         <ul
           tabIndex={0}
-          className="customScroll dropdown-content z-[1] p-2 shadow-2xl bg-base-300 rounded-box w-52"
-          style={{
-            maxHeight: "200px",
-            overflowY: "auto",
-            scrollbarWidth: "thin",
-          }}
+          className="dropdown-content z-[1] max-h-48 w-52 overflow-y-auto rounded-box bg-base-300 p-2 shadow-2xl"
         >
           <li>
             <input
               type="radio"
               name="theme-dropdown"
-              className="theme-controller btn btn-sm btn-block btn-ghost justify-start"
+              className="theme-controller btn btn-ghost btn-sm btn-block justify-start"
               aria-label="Default"
               value="default"
             />
           </li>
-          {themes.map((themeOption) => (
+          {themes.map(themeOption => (
             <li key={themeOption} value={themeOption}>
               <input
                 type="radio"
                 name="theme-dropdown"
-                className="theme-controller btn btn-sm btn-block btn-ghost justify-start"
-                aria-label={
-                  themeOption.charAt(0).toUpperCase() + themeOption.slice(1)
-                }
-                onChange={(e) => changeTheme(e.target.value as Theme)}
+                className="theme-controller btn btn-ghost btn-sm btn-block justify-start"
+                aria-label={themeOption.charAt(0).toUpperCase() + themeOption.slice(1)}
+                onChange={e => changeTheme(e.target.value as Theme)}
                 value={themeOption}
               />
             </li>

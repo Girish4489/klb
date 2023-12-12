@@ -1,7 +1,7 @@
-import { connect } from "@/dbConfig/dbConfig";
-import User from "@/models/userModel";
-import { NextRequest, NextResponse } from "next/server";
-import { sendEmail } from "@/helpers/mailer";
+import { connect } from '@/dbConfig/dbConfig';
+import User from '@/models/userModel';
+import { NextRequest, NextResponse } from 'next/server';
+import { sendEmail } from '@/helpers/mailer';
 
 connect();
 
@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     const user = await User.findOne({ email: email });
     if (!user) {
       return NextResponse.json({
-        message: "User not found",
+        message: 'User not found',
         success: false,
       });
     }
@@ -24,11 +24,11 @@ export async function POST(request: NextRequest) {
       try {
         await sendEmail({
           email: email,
-          emailType: "VERIFY",
+          emailType: 'VERIFY',
           userId: user._id,
         });
         return NextResponse.json({
-          message: "Email sent successfully",
+          message: 'Email sent successfully',
           success: true,
         });
       } catch (error: any) {
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     }
     if (user.isVerified) {
       return NextResponse.json({
-        message: "User already verified",
+        message: 'User already verified',
         success: false,
       });
     }
