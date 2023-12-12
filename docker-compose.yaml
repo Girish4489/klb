@@ -13,7 +13,6 @@ services:
     environment:
       - MONGO_URI=mongodb://db:27017/
       - DOCKER=true
-      - DOCKER_DATABASE=kalamandir
   db:
     image: mongo:latest
     ports:
