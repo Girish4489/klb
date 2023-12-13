@@ -29,6 +29,7 @@ export default function ThemerPage() {
       const response = await axios.get('/api/auth/theme-save');
       console.log('response:', response.data.user.theme);
       setSelectedTheme(response.data.user.theme);
+      document.documentElement.setAttribute('data-theme', response.data.user.theme);
     } catch (error: any) {
       console.log(error);
     }
@@ -38,9 +39,9 @@ export default function ThemerPage() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center ">
+    <div className="flex flex-col items-center  rounded-box border border-base-100 p-2 shadow-2xl">
       <span className="m-2 p-2">Current Theme: {selectedTheme}</span>
-      <form className="flex w-full flex-col items-center">
+      <form className="flex w-full flex-col items-end gap-3 max-sm:items-center">
         <div className="grid w-full grid-cols-2 gap-4 rounded-box sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
           {themes.map(themeOption => (
             <div
@@ -93,7 +94,7 @@ export default function ThemerPage() {
             </div>
           ))}
         </div>
-        <button className="btn btn-primary" onClick={handleThemeChange}>
+        <button className="btn btn-primary m-2" onClick={handleThemeChange}>
           Apply
         </button>
       </form>

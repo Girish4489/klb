@@ -180,7 +180,7 @@ export default function SettingsPage() {
                   </div>
                 </div>
               </dialog>
-              <div className="card-body my-4 rounded-box border p-4">
+              <div className="card-body my-4 rounded-box border border-base-100 p-4 shadow-2xl">
                 <span className="badge w-full justify-between gap-2 p-5">
                   <h1 className="text-xl font-bold">UserName:</h1>
                   <span className="badge badge-accent badge-outline">{data.username}</span>
