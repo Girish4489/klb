@@ -53,7 +53,7 @@ export default function ProfilePage() {
             />
           </div>
         </div>
-        <ul tabIndex={0} className="menu dropdown-content menu-sm z-[1] mt-3 w-auto rounded-box bg-base-200 p-2 shadow">
+        <ul tabIndex={0} className="menu dropdown-content menu-sm z-50 mt-3 w-auto rounded-box bg-base-200 p-2 shadow">
           <li>
             <a className="justify-between">
               {data.username}
