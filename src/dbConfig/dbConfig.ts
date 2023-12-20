@@ -5,11 +5,11 @@ export async function connect() {
     let mongoURI;
 
     console.log('process.env.DOCKER', process.env.DOCKER!);
-    if (process.env.DOCKER! === 'true') {
+    if (process.env.DOCKER! === 'true' && process.env.DBTYPE === 'offline') {
       // Use the service name 'db' as the host
-      mongoURI = 'mongodb://db:27017/';
+      mongoURI = `${process.env.MONGO_URI!}${process.env.DBNAME!}`;
     } else {
-      mongoURI = process.env.MONGO_URI! || `${process.env.MONGO_URI!}${process.env.DOCKER_DATABASE!}`;
+      mongoURI = `${process.env.MONGO_URI!}${process.env.DBNAME!}`;
     }
 
     await mongoose.connect(mongoURI);

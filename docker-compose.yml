@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 services:
   app:
     build:
@@ -7,14 +7,11 @@ services:
     ports:
       - '3000:3000'
     volumes:
-      - .:/usr/src/app
+      - .:/usr/src/app:cached
     depends_on:
       - db
-    environment:
-      - MONGO_URI=mongodb://db:27017/
-      - DOCKER=true
   db:
-    image: mongo:latest
+    image: mongo:7
     ports:
       - '27017:27017'
     volumes:

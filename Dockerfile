@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 # Install any needed packages specified in package.json
-RUN npm install --unsafe-perm --fund --audit --update-notifier
+RUN npm install
 
 # install next globally
 RUN npm install -g next
