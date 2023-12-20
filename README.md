@@ -31,7 +31,6 @@ npm i -D daisyui@latest
 
 ```bash
 # create .env in root(/) directory
-# .env file should have
 #MONGO_URI=mongodb+srv://<username>:<password>@cluster0.zawyfkq.mongodb.net/
 MONGO_URI=mongodb://localhost:27017/ # for local mongo server
 TOKEN_SECRET=<set-your-secret-string> # keep same for local and mongo
@@ -39,9 +38,24 @@ DOMAIN=http://localhost:3000
 #need to have gmail and credentials to send the mails
 GMAIL=<use your mail>
 GMAILPASSWORD= set_password_read_below
+DBNAME= # set desired database name
+DBTYPE= # online or offline based on where you want store
 ```
 
 [Set Gmail password for SMTP](https://support.google.com/mail/answer/185833)
+
+> Docker
+
+```bash
+# add to .env
+DOCKER_USERNAME= # optional
+DOCKER_PASSWORD= # optional
+DOCKER=true
+
+# Run
+docker-compose up -d --build # for build and run
+docker-compose up # to run the application
+```
 
 > First, run the development server:
 
