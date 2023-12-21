@@ -18,20 +18,11 @@ yarn install
 bun install
 ```
 
-> Packages:
-
-```bash
-# required packages
-npm i axios bcryptjs jsonwebtoken nodemailer react-hot-toast mongoose
-# UI packages
-npm i -D daisyui@latest
-```
-
 > Files
 
 ```bash
 # create .env in root(/) directory
-#MONGO_URI=mongodb+srv://<username>:<password>@cluster0.zawyfkq.mongodb.net/
+# MONGO_ONLINE_URI=mongodb+srv://<username>:<password>@cluster0.zawyfkq.mongodb.net/
 MONGO_URI=mongodb://localhost:27017/ # for local mongo server
 TOKEN_SECRET=<set-your-secret-string> # keep same for local and mongo
 DOMAIN=http://localhost:3000
@@ -39,7 +30,7 @@ DOMAIN=http://localhost:3000
 GMAIL=<use your mail>
 GMAILPASSWORD= set_password_read_below
 DBNAME= # set desired database name
-DBTYPE= # online or offline based on where you want store
+DBTYPE=offline # online based on where you want store uncomment MONGO_ONLINE_URI
 ```
 
 [Set Gmail password for SMTP](https://support.google.com/mail/answer/185833)
@@ -48,6 +39,7 @@ DBTYPE= # online or offline based on where you want store
 
 ```bash
 # add to .env
+MONGO_DOCKER_URI=mongodb://db:27017/
 DOCKER_USERNAME= # optional
 DOCKER_PASSWORD= # optional
 DOCKER=true
