@@ -10,7 +10,9 @@ export async function POST(request: NextRequest) {
   const { email } = reqBody;
 
   // fetch user password by email
-  const user = await User.findOne({ email }).select('-password');
+  const user = await User.findOne({ email }).select(
+    '-password -username -theme -profileImage -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry',
+  );
   if (!user || user == null || user == undefined) {
     return NextResponse.json({ error: 'User not found' }, { status: 400 });
   } else if (user.email !== email) {

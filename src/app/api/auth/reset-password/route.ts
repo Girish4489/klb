@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     const newPassword = password.password;
     const user = await User.findOne({
       forgotPasswordToken: token,
-    });
+    }).select('-username -email -isVerified -isAdmin -theme -profileImage  -verifyToken -verifyTokenExpiry');
 
     if (user == null || user == undefined || user.forgotPasswordTokenExpiry < Date.now()) {
       return NextResponse.json({ error: 'Link expired' }, { status: 400 });

@@ -11,7 +11,9 @@ export async function POST(request: NextRequest) {
     const { email } = reqBody;
 
     //check if user already exists
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({ email: email }).select(
+      '-password -username -isAdmin -theme -profileImage -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry',
+    );
     if (!user) {
       return NextResponse.json({
         message: 'User not found',

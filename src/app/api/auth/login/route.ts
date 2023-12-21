@@ -12,7 +12,9 @@ export async function POST(request: NextRequest) {
     const { email, password } = reqBody;
 
     //check if user exists
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select(
+      '-theme -profileImage -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry',
+    );
     if (!user) {
       return NextResponse.json({ error: 'User does not exist' }, { status: 400 });
     }
