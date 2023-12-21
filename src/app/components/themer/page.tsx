@@ -27,7 +27,6 @@ export default function ThemerPage() {
   const getTheme = async () => {
     try {
       const response = await axios.get('/api/auth/theme-save');
-      console.log('response:', response.data.user.theme);
       setSelectedTheme(response.data.user.theme);
       document.documentElement.setAttribute('data-theme', response.data.user.theme);
     } catch (error: any) {

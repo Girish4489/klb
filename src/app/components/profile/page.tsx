@@ -21,14 +21,22 @@ export default function ProfilePage() {
   const getUserDetails = async () => {
     try {
       const res = await axios.get('/api/auth/user');
-      const base64Image = Buffer.from(res.data.data.profileImage.data).toString('base64');
-
-      setData({
-        username: res.data.data.username,
-        email: res.data.data.email,
-        theme: res.data.data.theme,
-        profileImage: `data:${res.data.data.profileImage.contentType};base64,${base64Image}`,
-      });
+      if (!res.data.data.profileImage.data) {
+        setData({
+          username: res.data.data.username,
+          email: res.data.data.email,
+          theme: res.data.data.theme,
+          profileImage: '',
+        });
+      } else {
+        const base64Image = Buffer.from(res.data.data.profileImage.data).toString('base64');
+        setData({
+          username: res.data.data.username,
+          email: res.data.data.email,
+          theme: res.data.data.theme,
+          profileImage: `data:${res.data.data.profileImage.contentType};base64,${base64Image}`,
+        });
+      }
       document.documentElement.setAttribute('data-theme', res.data.data.theme);
     } catch (error) {
       console.error(error);
@@ -44,7 +52,7 @@ export default function ProfilePage() {
         <div tabIndex={0} role="button" className="avatar btn btn-circle btn-ghost">
           <div className="w-28 rounded-full ring ring-primary ring-offset-2 ring-offset-base-100">
             <Image
-              src={`${data.profileImage === undefined ? '/vercel.svg' : data.profileImage}`}
+              src={`${data.profileImage === '' ? '/vercel.svg' : data.profileImage}`}
               alt="Landscape picture"
               className="cursor-pointer rounded-full p-0.5  transition-all duration-500 ease-in-out hover:bg-secondary hover:shadow-2xl"
               width="40"

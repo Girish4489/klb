@@ -15,7 +15,7 @@ export default function SidebarPage() {
           <ul className="menu rounded-box bg-base-200 shadow-xl xl:menu-vertical lg:min-w-max">
             <h1 className="menu-title select-none text-center">Kalamndir</h1>
             <li>
-              <a>Home</a>
+              <Link href={'/dashboard'}>Dashboard</Link>
             </li>
             {navigationData.map((nav, index) => {
               return (

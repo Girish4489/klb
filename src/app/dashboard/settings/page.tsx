@@ -20,7 +20,7 @@ export default function SettingsPage() {
     username: 'User',
     email: 'sample@example.com',
     theme: 'default',
-    profileImage: '/next.svg',
+    profileImage: '/vercel.svg',
     isVerified: false,
     isAdmin: false,
   });
@@ -28,16 +28,26 @@ export default function SettingsPage() {
   const getUserDetails = async () => {
     try {
       const res = await axios.get('/api/auth/user');
-      const base64Image = Buffer.from(res.data.data.profileImage.data).toString('base64');
-
-      setData({
-        username: res.data.data.username,
-        email: res.data.data.email,
-        theme: res.data.data.theme,
-        profileImage: `data:${res.data.data.profileImage.contentType};base64,${base64Image}`,
-        isVerified: res.data.data.isVerified,
-        isAdmin: res.data.data.isAdmin,
-      });
+      if (!res.data.data.profileImage.data) {
+        setData({
+          username: res.data.data.username,
+          email: res.data.data.email,
+          theme: res.data.data.theme,
+          profileImage: '',
+          isVerified: res.data.data.isVerified,
+          isAdmin: res.data.data.isAdmin,
+        });
+      } else {
+        const base64Image = Buffer.from(res.data.data.profileImage.data).toString('base64');
+        setData({
+          username: res.data.data.username,
+          email: res.data.data.email,
+          theme: res.data.data.theme,
+          profileImage: `data:${res.data.data.profileImage.contentType};base64,${base64Image}`,
+          isVerified: res.data.data.isVerified,
+          isAdmin: res.data.data.isAdmin,
+        });
+      }
     } catch (error) {
       console.error(error);
     }
@@ -123,7 +133,7 @@ export default function SettingsPage() {
                 <span className="badge indicator-item badge-secondary lg:mt-4">edit</span>
                 <div className="h-24 w-24 rounded-full ring ring-primary ring-offset-2 ring-offset-base-100">
                   <Image
-                    src={`${data.profileImage === undefined ? '/vercel.svg' : data.profileImage}`}
+                    src={`${data.profileImage === '' ? '/vercel.svg' : data.profileImage}`}
                     alt="Landscape picture"
                     className="cursor-pointer rounded-full p-1  transition-all duration-500 ease-in-out hover:bg-primary hover:shadow-2xl"
                     width="40"
@@ -139,7 +149,7 @@ export default function SettingsPage() {
                   <div className="card flex items-center justify-evenly py-2 lg:card-side lg:items-center lg:justify-evenly">
                     <span className="h-48 w-48">
                       <Image
-                        src={`${data.profileImage === undefined ? '/vercel.svg' : data.profileImage}`}
+                        src={`${data.profileImage === '' ? '/vercel.svg' : data.profileImage}`}
                         alt="Landscape picture"
                         className="h-48 w-48 cursor-pointer rounded-full p-1 transition-all duration-500 ease-in-out hover:bg-primary hover:shadow-2xl"
                         width="192"
