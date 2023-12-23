@@ -1,7 +1,7 @@
 {
   "extends": "next/core-web-vitals",
   "rules": {
-    "no-console": "off",
+    "no-console": "error",
     "react/react-in-jsx-scope": "off"
     // Add more rules as needed
   }
