@@ -77,7 +77,7 @@ export default function AuthLayout({
         <div
           className={`py-1.5 transition-all duration-500 max-sm:py-1.5 ${
             isSidebarOpen
-              ? 'h-full w-screen translate-x-0 rounded-e-2xl border-r border-neutral shadow-2xl max-sm:w-2/3 sm:w-2/4 md:w-1/3 lg:w-1/4 xl:w-1/5 2xl:w-1/6'
+              ? 'xl:w-1/7 h-full w-screen translate-x-0 rounded-e-2xl border-r border-neutral shadow-2xl max-sm:w-3/5 sm:w-2/4 md:w-1/3 lg:w-1/4 2xl:w-1/5'
               : 'w-0 -translate-x-full'
           }`}
         >
@@ -96,21 +96,12 @@ export default function AuthLayout({
           }}
         >
           <div
-            className={`m-0.5 h-full rounded-box border border-neutral p-1 shadow-2xl ${
+            className={`h-full rounded-box border border-neutral p-1 shadow-2xl ${
               isSidebarOpen ? 'max-sm:pointer-events-none max-sm:blur-sm' : 'overflow-auto'
             }`}
           >
             {/* Page content here */}
-            {/* <div className="flex flex-col items-center md:flex-row md:justify-between">
-              <div className="min-w-0">
-                <div className="flex items-center">
-                  <h2 className="text-xl font-bold leading-7 sm:text-2xl sm:truncate">
-                    Page Title
-                  </h2>
-                </div>
-              </div>
-            </div> */}
-            <div className="flex h-full flex-col overflow-y-auto pt-4">{children}</div>
+            <div className="flex h-full w-full flex-col overflow-y-auto">{children}</div>
           </div>
         </div>
       </div>
