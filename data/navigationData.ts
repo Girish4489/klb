@@ -6,7 +6,7 @@ const navigationData = [
     subNav: [
       { title: 'Form Master', href: '#m1' },
       { title: 'Input Data', href: '#m2' },
-      { title: 'Category', href: '#m3' },
+      { title: 'Category', href: '/dashboard/master-record/category' },
       { title: 'Work Process', href: '#m4' },
       { title: 'Work Process Style', href: '#m5' },
       { title: 'Work Master', href: '#m6' },
