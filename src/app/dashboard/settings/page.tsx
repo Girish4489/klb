@@ -49,7 +49,7 @@ export default function SettingsPage() {
         });
       }
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   };
 
@@ -69,49 +69,48 @@ export default function SettingsPage() {
 
   async function uploadProfilePhoto(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    try {
-      if (profileImage === undefined || !profileImage || !profileImage.type.startsWith('image/')) {
-        toast.error('Please select an image');
-        return;
-      }
+
+    const uploadImage = async () => {
+      if (profileImage === undefined || null || !File || !profileImage || !profileImage.type.startsWith('image/'))
+        throw new Error('Please select an image');
+
       // check the file size
-      if (profileImage.size > 2 * 1024 * 1024) {
-        toast.error('Please select an image less than 1MB');
-        return;
-      }
-      // check the file extention to be image
-      if (!profileImage.type.startsWith('image/')) {
-        alert('Please select an image');
-        return;
-      }
+      if (profileImage.size > 2 * 1024 * 1024) throw new Error('Please select an image less than 1MB');
+
       const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
       const fileExtension = profileImage.name.split('.').pop()?.toLowerCase();
-      if (!allowedExtensions.includes(fileExtension as string)) {
-        alert('Please select a valid image file');
-        return;
-      }
+      if (!allowedExtensions.includes(fileExtension as string)) throw new Error('Please select a valid image file');
 
       const formData = new FormData();
-      if (profileImage) {
-        formData.append('profileImage', profileImage);
-      } else {
-        toast.error('Please select an image');
-        return;
-      }
+      formData.append('profileImage', profileImage);
 
       const res = await axios.post('/api/dashboard/settings', formData);
+      if (res.data.success === true) {
+        return res.data.message; // Resolve with success message
+      } else {
+        throw new Error(res.data.message); // Reject with error message
+      }
+    };
+    try {
+      await toast.promise(uploadImage(), {
+        loading: 'Uploading...',
+        success: message => <b>{message}</b>,
+        error: error => <b>{error}</b>,
+      });
       getUserDetails();
       setProfileImage(null);
-
-      // Reload the page
-      router.refresh();
-
-      toast.success('Profile photo uploaded successfully!');
+      clearProfileImageInput();
     } catch (error) {
-      toast.error('Error uploading profile photo' + error);
-      console.error('Error uploading profile photo:', error);
+      // toast.error('Error uploading profile photo: ' + error);
+      // console.error(error);
     }
   }
+  const clearProfileImageInput = () => {
+    const profileImageInput = document.getElementById('profileImage') as HTMLInputElement | null;
+    if (profileImageInput) {
+      profileImageInput.value = '';
+    }
+  };
 
   const myModel = (id: string) => {
     const element = document.getElementById(id) as HTMLDialogElement | null;
@@ -135,7 +134,7 @@ export default function SettingsPage() {
                   <Image
                     src={`${data.profileImage === '' ? '/vercel.svg' : data.profileImage}`}
                     alt="Landscape picture"
-                    className="cursor-pointer rounded-full p-1  transition-all duration-500 ease-in-out hover:bg-primary hover:shadow-2xl"
+                    className="cursor-pointer rounded-full p-0.5 transition-all duration-500 ease-in-out hover:bg-accent hover:shadow-2xl"
                     width="40"
                     height="40"
                     onClick={() => myModel('my_modal_4')}

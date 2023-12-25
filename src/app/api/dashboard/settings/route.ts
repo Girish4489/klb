@@ -19,9 +19,7 @@ export async function POST(request: NextRequest) {
     const file = formData.get('profileImage') as File;
 
     // Check if a file was provided
-    if (!file) {
-      return NextResponse.json({ error: 'No file provided' });
-    }
+    if (!file) throw new Error('No file provided');
 
     // Process the file, e.g., store it in MongoDB or perform other operations
 
@@ -36,7 +34,7 @@ export async function POST(request: NextRequest) {
 
     user.save();
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, message: 'Profile updated' });
   } catch (error: any) {
     return NextResponse.json({ error: error.message });
   }
