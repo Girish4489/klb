@@ -39,7 +39,7 @@ export default function ProfilePage() {
       }
       document.documentElement.setAttribute('data-theme', res.data.data.theme);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   };
   useEffect(() => {

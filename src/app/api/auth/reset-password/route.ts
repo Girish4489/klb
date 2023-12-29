@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     const prevHashedPassword = user.password;
     // check is user password is the same as the new password
     const decryptedPassword = await bcryptjs.compare(newPassword, prevHashedPassword);
-    console.log('decrypted password ' + decryptedPassword);
+    // console.log('decrypted password ' + decryptedPassword);
     if (decryptedPassword) {
       return NextResponse.json({ error: 'New password cannot be the same as the old password' }, { status: 400 });
     }

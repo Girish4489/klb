@@ -18,7 +18,7 @@ export default function VerifyEmailPage() {
   useEffect(() => {
     const verifyUserEmail = async () => {
       try {
-        console.log(token);
+        // console.log(token);
         toast.loading('Verifying email');
         const response = await axios.post('/api/auth/verify-email', { token });
         toast.remove();

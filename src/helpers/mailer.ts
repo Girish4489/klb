@@ -46,11 +46,11 @@ export const sendEmail = async ({ email, emailType, userId }: any) => {
                 emailType === 'VERIFY' ? 'verify-email' : 'reset-password'
               }?token=${hashedToken}</p>`,
     };
-    console.log('before mail');
+    // console.log('before mail');
     const mailresponse = await transport.sendMail(mailOptions);
-    console.log('after mail');
+    // console.log('after mail');
     return mailresponse;
   } catch (error) {
-    console.log(error);
+    // console.log(error);
   }
 };
