@@ -90,7 +90,7 @@ export default function LoginPage() {
                 placeholder="email"
                 id="email"
                 value={user.email}
-                onChange={e => setUser({ ...user, email: e.target.value })}
+                onChange={(e) => setUser({ ...user, email: e.target.value })}
                 autoComplete="email"
                 className="input input-bordered"
                 required
@@ -105,7 +105,7 @@ export default function LoginPage() {
                 placeholder="password"
                 id="password"
                 value={user.password}
-                onChange={e => setUser({ ...user, password: e.target.value })}
+                onChange={(e) => setUser({ ...user, password: e.target.value })}
                 autoComplete="current-password"
                 className="input input-bordered"
                 required
@@ -150,7 +150,7 @@ export default function LoginPage() {
                       placeholder="email"
                       id="forgotEmail"
                       value={forgot.email}
-                      onChange={e => setForgot({ ...forgot, email: e.target.value })}
+                      onChange={(e) => setForgot({ ...forgot, email: e.target.value })}
                       autoComplete="email"
                       className="input input-bordered"
                       required

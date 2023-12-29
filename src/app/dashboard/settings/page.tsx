@@ -94,8 +94,8 @@ export default function SettingsPage() {
     try {
       await toast.promise(uploadImage(), {
         loading: 'Uploading...',
-        success: message => <b>{message}</b>,
-        error: error => <b>{error}</b>,
+        success: (message) => <b>{message}</b>,
+        error: (error) => <b>{error}</b>,
       });
       getUserDetails();
       setProfileImage(null);

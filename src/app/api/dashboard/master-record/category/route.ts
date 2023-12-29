@@ -115,7 +115,11 @@ export async function POST(request: NextRequest) {
       // delete the style
       const deletedStyle = await Category.findOneAndUpdate(
         { _id: reqBody.categoryId },
-        { $pull: { [`styleProcess.${reqBody.styleProcessIndex}.styles`]: { _id: { $eq: reqBody.styleId } } } },
+        {
+          $pull: {
+            [`styleProcess.${reqBody.styleProcessIndex}.styles`]: { _id: { $eq: reqBody.styleId } },
+          },
+        },
         { new: true },
       );
 

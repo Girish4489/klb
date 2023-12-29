@@ -90,7 +90,7 @@ export default function SignupPage() {
                 className="input input-bordered"
                 required
                 value={user.username}
-                onChange={e => setUser({ ...user, username: e.target.value })}
+                onChange={(e) => setUser({ ...user, username: e.target.value })}
               />
             </div>
             <div className="form-control">
@@ -106,7 +106,7 @@ export default function SignupPage() {
                 className="input input-bordered"
                 required
                 value={user.email}
-                onChange={e => setUser({ ...user, email: e.target.value })}
+                onChange={(e) => setUser({ ...user, email: e.target.value })}
               />
             </div>
             <div className="form-control">
@@ -122,7 +122,7 @@ export default function SignupPage() {
                 className="input input-bordered"
                 required
                 value={user.password}
-                onChange={e => setUser({ ...user, password: e.target.value })}
+                onChange={(e) => setUser({ ...user, password: e.target.value })}
               />
             </div>
             <div className="form-control mt-3">
@@ -162,7 +162,7 @@ export default function SignupPage() {
                       className="input input-bordered"
                       required
                       value={resendUser.email}
-                      onChange={e => setResendUser({ ...resendUser, email: e.target.value })}
+                      onChange={(e) => setResendUser({ ...resendUser, email: e.target.value })}
                     />
                   </div>
                   <div className="form-control mt-3">

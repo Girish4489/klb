@@ -27,8 +27,8 @@ export default function ThemerPage() {
     try {
       await toast.promise(saveT(), {
         loading: 'Applying the selected theme...',
-        success: message => <b>{message}</b>,
-        error: error => <b>{error.message}</b>,
+        success: (message) => <b>{message}</b>,
+        error: (error) => <b>{error.message}</b>,
       });
     } catch (error: any) {
       // toast.error(error.response.data.message);
@@ -53,7 +53,7 @@ export default function ThemerPage() {
       <span className="m-2 p-2">Current Theme: {selectedTheme}</span>
       <form className="flex w-full flex-col items-end gap-3 max-sm:items-center">
         <div className="grid w-full grid-cols-2 gap-4 rounded-box sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          {themes.map(themeOption => (
+          {themes.map((themeOption) => (
             <div
               key={themeOption}
               className={`overflow-hidden rounded-lg border-base-content/20  outline outline-2 outline-offset-2 outline-transparent ${
@@ -68,7 +68,7 @@ export default function ThemerPage() {
                 type="hidden"
                 name="theme"
                 value={themeOption}
-                onChange={e => setSaveTheme(e.target.value)}
+                onChange={(e) => setSaveTheme(e.target.value)}
                 className="invisible h-0 w-0"
               />
               <div

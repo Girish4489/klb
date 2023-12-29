@@ -31,7 +31,7 @@ export async function connect() {
       console.log('MongoDB connected successfully');
     });
 
-    connection.on('error', err => {
+    connection.on('error', (err) => {
       // eslint-disable-next-line no-console
       console.log('MongoDB connection error. Please make sure MongoDB is running. ' + err);
       process.exit();

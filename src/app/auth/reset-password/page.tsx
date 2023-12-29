@@ -80,7 +80,7 @@ export default function ResetPasswordPage() {
                 type="password"
                 id="password"
                 value={user.password}
-                onChange={e => setUser({ ...user, password: e.target.value })}
+                onChange={(e) => setUser({ ...user, password: e.target.value })}
               />
             </div>
             <div className="form-control">
@@ -93,7 +93,7 @@ export default function ResetPasswordPage() {
                 type="password"
                 id="retypepassword"
                 value={user.retypepassword}
-                onChange={e => setUser({ ...user, retypepassword: e.target.value })}
+                onChange={(e) => setUser({ ...user, retypepassword: e.target.value })}
               />
             </div>
             <div className="form-control mt-3">

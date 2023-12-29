@@ -57,8 +57,8 @@ export default function CategoryPage() {
     try {
       await toast.promise(saveCategory(), {
         loading: 'Adding Category...',
-        success: message => <b>{message}</b>,
-        error: error => <b>{error.message}</b>,
+        success: (message) => <b>{message}</b>,
+        error: (error) => <b>{error.message}</b>,
       });
 
       GetCategory(); // Refresh the category list on success
@@ -89,8 +89,8 @@ export default function CategoryPage() {
     try {
       await toast.promise(saveProcess(), {
         loading: 'Adding Process...',
-        success: message => <b>{message}</b>,
-        error: error => <b>{error.message}</b>,
+        success: (message) => <b>{message}</b>,
+        error: (error) => <b>{error.message}</b>,
       });
 
       GetCategory(); // Refresh the category list on success
@@ -121,8 +121,8 @@ export default function CategoryPage() {
     try {
       await toast.promise(saveStyle(), {
         loading: 'Adding Style...',
-        success: message => <b>{message}</b>,
-        error: error => <b>{error.message}</b>,
+        success: (message) => <b>{message}</b>,
+        error: (error) => <b>{error.message}</b>,
       });
       GetCategory(); // Refresh the category list on success
     } catch (error: any) {
@@ -153,8 +153,8 @@ export default function CategoryPage() {
       try {
         await toast.promise(deleteCategory(), {
           loading: 'Deleting Category...',
-          success: message => <b>{message}</b>,
-          error: error => <b>{error.message}</b>,
+          success: (message) => <b>{message}</b>,
+          error: (error) => <b>{error.message}</b>,
         });
         GetCategory(); // Refresh the category list on success
       } catch (error: any) {
@@ -188,8 +188,8 @@ export default function CategoryPage() {
         try {
           await toast.promise(deleteProcess(), {
             loading: 'Deleting Process...',
-            success: message => <b>{message}</b>,
-            error: error => <b>{error.message}</b>,
+            success: (message) => <b>{message}</b>,
+            error: (error) => <b>{error.message}</b>,
           });
           GetCategory(); // Refresh the category list on success
         } catch (error: any) {
@@ -225,8 +225,8 @@ export default function CategoryPage() {
         try {
           await toast.promise(deleteStyle(), {
             loading: 'Deleting Style...',
-            success: message => <b>{message}</b>,
-            error: error => <b>{error.message}</b>,
+            success: (message) => <b>{message}</b>,
+            error: (error) => <b>{error.message}</b>,
           });
           GetCategory(); // Refresh the category list on success
         } catch (error: any) {
@@ -267,8 +267,8 @@ export default function CategoryPage() {
     try {
       await toast.promise(UpdateCategory(), {
         loading: 'Updating Category...',
-        success: message => <b>{message}</b>,
-        error: error => <b>{error.message}</b>,
+        success: (message) => <b>{message}</b>,
+        error: (error) => <b>{error.message}</b>,
       });
       GetCategory(); // Refresh the category list on success
       closeModal('editCategory');
@@ -303,8 +303,8 @@ export default function CategoryPage() {
     try {
       await toast.promise(UpdateProcess(), {
         loading: 'Updating Process...',
-        success: message => <b>{message}</b>,
-        error: error => <b>{error.message}</b>,
+        success: (message) => <b>{message}</b>,
+        error: (error) => <b>{error.message}</b>,
       });
       GetCategory(); // Refresh the category list on success
       closeModal('editProcess');
@@ -341,8 +341,8 @@ export default function CategoryPage() {
     try {
       await toast.promise(UpdateStyles(), {
         loading: 'Updating Style...',
-        success: message => <b>{message}</b>,
-        error: error => <b>{error.message}</b>,
+        success: (message) => <b>{message}</b>,
+        error: (error) => <b>{error.message}</b>,
       });
       GetCategory(); // Refresh the category list on success
       closeModal('editStyles');
@@ -353,7 +353,7 @@ export default function CategoryPage() {
   };
 
   const myConfirmModal = (modalId: string, header: string, message: string): Promise<boolean> => {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       const element = document.getElementById(modalId) as HTMLDialogElement | null;
       if (element) {
         // Define the header
@@ -411,7 +411,7 @@ export default function CategoryPage() {
             spellCheck="true"
             name="category"
             id="category"
-            onFocus={e => e.currentTarget.select()}
+            onFocus={(e) => e.currentTarget.select()}
           />
           <label htmlFor="description">Description:</label>
           <input
@@ -420,7 +420,7 @@ export default function CategoryPage() {
             className="input input-bordered input-primary w-full max-w-xs max-sm:w-full max-sm:max-w-full"
             name="description"
             id="description"
-            onFocus={e => e.currentTarget.select()}
+            onFocus={(e) => e.currentTarget.select()}
           />
           <button className="btn btn-primary form-control tooltip tooltip-right self-end" data-tip="Add Category">
             <Image src="/icons/svg/plus-circle.svg" alt="Add Category" width={45} height={40} className="h-auto w-11" />
@@ -458,7 +458,7 @@ export default function CategoryPage() {
                   spellCheck="true"
                   name="category"
                   id="category"
-                  onFocus={e => e.currentTarget.select()}
+                  onFocus={(e) => e.currentTarget.select()}
                 />
                 <label htmlFor="description">Description:</label>
                 <input
@@ -467,7 +467,7 @@ export default function CategoryPage() {
                   className="input input-bordered input-primary w-full max-w-xs max-sm:w-full max-sm:max-w-full"
                   name="description"
                   id="description"
-                  onFocus={e => e.currentTarget.select()}
+                  onFocus={(e) => e.currentTarget.select()}
                 />
                 <div className="form-control w-full items-center">
                   <button className="btn btn-primary w-10/12" type="submit">
@@ -499,7 +499,7 @@ export default function CategoryPage() {
                   spellCheck="true"
                   name="processName"
                   id="processName"
-                  onFocus={e => e.currentTarget.select()}
+                  onFocus={(e) => e.currentTarget.select()}
                 />
                 <div className="form-control w-full items-center">
                   <button className="btn btn-primary w-10/12" type="submit">
@@ -531,7 +531,7 @@ export default function CategoryPage() {
                   spellCheck="true"
                   name="styleName"
                   id="styleName"
-                  onFocus={e => e.currentTarget.select()}
+                  onFocus={(e) => e.currentTarget.select()}
                 />
                 <div className="form-control w-full items-center">
                   <button className="btn btn-primary w-10/12" type="submit">
@@ -579,7 +579,7 @@ export default function CategoryPage() {
                                 spellCheck="true"
                                 name="styleProcess"
                                 id="styleProcess"
-                                onFocus={e => e.currentTarget.select()}
+                                onFocus={(e) => e.currentTarget.select()}
                               />
                               <button
                                 className="btn btn-primary form-control join-item tooltip tooltip-right rounded-r-full pl-0 pr-3"
@@ -634,7 +634,7 @@ export default function CategoryPage() {
                                         spellCheck="true"
                                         name="catStyle"
                                         id="catStyle"
-                                        onFocus={e => e.currentTarget.select()}
+                                        onFocus={(e) => e.currentTarget.select()}
                                       />
                                       <button className="btn btn-primary form-control join-item rounded-r-full pl-0 pr-3">
                                         <Image

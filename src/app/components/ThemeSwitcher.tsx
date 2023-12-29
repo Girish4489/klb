@@ -39,14 +39,14 @@ export function ThemeSwitcher() {
               value="default"
             />
           </li>
-          {themes.map(themeOption => (
+          {themes.map((themeOption) => (
             <li key={themeOption} value={themeOption}>
               <input
                 type="radio"
                 name="theme-dropdown"
                 className="theme-controller btn btn-ghost btn-sm btn-block justify-start"
                 aria-label={themeOption.charAt(0).toUpperCase() + themeOption.slice(1)}
-                onChange={e => changeTheme(e.target.value as Theme)}
+                onChange={(e) => changeTheme(e.target.value as Theme)}
                 value={themeOption}
               />
             </li>
