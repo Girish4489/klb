@@ -8,19 +8,30 @@ export default function ThemerPage() {
   const { theme, setTheme } = useTheme();
   const [selectedTheme, setSelectedTheme] = useState<string | null>(null);
   const [saveTheme, setSaveTheme] = useState<string | null>(null);
-  const changeTheme = async (theme: string) => {
+  const changeTheme = (theme: string) => {
     document.documentElement.setAttribute('data-theme', theme);
     setTheme(theme as Theme);
   };
   const handleThemeChange = async () => {
-    try {
+    const saveT = async () => {
       const response = await axios.post('/api/auth/theme-save', {
         theme: saveTheme,
       });
       setSelectedTheme(response.data.user.theme);
-      toast.success('Theme changed successfully!');
+      if (response.data.success === true) {
+        return response.data.message; // Resolve with success message
+      } else {
+        throw new Error(response.data.message); // Reject with error message
+      }
+    };
+    try {
+      await toast.promise(saveT(), {
+        loading: 'Applying the selected theme...',
+        success: message => <b>{message}</b>,
+        error: error => <b>{error.message}</b>,
+      });
     } catch (error: any) {
-      toast.error(error.response.data.message);
+      // toast.error(error.response.data.message);
     }
   };
 
@@ -30,7 +41,7 @@ export default function ThemerPage() {
       setSelectedTheme(response.data.user.theme);
       document.documentElement.setAttribute('data-theme', response.data.user.theme);
     } catch (error: any) {
-      console.log(error);
+      // console.log(error);
     }
   };
   useEffect(() => {

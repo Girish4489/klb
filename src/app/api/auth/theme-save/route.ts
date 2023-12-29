@@ -11,19 +11,18 @@ export async function POST(request: NextRequest) {
     const user = await User.findOne({ _id: userId }).select(
       '-password -__v -isAdmin -isVerified -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry -profileImage -email',
     );
-    if (!user) {
-      return NextResponse.json({ message: 'User not found' }, { status: 404 });
-    }
+    if (!user) throw new Error('User not found');
+
     const reqBody = await request.json();
     user.theme = reqBody.theme;
     await user.save();
     return NextResponse.json({
-      message: 'User found',
+      message: 'Theme changed successfully!',
       success: true,
       user,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    return NextResponse.json({ error: error.message });
   }
 }
 
@@ -42,6 +41,6 @@ export async function GET(request: NextRequest) {
       user,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    return NextResponse.json({ error: error.message });
   }
 }
