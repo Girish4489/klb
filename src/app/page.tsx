@@ -1,7 +1,6 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { ThemeSwitcher } from './components/ThemeSwitcher';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 export default function Home() {
   const [countdown, setCountdown] = useState(5); // Initial countdown time

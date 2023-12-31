@@ -1,11 +1,11 @@
 'use client';
-import axios from 'axios';
-import React, { useState, useEffect, useRef } from 'react';
-import Image from 'next/image';
-import toast from 'react-hot-toast';
-import { useRouter } from 'next/navigation';
-import Logout from '../../components/logout/page';
 import ThemerPage from '@/app/components/themer/page';
+import axios from 'axios';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import Logout from '../../components/logout/page';
 
 export default function SettingsPage() {
   const router = useRouter();

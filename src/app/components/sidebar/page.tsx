@@ -1,7 +1,6 @@
 'use client';
-import React from 'react';
-import navigationData from '../../../../data/navigationData';
 import Link from 'next/link';
+import navigationData from '../../../../data/navigationData';
 
 export default function SidebarPage() {
   return (

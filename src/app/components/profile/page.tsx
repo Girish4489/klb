@@ -1,9 +1,9 @@
 'use client';
-import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Image from 'next/image';
-import LogoutPage from '../logout/page';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import LogoutPage from '../logout/page';
 
 export default function ProfilePage() {
   const [data, setData] = useState<{

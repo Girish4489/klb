@@ -1,8 +1,8 @@
 import { connect } from '@/dbConfig/dbConfig';
-import { NextRequest, NextResponse } from 'next/server';
+import { getDataFromToken } from '@/helpers/getDataFromToken';
 import { Category } from '@/models/klm';
 import User from '@/models/userModel';
-import { getDataFromToken } from '@/helpers/getDataFromToken';
+import { NextRequest, NextResponse } from 'next/server';
 
 connect();
 

@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, Model } from 'mongoose';
+import mongoose, { Document, Model, Schema } from 'mongoose';
 
 // Interfaces
 interface ICustomer extends Document {
@@ -269,4 +269,4 @@ const Bill: Model<IBill> = mongoose.models.Bill || mongoose.model<IBill>('Bill',
 const Receipt: Model<IReceipt> = mongoose.models.Receipt || mongoose.model<IReceipt>('Receipt', receiptSchema);
 
 // Export the models
-export { Customer, Category, Order, OrderDetails, Bill, Receipt };
+export { Bill, Category, Customer, Order, OrderDetails, Receipt };

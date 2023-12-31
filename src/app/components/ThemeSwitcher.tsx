@@ -1,6 +1,6 @@
 // /components/ThemeSwitcher.tsx
 'use client';
-import { useTheme, Theme, themes } from './ThemeContext';
+import { Theme, themes, useTheme } from './ThemeContext';
 
 export function ThemeSwitcher() {
   const { theme, setTheme } = useTheme();

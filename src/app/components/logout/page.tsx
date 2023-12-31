@@ -1,8 +1,7 @@
 'use client';
 import axios from 'axios';
-import React from 'react';
-import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
+import { toast } from 'react-hot-toast';
 
 export default function LogoutPage() {
   const router = useRouter();

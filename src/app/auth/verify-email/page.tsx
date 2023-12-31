@@ -1,10 +1,10 @@
 'use client';
-import Link from 'next/link';
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { toast, Toaster } from 'react-hot-toast';
-import axios from 'axios';
 import { ThemeSwitcher } from '@/app/components/ThemeSwitcher';
+import axios from 'axios';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { Toaster, toast } from 'react-hot-toast';
 
 export default function VerifyEmailPage() {
   const [token, setToken] = useState('');

@@ -7,8 +7,8 @@
   "semi": true,
   "bracketSpacing": true,
   "bracketSameLine": false,
-  "plugins": ["prettier-plugin-tailwindcss"],
-  "tailwindFunctions": ["clsx", "cn"],
   "useTabs": false,
-  "endOfLine": "auto"
+  "endOfLine": "auto",
+  "plugins": ["prettier-plugin-organize-imports", "prettier-plugin-tailwindcss"],
+  "tailwindFunctions": ["clsx", "cn"]
 }

@@ -1,8 +1,8 @@
 'use client';
-import React, { useEffect, useState } from 'react';
-import { themes, Theme, useTheme } from '../ThemeContext';
 import axios from 'axios';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import { Theme, themes, useTheme } from '../ThemeContext';
 
 export default function ThemerPage() {
   const { theme, setTheme } = useTheme();

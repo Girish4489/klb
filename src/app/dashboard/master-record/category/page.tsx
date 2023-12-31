@@ -1,8 +1,8 @@
 'use client';
-import React from 'react';
 import axios from 'axios';
-import toast from 'react-hot-toast';
 import Image from 'next/image';
+import React from 'react';
+import toast from 'react-hot-toast';
 
 export default function CategoryPage() {
   interface Category {

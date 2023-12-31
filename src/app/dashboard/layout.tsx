@@ -1,9 +1,8 @@
 'use client';
-import React, { useState, useEffect } from 'react';
-import Sidebar from '../components/sidebar/page';
-import Image from 'next/image';
-import ProfilePage from '../components/profile/page';
+import React, { useEffect, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
+import ProfilePage from '../components/profile/page';
+import Sidebar from '../components/sidebar/page';
 
 export default function AuthLayout({
   children, // will be a page or nested layout
