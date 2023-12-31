@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/sidebar/page';
 import Image from 'next/image';
 import ProfilePage from '../components/profile/page';
@@ -10,6 +10,9 @@ export default function AuthLayout({
 }: {
   children: React.ReactNode;
 }) {
+  useEffect(() => {
+    document.title = 'Dashboard | Kalamandir';
+  }, []);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   let startX = 0;
 
