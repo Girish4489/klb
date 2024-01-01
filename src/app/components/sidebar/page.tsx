@@ -1,8 +1,10 @@
 'use client';
+import navigationData from '@/../../data/navigationData';
 import Link from 'next/link';
-import navigationData from '../../../../data/navigationData';
+import { usePathname } from 'next/navigation';
 
 export default function SidebarPage() {
+  const currentPathname = usePathname();
   return (
     <>
       <div
@@ -14,7 +16,9 @@ export default function SidebarPage() {
           <ul className="menu rounded-box bg-base-200 shadow-xl xl:menu-vertical lg:min-w-max">
             <h1 className="menu-title select-none text-center">Kalamndir</h1>
             <li>
-              <Link href={'/dashboard'}>Dashboard</Link>
+              <Link href={'/dashboard'} className={currentPathname === '/dashboard' ? 'active' : ''}>
+                Dashboard
+              </Link>
             </li>
             {navigationData.map((nav, index) => {
               return (
@@ -25,7 +29,13 @@ export default function SidebarPage() {
                       {nav.subNav.map((child, index) => {
                         return (
                           <li key={index}>
-                            <Link href={child.href} className="tooltip flex w-full flex-row" data-tip={child.title}>
+                            <Link
+                              href={child.href}
+                              className={`tooltip flex w-full flex-row ${
+                                currentPathname === child.href ? 'active' : ''
+                              }`}
+                              data-tip={child.title}
+                            >
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 className="h-5 w-5"
