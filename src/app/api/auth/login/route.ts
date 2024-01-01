@@ -15,21 +15,15 @@ export async function POST(request: NextRequest) {
     const user = await User.findOne({ email }).select(
       '-theme -profileImage -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry',
     );
-    if (!user) {
-      return NextResponse.json({ error: 'User does not exist' }, { status: 400 });
-    }
+    if (!user) throw new Error('User does not exist');
 
     // check if user is verified
     const isVerified = user.isVerified;
-    if (isVerified === false || null || undefined) {
-      return NextResponse.json({ error: 'User is not verified' }, { status: 400 });
-    }
+    if (isVerified === false || null || undefined) throw new Error('User is not verified');
 
     //check if password is correct
     const validPassword = await bcryptjs.compare(password, user.password);
-    if (!validPassword) {
-      return NextResponse.json({ error: 'Invalid password' }, { status: 400 });
-    }
+    if (!validPassword) throw new Error('Invalid password');
 
     //create token data
     const tokenData = {
@@ -55,6 +49,6 @@ export async function POST(request: NextRequest) {
 
     return response;
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error.message });
   }
 }
