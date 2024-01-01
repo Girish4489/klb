@@ -1,11 +1,11 @@
 'use client';
+import Logout from '@/app/components/logout/page';
 import ThemerPage from '@/app/components/themer/page';
 import axios from 'axios';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import Logout from '../../components/logout/page';
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -27,29 +27,22 @@ export default function SettingsPage() {
 
   const getUserDetails = async () => {
     try {
-      const res = await axios.get('/api/auth/user');
-      if (!res.data.data.profileImage.data) {
-        setData({
-          username: res.data.data.username,
-          email: res.data.data.email,
-          theme: res.data.data.theme,
-          profileImage: '',
-          isVerified: res.data.data.isVerified,
-          isAdmin: res.data.data.isAdmin,
-        });
-      } else {
-        const base64Image = Buffer.from(res.data.data.profileImage.data).toString('base64');
-        setData({
-          username: res.data.data.username,
-          email: res.data.data.email,
-          theme: res.data.data.theme,
-          profileImage: `data:${res.data.data.profileImage.contentType};base64,${base64Image}`,
-          isVerified: res.data.data.isVerified,
-          isAdmin: res.data.data.isAdmin,
-        });
-      }
+      const {
+        data: { data: userData },
+      } = await axios.get('/api/auth/user');
+
+      const base64Image = userData.profileImage?.data ? Buffer.from(userData.profileImage.data).toString('base64') : '';
+
+      setData({
+        username: userData.username,
+        email: userData.email,
+        theme: userData.theme || 'default',
+        profileImage: base64Image ? `data:${userData.profileImage.contentType};base64,${base64Image}` : '',
+        isVerified: userData.isVerified,
+        isAdmin: userData.isAdmin,
+      });
     } catch (error) {
-      // console.error(error);
+      // console.error('Error fetching user details:', error);
     }
   };
 
@@ -61,25 +54,28 @@ export default function SettingsPage() {
   const [profileImage, setProfileImage] = useState<File | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const target = e.target as HTMLInputElement & {
-      files: FileList;
-    };
-    setProfileImage(target.files![0]);
+    const target = e.target as HTMLInputElement & { files: FileList };
+    setProfileImage(target.files?.[0] || null);
   };
 
   async function uploadProfilePhoto(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     const uploadImage = async () => {
-      if (profileImage === undefined || null || !File || !profileImage || !profileImage.type.startsWith('image/'))
-        throw new Error('Please select an image');
+      if (!profileImage || !profileImage.type.startsWith('image/')) {
+        throw new Error('Please select a valid image');
+      }
 
       // check the file size
-      if (profileImage.size > 2 * 1024 * 1024) throw new Error('Please select an image less than 1MB');
+      if (profileImage.size > 2 * 1024 * 1024) {
+        throw new Error('Please select an image less than 2MB');
+      }
 
       const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-      const fileExtension = profileImage.name.split('.').pop()?.toLowerCase();
-      if (!allowedExtensions.includes(fileExtension as string)) throw new Error('Please select a valid image file');
+      const fileExtension = profileImage?.name.split('.').pop()?.toLowerCase();
+      if (!allowedExtensions.includes(fileExtension as string)) {
+        throw new Error('Please select a valid image file');
+      }
 
       const formData = new FormData();
       formData.append('profileImage', profileImage);
@@ -95,7 +91,7 @@ export default function SettingsPage() {
       await toast.promise(uploadImage(), {
         loading: 'Uploading...',
         success: (message) => <b>{message}</b>,
-        error: (error) => <b>{error}</b>,
+        error: (error) => <b>{error.message}</b>,
       });
       getUserDetails();
       setProfileImage(null);
@@ -124,15 +120,15 @@ export default function SettingsPage() {
       <div className="join join-vertical w-full bg-base-200">
         <div className="collapse join-item collapse-arrow border border-base-300">
           {/* <input type="radio" name="my-accordion-4" /> */}
-          <input type="checkbox" defaultChecked />
+          <input type="checkbox" name="collapse" defaultChecked />
           <div className="collapse-title text-xl font-medium text-info">User Profile</div>
           <div className="collapse-content">
             <div className="card flex flex-col items-center gap-4 lg:card-side">
               <div className="avatar indicator card-side lg:pt-4">
-                <span className="badge indicator-item badge-secondary lg:mt-4">edit</span>
+                <span className="badge indicator-item badge-secondary select-none lg:mt-4">edit..</span>
                 <div className="h-24 w-24 rounded-full ring ring-primary ring-offset-2 ring-offset-base-100">
                   <Image
-                    src={`${data.profileImage === '' ? '/vercel.svg' : data.profileImage}`}
+                    src={`${data.profileImage === '' ? '/klm.webp' : data.profileImage}`}
                     alt="Landscape picture"
                     className="cursor-pointer rounded-full p-0.5 transition-all duration-500 ease-in-out hover:bg-accent hover:shadow-2xl"
                     width="40"
@@ -148,7 +144,7 @@ export default function SettingsPage() {
                   <div className="card flex items-center justify-evenly py-2 lg:card-side lg:items-center lg:justify-evenly">
                     <span className="h-48 w-48">
                       <Image
-                        src={`${data.profileImage === '' ? '/vercel.svg' : data.profileImage}`}
+                        src={`${data.profileImage === '' ? '/klm.webp' : data.profileImage}`}
                         alt="Landscape picture"
                         className="h-48 w-48 cursor-pointer rounded-full p-1 transition-all duration-500 ease-in-out hover:bg-primary hover:shadow-2xl"
                         width="192"
@@ -192,25 +188,25 @@ export default function SettingsPage() {
               <div className="card-body my-4 rounded-box border border-base-100 p-4 shadow-2xl">
                 <span className="badge w-full justify-between gap-2 p-5">
                   <h1 className="text-xl font-bold">UserName:</h1>
-                  <span className="badge badge-accent badge-outline">{data.username}</span>
+                  <span className="badge badge-accent badge-outline py-3">{data.username}</span>
                 </span>
                 <span className="badge w-full justify-between gap-2 p-5">
                   <h1 className="text-xl font-bold">Email:</h1>
-                  <span className="badge badge-accent badge-outline">{data.email}</span>
+                  <span className="badge badge-accent badge-outline py-3">{data.email}</span>
                 </span>
                 <span className="badge w-full justify-between gap-2 p-5">
                   <h1 className="text-xl font-bold">Verified:</h1>
-                  <span className="badge badge-accent badge-outline">{data.isVerified ? 'Yes' : 'No'}</span>
+                  <span className="badge badge-accent badge-outline py-3">{data.isVerified ? 'Yes' : 'No'}</span>
                 </span>
                 <span className="badge w-full justify-between gap-2 p-5">
                   <h1 className="text-xl font-bold">Admin:</h1>
-                  <span className="badge badge-accent badge-outline">{data.isAdmin ? 'Yes' : 'No'}</span>
+                  <span className="badge badge-accent badge-outline py-3">{data.isAdmin ? 'Yes' : 'No'}</span>
                 </span>
                 <span className="badge w-full justify-between gap-2 p-5">
                   <h1 className="text-xl font-bold">Logout:</h1>
-                  <div className="btn my-2 h-9">
+                  <span className="badge badge-warning badge-outline border-2 border-error py-3 hover:bg-error">
                     <Logout />
-                  </div>
+                  </span>
                 </span>
               </div>
             </div>
@@ -218,7 +214,7 @@ export default function SettingsPage() {
         </div>
         <div className="collapse join-item collapse-arrow border border-base-300">
           {/* <input type="radio" name="my-accordion-4" /> */}
-          <input type="checkbox" defaultChecked />
+          <input type="checkbox" name="collapse" defaultChecked />
           <div className="collapse-title text-xl font-medium">Theme</div>
           <div className="collapse-content m-2">
             <ThemerPage />
@@ -226,7 +222,7 @@ export default function SettingsPage() {
         </div>
         <div className="collapse join-item collapse-arrow border border-base-300">
           {/* <input type="radio" name="my-accordion-4" /> */}
-          <input type="checkbox" defaultChecked />
+          <input type="checkbox" name="collapse" defaultChecked />
           <div className="collapse-title text-xl font-medium">Notification</div>
           <div className="collapse-content">
             <p>hello</p>
