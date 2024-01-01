@@ -4,7 +4,7 @@ import axios from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Toaster, toast } from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 
 export default function VerifyEmailPage() {
   const [token, setToken] = useState('');
@@ -44,7 +44,6 @@ export default function VerifyEmailPage() {
 
   return (
     <div className="hero min-h-screen bg-base-200">
-      <Toaster />
       <div className="hero-content flex-col justify-center rounded-box shadow-2xl lg:flex-row-reverse">
         <div className="text-center lg:text-left">
           <h1 className="mb-5 text-5xl font-bold">Verify Email</h1>

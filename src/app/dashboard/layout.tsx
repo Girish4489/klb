@@ -1,6 +1,5 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { Toaster } from 'react-hot-toast';
 import ProfilePage from '../components/profile/page';
 import Sidebar from '../components/sidebar/page';
 
@@ -21,7 +20,6 @@ export default function AuthLayout({
 
   return (
     <div className="flex h-screen w-screen flex-col overflow-hidden max-sm:-mb-16 max-sm:pb-0.5">
-      <Toaster />
       {/* Navbar */}
       <div className="navbar flex w-full flex-row content-stretch items-center bg-base-300">
         <span
@@ -57,7 +55,6 @@ export default function AuthLayout({
         {/* Profile dropdown */}
         <ProfilePage />
       </div>
-
       {/* sidebar and content page */}
       <div
         className="flex h-full w-full flex-grow flex-row overflow-hidden"
