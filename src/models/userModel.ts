@@ -1,6 +1,27 @@
-import mongoose from 'mongoose';
+import mongoose, { Document, Model, Schema } from 'mongoose';
 
-const userSchema = new mongoose.Schema({
+interface IUser extends Document {
+  username: string;
+  email: string;
+  password: string;
+  isVerified: boolean;
+  isAdmin: boolean;
+  theme: string;
+  profileImage: {
+    __filename: string;
+    data: Buffer;
+    contentType: string;
+    uploadAt: Date;
+  };
+  forgotPasswordToken: string;
+  forgotPasswordTokenExpiry: Date;
+  verifyToken: string;
+  verifyTokenExpiry: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const userSchema: Schema<IUser> = new mongoose.Schema({
   username: {
     type: String,
     required: [true, 'Please provide a username'],
@@ -8,7 +29,7 @@ const userSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: [true, 'Please provide a email'],
+    required: [true, 'Please provide an email'],
     unique: true,
   },
   password: {
@@ -28,17 +49,26 @@ const userSchema = new mongoose.Schema({
     default: 'dark',
   },
   profileImage: {
-    __filename: String, // Store image filename
-    data: Buffer, // Store image data as Buffer
-    contentType: { type: String, default: 'multipart/form-data' }, // Store image content type (e.g., "image/jpeg")
-    uploadAt: Date, // Store image upload time
+    __filename: String,
+    data: Buffer,
+    contentType: { type: String, default: 'multipart/form-data' },
+    uploadAt: Date,
   },
   forgotPasswordToken: String,
   forgotPasswordTokenExpiry: Date,
   verifyToken: String,
   verifyTokenExpiry: Date,
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
-const User = mongoose.models.users || mongoose.model('users', userSchema);
+// model from the schema
+const User: Model<IUser> = mongoose.models.users || mongoose.model<IUser>('users', userSchema);
 
 export default User;
