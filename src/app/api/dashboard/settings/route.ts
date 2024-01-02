@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
 
     user.save();
 
-    return NextResponse.json({ success: true, message: 'Profile updated' });
+    return NextResponse.json({ success: true, message: 'Profile updated', profileImage: user.profileImage });
   } catch (error: any) {
     return NextResponse.json({ error: error.message });
   }

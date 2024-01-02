@@ -1,54 +1,35 @@
 'use client';
 import Logout from '@/app/components/logout/page';
 import ThemerPage from '@/app/components/themer/page';
+import { useUser } from '@/app/context/userContext';
 import axios from 'axios';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 
 export default function SettingsPage() {
-  const router = useRouter();
-  const [data, setData] = useState<{
-    username: string;
-    email: string;
-    theme: string;
-    profileImage: string;
-    isVerified: boolean;
-    isAdmin: boolean;
-  }>({
-    username: 'User',
-    email: 'sample@example.com',
-    theme: 'default',
-    profileImage: '/vercel.svg',
-    isVerified: false,
-    isAdmin: false,
-  });
+  const { user, fetchAndSetUser, setUser, updateUser } = useUser();
+  let createdAt = '';
 
-  const getUserDetails = async () => {
-    try {
-      const {
-        data: { data: userData },
-      } = await axios.get('/api/auth/user');
+  if (user.createdAt) {
+    const createdAtDate = new Date(user.createdAt);
+    createdAt = createdAtDate.toLocaleDateString('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    });
+  }
 
-      const base64Image = userData.profileImage?.data ? Buffer.from(userData.profileImage.data).toString('base64') : '';
+  let updatedAt = '';
 
-      setData({
-        username: userData.username,
-        email: userData.email,
-        theme: userData.theme || 'default',
-        profileImage: base64Image ? `data:${userData.profileImage.contentType};base64,${base64Image}` : '',
-        isVerified: userData.isVerified,
-        isAdmin: userData.isAdmin,
-      });
-    } catch (error) {
-      // console.error('Error fetching user details:', error);
-    }
-  };
-
-  useEffect(() => {
-    getUserDetails();
-  }, []);
+  if (user.updatedAt) {
+    const updatedAtDate = new Date(user.updatedAt);
+    updatedAt = updatedAtDate.toLocaleDateString('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    });
+  }
 
   // Create a state for the file input
   const [profileImage, setProfileImage] = useState<File | null>(null);
@@ -82,6 +63,10 @@ export default function SettingsPage() {
 
       const res = await axios.post('/api/dashboard/settings', formData);
       if (res.data.success === true) {
+        const base64Image = Buffer.from(res.data.profileImage?.data || []).toString('base64');
+        updateUser({
+          profileImage: base64Image ? `data:${res.data.profileImage?.contentType};base64,${base64Image}` : '',
+        });
         return res.data.message; // Resolve with success message
       } else {
         throw new Error(res.data.message); // Reject with error message
@@ -93,7 +78,6 @@ export default function SettingsPage() {
         success: (message) => <b>{message}</b>,
         error: (error) => <b>{error.message}</b>,
       });
-      getUserDetails();
       setProfileImage(null);
       clearProfileImageInput();
     } catch (error) {
@@ -101,6 +85,7 @@ export default function SettingsPage() {
       // console.error(error);
     }
   }
+
   const clearProfileImageInput = () => {
     const profileImageInput = document.getElementById('profileImage') as HTMLInputElement | null;
     if (profileImageInput) {
@@ -121,16 +106,16 @@ export default function SettingsPage() {
         <div className="collapse join-item collapse-arrow border border-base-300">
           {/* <input type="radio" name="my-accordion-4" /> */}
           <input type="checkbox" name="collapse" defaultChecked />
-          <div className="collapse-title text-xl font-medium text-info">User Profile</div>
+          <div className="collapse-title text-xl font-medium">User Profile</div>
           <div className="collapse-content">
             <div className="card flex flex-col items-center gap-4 lg:card-side">
               <div className="avatar indicator card-side lg:pt-4">
                 <span className="badge indicator-item badge-secondary select-none lg:mt-4">edit..</span>
-                <div className="h-24 w-24 rounded-full ring ring-primary ring-offset-2 ring-offset-base-100">
+                <div className="h-24 w-24 rounded-full ring ring-primary hover:scale-105 hover:ring-offset-2  hover:ring-offset-accent">
                   <Image
-                    src={`${data.profileImage === '' ? '/klm.webp' : data.profileImage}`}
+                    src={`${user.profileImage === '' ? '/klm.webp' : user.profileImage}`}
                     alt="Landscape picture"
-                    className="cursor-pointer rounded-full p-0.5 transition-all duration-500 ease-in-out hover:bg-accent hover:shadow-2xl"
+                    className="cursor-pointer rounded-full transition-all duration-500 ease-in-out"
                     width="40"
                     height="40"
                     onClick={() => myModel('my_modal_4')}
@@ -141,40 +126,46 @@ export default function SettingsPage() {
               <dialog id="my_modal_4" className="modal">
                 <div className="modal-box w-11/12 max-w-5xl">
                   <h3 className="text-lg font-bold">Change Profile!</h3>
-                  <div className="card flex items-center justify-evenly py-2 lg:card-side lg:items-center lg:justify-evenly">
-                    <span className="h-48 w-48">
-                      <Image
-                        src={`${data.profileImage === '' ? '/klm.webp' : data.profileImage}`}
-                        alt="Landscape picture"
-                        className="h-48 w-48 cursor-pointer rounded-full p-1 transition-all duration-500 ease-in-out hover:bg-primary hover:shadow-2xl"
-                        width="192"
-                        height="192"
-                      />
-                    </span>
-                    <form
-                      onSubmit={uploadProfilePhoto}
-                      encType="multipart/form-data"
-                      className="form card-body flex-grow-0 gap-4"
-                    >
-                      <span className="">
-                        <p className="py-4">choose file to update/add profile image</p>
-                        <input
-                          type="file"
-                          name="file"
-                          id="profileImage"
-                          onChange={handleChange}
-                          accept=".jpg, .png, .jpeg, .webp, .gif"
-                          className="file-input file-input-bordered file-input-primary w-full max-w-xs"
-                          required
+                  <div className="card flex w-full items-center justify-between py-2 align-middle lg:card-side max-sm:pt-5 lg:items-center">
+                    <div className="avatar h-full w-full justify-center">
+                      <div className="mask w-48 rounded-badge ring ring-primary ring-offset-1 ring-offset-base-100 transition-transform duration-300 hover:scale-110">
+                        <Image
+                          src={`${user.profileImage === '' ? '/klm.webp' : user.profileImage}`}
+                          alt="Landscape picture"
+                          className="h-48 w-48 cursor-pointer transition-all duration-500 ease-in-out"
+                          width="192"
+                          height="192"
                         />
-                        <p className="pt-1">Note: .jpg, .png, .jpeg, .webp, .gif only..</p>
-                      </span>
-                      <div className="form-control items-center">
-                        <button className="btn btn-primary w-10/12" type="submit">
+                      </div>
+                    </div>
+                    <div className="card-body w-full items-center">
+                      <form
+                        onSubmit={uploadProfilePhoto}
+                        encType="multipart/form-data"
+                        className="flex max-w-xs flex-col gap-2"
+                      >
+                        <label className="form-control w-full">
+                          <div className="label">
+                            <span className="label-text">Choose file to update/add profile image</span>
+                          </div>
+                          <input
+                            type="file"
+                            name="file"
+                            id="profileImage"
+                            onChange={handleChange}
+                            accept=".jpg, .png, .jpeg, .webp, .gif"
+                            className="file-input file-input-bordered file-input-primary"
+                            required
+                          />
+                          <div className="label">
+                            <span className="label-text-alt">Note: .jpg, .png, .jpeg, .webp, .gif only..</span>
+                          </div>
+                        </label>
+                        <button className="btn btn-primary w-full" type="submit">
                           Add | Update
                         </button>
-                      </div>
-                    </form>
+                      </form>
+                    </div>
                   </div>
                   <div className="modal-action">
                     <form method="dialog">
@@ -187,24 +178,36 @@ export default function SettingsPage() {
               </dialog>
               <div className="card-body my-4 rounded-box border border-base-100 p-4 shadow-2xl">
                 <span className="badge w-full justify-between gap-2 p-5">
-                  <h1 className="text-xl font-bold">UserName:</h1>
-                  <span className="badge badge-accent badge-outline py-3">{data.username}</span>
+                  <h1 className="font-bold">UserName:</h1>
+                  <span className="badge badge-primary py-3">{user.username}</span>
                 </span>
                 <span className="badge w-full justify-between gap-2 p-5">
-                  <h1 className="text-xl font-bold">Email:</h1>
-                  <span className="badge badge-accent badge-outline py-3">{data.email}</span>
+                  <h1 className="font-bold">Email:</h1>
+                  <span className="badge badge-primary py-3">{user.email}</span>
                 </span>
                 <span className="badge w-full justify-between gap-2 p-5">
-                  <h1 className="text-xl font-bold">Verified:</h1>
-                  <span className="badge badge-accent badge-outline py-3">{data.isVerified ? 'Yes' : 'No'}</span>
+                  <h1 className="font-bold">Verified:</h1>
+                  <span className={`badge py-3 ${user.isVerified ? 'badge-success' : 'badge-error'}`}>
+                    {user.isVerified ? 'Yes' : 'No'}
+                  </span>
                 </span>
                 <span className="badge w-full justify-between gap-2 p-5">
-                  <h1 className="text-xl font-bold">Admin:</h1>
-                  <span className="badge badge-accent badge-outline py-3">{data.isAdmin ? 'Yes' : 'No'}</span>
+                  <h1 className="font-bold">Admin:</h1>
+                  <span className={`badge py-3 ${user.isAdmin ? 'badge-success' : 'badge-error'}`}>
+                    {user.isAdmin ? 'Yes' : 'No'}
+                  </span>
                 </span>
                 <span className="badge w-full justify-between gap-2 p-5">
-                  <h1 className="text-xl font-bold">Logout:</h1>
-                  <span className="badge badge-warning badge-outline border-2 border-error py-3 hover:bg-error">
+                  <h1 className="font-bold">Created:</h1>
+                  <span className="badge badge-primary py-3">{createdAt}</span>
+                </span>
+                <span className="badge w-full justify-between gap-2 p-5">
+                  <h1 className="font-bold">Updated:</h1>
+                  <span className="badge badge-primary py-3">{updatedAt}</span>
+                </span>
+                <span className="badge w-full select-none justify-between gap-2 p-5">
+                  <h1 className="font-bold">Logout:</h1>
+                  <span className="badge badge-warning p-4 outline outline-offset-1 outline-error hover:badge-error hover:cursor-pointer hover:font-semibold hover:outline-warning">
                     <Logout />
                   </span>
                 </span>
