@@ -2604,6 +2604,7 @@ __metadata:
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
     react-hot-toast: "npm:^2.4.1"
+    react-top-loading-bar: "npm:^2.3.1"
     tailwindcss: "npm:^3.4.0"
     typescript: "npm:5.3.3"
   languageName: unknown
@@ -3659,6 +3660,15 @@ __metadata:
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
   checksum: 33977da7a5f1a287936a0c85639fec6ca74f4f15ef1e59a6bc20338fc73dc69555381e211f7a3529b8150a1f71e4225525b41b60b52965bda53ce7d47377ada1
+  languageName: node
+  linkType: hard
+
+"react-top-loading-bar@npm:^2.3.1":
+  version: 2.3.1
+  resolution: "react-top-loading-bar@npm:2.3.1"
+  peerDependencies:
+    react: ^16 || ^17 || ^18
+  checksum: f3190a16edc2dc4b169cd28a23d9032828cd3b7f516767b74548ee87efdf6df502e6e14a7eca475db8cd78a1a480cac4352ac7df7f683a07bf3e857fb78e3388
   languageName: node
   linkType: hard
 
