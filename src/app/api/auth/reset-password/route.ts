@@ -9,35 +9,33 @@ export async function POST(request: NextRequest) {
   try {
     const reqBody = await request.json();
     const { token, password } = reqBody;
-    const newPassword = password.password;
     const user = await User.findOne({
       forgotPasswordToken: token,
     }).select('-username -email -isVerified -isAdmin -theme -profileImage  -verifyToken -verifyTokenExpiry');
 
-    if (user == null || user == undefined || user.forgotPasswordTokenExpiry < Date.now()) {
-      return NextResponse.json({ error: 'Link expired' }, { status: 400 });
-    } else if (user.forgotPasswordToken !== token) {
-      return NextResponse.json({ error: 'Invalid token' }, { status: 400 });
-    }
     if (!user) {
-      return NextResponse.json({ error: 'Invalid token' }, { status: 400 });
+      throw new Error('User not found or Link expired');
+    }
+    if (user.forgotPasswordTokenExpiry.getTime() < Date.now()) {
+      throw new Error('Link expired');
+    }
+    if (user.forgotPasswordToken !== token) {
+      throw new Error('Invalid token');
     }
 
     const prevHashedPassword = user.password;
-    // check is user password is the same as the new password
-    const decryptedPassword = await bcryptjs.compare(newPassword, prevHashedPassword);
-    // console.log('decrypted password ' + decryptedPassword);
+    const decryptedPassword = await bcryptjs.compare(password, prevHashedPassword);
     if (decryptedPassword) {
-      return NextResponse.json({ error: 'New password cannot be the same as the old password' }, { status: 400 });
+      throw new Error('New password cannot be the same as the old password');
     }
 
     //hash password
     const salt = await bcryptjs.genSalt(10);
-    const hashedPassword = await bcryptjs.hash(newPassword, salt);
+    const hashedPassword = await bcryptjs.hash(password, salt);
 
     user.password = hashedPassword;
-    user.forgotPasswordToken = undefined;
-    user.forgotPasswordTokenExpiry = undefined;
+    user.forgotPasswordToken = '';
+    user.forgotPasswordTokenExpiry = new Date();
     await user.save();
 
     return NextResponse.json({
@@ -45,6 +43,6 @@ export async function POST(request: NextRequest) {
       success: true,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error.message, status: 500 });
   }
 }

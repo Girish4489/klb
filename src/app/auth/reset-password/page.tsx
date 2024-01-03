@@ -10,33 +10,34 @@ export default function ResetPasswordPage() {
   const [token, setToken] = useState('');
   const router = useRouter();
 
-  const [user, setUser] = React.useState({
-    password: '',
-    retypepassword: '',
-  });
-
-  const resetUserPassword = async () => {
-    try {
-      // check if password and retypepassword are the same
-      if (user.password !== user.retypepassword) {
-        toast.error('Passwords do not match');
-        return;
+  const resetUserPassword = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const password = e.currentTarget.password.value.trim();
+    const retypepassword = e.currentTarget.retypepassword.value.trim();
+    if (password !== retypepassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
+    const resetPassword = async () => {
+      const response = await axios.post('/api/auth/reset-password', { token: token, password: password });
+      if (response.data.success === true) {
+        return response.data.message;
+      } else {
+        throw new Error(response.data.error);
       }
-      toast.loading('Resetting password...');
-      const response = await axios.post('/api/auth/reset-password', {
-        token,
-        password: user,
+    };
+    try {
+      await toast.promise(resetPassword(), {
+        loading: 'Resetting Password...',
+        success: (message) => <b>{message}</b>,
+        error: (error) => <b>{error.message}</b>,
       });
-      // console.log(response.data.message);
-      toast.remove();
-      toast.success(response.data.message);
       setTimeout(() => {
         router.push('/auth/login');
-      }, 3000);
+      }, 1000);
     } catch (error: any) {
-      toast.remove();
-      toast.error(error.response.data.error + ' ' + error.response.status);
       // console.error(error.response.data.error);
+      // toast.error(error.response.data.error);
     }
   };
 
@@ -57,62 +58,50 @@ export default function ResetPasswordPage() {
             <div className="flex justify-center">
               <ThemeSwitcher />
             </div>
-            <div className="form-control">
-              <label className="label py-0.5 font-normal text-primary" htmlFor="token">
-                Token
-              </label>
-              <textarea
-                className="textarea textarea-accent disabled:opacity-50"
-                placeholder="Token"
-                name="token"
-                id="token"
-                defaultValue={token}
-              />
-            </div>
-            <div className="form-control">
-              <label className="label py-0.5 font-normal text-primary" htmlFor="password">
-                Password
-              </label>
-              <input
-                className="input input-accent"
-                placeholder="Password"
-                type="password"
-                id="password"
-                value={user.password}
-                onChange={(e) => setUser({ ...user, password: e.target.value })}
-              />
-            </div>
-            <div className="form-control">
-              <label className="label py-0.5 font-normal text-primary" htmlFor="retypepassword">
-                Retype Password
-              </label>
-              <input
-                className="input input-accent"
-                placeholder="Retype Password"
-                type="password"
-                id="retypepassword"
-                value={user.retypepassword}
-                onChange={(e) => setUser({ ...user, retypepassword: e.target.value })}
-              />
-            </div>
-            <div className="form-control mt-3">
-              <button className="btn btn-primary" onClick={resetUserPassword}>
-                Reset Password
-              </button>
-            </div>
-            <div className="card-body px-3 pt-3">
-              <div className={`flex items-center justify-center`}>
-                <p className={` labelfont-normal py-0.5 text-secondary`}>If Already Verified</p>
-                <Link href="/auth/login" className="btn btn-link">
+            <form onSubmit={resetUserPassword}>
+              <div className="form-control">
+                <label className="label py-0.5 font-normal text-primary" htmlFor="password">
+                  Password
+                </label>
+                <input
+                  className="input input-accent"
+                  placeholder="Password"
+                  autoComplete="new-password"
+                  type="password"
+                  id="password"
+                  onFocus={(e) => e.target.select()}
+                  required
+                />
+              </div>
+              <div className="form-control">
+                <label className="label py-0.5 font-normal text-primary" htmlFor="retypepassword">
+                  Confirm Password
+                </label>
+                <input
+                  className="input input-accent"
+                  placeholder="Retype Password"
+                  autoComplete="new-password"
+                  type="password"
+                  id="retypepassword"
+                  onFocus={(e) => e.target.select()}
+                  required
+                />
+              </div>
+              <div className="form-control mt-3">
+                <button className="btn btn-primary">Reset Password</button>
+              </div>
+            </form>
+            <div className="card-body px-2 py-3">
+              <div className="flex items-center justify-between gap-2">
+                <p className="label label-text text-secondary">If Already Verified</p>
+                <Link href="/auth/login" className="btn btn-link p-0">
                   Login
                 </Link>
               </div>
               <hr className="border-t-2 border-neutral bg-base-300" />
-              <div className={`flex items-center justify-center`}>
-                <p className="label py-0.5 font-normal text-secondary">
-                  If Link expired resend verification go to signup
-                </p>
-                <Link href="/auth/signup" className="btn btn-link">
+              <div className="flex items-center justify-between gap-2">
+                <p className="label label-text text-secondary">If Link expired resend verification go to signup</p>
+                <Link href="/auth/signup" className="btn btn-link p-0">
                   Signup
                 </Link>
               </div>
