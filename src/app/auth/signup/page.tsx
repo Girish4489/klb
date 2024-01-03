@@ -8,59 +8,63 @@ import { toast } from 'react-hot-toast';
 
 export default function SignupPage() {
   const router = useRouter();
-  const [user, setUser] = useState({
-    username: '',
-    email: '',
-    password: '',
-  });
+  const [showPassword, setShowPassword] = useState(false);
 
-  const handleSignup = async () => {
-    // Logic to handle signup form submission
-    try {
-      toast.loading('Signing up');
-      const response = await axios.post('/api/auth/signup', user);
-      // console.log("Signup success", response.data);
-      toast.remove();
-      if (response.data.success === false) {
-        toast.error(response.data.message);
-        return;
+  const handleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const username = e.currentTarget.username.value.trim();
+    const email = e.currentTarget.email.value.trim();
+    const password = e.currentTarget.password.value.trim();
+    const signup = async () => {
+      const response = await axios.post('/api/auth/signup', { username: username, email: email, password: password });
+      if (response.data.success === true) {
+        return response.data.message;
+      } else {
+        throw new Error(response.data.error);
       }
-      toast.success('Signup Successfull \n Please verify your email');
+    };
+    try {
+      await toast.promise(signup(), {
+        loading: 'Signing up...',
+        success: (message) => <b>{message}</b>,
+        error: (error) => <b>{error.message}</b>,
+      });
       setTimeout(() => {
         router.push('/auth/login');
-      }, 2000);
+      }, 1000);
     } catch (error: any) {
       // console.log("Signup failed", error.message);
-      toast.remove();
-      toast.error(error.message);
-    } finally {
-      setUser({ username: '', email: '', password: '' });
+      // toast.error(error.message);
     }
   };
 
-  const [resendUser, setResendUser] = useState({ email: '' });
-  const handleResendVerification = async () => {
-    // Logic to resend verification mail
-    resendUser.email = resendUser.email.trim();
-    try {
-      toast.loading('Sending verification email');
-      const response = await axios.post('/api/auth/resend-email', resendUser);
-      // console.log("Resend email success", response.data);
-      toast.remove();
-      if (response.data.success === false) {
-        toast.error(response.data.message);
-        return;
+  const handleResendVerification = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const email = e.currentTarget.resendEmail.value.trim();
+    const resendVerification = async () => {
+      const response = await axios.post('/api/auth/resend-email', { email: email });
+      if (response.data.success === true) {
+        return response.data.message;
+      } else {
+        throw new Error(response.data.error);
       }
-      toast.success('Verification email sent');
+    };
+    try {
+      await toast.promise(resendVerification(), {
+        loading: 'Sending verification email',
+        success: (message) => <b>{message}</b>,
+        error: (error) => <b>{error.message}</b>,
+      });
       setTimeout(() => {
         router.push('/auth/login');
-      }, 2000);
+      }, 1000);
     } catch (error: any) {
-      // console.log("Resend email failed", error.message);
-      toast.remove();
-      toast.error(error.message);
-    } finally {
-      setResendUser({ email: '' });
+      // console.log("resend verification failed", error.message);
+      // toast.error(error.message);
     }
   };
 
@@ -76,62 +80,68 @@ export default function SignupPage() {
             <div className="flex justify-center">
               <ThemeSwitcher />
             </div>
-            <div className="form-control">
-              <label className="label" htmlFor="username">
-                <span className="label-text">Username</span>
-              </label>
-              <input
-                type="text"
-                name="username"
-                id="username"
-                autoComplete="username"
-                placeholder="username"
-                className="input input-bordered"
-                required
-                value={user.username}
-                onChange={(e) => setUser({ ...user, username: e.target.value })}
-              />
-            </div>
-            <div className="form-control">
-              <label className="label" htmlFor="email">
-                <span className="label-text">Email</span>
-              </label>
-              <input
-                type="email"
-                placeholder="email"
-                name="email"
-                id="email"
-                autoComplete="email"
-                className="input input-bordered"
-                required
-                value={user.email}
-                onChange={(e) => setUser({ ...user, email: e.target.value })}
-              />
-            </div>
-            <div className="form-control">
-              <label className="label" htmlFor="password">
-                <span className="label-text">Password</span>
-              </label>
-              <input
-                type="password"
-                placeholder="password"
-                name="password"
-                id="password"
-                autoComplete="new-password"
-                className="input input-bordered"
-                required
-                value={user.password}
-                onChange={(e) => setUser({ ...user, password: e.target.value })}
-              />
-            </div>
-            <div className="form-control mt-3">
-              <button className="btn btn-primary" onClick={handleSignup}>
-                Sign up
-              </button>
-            </div>
+            <form onSubmit={handleSignup} className="flex flex-col gap-2">
+              <div className="form-control">
+                <label className="label label-text" htmlFor="username">
+                  Username
+                </label>
+                <input
+                  type="text"
+                  name="username"
+                  id="username"
+                  autoComplete="username"
+                  placeholder="username"
+                  className="input input-bordered"
+                  onFocus={(e) => e.target.select()}
+                  required
+                />
+              </div>
+              <div className="form-control">
+                <label className="label label-text" htmlFor="email">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  id="email"
+                  autoComplete="email"
+                  placeholder="email"
+                  className="input input-bordered"
+                  onFocus={(e) => e.target.select()}
+                  required
+                />
+              </div>
+              <div className="form-control">
+                <label className="label label-text" htmlFor="password">
+                  Password
+                </label>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  id="password"
+                  autoComplete="new-password"
+                  placeholder="password"
+                  className="input input-bordered"
+                  onFocus={(e) => e.target.select()}
+                  required
+                />
+              </div>
+              <div className="flex flex-row items-center justify-between pe-1">
+                <label className="label" htmlFor="check">
+                  <span className="label-text-alt">Show password</span>
+                </label>
+                <input type="checkbox" onChange={handleShowPassword} id="check" name="check" className="checkbox" />
+              </div>
+              <div className="form-control mt-3">
+                <button className="btn btn-primary">Sign up</button>
+              </div>
+            </form>
           </div>
           <div className="card-body pt-3">
             <div className="flex flex-col justify-center">
+              <p className="px-3 py-1 text-xs font-normal text-info">
+                Note: If you have not verified your account, please enter your email below and click on resend.
+              </p>
               <details className="collapse collapse-arrow bg-base-200">
                 <summary
                   className="collapse-title flex items-center py-1 align-middle text-xs font-normal"
@@ -147,33 +157,33 @@ export default function SignupPage() {
                     padding-bottom: 14px;
                   }
                 `}</style>
+
                 <div className="collapse-content">
-                  <div className="form-control">
-                    <label className="label" htmlFor="resendEmail">
-                      <span className="label-text">Email</span>
-                    </label>
-                    <input
-                      type="email"
-                      placeholder="email"
-                      name="email"
-                      id="resendEmail"
-                      autoComplete="email"
-                      className="input input-bordered"
-                      required
-                      value={resendUser.email}
-                      onChange={(e) => setResendUser({ ...resendUser, email: e.target.value })}
-                    />
-                  </div>
-                  <div className="form-control mt-3">
-                    <button className="btn btn-primary" onClick={handleResendVerification}>
-                      Resend
-                    </button>
-                  </div>
+                  <form onSubmit={handleResendVerification}>
+                    <div className="form-control">
+                      <label className="label label-text" htmlFor="resendEmail">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        placeholder="email"
+                        name="resendEmail"
+                        id="resendEmail"
+                        autoComplete="email"
+                        className="input input-bordered"
+                        onFocus={(e) => e.target.select()}
+                        required
+                      />
+                    </div>
+                    <div className="form-control mt-3">
+                      <button className="btn btn-primary">Resend</button>
+                    </div>
+                  </form>
                 </div>
               </details>
-              <div className="flex items-center justify-center">
+              <div className="flex items-center justify-center px-2">
                 <p className="label py-0.5 font-normal text-secondary">Already have an account?</p>
-                <Link href="/auth/login" className="btn btn-link">
+                <Link href="/auth/login" className="btn btn-link pr-0">
                   Login here
                 </Link>
               </div>

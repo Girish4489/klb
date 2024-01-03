@@ -16,21 +16,17 @@ export async function POST(request: NextRequest) {
       '-password -username -email -isVerified -isAdmin -theme -profileImage -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry',
     );
 
-    if (user) {
-      return NextResponse.json({
-        message: 'User already exists',
-        success: false,
-      });
-    }
+    if (user) throw new Error('User already exists');
 
     //hash password
     const salt = await bcryptjs.genSalt(10);
     const hashedPassword = await bcryptjs.hash(password, salt);
-
     const newUser = new User({
       username,
       email,
       password: hashedPassword,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
 
     const savedUser = await newUser.save();
@@ -39,11 +35,11 @@ export async function POST(request: NextRequest) {
     await sendEmail({ email, emailType: 'VERIFY', userId: savedUser._id });
 
     return NextResponse.json({
-      message: 'User created successfully',
+      message: 'Signup Successfull \n Please verify your email',
       success: true,
       savedUser,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error.message });
   }
 }

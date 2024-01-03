@@ -14,36 +14,23 @@ export async function POST(request: NextRequest) {
     const user = await User.findOne({ email: email }).select(
       '-password -username -isAdmin -theme -profileImage -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry',
     );
-    if (!user) {
-      return NextResponse.json({
-        message: 'User not found',
-        success: false,
-      });
-    }
+
+    if (!user) throw new Error('User not found');
+
+    if (user.isVerified) throw new Error('User already verified');
 
     //send verification email
-    if (!user.isVerified) {
-      try {
-        await sendEmail({
-          email: email,
-          emailType: 'VERIFY',
-          userId: user._id,
-        });
-        return NextResponse.json({
-          message: 'Email sent successfully',
-          success: true,
-        });
-      } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
-      }
-    }
-    if (user.isVerified) {
-      return NextResponse.json({
-        message: 'User already verified',
-        success: false,
-      });
-    }
+    await sendEmail({
+      email: email,
+      emailType: 'VERIFY',
+      userId: user._id,
+    });
+
+    return NextResponse.json({
+      message: 'Verification email sent',
+      success: true,
+    });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error.message, status: 500 });
   }
 }
