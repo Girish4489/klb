@@ -4,53 +4,61 @@ import nodemailer from 'nodemailer';
 
 export const sendEmail = async ({ email, emailType, userId }: any) => {
   try {
-    // create a hased token
     const hashedToken = await bcryptjs.hash(userId.toString(), 10);
     const tokenExpiryTime = Date.now() + 30 * 60 * 1000; // 30 minutes in milliseconds
     const indianDate = new Date(tokenExpiryTime).toLocaleString('en-IN');
 
+    let subject = '';
+    let actionDescription = '';
+    let actionLinkText = '';
+    let actionLink = '';
+
     if (emailType === 'VERIFY') {
+      subject = 'Verify Your Email';
+      actionDescription = 'verify your email';
+      actionLinkText = 'Verify Email';
+      actionLink = `${process.env.DOMAIN}/auth/verify-email?token=${hashedToken}`;
       await User.findByIdAndUpdate(userId, {
         verifyToken: hashedToken,
         verifyTokenExpiry: tokenExpiryTime,
       });
     } else if (emailType === 'RESET') {
+      subject = 'Reset Your Password';
+      actionDescription = 'reset your password';
+      actionLinkText = 'Reset Password';
+      actionLink = `${process.env.DOMAIN}/auth/reset-password?token=${hashedToken}`;
       await User.findByIdAndUpdate(userId, {
         forgotPasswordToken: hashedToken,
         forgotPasswordTokenExpiry: tokenExpiryTime,
       });
     }
 
-    var transport = nodemailer.createTransport({
-      host: 'smtp.gmail.com', // Use the correct SMTP server hostname
-      port: 587, // Use the appropriate port for TLS/STARTTLS
-      secure: false, // true for 465, false for other ports
+    const transport = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false,
       auth: {
-        user: process.env.GMAIL, // Use the environment variable for Gmail email
-        pass: process.env.GMAILPASSWORD, // Use the environment variable for Gmail password
+        user: process.env.GMAIL,
+        pass: process.env.GMAILPASSWORD,
       },
     });
 
     const mailOptions = {
-      from: 'kalamandir@gmail.com',
+      from: process.env.GMAIL,
       to: email,
-      subject: emailType === 'VERIFY' ? 'Verify your email' : 'Reset your password',
+      subject: subject,
       html: `
         <h1>Kala Mandir</h1>
         <hr>
-        <h3>The link will expire after 30 minutes or link active upto ${indianDate} IST</h3>
-        <p>Click <a href="${process.env.DOMAIN}/auth/${
-          emailType === 'VERIFY' ? 'verify-email' : 'reset-password'
-        }?token=${hashedToken}">here</a> to ${emailType === 'VERIFY' ? 'verify your email' : 'reset your password'}
-              or copy and paste the link below in your browser. <br> ${process.env.DOMAIN}/auth/${
-                emailType === 'VERIFY' ? 'verify-email' : 'reset-password'
-              }?token=${hashedToken}</p>`,
+        <h3>The link will expire after 30 minutes or link active up to ${indianDate} IST</h3>
+        <p>Click <a href="${actionLink}">${actionLinkText}</a> to ${actionDescription}
+          or copy and paste the link below in your browser. <br> ${actionLink}</p>`,
     };
-    // console.log('before mail');
+
     const mailresponse = await transport.sendMail(mailOptions);
-    // console.log('after mail');
     return mailresponse;
   } catch (error) {
-    // console.log(error);
+    // Handle error
+    // console.error(error);
   }
 };
