@@ -17,28 +17,34 @@ export default function VerifyEmailPage() {
 
   useEffect(() => {
     const verifyUserEmail = async () => {
-      try {
-        // console.log(token);
-        toast.loading('Verifying email');
-        const response = await axios.post('/api/auth/verify-email', { token });
-        toast.remove();
-        if (response.data.success === false) {
-          toast.error(response.data.message);
-          return;
+      const verifyUser = async () => {
+        const response = await axios.post('/api/auth/verify-email', { token: token });
+        if (response.data.success === true) {
+          return response.data.message;
+        } else {
+          throw new Error(response.data.error);
         }
-        toast.success(response.data.message);
+      };
+
+      try {
+        await toast.promise(verifyUser(), {
+          loading: 'Verifying email...',
+          success: (message) => <b>{message}</b>,
+          error: (error) => <b>{error.message}</b>,
+        });
         setTimeout(() => {
           router.push('/auth/login');
         }, 3000);
       } catch (error: any) {
-        toast.remove();
         // console.log(error.response);
-        toast.error(error.response.data.error + ' ' + error.response.status);
+        // toast.error(error.response.data.error + ' ' + error.response.status);
       }
     };
 
     if (token.length > 0) {
       verifyUserEmail();
+    } else {
+      toast.error('Invalid Link or token');
     }
   }, [token, router]);
 
@@ -54,31 +60,17 @@ export default function VerifyEmailPage() {
             <div className="flex justify-center">
               <ThemeSwitcher />
             </div>
-            <div className="form-control">
-              <label className="label py-0.5 font-normal text-primary" htmlFor="token">
-                Token
-              </label>
-              <textarea
-                className="textarea textarea-accent disabled:opacity-50"
-                placeholder="Token"
-                name="token"
-                id="token"
-                defaultValue={token}
-              />
-            </div>
-            <div className="card-body px-3 pt-3">
-              <div className={`flex items-center justify-center`}>
-                <p className={` labelfont-normal py-0.5 text-secondary`}>If Already Verified</p>
-                <Link href="/auth/login" className="btn btn-link">
+            <div className="card-body px-2 pt-3">
+              <div className="flex items-center justify-between">
+                <p className="label label-text text-secondary">If Already Verified</p>
+                <Link href="/auth/login" className="btn btn-link pr-0">
                   Login
                 </Link>
               </div>
               <hr className="border-t-2 border-neutral bg-base-300" />
-              <div className={`flex items-center justify-center`}>
-                <p className="label py-0.5 font-normal text-secondary">
-                  If Link expired resend verification go to signup
-                </p>
-                <Link href="/auth/signup" className="btn btn-link">
+              <div className="flex items-center justify-between">
+                <p className="label label-text text-secondary">If Link expired resend verification go to signup</p>
+                <Link href="/auth/signup" className="btn btn-link pr-0">
                   Signup
                 </Link>
               </div>

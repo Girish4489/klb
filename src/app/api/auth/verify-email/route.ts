@@ -9,51 +9,23 @@ export async function POST(request: NextRequest) {
     const reqBody = await request.json();
     const { token } = reqBody;
 
-    // Check if token is provided
-    if (!token) {
-      return NextResponse.json({
-        message: 'Token is missing',
-        success: false,
-        type: 'missing-token',
-      });
-    }
-
     const user = await User.findOne({
       verifyToken: token,
-      verifyTokenExpiry: { $gt: Date.now() },
-      isVerified: false,
-    });
+    }).select(
+      '-username -email -isAdmin -theme -profileImage -forgotPasswordToken -forgotPasswordTokenExpiry -updatedAt -createdAt -__v',
+    );
 
-    if (user == null || user == undefined || user.verifyTokenExpiry < Date.now()) {
-      return NextResponse.json({
-        message: 'Link expired',
-        success: false,
-        type: 'token-expired',
-      });
-    } else if (user.verifyToken !== token) {
-      return NextResponse.json({
-        message: 'Invalid token',
-        success: false,
-        type: 'invalid-token',
-      });
-    } else if (user.isVerified) {
-      return NextResponse.json({
-        message: 'Email already verified',
-        success: false,
-        type: 'already-verified',
-      });
-    }
-    if (!user) {
-      return NextResponse.json({
-        message: 'Invalid token',
-        success: false,
-        type: 'invalid-token',
-      });
-    }
+    if (!user) throw new Error('User not found or Link expired');
+
+    if (user.verifyTokenExpiry.getTime() < Date.now()) throw new Error('Link expired');
+
+    if (user.verifyToken !== token) throw new Error('Invalid token');
+
+    if (user.isVerified) throw new Error('Email already verified');
 
     user.isVerified = true;
-    user.verifyToken = undefined;
-    user.verifyTokenExpiry = undefined;
+    user.verifyToken = '';
+    user.verifyTokenExpiry = new Date();
     await user.save();
 
     return NextResponse.json({
@@ -61,6 +33,6 @@ export async function POST(request: NextRequest) {
       success: true,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error.message, status: 500 });
   }
 }
