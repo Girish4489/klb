@@ -156,9 +156,9 @@ export default function LoginPage() {
                   </form>
                 </div>
               </details>
-              <div className="flex items-center justify-center">
+              <div className="flex items-center justify-center px-2">
                 <p className="label py-0.5 font-normal text-secondary">Don{"'"}t have an account yet?</p>
-                <Link href="/auth/signup" className="btn btn-link">
+                <Link href="/auth/signup" className="btn btn-link pr-0">
                   Signup
                 </Link>
               </div>
