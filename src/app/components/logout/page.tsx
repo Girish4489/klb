@@ -11,7 +11,7 @@ export default function LogoutPage() {
       toast.success('Logout successful');
       setTimeout(() => {
         router.push('/auth/login');
-      }, 2000);
+      }, 1000);
     } catch (error: any) {
       toast.error(error.message);
     }
@@ -19,7 +19,7 @@ export default function LogoutPage() {
 
   return (
     <span onClick={logout}>
-      <button className="text-warning">Logout</button>
+      <button>Logout</button>
     </span>
   );
 }
