@@ -36,6 +36,7 @@ export async function POST(request: NextRequest) {
     user.password = hashedPassword;
     user.forgotPasswordToken = '';
     user.forgotPasswordTokenExpiry = new Date();
+    user.updatedAt = new Date();
     await user.save();
 
     return NextResponse.json({
