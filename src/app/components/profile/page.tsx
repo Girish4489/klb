@@ -2,13 +2,11 @@
 import { useUser } from '@/app/context/userContext';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import LogoutPage from '../logout/page';
 
 export default function ProfilePage() {
   // Use the useUser hook to get user data
   const { user } = useUser();
-  document.documentElement.setAttribute('data-theme', user.theme);
 
   return (
     <>
@@ -39,12 +37,6 @@ export default function ProfilePage() {
           </li>
           <li>
             <a className="justify-between">
-              Theme
-              <span className="badge badge-primary">{user.theme.charAt(0).toUpperCase() + user.theme.slice(1)}</span>
-            </a>
-          </li>
-          <li>
-            <a className="justify-between">
               Verified
               <span className={`badge ${user.isVerified ? 'badge-success' : 'badge-error'}`}>
                 {user.isVerified ? 'Yes' : 'No'}
@@ -59,10 +51,23 @@ export default function ProfilePage() {
               </span>
             </a>
           </li>
+          <li>
+            <span className="justify-between">
+              Theme
+              <Link
+                href="/dashboard/settings#themeBlock"
+                className="tooltip tooltip-top flex flex-row gap-2 rounded-box bg-primary pl-2 pr-1 font-medium text-primary-content"
+                data-tip="edit theme"
+              >
+                {user.theme.charAt(0).toUpperCase() + user.theme.slice(1)}
+                <span className="badge badge-secondary">
+                  <Image src="/icons/svg/note-pencil.svg" alt="edit icon" width="18" height="18" />
+                </span>
+              </Link>
+            </span>
+          </li>
           <li className={`tooltip tooltip-left`} data-tip="Settings">
-            <Link href="/dashboard/settings" className={usePathname() === '/dashboard/settings' ? 'active' : ''}>
-              Settings
-            </Link>
+            <Link href="/dashboard/settings">Settings</Link>
           </li>
           <li
             className="tooltip tooltip-left text-warning hover:rounded-lg hover:bg-error hover:font-medium hover:text-warning-content"
