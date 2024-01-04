@@ -8,7 +8,7 @@ import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 
 export default function SettingsPage() {
-  const { user, fetchAndSetUser, setUser, updateUser } = useUser();
+  const { user, updateUser } = useUser();
   let createdAt = '';
 
   if (user.createdAt) {
@@ -207,7 +207,7 @@ export default function SettingsPage() {
                 </span>
                 <span className="badge w-full select-none justify-between gap-2 p-5">
                   <h1 className="font-bold">Logout:</h1>
-                  <span className="badge badge-warning p-4 outline outline-offset-1 outline-error hover:badge-error hover:cursor-pointer hover:font-semibold hover:outline-warning">
+                  <span className="badge badge-warning p-4 outline outline-2 outline-offset-1 outline-error hover:badge-error hover:cursor-pointer hover:font-semibold hover:outline-warning">
                     <Logout />
                   </span>
                 </span>
@@ -218,7 +218,9 @@ export default function SettingsPage() {
         <div className="collapse join-item collapse-arrow border border-base-300">
           {/* <input type="radio" name="my-accordion-4" /> */}
           <input type="checkbox" name="collapse" defaultChecked />
-          <div className="collapse-title text-xl font-medium">Theme</div>
+          <div id="themeBlock" className="collapse-title text-xl font-medium">
+            Theme
+          </div>
           <div className="collapse-content m-2">
             <ThemerPage />
           </div>
