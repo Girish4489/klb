@@ -1,13 +1,12 @@
 // src/app/components/topbarLoader/page.tsx
 'use client';
 import { usePathname } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import LoadingBar from 'react-top-loading-bar';
 
 export default function TopbarLoader() {
   const loadingBarRef = useRef<any>(null);
   const currentPathname = usePathname();
-  const [loadingBarColor, setLoadingBarColor] = useState('');
 
   useEffect(() => {
     loadingBarRef.current && loadingBarRef.current.continuousStart();
@@ -31,14 +30,5 @@ export default function TopbarLoader() {
     };
   }, [currentPathname]);
 
-  useEffect(() => {
-    const primaryBgElement = document.querySelector('.badge-error');
-    if (primaryBgElement) {
-      const computedStyle = getComputedStyle(primaryBgElement);
-      const color = computedStyle.getPropertyValue('background-color');
-      setLoadingBarColor(color);
-    }
-  }, []);
-
-  return <LoadingBar color={loadingBarColor} ref={loadingBarRef} />;
+  return <LoadingBar color={'red'} ref={loadingBarRef} />;
 }
