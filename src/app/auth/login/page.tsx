@@ -1,5 +1,4 @@
 'use client';
-import { ThemeSwitcher } from '@/app/components/ThemeSwitcher';
 import axios from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -78,9 +77,7 @@ export default function LoginPage() {
         </div>
         <div className="card m-3 w-full max-w-sm shrink-0 bg-base-100 shadow-lg shadow-neutral">
           <form className="card-body pb-5" onSubmit={handleLogin}>
-            <div className="flex justify-center">
-              <ThemeSwitcher />
-            </div>
+            <div className="flex select-none justify-center">Login</div>
             <div className="form-control">
               <label className="label" htmlFor="email">
                 <span className="label-text">Email</span>

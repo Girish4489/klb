@@ -1,5 +1,4 @@
 'use client';
-import { ThemeSwitcher } from '@/app/components/ThemeSwitcher';
 import axios from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -77,9 +76,7 @@ export default function SignupPage() {
         </div>
         <div className="card m-3 w-full max-w-sm flex-shrink-0 bg-base-100 shadow-xl shadow-neutral">
           <div className="card-body pb-5">
-            <div className="flex justify-center">
-              <ThemeSwitcher />
-            </div>
+            <div className="flex select-none justify-center">Sign Up</div>
             <form onSubmit={handleSignup} className="flex flex-col gap-2">
               <div className="form-control">
                 <label className="label label-text" htmlFor="username">
