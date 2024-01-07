@@ -1,39 +1,36 @@
 'use client';
+import { Theme, useTheme } from '@/app/context/ThemeContext';
+import { useUser } from '@/app/context/userContext';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import toast from 'react-hot-toast';
-import { Theme, themes, useTheme } from '../ThemeContext';
 
 export default function ThemerPage() {
-  const { theme, setTheme } = useTheme();
-  const [appliedTheme, setAppliedTheme] = useState<string>('dark');
-  const [currentTheme, setCurrentTheme] = useState<string>('');
-
-  const changeTheme = (theme: string) => {
-    document.documentElement.setAttribute('data-theme', theme);
-    setTheme(theme as Theme);
-  };
+  const { themes, currentTheme, setTheme } = useTheme();
+  const { user, setUser } = useUser();
+  const [selectedTheme, setSelectedTheme] = React.useState<string | null>(null);
 
   const handleThemeChange = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const saveTheme = currentTheme;
     const saveThemeRequest = async () => {
-      if (saveTheme === appliedTheme) {
+      if (user.theme === selectedTheme) {
         throw new Error('Theme already applied.\n Please select a different theme');
       }
-      if (!saveTheme) {
+      if (!selectedTheme) {
         throw new Error('Please select a theme');
       }
 
       const response = await axios.post('/api/auth/theme-save', {
-        theme: saveTheme,
+        theme: selectedTheme,
       });
 
       if (response.data.success === true) {
+        setTheme(selectedTheme as Theme);
+        setUser({ ...user, theme: selectedTheme });
         return { message: response.data.message, theme: response.data.user.theme };
       } else {
-        throw new Error(response.data.message); // Reject with error message
+        throw new Error(response.data.message);
       }
     };
     try {
@@ -47,24 +44,10 @@ export default function ThemerPage() {
         ),
         error: (error) => <b>{error.message}</b>,
       });
-      setAppliedTheme(currentTheme);
     } catch (error: any) {
       // toast.error(error.response.data.message);
     }
   };
-
-  const getTheme = async () => {
-    try {
-      const response = await axios.get('/api/auth/theme-save');
-      document.documentElement.setAttribute('data-theme', response.data.user.theme);
-      setAppliedTheme(response.data.user.theme || 'dark');
-    } catch (error: any) {
-      // console.log(error);
-    }
-  };
-  useEffect(() => {
-    getTheme();
-  }, []);
 
   return (
     <div className="flex flex-col items-center  rounded-box border border-base-100 p-2 shadow-2xl">
@@ -73,49 +56,42 @@ export default function ThemerPage() {
           {themes.map((themeOption) => (
             <div
               key={themeOption}
-              className={`overflow-hidden rounded-lg border-base-content/20  outline outline-2 outline-offset-2 outline-transparent`}
-              data-theme={themeOption}
-              data-act-class="!outline-base-content"
+              onClick={() => {
+                setSelectedTheme(themeOption);
+                setTheme(themeOption);
+              }}
+              className="overflow-hidden rounded-lg border-2 border-base-content/10 hover:border-base-content/60"
             >
-              <input
-                type="hidden"
-                id={themeOption}
-                name={themeOption}
-                onChange={() => {
-                  setCurrentTheme(themeOption);
-                }}
-                required
-                className="invisible h-0 w-0"
-              />
-              <div
-                className={`w-full cursor-pointer bg-base-100 font-sans text-base-content`}
-                onClick={() => {
-                  changeTheme(themeOption);
-                  setCurrentTheme(themeOption);
-                }}
-              >
-                <div className="indicator w-full">
-                  {appliedTheme === themeOption && (
-                    <span className="badge indicator-item badge-success indicator-center indicator-top -mt-1.5">
-                      Applied
+              <div className={`w-full cursor-pointer bg-base-100 font-sans text-base-content`} data-theme={themeOption}>
+                <div className="grid grid-cols-4 grid-rows-4 rounded-box">
+                  <div className="indicator col-span-4 col-start-1 row-span-1 row-start-1 w-full rounded-box shadow-xl">
+                    <span className="flex w-full flex-row items-center justify-around rounded-box bg-white/10 backdrop-blur-sm">
+                      {user.theme === themeOption && (
+                        <span className="badge indicator-item badge-success indicator-center indicator-middle">
+                          Applied
+                        </span>
+                      )}
+                      {user.theme !== themeOption && themeOption === currentTheme && currentTheme === selectedTheme && (
+                        <span className="badge indicator-item badge-info indicator-center indicator-middle">
+                          Selected (unsaved!)
+                        </span>
+                      )}
                     </span>
-                  )}
-                  {currentTheme === themeOption && appliedTheme !== themeOption && (
-                    <span className="badge indicator-item badge-primary indicator-center indicator-top -mt-1.5">
-                      Selected(unsaved!)
-                    </span>
-                  )}
-                </div>
-                <div className="grid grid-cols-5 grid-rows-3" data-set-theme={themeOption}>
+                  </div>
+
                   <div
-                    className="tooltip tooltip-right col-start-1 row-span-2 row-start-1 bg-base-200"
+                    className="tooltip tooltip-right col-span-1 col-start-1 row-span-1 row-start-2 border-r border-error-content bg-base-100"
+                    data-tip="base 100"
+                  ></div>
+                  <div
+                    className="tooltip tooltip-right col-span-1 col-start-1 row-span-1 row-start-3 border-r border-error-content bg-base-200"
                     data-tip="base 200"
                   ></div>
-                  <div className="tooltip tooltip-right col-start-1 row-start-3 bg-base-300" data-tip="base 300"></div>
                   <div
-                    className="tooltip tooltip-top col-span-4 col-start-2 row-span-3 row-start-1 flex flex-col gap-1 bg-base-100 p-2"
-                    data-tip="base 100"
-                  >
+                    className="tooltip tooltip-right col-span-1 col-start-1 row-span-1 row-start-4 border-r border-error-content bg-base-300"
+                    data-tip="base 300"
+                  ></div>
+                  <div className="tooltip tooltip-top col-span-3 col-start-2 row-span-3 row-start-2 flex flex-col items-center gap-1 p-2">
                     <div className="font-bold">{themeOption}</div>
                     <div className="flex flex-wrap gap-1">
                       <div className="flex aspect-square w-5 items-center justify-center rounded bg-primary lg:w-6">
@@ -149,12 +125,14 @@ export default function ThemerPage() {
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>{' '}
+                </div>{' '}
+              </div>
             </div>
           ))}
         </div>
-        <button className="btn btn-primary m-2">Apply</button>
+        <button type="submit" className="btn btn-primary m-2">
+          Apply
+        </button>
       </form>
     </div>
   );
