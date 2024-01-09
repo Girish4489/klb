@@ -1,4 +1,5 @@
 // src/app/context/UserContext.tsx
+'use client';
 import axios from 'axios';
 import { ReactNode, createContext, useCallback, useContext, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
