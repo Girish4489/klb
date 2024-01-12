@@ -65,7 +65,7 @@ export default function ThemerPage() {
               <div className={`w-full cursor-pointer bg-base-100 font-sans text-base-content`} data-theme={themeOption}>
                 <div className="grid grid-cols-4 grid-rows-4 rounded-box">
                   <div className="indicator col-span-4 col-start-1 row-span-1 row-start-1 w-full rounded-box shadow-xl">
-                    <span className="flex w-full flex-row items-center justify-around rounded-box bg-white/10 backdrop-blur-sm">
+                    <span className="flex w-full flex-row items-center justify-around rounded-b bg-primary/40">
                       {user.theme === themeOption && (
                         <span className="badge indicator-item badge-success indicator-center indicator-middle">
                           Applied
