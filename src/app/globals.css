@@ -6,6 +6,7 @@
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
+  scroll-behavior: smooth;
 }
 
 @media (max-width: 640px) {
@@ -13,25 +14,34 @@
   ::-webkit-scrollbar {
     width: 3px;
     height: 3px;
+    scroll-behavior: smooth;
   }
 }
 
 /* Default track */
 ::-webkit-scrollbar-track {
-  background: transparent;
+  --tw-bg-opacity: 0.2;
+  background-color: var(--fallback-p, oklch(var(--p) / var(--tw-bg-opacity)));
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-track:hover {
+  --tw-bg-opacity: 0.2;
+  background-color: var(--fallback-s, oklch(var(--s) / var(--tw-bg-opacity)));
   border-radius: 5px;
 }
 
 /* Default handle (thumb) */
 ::-webkit-scrollbar-thumb {
-  background: #888;
+  --tw-bg-opacity: 0.8;
+  background-color: var(--fallback-p, oklch(var(--p) / var(--tw-bg-opacity)));
   border-radius: 5px;
-  transition:
-    width 0.3s ease,
-    background 0.3s ease;
+  cursor: pointer;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  --tw-bg-opacity: 0.8;
+  background-color: var(--fallback-s, oklch(var(--s) / var(--tw-bg-opacity)));
+  cursor: pointer;
 }
