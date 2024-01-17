@@ -15,12 +15,22 @@ interface ICategory extends Document {
   categoryId?: mongoose.Types.ObjectId;
   categoryName?: string;
   description?: string;
-  styleProcess: {
-    styleProcessName: string;
-    styles: {
-      styleName: string;
-    }[];
-  }[];
+  styleProcess?: [
+    {
+      styleProcessName: string;
+      styles: {
+        styleName: string;
+      };
+    },
+  ];
+  dimension?: [
+    {
+      dimensionTypeName: string;
+      types: {
+        dimensionName: string;
+      };
+    },
+  ];
 }
 
 interface IOrder extends Document {
@@ -78,7 +88,7 @@ interface IReceipt extends Document {
 // Schema for Customer Data
 const customerSchema: Schema<ICustomer> = new Schema<ICustomer>({
   customerId: {
-    type: mongoose.Schema.Types.ObjectId, // Automatically generated
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Customer',
     required: true,
   },
@@ -106,7 +116,7 @@ const customerSchema: Schema<ICustomer> = new Schema<ICustomer>({
 // Schema for Category
 const categorySchema: Schema<ICategory> = new Schema<ICategory>({
   categoryId: {
-    type: mongoose.Schema.Types.ObjectId, // Automatically generated
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',
   },
   categoryName: String,
@@ -121,12 +131,22 @@ const categorySchema: Schema<ICategory> = new Schema<ICategory>({
       ],
     },
   ],
+  dimension: [
+    {
+      dimensionTypeName: String,
+      types: [
+        {
+          dimensionName: String,
+        },
+      ],
+    },
+  ],
 });
 
 // Schema for Order
 const orderSchema: Schema<IOrder> = new Schema<IOrder>({
   orderId: {
-    type: mongoose.Schema.Types.ObjectId, // Automatically generated
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Order',
     required: true,
   },
@@ -197,7 +217,7 @@ const orderDetailsSchema: Schema<IOrderDetails> = new Schema<IOrderDetails>({
 // Schema for Bill
 const billSchema: Schema<IBill> = new Schema<IBill>({
   billId: {
-    type: mongoose.Schema.Types.ObjectId, // Automatically generated
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Bill',
     required: true,
   },
@@ -228,7 +248,7 @@ const billSchema: Schema<IBill> = new Schema<IBill>({
 // Schema for Receipts
 const receiptSchema: Schema<IReceipt> = new Schema<IReceipt>({
   receiptId: {
-    type: mongoose.Schema.Types.ObjectId, // Automatically generated
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Receipt',
     required: true,
   },
@@ -270,3 +290,4 @@ const Receipt: Model<IReceipt> = mongoose.models.Receipt || mongoose.model<IRece
 
 // Export the models
 export { Bill, Category, Customer, Order, OrderDetails, Receipt };
+export type { IBill, ICategory, ICustomer, IOrder, IOrderDetails, IReceipt };
