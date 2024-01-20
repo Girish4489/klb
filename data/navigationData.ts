@@ -41,6 +41,7 @@ const navigationData = [
     onclick: 'workManageDropdown',
     imgSrc: '/apps_logos/docs.svg',
     subNav: [
+      { title: 'New Customer', href: '/dashboard/work-manage/new-customer' },
       { title: 'Bill', href: '#w0' },
       { title: 'Edit Bill', href: '#w11' },
       { title: 'Photo Gallery', href: '#w2' },
@@ -94,7 +95,7 @@ const navigationData = [
       { title: 'Bill work status', href: '#r6' },
       { title: 'Bill & Payment Transaction', href: '#r7' },
       { title: 'Inventory', href: '#r8' },
-      { title: 'Customer Details', href: '#r9' },
+      { title: 'Customer Details', href: '/dashboard/report/customer-details' },
     ],
   },
   {
