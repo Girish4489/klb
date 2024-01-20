@@ -4,9 +4,14 @@ import mongoose, { Document, Model, Schema } from 'mongoose';
 interface ICustomer extends Document {
   customerId: mongoose.Types.ObjectId;
   name: string;
-  mobile: number;
+  phone: number;
   email?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  pin?: string;
   address?: string;
+  notes?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -97,12 +102,18 @@ const customerSchema: Schema<ICustomer> = new Schema<ICustomer>({
     default: 'NA',
     required: true,
   },
-  mobile: {
+  phone: {
     type: Number,
     required: true,
+    unique: true,
   },
   email: String,
+  city: String,
+  state: String,
+  country: String,
+  pin: String,
   address: String,
+  notes: String,
   createdAt: {
     type: Date,
     default: Date.now,
