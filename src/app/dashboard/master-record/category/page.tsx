@@ -1,4 +1,5 @@
 'use client';
+import { userConfirmaion } from '@/app/util/confirmation/confirmationUtil';
 import { ICategory } from '@/models/klm';
 import axios from 'axios';
 import Image from 'next/image';
@@ -211,11 +212,11 @@ export default function CategoryPage() {
   };
 
   const DelCategory = (id: string) => async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    const confirmed = await myConfirmModal(
-      'confirm',
-      'Confirm Deletion',
-      'Are you sure you want to delete this category?',
-    );
+    const confirmed = await userConfirmaion({
+      header: 'Confirm Deletion',
+      message: 'Are you sure you want to delete this category?',
+    });
+    if (!confirmed) return;
     const deleteCategory = async () => {
       const res = await axios.post('/api/dashboard/master-record/category', {
         type: 'delCategory',
@@ -227,29 +228,27 @@ export default function CategoryPage() {
         throw new Error(res.data.message);
       }
     };
-    if (confirmed) {
-      try {
-        await toast.promise(deleteCategory(), {
-          loading: 'Deleting Category...',
-          success: (message) => <b>{message}</b>,
-          error: (error) => <b>{error.message}</b>,
-        });
-        GetCategory();
-      } catch (error: any) {
-        // Handle any additional error handling if needed
-        // console.error(error);
-        // toast.error(error.response.data.error);
-      }
+    try {
+      await toast.promise(deleteCategory(), {
+        loading: 'Deleting Category...',
+        success: (message) => <b>{message}</b>,
+        error: (error) => <b>{error.message}</b>,
+      });
+      GetCategory();
+    } catch (error: any) {
+      // Handle any additional error handling if needed
+      // console.error(error);
+      // toast.error(error.response.data.error);
     }
   };
 
   const DelProcess =
     (id: string, styleProcessId: string) => async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-      const confirmed = await myConfirmModal(
-        'confirm',
-        'Confirm Deletion',
-        'Are you sure you want to delete this process?',
-      );
+      const confirmed = await userConfirmaion({
+        header: 'Confirm Deletion',
+        message: 'Are you sure you want to delete this process?',
+      });
+      if (!confirmed) return;
       const deleteProcess = async () => {
         const res = await axios.post('/api/dashboard/master-record/category', {
           type: 'delProcess',
@@ -262,29 +261,27 @@ export default function CategoryPage() {
           throw new Error(res.data.message);
         }
       };
-      if (confirmed) {
-        try {
-          await toast.promise(deleteProcess(), {
-            loading: 'Deleting Process...',
-            success: (message) => <b>{message}</b>,
-            error: (error) => <b>{error.message}</b>,
-          });
-          GetCategory();
-        } catch (error: any) {
-          // Handle any additional error handling if needed
-          // console.error(error);
-          // toast.error(error.response.data.error);
-        }
+      try {
+        await toast.promise(deleteProcess(), {
+          loading: 'Deleting Process...',
+          success: (message) => <b>{message}</b>,
+          error: (error) => <b>{error.message}</b>,
+        });
+        GetCategory();
+      } catch (error: any) {
+        // Handle any additional error handling if needed
+        // console.error(error);
+        // toast.error(error.response.data.error);
       }
     };
 
   const DelTypeDimension =
     (id: string, dimensionTypeId: string) => async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-      const confirmed = await myConfirmModal(
-        'confirm',
-        'Confirm Deletion',
-        'Are you sure you want to delete this dimension type?',
-      );
+      const confirmed = await userConfirmaion({
+        header: 'Confirm Deletion',
+        message: 'Are you sure you want to delete this dimension type?',
+      });
+      if (!confirmed) return;
       const deleteDimensionType = async () => {
         const res = await axios.post('/api/dashboard/master-record/category', {
           type: 'delTypeDimension',
@@ -297,30 +294,28 @@ export default function CategoryPage() {
           throw new Error(res.data.message);
         }
       };
-      if (confirmed) {
-        try {
-          await toast.promise(deleteDimensionType(), {
-            loading: 'Deleting Dimension Type...',
-            success: (message) => <b>{message}</b>,
-            error: (error) => <b>{error.message}</b>,
-          });
-          GetCategory();
-        } catch (error: any) {
-          // Handle any additional error handling if needed
-          // console.error(error);
-          // toast.error(error.response.data.error);
-        }
+      try {
+        await toast.promise(deleteDimensionType(), {
+          loading: 'Deleting Dimension Type...',
+          success: (message) => <b>{message}</b>,
+          error: (error) => <b>{error.message}</b>,
+        });
+        GetCategory();
+      } catch (error: any) {
+        // Handle any additional error handling if needed
+        // console.error(error);
+        // toast.error(error.response.data.error);
       }
     };
 
   const DelStyle =
     (id: string, styleProcessId: string, styleId: string) =>
     async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-      const confirmed = await myConfirmModal(
-        'confirm',
-        'Confirm Deletion',
-        'Are you sure you want to delete this style?',
-      );
+      const confirmed = await userConfirmaion({
+        header: 'Confirm Deletion',
+        message: 'Are you sure you want to delete this style?',
+      });
+      if (!confirmed) return;
       const deleteStyle = async () => {
         const res = await axios.post('/api/dashboard/master-record/category', {
           type: 'delStyle',
@@ -334,30 +329,27 @@ export default function CategoryPage() {
           throw new Error(res.data.message);
         }
       };
-      if (confirmed) {
-        try {
-          await toast.promise(deleteStyle(), {
-            loading: 'Deleting Style...',
-            success: (message) => <b>{message}</b>,
-            error: (error) => <b>{error.message}</b>,
-          });
-          GetCategory();
-        } catch (error: any) {
-          // Handle any additional error handling if needed
-          // console.error(error);
-          // toast.error(error.response.data.error);
-        }
+      try {
+        await toast.promise(deleteStyle(), {
+          loading: 'Deleting Style...',
+          success: (message) => <b>{message}</b>,
+          error: (error) => <b>{error.message}</b>,
+        });
+        GetCategory();
+      } catch (error: any) {
+        // Handle any additional error handling if needed
+        // console.error(error);
+        // toast.error(error.response.data.error);
       }
     };
 
   const DelDimension =
     (id: string, dimensionTypeId: string, dimensionId: string) =>
     async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-      const confirmed = await myConfirmModal(
-        'confirm',
-        'Confirm Deletion',
-        'Are you sure you want to delete this dimension?',
-      );
+      const confirmed = await userConfirmaion({
+        header: 'Confirm Deletion',
+        message: 'Are you sure you want to delete this dimension?',
+      });
       const deleteDimension = async () => {
         const res = await axios.post('/api/dashboard/master-record/category', {
           type: 'delDimension',
@@ -543,35 +535,6 @@ export default function CategoryPage() {
     }
   };
 
-  const myConfirmModal = (modalId: string, header: string, message: string): Promise<boolean> => {
-    return new Promise((resolve) => {
-      const element = document.getElementById(modalId) as HTMLDialogElement | null;
-      if (element) {
-        // Define the header
-        element.querySelector('.modal-box h3')!.textContent = header;
-        element.querySelector('.modal-box p')!.textContent = message;
-
-        // Define the action when the "Confirm" button is clicked
-        const confirmButton = element.querySelector('.btn-primary') as HTMLButtonElement;
-        confirmButton.addEventListener('click', () => {
-          element.close();
-          resolve(true);
-        });
-
-        // Define the action when the "Cancel" button is clicked
-        const cancelButton = element.querySelector('.btn-secondary') as HTMLButtonElement;
-        cancelButton.addEventListener('click', () => {
-          element.close();
-          resolve(false);
-        });
-
-        element.showModal();
-      } else {
-        resolve(false);
-      }
-    });
-  };
-
   const myModal = (modalId: string) => {
     const element = document.getElementById(modalId) as HTMLDialogElement | null;
     if (element) {
@@ -589,18 +552,6 @@ export default function CategoryPage() {
     <div className="flex h-full flex-col gap-2 overflow-auto">
       {/* modals */}
       <span>
-        <dialog id="confirm" className="modal">
-          <div className="modal-box">
-            <h3 className="text-lg font-bold"></h3>
-            <p className="py-4"></p>
-            <div className="modal-action">
-              <form method="dialog" className="flex gap-2">
-                <button className="btn btn-secondary">Cancel</button>
-                <button className="btn btn-primary">Confirm</button>
-              </form>
-            </div>
-          </div>
-        </dialog>
         <dialog id="editCategory" className="modal">
           <div className="modal-box">
             <h3 className="text-lg font-bold">Edit Category</h3>
