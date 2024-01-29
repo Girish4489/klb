@@ -1,7 +1,6 @@
 'use client';
 import { ICustomer } from '@/models/klm';
 import axios from 'axios';
-import { Types } from 'mongoose';
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -19,7 +18,6 @@ export default function NewCustomerPage() {
       }
       return {
         ...prevCustomer,
-        customerId: new Types.ObjectId(),
         createdAt: new Date(),
         updatedAt: new Date(),
       } as ICustomer;
@@ -28,6 +26,7 @@ export default function NewCustomerPage() {
     const saveCustomerToDB = async (customer: ICustomer) => {
       const res = await axios.post('/api/dashboard/work-manage/new-customer', customer);
       if (res.data.success === true) {
+        setCustomer(undefined);
         return res.data.message;
       } else {
         throw new Error(res.data.message);

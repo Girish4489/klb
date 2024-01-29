@@ -2,7 +2,6 @@ import mongoose, { Document, Model, Schema } from 'mongoose';
 
 // Interfaces
 interface ICustomer extends Document {
-  customerId: mongoose.Types.ObjectId;
   name: string;
   phone: number;
   email?: string;
@@ -17,7 +16,6 @@ interface ICustomer extends Document {
 }
 
 interface ICategory extends Document {
-  categoryId?: mongoose.Types.ObjectId;
   categoryName?: string;
   description?: string;
   styleProcess?: [
@@ -31,57 +29,56 @@ interface ICategory extends Document {
   dimension?: [
     {
       dimensionTypeName: string;
-      types: {
+      dimensionTypes: {
         dimensionName: string;
       };
+      note?: string;
     },
   ];
 }
 
-interface IOrder extends Document {
-  orderId: mongoose.Types.ObjectId;
-  customer: mongoose.Types.ObjectId;
-  orderDate: Date;
-  dueDate?: Date;
-  deliverStatus?: string;
-  urget?: boolean;
-  trail?: string;
-  billNumber: string;
-  shippingAddress?: string;
-  paymentMethod?: string;
-  createdAt: Date;
-  updatedAt: Date;
-  status: 'Pending' | 'In Progress' | 'Completed' | 'Cancelled';
-}
-
-interface IOrderDetails extends Document {
-  orderId: mongoose.Types.ObjectId;
-  orderPiece: number;
-  category: string;
-  parameter: Map<string, string>;
-  measurements: Map<string, number>;
-  itemsAmt: number;
-  styles: string[];
-  note?: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
 interface IBill extends Document {
-  billId: mongoose.Types.ObjectId;
-  order: mongoose.Types.ObjectId;
+  billNumber: number;
+  date?: Date;
+  dueDate?: Date;
+  urgent?: boolean;
+  trail: boolean;
+  mobile: number;
+  name: string;
+  email: string;
+  order: [
+    {
+      category: {
+        catId: mongoose.Types.ObjectId;
+        categoryName: string;
+      };
+      dimension: {
+        dimensionTypeName: string;
+        dimensionName: string;
+        note?: string;
+      };
+      styleProcess: {
+        styleProcessName: string;
+        styleName: string;
+      };
+      work: boolean;
+      barcode: boolean;
+      measurement: string;
+      amount: number;
+      status: 'Pending' | 'In Progress' | 'Completed' | 'Cancelled';
+    },
+  ];
   totalAmount: number;
   paidAmount: number;
   dueAmount: number;
-  billingDate: Date;
   paymentStatus?: 'Paid' | 'Unpaid' | 'Partially Paid';
+  billBy?: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }
 
 interface IReceipt extends Document {
   receiptId: mongoose.Types.ObjectId;
-  order: mongoose.Types.ObjectId;
   bill?: mongoose.Types.ObjectId;
   amount: number;
   paymentDate: Date;
@@ -92,19 +89,14 @@ interface IReceipt extends Document {
 
 // Schema for Customer Data
 const customerSchema: Schema<ICustomer> = new Schema<ICustomer>({
-  customerId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Customer',
-    required: true,
-  },
   name: {
     type: String,
     default: 'NA',
-    required: true,
+    required: [true, 'Name is required.'],
   },
   phone: {
     type: Number,
-    required: true,
+    required: [true, 'Phone number is required.'],
     unique: true,
   },
   email: String,
@@ -126,125 +118,100 @@ const customerSchema: Schema<ICustomer> = new Schema<ICustomer>({
 
 // Schema for Category
 const categorySchema: Schema<ICategory> = new Schema<ICategory>({
-  categoryId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Category',
+  categoryName: {
+    type: String,
+    required: [true, 'Category name is required.'],
+    unique: true,
   },
-  categoryName: String,
   description: String,
   styleProcess: [
     {
-      styleProcessName: String,
+      styleProcessName: {
+        type: String,
+        required: [true, 'Style Process name is required.'],
+      },
       styles: [
         {
-          styleName: String,
+          styleName: {
+            type: String,
+            required: [true, 'Style name is required.'],
+          },
         },
       ],
     },
   ],
   dimension: [
     {
-      dimensionTypeName: String,
-      types: [
+      dimensionTypeName: {
+        type: String,
+        required: [true, 'Dimension type name is required.'],
+      },
+      dimensionTypes: [
         {
-          dimensionName: String,
+          dimensionName: {
+            type: String,
+            required: [true, 'Dimension name is required.'],
+          },
+          note: String,
         },
       ],
     },
   ],
 });
 
-// Schema for Order
-const orderSchema: Schema<IOrder> = new Schema<IOrder>({
-  orderId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Order',
-    required: true,
-  },
-  customer: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Customer',
-    required: true,
-  },
-  orderDate: {
-    type: Date,
-    required: true,
-  },
-  dueDate: Date,
-  deliverStatus: String,
-  urget: Boolean,
-  trail: String,
-  billNumber: {
-    type: String, // Add the bill number field
-    required: true,
-  },
-  shippingAddress: String,
-  paymentMethod: String,
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
-  status: {
-    type: String,
-    enum: ['Pending', 'In Progress', 'Completed', 'Cancelled'],
-    default: 'Pending',
-  },
-});
-
-// Schema for Order Details
-const orderDetailsSchema: Schema<IOrderDetails> = new Schema<IOrderDetails>({
-  orderId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Order',
-    required: true,
-  },
-  orderPiece: Number,
-  category: String,
-  parameter: {
-    type: Map,
-    of: String,
-  },
-  measurements: {
-    type: Map,
-    of: Number,
-  },
-  itemsAmt: Number,
-  styles: [String],
-  note: String,
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
-
 // Schema for Bill
 const billSchema: Schema<IBill> = new Schema<IBill>({
-  billId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Bill',
-    required: true,
+  billNumber: {
+    type: Number,
+    required: [true, 'Bill number is required.'],
+    unique: true,
   },
-  order: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Order',
-    required: true,
+  date: {
+    type: Date,
+    default: Date.now,
   },
+  dueDate: {
+    type: Date,
+    default: Date.now,
+  },
+  urgent: {
+    type: Boolean,
+    default: false,
+  },
+  trail: {
+    type: Boolean,
+    default: false,
+  },
+  mobile: {
+    type: Number,
+  },
+  name: String,
+  email: String,
+  order: [
+    {
+      category: categorySchema,
+      work: Boolean,
+      barcode: Boolean,
+      measurment: String,
+      amount: Number,
+      status: {
+        type: String,
+        enum: ['Pending', 'In Progress', 'Completed', 'Cancelled'],
+        default: 'Pending',
+      },
+    },
+  ],
   totalAmount: Number,
   paidAmount: Number,
   dueAmount: Number,
-  billingDate: Date,
   paymentStatus: {
     type: String,
     enum: ['Paid', 'Unpaid', 'Partially Paid'],
     default: 'Unpaid',
+  },
+  billBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
   },
   createdAt: {
     type: Date,
@@ -261,11 +228,6 @@ const receiptSchema: Schema<IReceipt> = new Schema<IReceipt>({
   receiptId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Receipt',
-    required: true,
-  },
-  order: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Order',
     required: true,
   },
   bill: {
@@ -290,15 +252,10 @@ const Customer: Model<ICustomer> = mongoose.models.Customer || mongoose.model<IC
 
 const Category: Model<ICategory> = mongoose.models.Category || mongoose.model<ICategory>('Category', categorySchema);
 
-const Order: Model<IOrder> = mongoose.models.Order || mongoose.model<IOrder>('Order', orderSchema);
-
-const OrderDetails: Model<IOrderDetails> =
-  mongoose.models.OrderDetails || mongoose.model<IOrderDetails>('OrderDetails', orderDetailsSchema);
-
 const Bill: Model<IBill> = mongoose.models.Bill || mongoose.model<IBill>('Bill', billSchema);
 
 const Receipt: Model<IReceipt> = mongoose.models.Receipt || mongoose.model<IReceipt>('Receipt', receiptSchema);
 
 // Export the models
-export { Bill, Category, Customer, Order, OrderDetails, Receipt };
-export type { IBill, ICategory, ICustomer, IOrder, IOrderDetails, IReceipt };
+export { Bill, Category, Customer, Receipt };
+export type { IBill, ICategory, ICustomer, IReceipt };
