@@ -42,7 +42,7 @@ const navigationData = [
     imgSrc: '/apps_logos/docs.svg',
     subNav: [
       { title: 'New Customer', href: '/dashboard/work-manage/new-customer' },
-      { title: 'Bill', href: '#w0' },
+      { title: 'Bill', href: '/dashboard/work-manage/bill' },
       { title: 'Edit Bill', href: '#w11' },
       { title: 'Photo Gallery', href: '#w2' },
       { title: 'Work Process', href: '#w3' },
