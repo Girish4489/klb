@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
       // delete the dimension
       const deletedDimension = await Category.findOneAndUpdate(
         { _id: reqBody.categoryId, 'dimension._id': reqBody.dimensionTypeId },
-        { $pull: { 'dimension.$.types': { _id: reqBody.dimensionId } } },
+        { $pull: { 'dimension.$.dimensionTypes': { _id: reqBody.dimensionId } } },
         { new: true },
       );
 
@@ -137,9 +137,12 @@ export async function POST(request: NextRequest) {
       // check if the style name is already present in the database
       const style = await Category.findOne({
         _id: reqBody.categoryId,
-        'styleProcess._id': reqBody.styleProcessId,
-        'styleProcess.styles._id': reqBody.styleId,
-        'styleProcess.styles.styleName': reqBody.styleName,
+        styleProcess: {
+          $elemMatch: {
+            _id: reqBody.styleProcessId,
+            'styles.styleName': reqBody.styleName,
+          },
+        },
       });
       if (style) throw new Error('Style name already exists');
 
@@ -188,9 +191,12 @@ export async function POST(request: NextRequest) {
       // check if the dimension name is already present in the database
       const dimension = await Category.findOne({
         _id: reqBody.categoryId,
-        'dimension._id': reqBody.dimensionTypeId,
-        'dimension.types._id': reqBody.dimensionId,
-        'dimension.types.dimensionName': reqBody.dimensionName,
+        dimension: {
+          $elemMatch: {
+            _id: reqBody.dimensionTypeId,
+            'dimensionTypes.dimensionName': reqBody.dimensionName,
+          },
+        },
       });
       if (dimension) throw new Error('Dimension name already exists');
 
@@ -199,9 +205,9 @@ export async function POST(request: NextRequest) {
         {
           _id: reqBody.categoryId,
           'dimension._id': reqBody.dimensionTypeId,
-          'dimension.types._id': reqBody.dimensionId,
+          'dimension.dimensionTypes._id': reqBody.dimensionId,
         },
-        { $set: { 'dimension.$[dimension].types.$[type].dimensionName': reqBody.dimensionName } },
+        { $set: { 'dimension.$[dimension].dimensionTypes.$[type].dimensionName': reqBody.dimensionName } },
         {
           new: true,
           arrayFilters: [{ 'dimension._id': reqBody.dimensionTypeId }, { 'type._id': reqBody.dimensionId }],
@@ -218,16 +224,18 @@ export async function POST(request: NextRequest) {
       if (!reqBody.description) throw new Error('Description not provided');
 
       // check if the category name is already present in the database
-      const category = await Category.findOne({ categoryName: reqBody.categoryName });
-      if (category?.categoryName === reqBody.categoryName) throw new Error('Category name already exists');
+      const existingCategory = await Category.findOne({ categoryName: reqBody.categoryName });
+      if (existingCategory) throw new Error('Category name already exists');
 
       // create a new category
       const newCategory = new Category({
         categoryName: reqBody.categoryName,
         description: reqBody.description,
       });
+
       // save the new category
       const savedCategory = await newCategory.save();
+
       // return the response
       return handleResponse('Category created successfully', true, savedCategory);
     };
@@ -249,10 +257,14 @@ export async function POST(request: NextRequest) {
       };
 
       // save the new style process
-      const savedStyleProcess = await Category.findOneAndUpdate(
+      const updatedCategory = await Category.findOneAndUpdate(
         { _id: reqBody.categoryId },
         { $push: { styleProcess: newStyleProcess } },
         { new: true },
+      );
+
+      const savedStyleProcess = updatedCategory?.styleProcess?.find(
+        (process) => process.styleProcessName === reqBody.styleProcessName,
       );
 
       // return the response
@@ -265,12 +277,8 @@ export async function POST(request: NextRequest) {
       // check if the style name is already present in the database
       const existingStyle = await Category.findOne({
         _id: reqBody.categoryId,
-        styleProcess: {
-          $elemMatch: {
-            _id: reqBody.styleProcessId,
-            'styles.styleName': reqBody.styleName,
-          },
-        },
+        'styleProcess._id': reqBody.styleProcessId,
+        'styleProcess.styles.styleName': reqBody.styleName,
       });
 
       if (existingStyle) throw new Error('Style name already exists');
@@ -279,15 +287,20 @@ export async function POST(request: NextRequest) {
       const newStyle = {
         styleName: reqBody.styleName,
       };
+
       // save the new style
-      const savedStyle = await Category.findOneAndUpdate(
+      const updatedStyle = (await Category.findOneAndUpdate(
         {
           _id: reqBody.categoryId,
           'styleProcess._id': reqBody.styleProcessId,
         },
         { $push: { 'styleProcess.$.styles': newStyle } },
         { new: true },
-      );
+      )) as { styleProcess: { _id: string; styles: { styleName: string }[] }[] };
+
+      const savedStyle = (updatedStyle?.styleProcess || [])
+        .find((process) => process._id.toString() === reqBody.styleProcessId)
+        ?.styles?.find((style) => style.styleName === reqBody.styleName);
 
       // return the response
       return handleResponse('Style added successfully', true, savedStyle);
@@ -306,14 +319,18 @@ export async function POST(request: NextRequest) {
       // create a new dimension type
       const newDimensionType = {
         dimensionTypeName: reqBody.dimensionTypeName,
-        types: [],
+        dimensionTypes: [],
       };
 
       // save the new dimension type
-      const savedDimensionType = await Category.findOneAndUpdate(
+      const updatedDimensionType = await Category.findOneAndUpdate(
         { _id: reqBody.categoryId },
         { $push: { dimension: newDimensionType } },
         { new: true },
+      );
+
+      const savedDimensionType = updatedDimensionType?.dimension?.find(
+        (dimension) => dimension.dimensionTypeName === reqBody.dimensionTypeName,
       );
 
       // return the response
@@ -328,7 +345,7 @@ export async function POST(request: NextRequest) {
       const dimension = await Category.findOne({
         _id: reqBody.categoryId,
         dimension: {
-          $elemMatch: { _id: reqBody.dimensionTypeId, 'types.dimensionName': reqBody.dimensionName },
+          $elemMatch: { _id: reqBody.dimensionTypeId, 'dimensionTypes.dimensionName': reqBody.dimensionName },
         },
       });
 
@@ -339,11 +356,15 @@ export async function POST(request: NextRequest) {
         dimensionName: reqBody.dimensionName,
       };
       // save the new dimension
-      const savedDimension = await Category.findOneAndUpdate(
+      const updatedDimension = (await Category.findOneAndUpdate(
         { _id: reqBody.categoryId },
-        { $push: { 'dimension.$[dimension].types': newDimension } },
+        { $push: { 'dimension.$[dimension].dimensionTypes': newDimension } },
         { new: true, arrayFilters: [{ 'dimension._id': reqBody.dimensionTypeId }] },
-      );
+      )) as { dimension: { _id: string; dimensionTypes: { dimensionName: string }[] }[] };
+
+      const savedDimension = (updatedDimension?.dimension || [])
+        .find((dimension) => dimension._id.toString() === reqBody.dimensionTypeId)
+        ?.dimensionTypes?.find((dimensionType) => dimensionType.dimensionName === reqBody.dimensionName);
 
       // return the response
       return handleResponse('Dimension added successfully', true, savedDimension);
