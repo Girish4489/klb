@@ -63,9 +63,13 @@ export default function SettingsPage() {
 
       const res = await axios.post('/api/dashboard/settings', formData);
       if (res.data.success === true) {
-        const base64Image = Buffer.from(res.data.profileImage?.data || []).toString('base64');
         updateUser({
-          profileImage: base64Image ? `data:${res.data.profileImage?.contentType};base64,${base64Image}` : '',
+          profileImage: {
+            data: res.data.profileImage?.data,
+            __filename: res.data.profileImage?.__filename,
+            contentType: res.data.profileImage?.contentType,
+            uploadAt: res.data.profileImage?.uploadAt,
+          },
         });
         return res.data.message; // Resolve with success message
       } else {
@@ -85,6 +89,35 @@ export default function SettingsPage() {
       // console.error(error);
     }
   }
+
+  const removeProfilePhoto = async () => {
+    const removeImage = async () => {
+      const res = await axios.delete('/api/dashboard/settings');
+      if (res.data.success === true) {
+        updateUser({
+          profileImage: {
+            data: Buffer.from([]),
+            __filename: 'USER_PROFILE_404_ERROR',
+            contentType: '',
+            uploadAt: new Date(),
+          },
+        });
+        return res.data.message; // Resolve with success message
+      } else {
+        throw new Error(res.data.message); // Reject with error message
+      }
+    };
+    try {
+      await toast.promise(removeImage(), {
+        loading: 'Removing...',
+        success: (message) => <b>{message}</b>,
+        error: (error) => <b>{error.message}</b>,
+      });
+    } catch (error) {
+      // toast.error('Error removing profile photo: ' + error);
+      // console.error(error);
+    }
+  };
 
   const clearProfileImageInput = () => {
     const profileImageInput = document.getElementById('profileImage') as HTMLInputElement | null;
@@ -113,7 +146,11 @@ export default function SettingsPage() {
                 <span className="badge indicator-item badge-secondary select-none lg:mt-4">edit..</span>
                 <div className="h-24 w-24 rounded-full ring ring-primary hover:scale-105 hover:ring-offset-2  hover:ring-offset-accent">
                   <Image
-                    src={`${user.profileImage === '' ? '/klm.webp' : user.profileImage}`}
+                    src={
+                      user.profileImage.__filename !== 'USER_PROFILE_404_ERROR'
+                        ? `data:${user.profileImage.contentType};base64,${Buffer.from(user.profileImage?.data || []).toString('base64')}`
+                        : '/klm.webp'
+                    }
                     alt="Landscape picture"
                     className="cursor-pointer rounded-full transition-all duration-500 ease-in-out"
                     width="40"
@@ -127,16 +164,28 @@ export default function SettingsPage() {
                 <div className="modal-box w-11/12 max-w-5xl">
                   <h3 className="text-lg font-bold">Change Profile!</h3>
                   <div className="card flex w-full items-center justify-between py-2 align-middle lg:card-side max-sm:pt-5 lg:items-center">
-                    <div className="avatar h-full w-full justify-center">
-                      <div className="mask w-48 rounded-badge ring ring-primary ring-offset-1 ring-offset-base-100 transition-transform duration-300 hover:scale-110">
+                    <div className="avatar h-full w-full flex-col items-center justify-center gap-2">
+                      <div className="mask w-48 rounded-badge ring ring-primary ring-offset-1 ring-offset-base-100 transition-transform duration-300 ease-in-out hover:scale-105">
                         <Image
-                          src={`${user.profileImage === '' ? '/klm.webp' : user.profileImage}`}
+                          src={
+                            user.profileImage.__filename !== 'USER_PROFILE_404_ERROR'
+                              ? `data:${user.profileImage.contentType};base64,${Buffer.from(user.profileImage?.data || []).toString('base64')}`
+                              : '/klm.webp'
+                          }
                           alt="Landscape picture"
-                          className="h-48 w-48 cursor-pointer transition-all duration-500 ease-in-out"
+                          className="h-48 w-48 cursor-pointer transition-transform duration-300 ease-in-out"
                           width="192"
                           height="192"
                         />
                       </div>
+                      {user.profileImage.__filename !== 'USER_PROFILE_404_ERROR' && (
+                        <span
+                          className="btn btn-warning btn-sm w-40 select-none transition-transform duration-300 ease-in-out hover:btn-error hover:scale-105 hover:font-bold"
+                          onClick={removeProfilePhoto}
+                        >
+                          Remove
+                        </span>
+                      )}
                     </div>
                     <div className="card-body w-full items-center">
                       <form

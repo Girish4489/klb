@@ -32,9 +32,31 @@ export async function POST(request: NextRequest) {
     user.profileImage.contentType = file.type;
     user.profileImage.uploadAt = new Date();
 
-    user.save();
+    await user.save();
 
     return NextResponse.json({ success: true, message: 'Profile updated', profileImage: user.profileImage });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message });
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const userId = getDataFromToken(request);
+    const user = await User.findById(userId);
+
+    // Make sure that the user exists
+    if (!user) throw new Error('User not found');
+
+    // Remove the profile image data from the user document
+    user.profileImage.__filename = 'USER_PROFILE_404_ERROR';
+    user.profileImage.data = Buffer.from([]);
+    user.profileImage.contentType = 'image/webp';
+    user.profileImage.uploadAt = new Date();
+
+    await user.save();
+
+    return NextResponse.json({ success: true, message: 'Profile image removed', profileImage: user.profileImage });
   } catch (error: any) {
     return NextResponse.json({ error: error.message });
   }
