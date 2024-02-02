@@ -1,9 +1,9 @@
 'use client';
+import ProfilePage from '@/app/components/profile/page';
+import Sidebar from '@/app/components/sidebar/page';
 import { UserProvider } from '@/app/context/userContext';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
-import ProfilePage from '../components/profile/page';
-import Sidebar from '../components/sidebar/page';
 
 export default function AuthLayout({
   children, // will be a page or nested layout
@@ -21,9 +21,9 @@ export default function AuthLayout({
   };
 
   return (
-    <div className="flex h-screen w-screen flex-col overflow-hidden max-sm:-mb-16 max-sm:pb-0.5">
-      {/* Navbar */}
-      <UserProvider>
+    <UserProvider>
+      <div className="flex h-screen w-screen flex-col overflow-hidden max-sm:-mb-16 max-sm:pb-0.5">
+        {/* Navbar */}
         <div className="navbar flex w-full flex-row content-stretch items-center bg-base-300">
           <span
             className={`btn btn-circle ${isSidebarOpen ? 'open' : 'closed'}`}
@@ -109,7 +109,7 @@ export default function AuthLayout({
             </div>
           </div>
         </div>
-      </UserProvider>
-    </div>
+      </div>
+    </UserProvider>
   );
 }

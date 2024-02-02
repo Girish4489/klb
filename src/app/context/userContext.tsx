@@ -1,6 +1,7 @@
 // src/app/context/UserContext.tsx
 'use client';
-import axios from 'axios';
+import { fetchUserData } from '@/app/util/user/userFetchUtil/userUtils';
+import { IUser } from '@/models/userModel';
 import { ReactNode, createContext, useCallback, useContext, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -8,68 +9,49 @@ interface UserContextProps {
   children: ReactNode;
 }
 
-interface UserData {
-  username: string;
-  email: string;
-  theme: string;
-  profileImage: string;
-  isVerified: boolean;
-  isAdmin: boolean;
-  createdAt: Date;
-  updatedAt?: Date;
-}
+type UserState = Omit<IUser, 'password'>;
 
 interface UserContextType {
-  user: UserData;
-  setUser: React.Dispatch<React.SetStateAction<UserData>>;
-  updateUser: (partialUpdate: Partial<UserData>) => void;
+  user: UserState;
+  setUser: React.Dispatch<React.SetStateAction<UserState>>;
+  updateUser: (partialUpdate: Partial<UserState>) => void;
   fetchAndSetUser: () => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider: React.FC<UserContextProps> = ({ children }) => {
-  const [user, setUser] = useState<UserData>({
-    username: 'User',
-    email: 'sample@example.com',
+  const [user, setUser] = useState<UserState>({
+    username: '',
+    email: '',
     theme: 'default',
-    profileImage: '/klm.webp',
+    profileImage: {
+      data: new Uint8Array(),
+      __filename: '',
+      contentType: '',
+      uploadAt: new Date(),
+    },
     isVerified: false,
     isAdmin: false,
     createdAt: new Date(),
     updatedAt: new Date(),
-  });
-
-  // Function to update user details
-  const updateUser = useCallback((partialUpdate: Partial<UserData>) => {
-    setUser((prevUser) => ({ ...prevUser, ...partialUpdate }));
-  }, []);
+  } as UserState);
 
   // Function to fetch and set user data
   const fetchAndSetUser = useCallback(async () => {
     try {
-      const theme = document.documentElement.getAttribute('data-theme');
-      const {
-        data: { data: userData },
-      } = await axios.get('/api/auth/user');
-      const base64Image = userData.profileImage?.data ? Buffer.from(userData.profileImage.data).toString('base64') : '';
-      setUser({
-        username: userData.username,
-        email: userData.email,
-        theme: userData.theme || theme || 'default',
-        profileImage: base64Image ? `data:${userData.profileImage.contentType};base64,${base64Image}` : '',
-        isVerified: userData.isVerified,
-        isAdmin: userData.isAdmin,
-        createdAt: userData.createdAt || new Date(),
-        updatedAt: userData.updatedAt || new Date(),
-      });
+      const userData = await fetchUserData();
+      setUser(userData);
 
       document.documentElement.setAttribute('data-theme', userData.theme);
     } catch (error: any) {
-      // Handle error
       // console.error(error);
       toast.error(error.response.data.message + '\n😢 Please try sometime later or Login again');
     }
+  }, []);
+
+  const updateUser = useCallback((partialUpdate: Partial<UserState>) => {
+    setUser((prevUser) => ({ ...prevUser, ...partialUpdate }));
   }, []);
 
   // Fetch and set user data on initial mount

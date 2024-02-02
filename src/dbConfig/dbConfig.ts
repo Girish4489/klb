@@ -1,7 +1,28 @@
+import { loadEnvConfig } from '@next/env';
 import mongoose from 'mongoose';
+
+// Load environment variables using Next.js
+const projectDir = process.cwd();
+loadEnvConfig(projectDir);
 
 export async function connect() {
   try {
+    // Check if required environment variables are present
+    const requiredVariables = [
+      'DBTYPE',
+      'DBNAME',
+      'MONGO_DOCKER_URI',
+      'MONGO_URI',
+      'MONGO_ONLINE_URI',
+      'DOMAIN',
+      'DOCKER',
+    ];
+    const missingVariables = requiredVariables.filter((variable) => !process.env[variable]);
+
+    if (missingVariables.length > 0) {
+      throw new Error(`Missing required environment variables: ${missingVariables.join(', ')}`);
+    }
+
     let mongoURI: string;
 
     switch (process.env.DBTYPE) {
@@ -24,7 +45,7 @@ export async function connect() {
     }
 
     await mongoose.connect(mongoURI);
-    const connection = mongoose.connection;
+    const connection = mongoose.connection as mongoose.Connection;
 
     connection.on('connected', () => {
       // eslint-disable-next-line no-console
@@ -41,5 +62,6 @@ export async function connect() {
     console.log('Something goes wrong!');
     // eslint-disable-next-line no-console
     console.log(error);
+    throw error;
   }
 }

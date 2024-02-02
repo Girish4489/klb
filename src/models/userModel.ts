@@ -49,7 +49,7 @@ const userSchema: Schema<IUser> = new mongoose.Schema({
     default: 'dark',
   },
   profileImage: {
-    __filename: String,
+    __filename: { type: String, default: 'USER_PROFILE_404_ERROR' },
     data: Buffer,
     contentType: { type: String, default: 'multipart/form-data' },
     uploadAt: Date,
@@ -72,3 +72,4 @@ const userSchema: Schema<IUser> = new mongoose.Schema({
 const User: Model<IUser> = mongoose.models.users || mongoose.model<IUser>('users', userSchema);
 
 export default User;
+export type { IUser };
