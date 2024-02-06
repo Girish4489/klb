@@ -1,4 +1,4 @@
-import { loadEnvConfig } from '@next/env';
+import { loadEnvConfig } from '@next/env/dist';
 import mongoose from 'mongoose';
 
 // Load environment variables using Next.js
