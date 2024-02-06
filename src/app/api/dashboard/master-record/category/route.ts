@@ -277,6 +277,12 @@ export async function POST(request: NextRequest) {
       // check if the style name is already present in the database
       const existingStyle = await Category.findOne({
         _id: reqBody.categoryId,
+        styleProcess: {
+          $elemMatch: {
+            _id: reqBody.styleProcessId,
+            'styles.styleName': reqBody.styleName,
+          },
+        },
         'styleProcess._id': reqBody.styleProcessId,
         'styleProcess.styles.styleName': reqBody.styleName,
       });

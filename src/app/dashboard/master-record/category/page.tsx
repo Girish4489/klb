@@ -59,7 +59,9 @@ export default function CategoryPage() {
         } else {
           throw new Error(res.message);
         }
-      } catch (error) {}
+      } catch (error: any) {
+        throw new Error(error);
+      }
     };
     await configureToastPromise(saveCategory(), 'Adding Category...');
   };
@@ -91,7 +93,9 @@ export default function CategoryPage() {
         } else {
           throw new Error(res.message);
         }
-      } catch (error) {}
+      } catch (error: any) {
+        throw new Error(error);
+      }
     };
     await configureToastPromise(saveProcess(), 'Adding Process...');
   };
@@ -100,28 +104,32 @@ export default function CategoryPage() {
     const { dimensionType } = e;
 
     const saveDimension = async () => {
-      const res = await ApiPost.Category('addTypeDimension', {
-        categoryId: ids?.catId,
-        dimensionTypeName: dimensionType,
-      });
+      try {
+        const res = await ApiPost.Category('addTypeDimension', {
+          categoryId: ids?.catId,
+          dimensionTypeName: dimensionType,
+        });
 
-      if (res.success === true) {
-        setCategory(
-          (prevCategory) =>
-            prevCategory.map((cat) => {
-              if (cat._id === ids?.catId) {
-                return {
-                  ...(cat as ICategory),
-                  dimension: cat.dimension ? [...cat.dimension, res.data] : [res.data],
-                } as ICategory;
-              }
-              return cat as ICategory;
-            }) as ICategory[],
-        );
-        closeModal('addTypeDimension');
-        return res.message;
-      } else {
-        throw new Error(res.message);
+        if (res.success === true) {
+          setCategory(
+            (prevCategory) =>
+              prevCategory.map((cat) => {
+                if (cat._id === ids?.catId) {
+                  return {
+                    ...(cat as ICategory),
+                    dimension: cat.dimension ? [...cat.dimension, res.data] : [res.data],
+                  } as ICategory;
+                }
+                return cat as ICategory;
+              }) as ICategory[],
+          );
+          closeModal('addTypeDimension');
+          return res.message;
+        } else {
+          throw new Error(res.message);
+        }
+      } catch (error: any) {
+        throw new Error(error);
       }
     };
     await configureToastPromise(saveDimension(), 'Adding Dimension Type...');
@@ -131,38 +139,42 @@ export default function CategoryPage() {
     const { dimension } = e;
 
     const saveDimension = async () => {
-      const res = await ApiPost.Category('addDimension', {
-        categoryId: ids?.catId,
-        dimensionTypeId: ids?.dimensionTypeId,
-        dimensionName: dimension,
-      });
-      if (res.success === true) {
-        setCategory(
-          (prevCategory) =>
-            prevCategory.map((cat) => {
-              if (cat._id === ids?.catId) {
-                return {
-                  ...(cat as ICategory),
-                  dimension: cat.dimension?.map((dimensionType) => {
-                    if ((dimensionType as any)?._id === ids?.dimensionTypeId) {
-                      return {
-                        ...(dimensionType as any),
-                        dimensionTypes: dimensionType.dimensionTypes
-                          ? [...(dimensionType.dimensionTypes as any), res.data]
-                          : [res.data],
-                      };
-                    }
-                    return dimensionType;
-                  }),
-                } as ICategory;
-              }
-              return cat as ICategory;
-            }) as ICategory[],
-        );
-        closeModal('addDimension');
-        return res.message;
-      } else {
-        throw new Error(res.message);
+      try {
+        const res = await ApiPost.Category('addDimension', {
+          categoryId: ids?.catId,
+          dimensionTypeId: ids?.dimensionTypeId,
+          dimensionName: dimension,
+        });
+        if (res.success === true) {
+          setCategory(
+            (prevCategory) =>
+              prevCategory.map((cat) => {
+                if (cat._id === ids?.catId) {
+                  return {
+                    ...(cat as ICategory),
+                    dimension: cat.dimension?.map((dimensionType) => {
+                      if ((dimensionType as any)?._id === ids?.dimensionTypeId) {
+                        return {
+                          ...(dimensionType as any),
+                          dimensionTypes: dimensionType.dimensionTypes
+                            ? [...(dimensionType.dimensionTypes as any), res.data]
+                            : [res.data],
+                        };
+                      }
+                      return dimensionType;
+                    }),
+                  } as ICategory;
+                }
+                return cat as ICategory;
+              }) as ICategory[],
+          );
+          closeModal('addDimension');
+          return res.message;
+        } else {
+          throw new Error(res.message);
+        }
+      } catch (error: any) {
+        throw new Error(error);
       }
     };
     await configureToastPromise(saveDimension(), 'Adding Dimension...');
@@ -171,37 +183,41 @@ export default function CategoryPage() {
   const AddStyle = async (e: any) => {
     const { catStyle } = e;
     const saveStyle = async () => {
-      const res = await ApiPost.Category('addStyle', {
-        categoryId: ids?.catId,
-        styleProcessId: ids?.styleProcessId,
-        styleName: catStyle,
-      });
+      try {
+        const res = await ApiPost.Category('addStyle', {
+          categoryId: ids?.catId,
+          styleProcessId: ids?.styleProcessId,
+          styleName: catStyle,
+        });
 
-      if (res.success === true) {
-        setCategory(
-          (prevCategory) =>
-            prevCategory.map((cat) => {
-              if (cat._id === ids?.catId) {
-                return {
-                  ...(cat as ICategory),
-                  styleProcess: cat.styleProcess?.map((styleProcess) => {
-                    if ((styleProcess as any)?._id === ids?.styleProcessId) {
-                      return {
-                        ...(styleProcess as any),
-                        styles: styleProcess.styles ? [...(styleProcess.styles as any), res.data] : [res.data],
-                      };
-                    }
-                    return styleProcess;
-                  }),
-                } as ICategory;
-              }
-              return cat as ICategory;
-            }) as ICategory[],
-        );
-        closeModal('addStyle');
-        return res.message;
-      } else {
-        throw new Error(res.message);
+        if (res.success === true) {
+          setCategory(
+            (prevCategory) =>
+              prevCategory.map((cat) => {
+                if (cat._id === ids?.catId) {
+                  return {
+                    ...(cat as ICategory),
+                    styleProcess: cat.styleProcess?.map((styleProcess) => {
+                      if ((styleProcess as any)?._id === ids?.styleProcessId) {
+                        return {
+                          ...(styleProcess as any),
+                          styles: styleProcess.styles ? [...(styleProcess.styles as any), res.data] : [res.data],
+                        };
+                      }
+                      return styleProcess;
+                    }),
+                  } as ICategory;
+                }
+                return cat as ICategory;
+              }) as ICategory[],
+          );
+          closeModal('addStyle');
+          return res.message;
+        } else {
+          throw new Error(res.message);
+        }
+      } catch (error: any) {
+        throw new Error(error);
       }
     };
     await configureToastPromise(saveStyle(), 'Adding Style...');
@@ -224,7 +240,9 @@ export default function CategoryPage() {
         } else {
           throw new Error(res.message);
         }
-      } catch (error) {}
+      } catch (error: any) {
+        throw new Error(error);
+      }
     };
     await configureToastPromise(deleteCategory(), 'Deleting Category...');
   };
@@ -260,7 +278,9 @@ export default function CategoryPage() {
           } else {
             throw new Error(res.message);
           }
-        } catch (error) {}
+        } catch (error: any) {
+          throw new Error(error);
+        }
       };
       await configureToastPromise(deleteProcess(), 'Deleting Process...');
     };
@@ -296,7 +316,9 @@ export default function CategoryPage() {
           } else {
             throw new Error(res.message);
           }
-        } catch (error) {}
+        } catch (error: any) {
+          throw new Error(error);
+        }
       };
       await configureToastPromise(deleteDimensionType(), 'Deleting Dimension Type...');
     };
@@ -342,7 +364,9 @@ export default function CategoryPage() {
           } else {
             throw new Error(res.message);
           }
-        } catch (error) {}
+        } catch (error: any) {
+          throw new Error(error);
+        }
       };
       await configureToastPromise(deleteStyle(), 'Deleting Style...');
     };
@@ -390,7 +414,9 @@ export default function CategoryPage() {
           } else {
             throw new Error(res.message);
           }
-        } catch (error) {}
+        } catch (error: any) {
+          throw new Error(error);
+        }
       };
       await configureToastPromise(deleteDimension(), 'Deleting Dimension...');
     };
@@ -400,28 +426,32 @@ export default function CategoryPage() {
   const EditCategory = async (e: any) => {
     const { category, description } = e;
     const UpdateCategory = async () => {
-      const res = await ApiPost.Category('editCategory', {
-        categoryId: ids?.catId,
-        categoryName: category,
-        description: description,
-      });
-      if (res.success === true) {
-        setCategory((prevCategory) =>
-          prevCategory.map((cat: ICategory) => {
-            if (cat._id === ids?.catId) {
-              return {
-                ...(cat as ICategory),
-                categoryName: category,
-                description: description,
-              } as ICategory;
-            }
-            return cat as ICategory;
-          }),
-        );
-        closeModal('editCategory');
-        return res.message;
-      } else {
-        throw new Error(res.message);
+      try {
+        const res = await ApiPost.Category('editCategory', {
+          categoryId: ids?.catId,
+          categoryName: category,
+          description: description,
+        });
+        if (res.success === true) {
+          setCategory((prevCategory) =>
+            prevCategory.map((cat: ICategory) => {
+              if (cat._id === ids?.catId) {
+                return {
+                  ...(cat as ICategory),
+                  categoryName: category,
+                  description: description,
+                } as ICategory;
+              }
+              return cat as ICategory;
+            }),
+          );
+          closeModal('editCategory');
+          return res.message;
+        } else {
+          throw new Error(res.message);
+        }
+      } catch (error: any) {
+        throw new Error(error);
       }
     };
     await configureToastPromise(UpdateCategory(), 'Updating Category...');
@@ -430,36 +460,40 @@ export default function CategoryPage() {
   const EditProcess = async (e: any) => {
     const { processName } = e;
     const UpdateProcess = async () => {
-      const res = await ApiPost.Category('editProcess', {
-        categoryId: ids?.catId,
-        styleProcessId: ids?.styleProcessId,
-        styleProcessName: processName,
-      });
-      if (res.success === true) {
-        setCategory(
-          (prevCategory) =>
-            prevCategory.map((cat) => {
-              if (cat._id === ids?.catId) {
-                return {
-                  ...(cat as ICategory),
-                  styleProcess: cat.styleProcess?.map((styleProcess) => {
-                    if ((styleProcess as any)?._id === ids?.styleProcessId) {
-                      return {
-                        ...(styleProcess as any),
-                        styleProcessName: processName,
-                      };
-                    }
-                    return styleProcess;
-                  }),
-                } as ICategory;
-              }
-              return cat as ICategory;
-            }) as ICategory[],
-        );
-        closeModal('editProcess');
-        return res.message;
-      } else {
-        throw new Error(res.message);
+      try {
+        const res = await ApiPost.Category('editProcess', {
+          categoryId: ids?.catId,
+          styleProcessId: ids?.styleProcessId,
+          styleProcessName: processName,
+        });
+        if (res.success === true) {
+          setCategory(
+            (prevCategory) =>
+              prevCategory.map((cat) => {
+                if (cat._id === ids?.catId) {
+                  return {
+                    ...(cat as ICategory),
+                    styleProcess: cat.styleProcess?.map((styleProcess) => {
+                      if ((styleProcess as any)?._id === ids?.styleProcessId) {
+                        return {
+                          ...(styleProcess as any),
+                          styleProcessName: processName,
+                        };
+                      }
+                      return styleProcess;
+                    }),
+                  } as ICategory;
+                }
+                return cat as ICategory;
+              }) as ICategory[],
+          );
+          closeModal('editProcess');
+          return res.message;
+        } else {
+          throw new Error(res.message);
+        }
+      } catch (error: any) {
+        throw new Error(error);
       }
     };
     await configureToastPromise(UpdateProcess(), 'Updating Process...');
@@ -468,36 +502,40 @@ export default function CategoryPage() {
   const EditTypeDimension = async (e: any) => {
     const { dimensionType } = e;
     const UpdateDimension = async () => {
-      const res = await ApiPost.Category('editTypeDimension', {
-        categoryId: ids?.catId,
-        dimensionTypeId: ids?.dimensionTypeId,
-        dimensionTypeName: dimensionType,
-      });
-      if (res.success === true) {
-        setCategory(
-          (prevCategory) =>
-            prevCategory.map((cat) => {
-              if (cat._id === ids?.catId) {
-                return {
-                  ...(cat as ICategory),
-                  dimension: cat.dimension?.map((dimTyp) => {
-                    if ((dimTyp as any)?._id === ids?.dimensionTypeId) {
-                      return {
-                        ...(dimTyp as any),
-                        dimensionTypeName: dimensionType,
-                      };
-                    }
-                    return dimensionType;
-                  }),
-                } as ICategory;
-              }
-              return cat as ICategory;
-            }) as ICategory[],
-        );
-        closeModal('editTypeDimension');
-        return res.message;
-      } else {
-        throw new Error(res.message);
+      try {
+        const res = await ApiPost.Category('editTypeDimension', {
+          categoryId: ids?.catId,
+          dimensionTypeId: ids?.dimensionTypeId,
+          dimensionTypeName: dimensionType,
+        });
+        if (res.success === true) {
+          setCategory(
+            (prevCategory) =>
+              prevCategory.map((cat) => {
+                if (cat._id === ids?.catId) {
+                  return {
+                    ...(cat as ICategory),
+                    dimension: cat.dimension?.map((dimTyp) => {
+                      if ((dimTyp as any)?._id === ids?.dimensionTypeId) {
+                        return {
+                          ...(dimTyp as any),
+                          dimensionTypeName: dimensionType,
+                        };
+                      }
+                      return dimensionType;
+                    }),
+                  } as ICategory;
+                }
+                return cat as ICategory;
+              }) as ICategory[],
+          );
+          closeModal('editTypeDimension');
+          return res.message;
+        } else {
+          throw new Error(res.message);
+        }
+      } catch (error: any) {
+        throw new Error(error);
       }
     };
     await configureToastPromise(UpdateDimension(), 'Updating Dimension...');
@@ -506,47 +544,51 @@ export default function CategoryPage() {
   const EditStyles = async (e: any) => {
     const { styleName } = e;
     const UpdateStyles = async () => {
-      const res = await ApiPost.Category('editStyle', {
-        categoryId: ids?.catId,
-        styleProcessId: ids?.styleProcessId,
-        styleId: ids?.styleId,
-        styleName: styleName,
-      });
-      if (res.success === true) {
-        setCategory(
-          (prevCategory) =>
-            prevCategory.map((cat) => {
-              if (cat._id === ids?.catId) {
-                return {
-                  ...(cat as ICategory),
-                  styleProcess: cat.styleProcess?.map((styleProcess) => {
-                    if ((styleProcess as any)?._id === ids?.styleProcessId) {
-                      return {
-                        ...(styleProcess as any),
-                        styles: Array.isArray(styleProcess.styles)
-                          ? styleProcess.styles.map((style: any) => {
-                              if ((style as any)?._id === ids?.styleId) {
-                                return {
-                                  ...(style as any),
-                                  styleName: styleName,
-                                };
-                              }
-                              return style;
-                            })
-                          : [],
-                      };
-                    }
-                    return styleProcess;
-                  }),
-                } as ICategory;
-              }
-              closeModal('editStyle');
-              return cat as ICategory;
-            }) as ICategory[],
-        );
-        return res.message;
-      } else {
-        throw new Error(res.message);
+      try {
+        const res = await ApiPost.Category('editStyle', {
+          categoryId: ids?.catId,
+          styleProcessId: ids?.styleProcessId,
+          styleId: ids?.styleId,
+          styleName: styleName,
+        });
+        if (res.success === true) {
+          setCategory(
+            (prevCategory) =>
+              prevCategory.map((cat) => {
+                if (cat._id === ids?.catId) {
+                  return {
+                    ...(cat as ICategory),
+                    styleProcess: cat.styleProcess?.map((styleProcess) => {
+                      if ((styleProcess as any)?._id === ids?.styleProcessId) {
+                        return {
+                          ...(styleProcess as any),
+                          styles: Array.isArray(styleProcess.styles)
+                            ? styleProcess.styles.map((style: any) => {
+                                if ((style as any)?._id === ids?.styleId) {
+                                  return {
+                                    ...(style as any),
+                                    styleName: styleName,
+                                  };
+                                }
+                                return style;
+                              })
+                            : [],
+                        };
+                      }
+                      return styleProcess;
+                    }),
+                  } as ICategory;
+                }
+                closeModal('editStyle');
+                return cat as ICategory;
+              }) as ICategory[],
+          );
+          return res.message;
+        } else {
+          throw new Error(res.message);
+        }
+      } catch (error: any) {
+        throw new Error(error);
       }
     };
     await configureToastPromise(UpdateStyles(), 'Updating Style...');
@@ -555,47 +597,51 @@ export default function CategoryPage() {
   const EditDimension = async (e: any) => {
     const { dimension } = e;
     const UpdateDimension = async () => {
-      const res = await ApiPost.Category('editDimension', {
-        categoryId: ids?.catId,
-        dimensionTypeId: ids?.dimensionTypeId,
-        dimensionId: ids?.dimensionId,
-        dimensionName: dimension,
-      });
-      if (res.success === true) {
-        setCategory(
-          (prevCategory) =>
-            prevCategory.map((cat) => {
-              if (cat._id === ids?.catId) {
-                return {
-                  ...(cat as ICategory),
-                  dimension: cat.dimension?.map((dimTyp) => {
-                    if ((dimTyp as any)?._id === ids?.dimensionTypeId) {
-                      return {
-                        ...(dimTyp as any),
-                        dimensionTypes: Array.isArray(dimTyp.dimensionTypes)
-                          ? dimTyp.dimensionTypes.map((dim: any) => {
-                              if ((dim as any)?._id === ids?.dimensionId) {
-                                return {
-                                  ...(dim as any),
-                                  dimensionName: dimension,
-                                };
-                              }
-                              return dim;
-                            })
-                          : [],
-                      };
-                    }
-                    return dimTyp;
-                  }),
-                } as ICategory;
-              }
-              return cat as ICategory;
-            }) as ICategory[],
-        );
-        closeModal('editDimension');
-        return res.message;
-      } else {
-        throw new Error(res.message);
+      try {
+        const res = await ApiPost.Category('editDimension', {
+          categoryId: ids?.catId,
+          dimensionTypeId: ids?.dimensionTypeId,
+          dimensionId: ids?.dimensionId,
+          dimensionName: dimension,
+        });
+        if (res.success === true) {
+          setCategory(
+            (prevCategory) =>
+              prevCategory.map((cat) => {
+                if (cat._id === ids?.catId) {
+                  return {
+                    ...(cat as ICategory),
+                    dimension: cat.dimension?.map((dimTyp) => {
+                      if ((dimTyp as any)?._id === ids?.dimensionTypeId) {
+                        return {
+                          ...(dimTyp as any),
+                          dimensionTypes: Array.isArray(dimTyp.dimensionTypes)
+                            ? dimTyp.dimensionTypes.map((dim: any) => {
+                                if ((dim as any)?._id === ids?.dimensionId) {
+                                  return {
+                                    ...(dim as any),
+                                    dimensionName: dimension,
+                                  };
+                                }
+                                return dim;
+                              })
+                            : [],
+                        };
+                      }
+                      return dimTyp;
+                    }),
+                  } as ICategory;
+                }
+                return cat as ICategory;
+              }) as ICategory[],
+          );
+          closeModal('editDimension');
+          return res.message;
+        } else {
+          throw new Error(res.message);
+        }
+      } catch (error: any) {
+        throw new Error(error);
       }
     };
     await configureToastPromise(UpdateDimension(), 'Updating Dimension...');
