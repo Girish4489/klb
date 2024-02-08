@@ -1,6 +1,10 @@
-import Head from 'next/head';
+import { Metadata } from 'next';
 import Image from 'next/image';
 import React from 'react';
+
+export const metadata: Metadata = {
+  title: '404 - Page Not Found',
+};
 
 const NotFound: React.FC = () => {
   const maskShapes = [
@@ -48,9 +52,6 @@ const NotFound: React.FC = () => {
 
   return (
     <div className="relative flex h-screen flex-col items-center justify-center overflow-hidden">
-      <Head>
-        <title>404 - Page Not Found</title>
-      </Head>
       <div className="absolute inset-0 bg-warning-content"></div>
       <div className="z-10 flex items-center justify-center gap-2 rounded-box border border-info bg-info-content p-10 max-sm:flex-col">
         <Image className="mask mask-squircle select-none" src="/klm.webp" alt="KLM" width={80} height={80} />
