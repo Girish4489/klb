@@ -522,7 +522,7 @@ export default function CategoryPage() {
                           dimensionTypeName: dimensionType,
                         };
                       }
-                      return dimensionType;
+                      return dimTyp;
                     }),
                   } as ICategory;
                 }
@@ -1077,7 +1077,7 @@ export default function CategoryPage() {
                                   <div className="collapse-content transform transition-all">
                                     <div className="m-1 flex max-h-56 flex-col gap-2 overflow-auto rounded-box bg-base-300 p-2">
                                       <p className="label label-text-alt w-max">Dimensions:</p>
-                                      {typ.dimensionTypes.map((dimension: any, dimensionIndex: any) => (
+                                      {typ.dimensionTypes?.map((dimension: any, dimensionIndex: any) => (
                                         <div
                                           key={dimensionIndex}
                                           className="flex flex-row items-center justify-between"
