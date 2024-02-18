@@ -21,6 +21,7 @@ const navigationData = [
       { title: 'No Advance Start', href: '#m15' },
       { title: 'Customer Master', href: '#m16' },
       { title: 'Request', href: '#m17' },
+      { title: 'Tax', href: '/dashboard/master-record/tax' },
     ],
   },
   {
