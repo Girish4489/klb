@@ -1,4 +1,5 @@
 'use client';
+import { userConfirmaion } from '@/app/util/confirmation/confirmationUtil';
 import { ApiDelete, ApiGet, ApiPost, ApiPut } from '@/app/util/makeApiRequest/makeApiRequest';
 import { ITax } from '@/models/klm';
 import React from 'react';
@@ -61,6 +62,11 @@ export default function TaxPage() {
 
   function handleDelete(_id: any): React.MouseEventHandler<HTMLButtonElement> | undefined {
     return async () => {
+      const Confirmed = await userConfirmaion({
+        header: 'Confirm Deletion',
+        message: 'Are you sure you want to delete this tax?',
+      });
+      if (!Confirmed) return;
       const deleteTax = async () => {
         try {
           const res = await ApiDelete.Tax(_id);
