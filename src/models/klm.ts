@@ -15,6 +15,14 @@ interface ICustomer extends Document {
   updatedAt: Date;
 }
 
+interface ITax extends Document {
+  taxName: string;
+  taxType: string;
+  taxPercentage: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 interface ICategory extends Document {
   categoryName?: string;
   description?: string;
@@ -56,11 +64,11 @@ interface IBill extends Document {
         dimensionTypeName: string;
         dimensionName: string;
         note?: string;
-      };
+      }[];
       styleProcess: {
         styleProcessName: string;
         styleName: string;
-      };
+      }[];
       work: boolean;
       barcode: boolean;
       measurement: string;
@@ -69,9 +77,12 @@ interface IBill extends Document {
     },
   ];
   totalAmount: number;
+  discount: number;
+  tax: ITax[];
+  grandTotal: number;
   paidAmount: number;
   dueAmount: number;
-  paymentStatus?: 'Paid' | 'Unpaid' | 'Partially Paid';
+  paymentStatus?: 'Unpaid' | 'Partially Paid' | 'Paid';
   billBy?: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -106,6 +117,32 @@ const customerSchema: Schema<ICustomer> = new Schema<ICustomer>({
   pin: String,
   address: String,
   notes: String,
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
+// Schema for Tax Data
+const taxSchema: Schema<ITax> = new Schema<ITax>({
+  taxName: {
+    type: String,
+    required: [true, 'Tax name is required.'],
+    unique: true,
+  },
+  taxType: {
+    type: String,
+    enum: ['Percentage', 'Fixed'],
+    default: 'Percentage',
+  },
+  taxPercentage: {
+    type: Number,
+    required: [true, 'Tax percentage is required.'],
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -192,7 +229,7 @@ const billSchema: Schema<IBill> = new Schema<IBill>({
       category: categorySchema,
       work: Boolean,
       barcode: Boolean,
-      measurment: String,
+      measurement: String,
       amount: Number,
       status: {
         type: String,
@@ -202,8 +239,25 @@ const billSchema: Schema<IBill> = new Schema<IBill>({
     },
   ],
   totalAmount: Number,
-  paidAmount: Number,
-  dueAmount: Number,
+  discount: {
+    type: Number,
+    default: 0,
+  },
+  tax: [taxSchema], // Array of Tax schema objects
+  grandTotal: {
+    type: Number,
+    default: 0,
+  },
+  paidAmount: {
+    type: Number,
+    default: 0,
+  },
+  dueAmount: {
+    type: Number,
+    default: function () {
+      return this.totalAmount - this.paidAmount;
+    },
+  },
   paymentStatus: {
     type: String,
     enum: ['Paid', 'Unpaid', 'Partially Paid'],
@@ -250,6 +304,8 @@ const receiptSchema: Schema<IReceipt> = new Schema<IReceipt>({
 // Create models from the schemas
 const Customer: Model<ICustomer> = mongoose.models.Customer || mongoose.model<ICustomer>('Customer', customerSchema);
 
+const Tax: Model<ITax> = mongoose.models.Tax || mongoose.model<ITax>('Tax', taxSchema);
+
 const Category: Model<ICategory> = mongoose.models.Category || mongoose.model<ICategory>('Category', categorySchema);
 
 const Bill: Model<IBill> = mongoose.models.Bill || mongoose.model<IBill>('Bill', billSchema);
@@ -257,5 +313,5 @@ const Bill: Model<IBill> = mongoose.models.Bill || mongoose.model<IBill>('Bill',
 const Receipt: Model<IReceipt> = mongoose.models.Receipt || mongoose.model<IReceipt>('Receipt', receiptSchema);
 
 // Export the models
-export { Bill, Category, Customer, Receipt };
-export type { IBill, ICategory, ICustomer, IReceipt };
+export { Bill, Category, Customer, Receipt, Tax };
+export type { IBill, ICategory, ICustomer, IReceipt, ITax };
