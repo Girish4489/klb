@@ -50,40 +50,45 @@ interface IBill extends Document {
   date?: Date;
   dueDate?: Date;
   urgent?: boolean;
-  trail: boolean;
-  mobile: number;
-  name: string;
-  email: string;
+  trail?: boolean;
+  mobile?: number;
+  name?: string;
+  email?: string;
   order: [
     {
-      category: {
-        catId: mongoose.Types.ObjectId;
-        categoryName: string;
+      category?: {
+        catId?: { tyepe: mongoose.Types.ObjectId; ref: 'Category' };
+        categoryName?: string;
       };
-      dimension: {
-        dimensionTypeName: string;
-        dimensionName: string;
+      dimension?: {
+        dimensionTypeName?: string;
+        dimensionName?: string;
         note?: string;
       }[];
-      styleProcess: {
-        styleProcessName: string;
-        styleName: string;
+      styleProcess?: {
+        styleProcessName?: string;
+        styleName?: string;
       }[];
-      work: boolean;
-      barcode: boolean;
-      measurement: string;
-      amount: number;
-      status: 'Pending' | 'In Progress' | 'Completed' | 'Cancelled';
+      work?: boolean;
+      barcode?: boolean;
+      measurement?: string;
+      amount?: number;
+      status?: 'Pending' | 'In Progress' | 'Completed' | 'Cancelled';
     },
   ];
   totalAmount: number;
   discount: number;
-  tax: ITax[];
+  tax: {
+    _id: { type: mongoose.Types.ObjectId; ref: 'Tax' };
+    taxName: string;
+    taxType: string;
+    taxPercentage: number;
+  }[];
   grandTotal: number;
   paidAmount: number;
   dueAmount: number;
   paymentStatus?: 'Unpaid' | 'Partially Paid' | 'Paid';
-  billBy?: mongoose.Types.ObjectId;
+  billBy?: { _id: mongoose.Types.ObjectId; name: string };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -226,7 +231,23 @@ const billSchema: Schema<IBill> = new Schema<IBill>({
   email: String,
   order: [
     {
-      category: categorySchema,
+      category: {
+        catId: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
+        categoryName: String,
+      },
+      dimension: [
+        {
+          dimensionTypeName: String,
+          dimensionName: String,
+          note: String,
+        },
+      ],
+      styleProcess: [
+        {
+          styleProcessName: String,
+          styleName: String,
+        },
+      ],
       work: Boolean,
       barcode: Boolean,
       measurement: String,
@@ -243,7 +264,13 @@ const billSchema: Schema<IBill> = new Schema<IBill>({
     type: Number,
     default: 0,
   },
-  tax: [taxSchema], // Array of Tax schema objects
+  tax: [
+    {
+      taxName: String,
+      taxType: String,
+      taxPercentage: Number,
+    },
+  ],
   grandTotal: {
     type: Number,
     default: 0,
@@ -255,7 +282,7 @@ const billSchema: Schema<IBill> = new Schema<IBill>({
   dueAmount: {
     type: Number,
     default: function () {
-      return this.totalAmount - this.paidAmount;
+      return (isNaN(this.totalAmount) ? 0 : this.totalAmount) - (isNaN(this.paidAmount) ? 0 : this.paidAmount);
     },
   },
   paymentStatus: {
@@ -264,8 +291,8 @@ const billSchema: Schema<IBill> = new Schema<IBill>({
     default: 'Unpaid',
   },
   billBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    _id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    name: String,
   },
   createdAt: {
     type: Date,
