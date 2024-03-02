@@ -19,6 +19,14 @@ export const ApiPost = {
       throw new Error(error.response?.data?.message || 'An error occurred');
     }
   },
+  Bill: async (data: any) => {
+    try {
+      const res = await axios.post('/api/dashboard/work-manage/bill', data);
+      return res.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'An error occurred');
+    }
+  },
 };
 
 export const ApiGet = {
@@ -38,6 +46,41 @@ export const ApiGet = {
       throw new Error(error.response?.data?.message || 'An error occurred');
     }
   },
+  Bill: {
+    // Add a colon (:) after the object key "Bill"
+    BillSearch: async (number: number) => {
+      try {
+        const res = await axios.get(`/api/dashboard/work-manage/bill?billNo=${number}`);
+        return res.data;
+      } catch (error: any) {
+        throw new Error(error.response?.data?.message || 'An error occurred');
+      }
+    },
+    LastBill: async () => {
+      try {
+        const res = await axios.get(`/api/dashboard/work-manage/bill?last=bill`);
+        return res.data;
+      } catch (error: any) {
+        throw new Error(error.response?.data?.message || 'An error occurred');
+      }
+    },
+    BillToday: async () => {
+      try {
+        const res = await axios.get(`/api/dashboard/work-manage/bill?today=bill&week=bill`);
+        return res.data;
+      } catch (error: any) {
+        throw new Error(error.response?.data?.message || 'An error occurred');
+      }
+    },
+    BillWeekBill: async () => {
+      try {
+        const res = await axios.get(`/api/dashboard/work-manage/bill`);
+        return res.data;
+      } catch (error: any) {
+        throw new Error(error.response?.data?.message || 'An error occurred');
+      }
+    },
+  },
 };
 
 export const ApiPut = {
@@ -49,12 +92,28 @@ export const ApiPut = {
       throw new Error(error.response?.data?.message || 'An error occurred');
     }
   },
+  Bill: async (id: string, data: any) => {
+    try {
+      const res = await axios.put(`/api/dashboard/work-manage/bill?updateBillId=${id}`, data);
+      return res.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'An error occurred');
+    }
+  },
 };
 
 export const ApiDelete = {
   Tax: async (id: string) => {
     try {
       const res = await axios.delete(`/api/dashboard/master-record/tax?deleteTId=${id}`);
+      return res.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'An error occurred');
+    }
+  },
+  Bill: async (id: string) => {
+    try {
+      const res = await axios.delete(`/api/dashboard/work-manage/bill?deleteBillId=${id}`);
       return res.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'An error occurred');

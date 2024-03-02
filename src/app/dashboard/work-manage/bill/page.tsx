@@ -1,28 +1,52 @@
 'use client';
 import { userConfirmaion } from '@/app/util/confirmation/confirmationUtil';
-import { ApiGet } from '@/app/util/makeApiRequest/makeApiRequest';
+import formatDate from '@/app/util/format/dateUtils';
+import { ApiGet, ApiPost } from '@/app/util/makeApiRequest/makeApiRequest';
 import { IBill, ICategory, ITax } from '@/models/klm';
-import axios from 'axios';
 import { Types } from 'mongoose';
-import React from 'react';
+import React, { useMemo } from 'react';
 import toast from 'react-hot-toast';
 
 export default function BillPage() {
   const [category, setCategory] = React.useState<ICategory[]>([]);
   const [tax, setTax] = React.useState<ITax[]>([]);
   const [bill, setBill] = React.useState<IBill>();
+  const [todayBill, setTodayBill] = React.useState<IBill[]>([]);
+  const [thisWeekBill, setThisWeekBill] = React.useState<IBill[]>([]);
 
   React.useEffect(() => {
     (async () => {
       try {
-        const cat = await ApiGet.Category();
-        const tax = await ApiGet.Tax();
-        if (cat.success === true) {
-          setCategory(cat.categories);
-          setTax(tax);
+        const catResponse = await ApiGet.Category();
+        const taxResponse = await ApiGet.Tax();
+        const BillResponse = await ApiGet.Bill.BillToday();
+
+        if (catResponse.success === true) {
+          if (catResponse.categories.length === 0) {
+            toast('No category found. Please add a category to continue.', { icon: '📦' });
+          }
+          setCategory(catResponse.categories);
         } else {
-          toast.error('An error occurred while fetching category and tax data\nPlease try again later.');
-          throw new Error(cat.message || tax.message);
+          toast.error('An error occurred while fetching category data. Please try again later.');
+          throw new Error(catResponse.message);
+        }
+
+        if (taxResponse.success === true || taxResponse) {
+          if (taxResponse.length === 0) {
+            toast('No tax found. Please add a tax to continue.', { icon: '📦' });
+          }
+          setTax(taxResponse);
+        } else {
+          toast.error('An error occurred while fetching tax data. Please try again later.');
+          throw new Error(taxResponse.message);
+        }
+
+        if (BillResponse.success === true) {
+          setTodayBill(BillResponse.todayBill);
+          setThisWeekBill(BillResponse.weekBill);
+        } else {
+          toast.error("An error occurred while fetching today's bill data. Please try again later.");
+          throw new Error(BillResponse.message);
         }
       } catch (error: any) {
         toast.error(error.message);
@@ -30,16 +54,12 @@ export default function BillPage() {
     })();
   }, []);
 
-  React.useEffect(() => {
-    // TODO: remove console
-    // eslint-disable-next-line no-console
-    console.log('current bill:', bill);
-  }, [bill]);
-
-  const createNewBill = () => {
+  async function createNewBill() {
+    const lastBill = await ApiGet.Bill.LastBill();
     setBill({
+      billNumber: (lastBill?.lastBill?.billNumber ?? 0) + 1,
       date: new Date(),
-      dueDate: new Date(),
+      dueDate: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
       urgent: false,
       trail: false,
       name: '',
@@ -47,51 +67,32 @@ export default function BillPage() {
       paidAmount: 0,
       dueAmount: 0,
       paymentStatus: 'Unpaid',
-      billBy: new Types.ObjectId(),
       createdAt: new Date(),
       updatedAt: new Date(),
     } as IBill);
-  };
-
-  const searchOldBill = async (e: React.FormEvent<HTMLFormElement>) => {
-    const billNo = e.currentTarget.billSearch.value;
-    const search = async (billNo: number) => {
-      const res = await axios.get('/api/dashboard/work-manage/bill', { params: { billNo } });
-      if (res.data.success === true) {
-        setBill(res.data.bill);
-        return res.data.message;
-      } else {
-        throw new Error(res.data.message);
-      }
-    };
-    try {
-      await toast.promise(search(billNo), {
-        loading: 'Searching and fetching bill...',
-        success: (message) => <b>{message}</b>,
-        error: (err) => <b>{err.message}</b>,
-      });
-    } catch (error: any) {
-      // console.log(error.message);
-    }
-  };
+  }
 
   const handleNewOrder = () => {
+    // Create a new order object with default values
+    const newOrder = {
+      category: {
+        catId: new Types.ObjectId(),
+        categoryName: '',
+      },
+      work: false,
+      barcode: false,
+      measurement: '',
+      amount: 0,
+      status: 'Pending',
+    };
+
+    // Create a copy of the existing orders array and add the new order
+    const updatedOrders = [...(bill?.order || []), newOrder];
+
+    // Update the bill state with the new orders array
     setBill({
       ...bill,
-      order: [
-        ...(bill?.order || []),
-        {
-          category: {
-            catId: new Types.ObjectId(),
-            categoryName: '',
-          },
-          work: false,
-          barcode: false,
-          measurement: '',
-          amount: 0,
-          status: 'Pending',
-        },
-      ],
+      order: updatedOrders,
     } as IBill);
   };
 
@@ -121,6 +122,9 @@ export default function BillPage() {
   const handleRowClick = (taxId: string) => {
     // Find the tax object with the given ID
     const selectedTax = tax.find((t) => t._id === taxId);
+    if (selectedTax === undefined) {
+      toast.error('Selected tax not found');
+    }
     if (selectedTax) {
       // If the tax is already selected, remove it from the selectedTax array
       if (bill?.tax?.some((t) => t._id === selectedTax._id)) {
@@ -132,22 +136,18 @@ export default function BillPage() {
     }
   };
 
-  const handleTotal = async () => {
-    if (!bill?.order) return;
-    setBill({ ...bill, totalAmount: bill.order.reduce((total, item) => total + (item.amount || 0), 0) } as IBill);
-  };
-
   const calculateGrandTotal = React.useCallback(() => {
     let totalTaxes = 0;
+    if (bill?.totalAmount === undefined) return;
 
     // Check if taxes are selected or present
     if (bill?.tax && bill.tax.length > 0) {
       // Calculate total taxes
       bill.tax.forEach((tax) => {
         if (tax.taxType === 'Percentage') {
-          totalTaxes += ((bill.totalAmount - bill?.discount) * tax.taxPercentage) / 100;
+          totalTaxes += ((bill.totalAmount - bill?.discount) * (tax.taxPercentage ?? 0)) / 100;
         } else {
-          totalTaxes += tax.taxPercentage; // Direct amount tax
+          totalTaxes += tax.taxPercentage ?? 0; // Direct amount tax
         }
       });
     }
@@ -167,33 +167,120 @@ export default function BillPage() {
     calculateGrandTotal();
   }, [calculateGrandTotal]);
 
+  async function handleSaveBill() {
+    try {
+      if (!bill) throw new Error('No bill data found to save');
+      if (!bill.billNumber) throw new Error('Bill number is required');
+      if (!bill?.order) throw new Error('No orders added');
+
+      const res = await ApiPost.Bill(bill);
+      if (res.success === true) {
+        setTodayBill([...todayBill, res.today]);
+        setBill(undefined);
+        toast.success(res.message);
+      } else {
+        throw new Error(res.message);
+      }
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  }
+
+  const BillTable = ({ caption, bills }: { caption: string; bills: any[] }) => {
+    return (
+      <div
+        className={`max-h-96 overflow-x-auto rounded-box border-2 border-base-300 bg-base-100 ${bills.length === 0 && 'min-h-24'}`}
+      >
+        <table className="table table-zebra table-pin-rows">
+          <caption className="px-1 py-2 font-bold">{caption}</caption>
+          {bills.length === 0 && (
+            <tbody>
+              <tr>
+                <td colSpan={5} className="text-warning">
+                  No bills for {caption}
+                </td>
+              </tr>
+            </tbody>
+          )}
+          {bills.length > 0 && (
+            <>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>BillNumber</th>
+                  <th>Mobile</th>
+                  <th>Date</th>
+                  <th>Due Date</th>
+                  <th>U/T</th>
+                  <th>Bill by</th>
+                </tr>
+              </thead>
+              <tbody>
+                {bills.map((bill, index) => (
+                  <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>{bill.billNumber}</td>
+                    <td>{bill.mobile}</td>
+                    <td>{formatDate(bill?.date)}</td>
+                    <td>{formatDate(bill?.dueDate)}</td>
+                    <td className={`${bill.urgent ? 'text-error' : ''} font-bold`}>
+                      {bill.urgent ? 'U' : bill.trail ? 'T' : ''}
+                    </td>
+                    <td>{bill?.billBy?.name}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </>
+          )}
+        </table>
+      </div>
+    );
+  };
+  const formattedTodayBill = useMemo(
+    () =>
+      (todayBill || []).map((bill) => ({
+        ...bill,
+        date: formatDate(bill?.date as Date),
+        dueDate: formatDate(bill?.dueDate as Date),
+      })),
+    [todayBill],
+  );
+  const formattedThisWeekBill = useMemo(
+    () =>
+      (thisWeekBill || []).map((bill) => ({
+        ...bill,
+        date: formatDate(bill?.date as Date),
+        dueDate: formatDate(bill?.dueDate as Date),
+      })),
+    [thisWeekBill],
+  );
+
   return (
     <span className="table-column h-full">
       <div className="flex h-full w-full flex-col shadow max-sm:table-cell">
-        <div className="flex flex-row flex-wrap items-center justify-between gap-1 rounded-box bg-accent/10 px-3 py-1.5 backdrop-blur-xl">
-          <span className="new">
-            <button className="btn btn-primary btn-sm" onClick={createNewBill}>
-              New
-            </button>
-          </span>
-          <form onSubmit={searchOldBill} className="search flex flex-row flex-wrap items-center gap-2 max-sm:flex-col">
-            <div className="flex flex-row items-center gap-1">
-              <label htmlFor="billSearch" className="label-text">
-                Bill No
-              </label>
+        <span className="flex min-w-fit flex-row flex-wrap items-center justify-between gap-2 rounded-box bg-accent/10 px-3 py-1.5 backdrop-blur-xl max-sm:flex-col">
+          <button className="btn btn-primary btn-sm" onClick={createNewBill}>
+            New
+          </button>
+          <form className="join flex flex-wrap items-center justify-between max-sm:flex-col">
+            <label htmlFor="billSearch" className="join-item label-text">
               <input
                 name="billSearch"
                 id="billSearch"
                 onFocus={(e) => e.target.select()}
-                className="input input-bordered input-primary input-sm w-40 bg-accent/5 max-sm:input-sm"
-                type="number"
+                className="input join-item input-bordered input-primary input-sm w-40 bg-accent/5"
+                placeholder="Search"
                 required
-                placeholder="Bill Search"
               />
-            </div>
-            <button className="btn btn-primary btn-sm max-sm:w-full">Search</button>
+            </label>
+            <select className="join-item select select-bordered select-primary select-sm">
+              <option>Bill No</option>
+              <option>Mobile</option>
+            </select>
+            <button className="btn btn-primary join-item btn-sm">Search</button>
           </form>
-        </div>
+        </span>
+
         {/* new bill */}
 
         <span className="contents">
@@ -209,8 +296,12 @@ export default function BillPage() {
                   placeholder="Bill No"
                   id="billNo"
                   type="number"
-                  value={bill?.billNumber}
-                  onChange={(e) => setBill({ ...bill, billNumber: parseInt(e.target.value) } as IBill)}
+                  value={bill?.billNumber ?? ''}
+                  onChange={(e) => {
+                    const limitedValue = e.target.value.slice(0, 7);
+                    const parsedValue = limitedValue === '' ? '' : parseInt(limitedValue);
+                    setBill({ ...bill, billNumber: parsedValue } as IBill);
+                  }}
                   className="input input-bordered input-primary w-32 max-sm:input-sm"
                 />
               </div>
@@ -222,7 +313,7 @@ export default function BillPage() {
                   name="date"
                   id="date"
                   type="date"
-                  value={bill?.date?.toISOString().split('T')[0]}
+                  value={bill?.date?.toISOString().split('T')[0] ?? new Date().toISOString().split('T')[0]}
                   onChange={(e) => setBill({ ...bill, date: new Date(e.target.value) } as IBill)}
                   className="input input-bordered input-primary max-sm:input-sm"
                 />
@@ -235,7 +326,7 @@ export default function BillPage() {
                   name="dueDate"
                   id="dueDate"
                   type="date"
-                  value={bill?.dueDate?.toISOString().split('T')[0]}
+                  value={bill?.dueDate?.toISOString().split('T')[0] ?? new Date().toISOString().split('T')[0]}
                   onChange={(e) => setBill({ ...bill, dueDate: new Date(e.target.value) } as IBill)}
                   className="input input-bordered input-primary max-sm:input-sm"
                 />
@@ -249,7 +340,7 @@ export default function BillPage() {
                   id="urgent"
                   type="checkbox"
                   className="checkbox-primary checkbox"
-                  checked={bill?.urgent}
+                  checked={bill?.urgent ?? false}
                   onChange={(e) => setBill({ ...bill, urgent: e.target.checked } as IBill)}
                 />
               </div>
@@ -262,7 +353,7 @@ export default function BillPage() {
                   id="trail"
                   type="checkbox"
                   className="checkbox-primary checkbox"
-                  checked={bill?.trail}
+                  checked={bill?.trail ?? false}
                   onChange={(e) => setBill({ ...bill, trail: e.target.checked } as IBill)}
                 />
               </div>
@@ -276,8 +367,12 @@ export default function BillPage() {
                   id="mobile"
                   type="number"
                   className="input input-bordered input-primary max-sm:input-sm"
-                  value={bill?.mobile}
-                  onChange={(e) => setBill({ ...bill, mobile: parseInt(e.target.value) } as IBill)}
+                  value={bill?.mobile ?? ''}
+                  onChange={(e) => {
+                    const limitedValue = e.target.value.slice(0, 10);
+                    const parsedValue = limitedValue === '' ? '' : parseInt(limitedValue);
+                    setBill({ ...bill, mobile: parsedValue } as IBill);
+                  }}
                 />
               </div>
               <div className="flex flex-row flex-wrap items-center max-sm:w-full max-sm:justify-between">
@@ -289,8 +384,9 @@ export default function BillPage() {
                   name="name"
                   placeholder="Customer Name"
                   id="name"
+                  autoComplete="name"
                   className="input input-bordered input-primary max-sm:input-sm"
-                  value={bill?.name}
+                  value={bill?.name ?? ''}
                   onChange={(e) => setBill({ ...bill, name: e.target.value } as IBill)}
                 />
               </div>
@@ -303,8 +399,9 @@ export default function BillPage() {
                   name="email"
                   placeholder="Customer Email"
                   id="email"
+                  autoComplete="email"
                   className="input input-bordered input-primary max-sm:input-sm"
-                  value={bill?.email}
+                  value={bill?.email ?? ''}
                   onChange={(e) => setBill({ ...bill, email: e.target.value } as IBill)}
                 />
               </div>
@@ -337,12 +434,13 @@ export default function BillPage() {
                       <div className="flex w-full flex-row items-center justify-between gap-1 max-sm:flex-col-reverse">
                         <div className="flex w-full flex-row flex-wrap justify-start gap-1">
                           <div className="flex flex-row items-center justify-between gap-1 max-sm:w-full">
-                            <label htmlFor="slNo" className="label label-text">
+                            <label htmlFor={`slNo_${index}`} className="label label-text">
                               Sl No
                             </label>
                             <input
                               type="text"
-                              name="slNo"
+                              name={`slNo_${index}`}
+                              id={`slNo_${index}`}
                               placeholder="Sl No"
                               className="input input-bordered input-primary input-sm w-16 select-none"
                               value={index + 1}
@@ -350,11 +448,12 @@ export default function BillPage() {
                             />
                           </div>
                           <div className="flex flex-row items-center justify-between gap-1 max-sm:w-full">
-                            <label htmlFor="category" className="label label-text">
+                            <label htmlFor={`category_${index}`} className="label label-text">
                               Category
                             </label>
                             <select
-                              name="category"
+                              name={`category_${index}`}
+                              id={`category_${index}`}
                               className="select select-primary select-sm"
                               onChange={(e) => {
                                 const selectedCategoryId = e.target.selectedOptions[0]?.getAttribute('itemID');
@@ -397,12 +496,13 @@ export default function BillPage() {
                             </select>
                           </div>
                           <div className="flex flex-row items-center justify-between gap-1 max-sm:w-full">
-                            <label htmlFor="work" className="label label-text">
+                            <label htmlFor={`work_${index}`} className="label label-text">
                               Work
                             </label>
                             <input
                               type="checkbox"
-                              name="work"
+                              name={`work_${index}`}
+                              id={`work_${index}`}
                               className="checkbox-primary checkbox checkbox-sm"
                               checked={order.work}
                               onChange={(e) =>
@@ -416,12 +516,13 @@ export default function BillPage() {
                             />
                           </div>
                           <div className="flex flex-row items-center justify-between gap-1 max-sm:w-full">
-                            <label htmlFor="barcode" className="label label-text">
+                            <label htmlFor={`barcode_${index}`} className="label label-text">
                               Barcode
                             </label>
                             <input
                               type="checkbox"
-                              name="barcode"
+                              name={`barcode_${index}`}
+                              id={`barcode_${index}`}
                               className="checkbox-primary checkbox checkbox-sm"
                               checked={order.barcode}
                               onChange={(e) =>
@@ -507,7 +608,7 @@ export default function BillPage() {
                                                 dimension: {
                                                   ...o.dimension,
                                                   [typIndex]: {
-                                                    ...o.dimension[typIndex],
+                                                    ...(o.dimension ?? [{}])[typIndex],
                                                     note: e.target.value,
                                                   },
                                                 },
@@ -528,11 +629,12 @@ export default function BillPage() {
                         {/* 3rd row */}
                         <div className="flex grow flex-row flex-wrap items-center gap-1 max-sm:flex-col">
                           <span className="flex grow flex-row justify-between max-sm:w-full">
-                            <label htmlFor="measure" className="label label-text">
+                            <label htmlFor={`measure_${index}`} className="label label-text">
                               Measure
                             </label>
                             <textarea
-                              name="measure"
+                              name={`measure_${index}`}
+                              id={`measure_${index}`}
                               placeholder="Measure"
                               className="textarea textarea-bordered textarea-primary textarea-sm grow"
                               value={order.measurement}
@@ -547,11 +649,12 @@ export default function BillPage() {
                             />
                           </span>
                           <span className="flex flex-row justify-between max-sm:w-full">
-                            <label htmlFor="amount" className="label label-text">
+                            <label htmlFor={`amount_${index}`} className="label label-text">
                               Amount
                             </label>
                             <input
-                              name="amount"
+                              name={`amount_${index}`}
+                              id={`amount_${index}`}
                               placeholder="Amount"
                               type="number"
                               className="input input-bordered input-primary input-sm max-w-32"
@@ -596,6 +699,7 @@ export default function BillPage() {
                                 </label>
                                 <select
                                   name={styleProcess.styleProcessName}
+                                  id={styleProcess.styleProcessName}
                                   className="select select-primary select-sm"
                                   onChange={(e) => {
                                     setBill({
@@ -638,7 +742,9 @@ export default function BillPage() {
               {/* save, update, print */}
               <div className="mx-1 flex items-center justify-between gap-1 rounded-box border-t-2 border-base-300 bg-base-200 p-2">
                 <span className="flex gap-2 pl-2">
-                  <button className="btn btn-primary btn-sm">Save</button>
+                  <button className="btn btn-primary btn-sm" onClick={handleSaveBill}>
+                    Save
+                  </button>
                   <button className="btn btn-secondary btn-sm">Update</button>
                   <button className="btn btn-accent btn-sm">Print</button>
                 </span>
@@ -684,7 +790,7 @@ export default function BillPage() {
                             <td>
                               {/* Calculate the running total */}
                               {bill.order.slice(0, index + 1).map((o) => {
-                                runningTotal += o.amount;
+                                runningTotal += o.amount ?? 0;
                                 return null;
                               })}
                               {runningTotal}
@@ -756,7 +862,8 @@ export default function BillPage() {
                                     name={tax.taxName}
                                     id={tax.taxName}
                                     defaultChecked={bill?.tax?.some((t) => t._id === tax._id)}
-                                    checked={bill?.tax?.some((t) => t._id === tax._id)}
+                                    checked={bill?.tax?.some((t) => t._id === tax._id) ?? false}
+                                    onChange={() => handleRowClick(tax._id)}
                                   />
                                 </label>
                               </td>
@@ -782,6 +889,8 @@ export default function BillPage() {
                   </label>
                   <button
                     className="btn btn-primary btn-sm"
+                    name="taxOptions"
+                    id="taxOptions"
                     onClick={() => (document.getElementById('tax_modal') as HTMLDialogElement)?.showModal()}
                   >
                     Add
@@ -807,35 +916,16 @@ export default function BillPage() {
           </div>
         </span>
       </div>
-      {/* track table */}
-      {bill && (
-        <div className="my-0.5 flex max-h-96 w-full flex-col rounded-box bg-base-300 p-2">
-          <div className="overflow-x-auto rounded-box border-2 border-base-300 bg-base-100">
-            <table className="table table-zebra table-pin-rows">
-              {/* head */}
-              <thead>
-                <tr>
-                  <th></th>
-                  <th>BillNumber</th>
-                  <th>Mobile</th>
-                  <th>Date</th>
-                  <th>Due Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {/* row 1 */}
-                <tr>
-                  <th>1</th>
-                  <td>0000</td>
-                  <td>00</td>
-                  <td>000</td>
-                  <td>000</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+      <div className="my-0.5 flex w-full flex-col rounded-box bg-base-300 p-2">
+        {todayBill?.length || thisWeekBill?.length ? (
+          <>
+            <BillTable caption="Today" bills={formattedTodayBill} />
+            <BillTable caption="This Week(excluding today)" bills={formattedThisWeekBill} />
+          </>
+        ) : (
+          <div className="text-warning">No bills for today or this week</div>
+        )}
+      </div>
     </span>
   );
 }
