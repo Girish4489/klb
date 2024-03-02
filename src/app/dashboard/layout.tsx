@@ -27,7 +27,7 @@ export default function AuthLayout({
         <div className="navbar flex w-full flex-row content-stretch items-center bg-base-300">
           <span
             className={`btn btn-circle ${isSidebarOpen ? 'open' : 'closed'}`}
-            aria-label="toggleSidebar"
+            // aria-label="toggleSidebar"
             onClick={toggleSidebar}
           >
             {/* hamburger icon */}
