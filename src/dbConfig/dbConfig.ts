@@ -32,13 +32,9 @@ export async function connect() {
         } else {
           mongoURI = `${process.env.MONGO_URI!}${process.env.DBNAME!}`;
         }
-        // eslint-disable-next-line no-console
-        console.log('mongoURI', mongoURI);
         break;
       case 'online':
         mongoURI = `${process.env.MONGO_ONLINE_URI!}${process.env.DBNAME!}`;
-        // eslint-disable-next-line no-console
-        console.log('mongoURI', 'online');
         break;
       default:
         throw new Error('Invalid DB type');
@@ -59,9 +55,7 @@ export async function connect() {
     });
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.log('Something goes wrong!');
-    // eslint-disable-next-line no-console
-    console.log(error);
+    console.log('Something goes wrong!' + error);
     throw error;
   }
 }
