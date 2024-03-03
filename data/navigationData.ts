@@ -88,7 +88,7 @@ const navigationData = [
     onclick: 'reportDropdown',
     imgSrc: '/apps_logos/docs.svg',
     subNav: [
-      { title: 'Bill Details', href: '#r1' },
+      { title: 'Bill Details', href: '/dashboard/report/bill-details' },
       { title: 'Receipt Details', href: '#r2' },
       { title: 'Worker Details', href: '#r3' },
       { title: 'GST', href: '#r4' },

@@ -1,0 +1,122 @@
+'use client';
+import { BillTable } from '@/app/components/tabels/page';
+import { ApiGet } from '@/app/util/makeApiRequest/makeApiRequest';
+import { IBill } from '@/models/klm';
+import { useState } from 'react';
+import toast from 'react-hot-toast';
+
+const PAGE_SIZE = 10; // Number of bills per page
+
+export default function BillDetails() {
+  const [fromDate, setFromDate] = useState<Date>();
+  const [toDate, setToDate] = useState<Date>();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [bills, setBills] = useState<IBill[]>([]);
+
+  const handleFilter = async () => {
+    if (!fromDate || !toDate) {
+      toast.error('Please provide both fromDate and toDate');
+      return;
+    }
+    if (fromDate > toDate) {
+      toast.error('Invalid date range. fromDate cannot be greater than toDate');
+      return;
+    }
+    const filter = async () => {
+      try {
+        const data = await fetchBills(fromDate, toDate, 1);
+        if (data.success === true) {
+          setBills(data.bill);
+          setTotalPages(calculateTotalPages(data.totalBills));
+          setCurrentPage(1);
+          return data.message;
+        } else {
+          throw new Error('An error occurred');
+        }
+      } catch (error) {}
+    };
+    try {
+      toast.promise(filter(), {
+        loading: 'Filtering bills...',
+        success: (message) => <b>{message}</b>,
+        error: (error) => <b>{error.message}</b>,
+      });
+    } catch (error) {}
+  };
+
+  const fetchBills = async (fromDate: Date, toDate: Date, page: number) => {
+    const data = await ApiGet.Bill.BillFromToDate(fromDate, toDate, page);
+    return { message: data.message, success: data.success, bill: data.bill, totalBills: data.totalBills };
+  };
+
+  const calculateTotalPages = (totalBills: number) => {
+    return Math.ceil(totalBills / PAGE_SIZE);
+  };
+
+  const handlePageChange = async (page: number) => {
+    if (page < 1 || page > totalPages) return;
+    if (page === currentPage) return;
+    if (!fromDate || !toDate) return;
+    const data = await fetchBills(fromDate, toDate, page);
+    setBills(data.bill);
+    setCurrentPage(page);
+  };
+
+  return (
+    <div className="flex grow flex-col">
+      <h1 className="text-center font-semibold">Bill Details</h1>
+      <span className="backdrop-blur-sm-lg flex flex-wrap items-center gap-2 rounded-box bg-base-300 p-2 shadow">
+        <div className="flex items-center gap-1">
+          <label htmlFor="fromDate" className="label-text">
+            From Date:
+          </label>
+          <input
+            type="date"
+            id="fromDate"
+            className="input input-primary input-sm"
+            value={fromDate ? new Date(fromDate).toISOString().split('T')[0] : ''}
+            onChange={(e) => setFromDate(new Date(e.target.value))}
+          />
+        </div>
+        <div className="flex items-center gap-1">
+          <label htmlFor="toDate" className="label-text">
+            To Date:
+          </label>
+          <input
+            type="date"
+            id="toDate"
+            className="input input-primary input-sm"
+            value={toDate ? new Date(toDate).toISOString().split('T')[0] : ''}
+            onChange={(e) => setToDate(new Date(e.target.value))}
+          />
+        </div>
+        <button onClick={handleFilter} className="btn btn-primary btn-sm">
+          Filter
+        </button>
+      </span>
+
+      {/* Render bills */}
+      <span className="table">
+        {/* Implement your logic to render bills based on currentPage */}
+        <BillTable caption="Bills" bills={bills} />
+        {/* Pagination */}
+        {bills.length > 0 && (
+          <div className="join mt-4 table-row space-y-1 text-center">
+            {Array.from({ length: totalPages }, (_, index) => (
+              <input
+                key={index}
+                name="options"
+                type="radio"
+                aria-label={String(index + 1)}
+                onClick={() => handlePageChange(index + 1)}
+                value={index + 1}
+                className={`btn btn-square join-item ${currentPage === index + 1 ? 'checked' : ''}`}
+              />
+            ))}
+          </div>
+        )}
+      </span>
+    </div>
+  );
+}
