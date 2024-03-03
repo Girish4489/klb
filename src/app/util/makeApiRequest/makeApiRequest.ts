@@ -48,9 +48,9 @@ export const ApiGet = {
   },
   Bill: {
     // Add a colon (:) after the object key "Bill"
-    BillSearch: async (number: number) => {
+    BillSearch: async (number: number, type: string) => {
       try {
-        const res = await axios.get(`/api/dashboard/work-manage/bill?billNo=${number}`);
+        const res = await axios.get(`/api/dashboard/work-manage/bill?searchValue=${number}&type=${type}`);
         return res.data;
       } catch (error: any) {
         throw new Error(error.response?.data?.message || 'An error occurred');
