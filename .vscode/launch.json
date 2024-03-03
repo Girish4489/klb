@@ -1,0 +1,148 @@
+{
+  "version": "0.2",
+  "compounds": [
+    {
+      "name": "Dev: Edge",
+      "configurations": ["Dev Server", "Launch in Edge"],
+      "stopAll": true,
+      "presentation": {
+        "hidden": false,
+        "group": "Dev",
+        "order": 1
+      }
+    },
+    {
+      "name": "Dev: Chrome",
+      "configurations": ["Dev Server", "Launch Chrome"],
+      "stopAll": true,
+      "presentation": {
+        "hidden": false,
+        "group": "Dev",
+        "order": 2
+      }
+    },
+    {
+      "name": "Format & Lint",
+      "configurations": ["format", "Lint"],
+      "stopAll": true,
+      "presentation": {
+        "hidden": false,
+        "group": "Build",
+        "order": 2
+      }
+    },
+    {
+      "name": "Build & Start",
+      "configurations": ["Build", "Start"],
+      "stopAll": true,
+      "presentation": {
+        "hidden": false,
+        "group": "Start",
+        "order": 2
+      }
+    }
+  ],
+  "configurations": [
+    {
+      "name": "Dev Server",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": ["dev"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "presentation": {
+        "hidden": true,
+        "group": "",
+        "order": 1
+      }
+    },
+    {
+      "name": "Build",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": ["build"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "presentation": {
+        "hidden": false,
+        "group": "Build",
+        "order": 1
+      }
+    },
+    {
+      "name": "Start",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": ["start"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "presentation": {
+        "hidden": false,
+        "group": "Start",
+        "order": 1
+      }
+    },
+    {
+      "name": "format",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": ["format"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "presentation": {
+        "hidden": true,
+        "group": "Build",
+        "order": 2
+      }
+    },
+    {
+      "name": "Lint",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": ["lint"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "presentation": {
+        "hidden": true,
+        "group": "Build",
+        "order": 3
+      }
+    },
+    {
+      "name": "Launch Chrome",
+      "request": "launch",
+      "type": "chrome",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}",
+      "presentation": {
+        "hidden": true,
+        "group": "",
+        "order": 1
+      }
+    },
+    {
+      "name": "Launch in Edge",
+      "type": "msedge",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}",
+      "sourceMaps": true,
+      "smartStep": true,
+      "presentation": {
+        "hidden": true,
+        "group": "",
+        "order": 1
+      }
+    }
+  ]
+}
