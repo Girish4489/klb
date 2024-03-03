@@ -9,19 +9,31 @@ connect();
 export async function GET(request: NextRequest) {
   try {
     const userId = await getDataFromToken(request);
-    const billNumber = request.nextUrl.searchParams.get('billNo');
-    const today = request.nextUrl.searchParams.get('today');
-    const week = request.nextUrl.searchParams.get('week');
-    const last = request.nextUrl.searchParams.get('last');
+    const urlSearchParams = new URLSearchParams(request.nextUrl.search);
+    const billOrMobileNumber = urlSearchParams.get('searchValue');
+    const billType = urlSearchParams.get('type');
+    const today = urlSearchParams.get('today');
+    const week = urlSearchParams.get('week');
+    const last = urlSearchParams.get('last');
     const user = await User.findOne({ _id: userId }).select(
       '-password -__v -email -isVerified -createdAt -updatedAt -isAdmin -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry -theme -profileImage',
     );
 
     if (!user) throw new Error('User not found');
 
-    if (billNumber) {
-      const bill = await Bill.findOne({ billNumber: billNumber });
-      if (!bill) throw new Error('Bill not found');
+    if (billOrMobileNumber && billType) {
+      let bill;
+      if (billType === 'bill') {
+        bill = await Bill.find({ billNumber: billOrMobileNumber });
+        if (!bill) {
+          throw new Error('Bill number not found');
+        }
+      } else {
+        bill = await Bill.find({ mobile: billOrMobileNumber });
+        if (!bill || bill.length === 0) {
+          throw new Error('Mobile number not found');
+        }
+      }
       return NextResponse.json({ message: 'Bill data', success: true, bill: bill });
     }
 
