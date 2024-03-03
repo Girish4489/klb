@@ -1,7 +1,7 @@
 'use client';
 import { userConfirmaion } from '@/app/util/confirmation/confirmationUtil';
 import formatDate from '@/app/util/format/dateUtils';
-import { ApiGet, ApiPost } from '@/app/util/makeApiRequest/makeApiRequest';
+import { ApiGet, ApiPost, ApiPut } from '@/app/util/makeApiRequest/makeApiRequest';
 import { IBill, ICategory, ITax } from '@/models/klm';
 import { Types } from 'mongoose';
 import React, { useMemo } from 'react';
@@ -14,6 +14,7 @@ export default function BillPage() {
   const [todayBill, setTodayBill] = React.useState<IBill[]>([]);
   const [thisWeekBill, setThisWeekBill] = React.useState<IBill[]>([]);
   const [searchBill, setSearchBill] = React.useState<IBill[] | undefined>(undefined);
+  const [newBill, setNewBill] = React.useState<boolean>(true);
 
   React.useEffect(() => {
     (async () => {
@@ -56,6 +57,8 @@ export default function BillPage() {
   }, []);
 
   async function createNewBill() {
+    setNewBill(true);
+    setSearchBill(undefined);
     const lastBill = await ApiGet.Bill.LastBill();
     setBill({
       billNumber: (lastBill?.lastBill?.billNumber ?? 0) + 1,
@@ -187,6 +190,35 @@ export default function BillPage() {
     }
   }
 
+  async function handleUpdateBill() {
+    const update = await userConfirmaion({
+      header: 'Confirm Update',
+      message: 'Are you sure you want to update this bill?',
+    });
+    if (!update) return;
+    const updateBill = async () => {
+      const res = await ApiPut.Bill(bill?._id, bill as IBill);
+      if (res.success === true) {
+        setTodayBill([...todayBill, res.today]);
+        setBill(res.bill);
+        return res.message;
+      } else {
+        throw new Error(res.message);
+      }
+    };
+    try {
+      if (!bill) throw new Error('No bill data found to update');
+      if (!bill._id) throw new Error('No bill ID found to update');
+      if (!bill.billNumber) throw new Error('Bill number is required');
+      if (!bill?.order) throw new Error('No orders added');
+      await toast.promise(updateBill(), {
+        loading: 'Updating bill...',
+        success: (message) => <b>{message}</b>,
+        error: (error) => <b>{error.message}</b>,
+      });
+    } catch (error: any) {}
+  }
+
   const BillTable = ({ caption, bills }: { caption: string; bills: any[] }) => {
     return (
       <div
@@ -194,7 +226,7 @@ export default function BillPage() {
       >
         <table className="table table-zebra table-pin-rows">
           <caption className="px-1 py-2 font-bold">{caption}</caption>
-          {bills.length === 0 && (
+          {bills.length === 0 ? (
             <tbody>
               <tr>
                 <td colSpan={5} className="text-warning">
@@ -202,12 +234,11 @@ export default function BillPage() {
                 </td>
               </tr>
             </tbody>
-          )}
-          {bills.length > 0 && (
+          ) : (
             <>
               <thead>
-                <tr>
-                  <th></th>
+                <tr className="text-center">
+                  <th>Slno</th>
                   <th>BillNumber</th>
                   <th>Mobile</th>
                   <th>Date</th>
@@ -217,15 +248,17 @@ export default function BillPage() {
                 </tr>
               </thead>
               <tbody>
-                {bills.map((bill, index) => (
-                  <tr key={index}>
+                {bills.map((bill: IBill, index) => (
+                  <tr key={index} className="text-center">
                     <td>{index + 1}</td>
                     <td>{bill.billNumber}</td>
                     <td>{bill.mobile}</td>
-                    <td>{formatDate(bill?.date)}</td>
-                    <td>{formatDate(bill?.dueDate)}</td>
-                    <td className={`${bill.urgent ? 'text-error' : ''} font-bold`}>
-                      {bill.urgent ? 'U' : bill.trail ? 'T' : ''}
+                    <td>{bill?.date ? formatDate(bill?.date) : ''}</td>
+                    <td>{bill?.dueDate ? formatDate(bill?.dueDate) : ''}</td>
+                    <td className="font-bold">
+                      {bill?.urgent && <span className={'text-error'}>U</span>}
+                      {bill?.urgent && bill.trail && <span> | </span>}
+                      {bill?.trail && <span className={'text-success'}>T</span>}
                     </td>
                     <td>{bill?.billBy?.name}</td>
                   </tr>
@@ -276,6 +309,21 @@ export default function BillPage() {
     }
   };
 
+  const searchRowClicked = (billId: string) => async () => {
+    try {
+      const selectedBill = (searchBill ?? []).find((bill) => bill._id === billId);
+      if (selectedBill) {
+        setNewBill(false);
+        setBill(selectedBill);
+        setSearchBill(undefined);
+      } else {
+        toast.error('Bill not found');
+      }
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
+
   return (
     <span className="table-column h-full">
       <div className="flex h-full w-full flex-col shadow max-sm:table-cell">
@@ -302,7 +350,7 @@ export default function BillPage() {
               <option value={'bill'}>Bill No</option>
               <option value={'mobile'}>Mobile</option>
             </select>
-            <span className="dropdown dropdown-end dropdown-bottom dropdown-open w-fit">
+            <span className="dropdown dropdown-end dropdown-bottom w-fit">
               <button tabIndex={0} role="button" className="btn btn-primary btn-sm rounded-l-none">
                 Search
               </button>
@@ -324,13 +372,13 @@ export default function BillPage() {
                       )}
                       {searchBill.length > 0 && (
                         <thead>
-                          <tr>
+                          <tr className="text-center">
                             <th>Slno</th>
                             <th>BillNumber</th>
                             <th>Mobile</th>
                             <th>Date</th>
                             <th>Due Date</th>
-                            <th>U/T</th>
+                            <th>U|T</th>
                             <th>Total</th>
                             <th>Grand</th>
                             <th>Bill by</th>
@@ -342,14 +390,16 @@ export default function BillPage() {
                           <>
                             {searchBill.map((bill: IBill, index: number) => (
                               <React.Fragment key={index}>
-                                <tr>
+                                <tr className="hover text-center" onClick={searchRowClicked(bill._id)}>
                                   <td>{index + 1}</td>
-                                  <td>{bill.billNumber}</td>
-                                  <td>{bill.mobile}</td>
+                                  <td>{bill?.billNumber}</td>
+                                  <td>{bill?.mobile}</td>
                                   <td>{bill?.date ? formatDate(bill?.date) : ''}</td>
                                   <td>{bill?.dueDate ? formatDate(bill?.dueDate) : ''}</td>
-                                  <td className={`${bill.urgent ? 'text-error' : ''} font-bold`}>
-                                    {bill.urgent ? 'U' : bill.trail ? 'T' : ''}
+                                  <td className="w-fit items-center font-bold">
+                                    {bill?.urgent && <span className={'text-error'}>U</span>}
+                                    {bill?.urgent && bill.trail && <span>|</span>}
+                                    {bill?.trail && <span className={'text-success'}>T</span>}
                                   </td>
                                   <td>{bill?.totalAmount}</td>
                                   <td>{bill?.grandTotal}</td>
@@ -400,7 +450,7 @@ export default function BillPage() {
                     name="date"
                     id="date"
                     type="date"
-                    value={bill?.date?.toISOString().split('T')[0] ?? new Date().toISOString().split('T')[0]}
+                    value={bill?.date ? new Date(bill.date).toISOString().split('T')[0] : ''}
                     onChange={(e) => setBill({ ...bill, date: new Date(e.target.value) } as IBill)}
                     className="input input-bordered input-primary max-sm:input-sm"
                   />
@@ -413,7 +463,7 @@ export default function BillPage() {
                     name="dueDate"
                     id="dueDate"
                     type="date"
-                    value={bill?.dueDate?.toISOString().split('T')[0] ?? new Date().toISOString().split('T')[0]}
+                    value={bill.dueDate ? new Date(bill.dueDate).toISOString().split('T')[0] : ''}
                     onChange={(e) => setBill({ ...bill, dueDate: new Date(e.target.value) } as IBill)}
                     className="input input-bordered input-primary max-sm:input-sm"
                   />
@@ -427,7 +477,7 @@ export default function BillPage() {
                     id="urgent"
                     type="checkbox"
                     className="checkbox-primary checkbox"
-                    checked={bill?.urgent ?? false}
+                    checked={bill?.urgent || false}
                     onChange={(e) => setBill({ ...bill, urgent: e.target.checked } as IBill)}
                   />
                 </div>
@@ -440,7 +490,7 @@ export default function BillPage() {
                     id="trail"
                     type="checkbox"
                     className="checkbox-primary checkbox"
-                    checked={bill?.trail ?? false}
+                    checked={bill?.trail || false}
                     onChange={(e) => setBill({ ...bill, trail: e.target.checked } as IBill)}
                   />
                 </div>
@@ -829,10 +879,15 @@ export default function BillPage() {
                 {/* save, update, print */}
                 <div className="mx-1 flex items-center justify-between gap-1 rounded-box border-t-2 border-base-300 bg-base-200 p-2">
                   <span className="flex gap-2 pl-2">
-                    <button className="btn btn-primary btn-sm" onClick={handleSaveBill}>
-                      Save
-                    </button>
-                    <button className="btn btn-secondary btn-sm">Update</button>
+                    {newBill ? (
+                      <button className="btn btn-primary btn-sm" onClick={handleSaveBill}>
+                        Save
+                      </button>
+                    ) : (
+                      <button className="btn btn-primary btn-sm" onClick={handleUpdateBill}>
+                        Update
+                      </button>
+                    )}
                     <button className="btn btn-accent btn-sm">Print</button>
                   </span>
                   <div className="flex flex-row justify-between gap-1 max-sm:flex-col">

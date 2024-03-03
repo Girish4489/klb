@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
       let bill;
       if (billType === 'bill') {
         bill = await Bill.find({ billNumber: billOrMobileNumber });
-        if (!bill) {
+        if (!bill || bill.length === 0) {
           throw new Error('Bill number not found');
         }
       } else {
@@ -107,9 +107,13 @@ export async function PUT(request: NextRequest) {
       '-password -__v -email -isVerified -createdAt -updatedAt -isAdmin -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry -theme -profileImage',
     );
     if (!user) throw new Error('User not found');
+    const billId = request.nextUrl.searchParams.get('updateBillId');
+    if (!billId) throw new Error('Bill id is required');
     const data = await request.json();
-    const bill = await Bill.findOneAndUpdate({ billNumber: data.billNumber }, data, { new: true });
+    data.updatedAt = new Date();
+    const bill = await Bill.findByIdAndUpdate(billId, data, { new: true });
     if (!bill) throw new Error('Bill not found');
+    await bill.save();
     return NextResponse.json({ message: 'Bill updated', success: true, user: user, bill: bill });
   } catch (error: any) {
     return NextResponse.json({ message: error.message });
