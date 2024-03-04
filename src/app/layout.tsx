@@ -1,5 +1,6 @@
 import TopbarLoader from '@/app/components/topbarLoader/page';
 import { ThemeProvider } from '@/app/context/ThemeContext';
+import { UserProvider } from '@/app/context/userContext';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { Toaster } from 'react-hot-toast';
@@ -26,11 +27,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
 
       <ThemeProvider>
-        <body className={`${inter.className}`}>
+        <UserProvider><body className={`${inter.className}`}>
           <TopbarLoader />
           <Toaster />
           {children}
-        </body>
+        </body></UserProvider>
+        
       </ThemeProvider>
     </html>
   );
