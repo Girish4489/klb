@@ -1,7 +1,6 @@
 'use client';
 import ProfilePage from '@/app/components/profile/page';
 import Sidebar from '@/app/components/sidebar/page';
-import { useUser } from '@/app/context/userContext';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
@@ -57,7 +56,7 @@ export default function AuthLayout({
         </div>
 
         {/* Profile dropdown */}
-          <ProfilePage />
+        <ProfilePage />
       </div>
       {/* sidebar and content page */}
       <div

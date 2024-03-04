@@ -27,12 +27,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
 
       <ThemeProvider>
-        <UserProvider><body className={`${inter.className}`}>
-          <TopbarLoader />
-          <Toaster />
-          {children}
-        </body></UserProvider>
-        
+        <UserProvider>
+          <body className={`${inter.className}`}>
+            <TopbarLoader />
+            <Toaster />
+            {children}
+          </body>
+        </UserProvider>
       </ThemeProvider>
     </html>
   );
