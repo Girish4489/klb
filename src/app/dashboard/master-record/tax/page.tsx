@@ -229,37 +229,49 @@ export default function TaxPage() {
           </div>
         </div>
       </dialog>
-      <div className="flex w-full shrink flex-col overflow-x-auto rounded-box border border-base-300">
-        <h3 className="text-center font-medium">Taxes</h3>
-        <div className="overflow-auto max-sm:max-w-sm">
+      <div className="table flex w-full shrink flex-col">
+        <div className="table-row overflow-auto rounded-box border border-base-300 max-sm:max-w-sm">
           <table className="table table-zebra table-pin-rows">
-            <thead>
-              <tr>
-                <th>Sn</th>
-                <th>Tax Name</th>
-                <th>Tax Type</th>
-                <th>Tax Percentage</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {taxes.map((tax, taxIndex) => (
-                <tr key={tax._id}>
-                  <td>{taxIndex + 1}</td>
-                  <td>{tax.taxName}</td>
-                  <td>{tax.taxType}</td>
-                  <td>{tax.taxPercentage}</td>
-                  <td className="flex gap-1 max-sm:flex-col">
-                    <button className="btn btn-warning btn-sm" onClick={() => openEditDialog(tax, tax._id)}>
-                      Edit
-                    </button>
-                    <button className="btn btn-error btn-sm" onClick={handleDelete(tax._id)}>
-                      Delete
-                    </button>
+            <caption className="table-caption text-center font-bold">Taxes</caption>
+            {taxes.length === 0 ? (
+              <tbody>
+                <tr>
+                  <td colSpan={5} className="text-warning">
+                    No taxes found
                   </td>
                 </tr>
-              ))}
-            </tbody>
+              </tbody>
+            ) : (
+              <>
+                <thead>
+                  <tr className="text-center">
+                    <th>Sn</th>
+                    <th>Tax Name</th>
+                    <th>Tax Type</th>
+                    <th>Tax Percentage</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {taxes.map((tax, taxIndex) => (
+                    <tr key={tax._id} className="hover text-center">
+                      <td>{taxIndex + 1}</td>
+                      <td>{tax.taxName}</td>
+                      <td>{tax.taxType}</td>
+                      <td>{tax.taxPercentage}</td>
+                      <td className="flex items-center justify-center gap-1 max-sm:flex-col">
+                        <button className="btn btn-warning btn-sm" onClick={() => openEditDialog(tax, tax._id)}>
+                          Edit
+                        </button>
+                        <button className="btn btn-error btn-sm" onClick={handleDelete(tax._id)}>
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </>
+            )}
           </table>
         </div>
       </div>
