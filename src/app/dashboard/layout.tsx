@@ -7,11 +7,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { fetchAndSetUser, user } = useUser();
   useEffect(() => {
     document.title = 'Dashboard | Kalamandir';
