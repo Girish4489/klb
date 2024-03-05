@@ -90,6 +90,17 @@ export async function POST(request: NextRequest) {
         name: user.username,
       };
     }
+    // Update dueAmount based on grandTotal and paidAmount
+    const { grandTotal, paidAmount } = bill;
+    bill.dueAmount = (isNaN(grandTotal) ? 0 : grandTotal) - (isNaN(paidAmount) ? 0 : paidAmount);
+    if (grandTotal === paidAmount) {
+      bill.paymentStatus = 'Paid';
+    } else if (paidAmount === 0) {
+      bill.paymentStatus = 'Unpaid';
+    } else if (paidAmount > 0 && paidAmount < grandTotal) {
+      bill.paymentStatus = 'Partially Paid';
+    }
+
     await bill.save();
     const today = await Bill.findOne({
       billNumber: bill.billNumber,
@@ -113,6 +124,16 @@ export async function PUT(request: NextRequest) {
     data.updatedAt = new Date();
     const bill = await Bill.findByIdAndUpdate(billId, data, { new: true });
     if (!bill) throw new Error('Bill not found');
+    // Update dueAmount based on grandTotal and paidAmount
+    const { grandTotal, paidAmount } = bill;
+    bill.dueAmount = (isNaN(grandTotal) ? 0 : grandTotal) - (isNaN(paidAmount) ? 0 : paidAmount);
+    if (grandTotal === paidAmount) {
+      bill.paymentStatus = 'Paid';
+    } else if (paidAmount === 0) {
+      bill.paymentStatus = 'Unpaid';
+    } else if (paidAmount > 0 && paidAmount < grandTotal) {
+      bill.paymentStatus = 'Partially Paid';
+    }
     await bill.save();
     return NextResponse.json({ message: 'Bill updated', success: true, user: user, bill: bill });
   } catch (error: any) {

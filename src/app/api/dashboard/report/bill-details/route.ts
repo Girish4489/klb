@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
       })
         .limit(pageSize)
         .skip(skip)
-        .select('-__v -updatedAt -createdAt -_id -order -paymentStatus -email -tax'),
+        .select('-__v -updatedAt -createdAt -_id -order -email -tax'),
       Bill.countDocuments({
         createdAt: {
           $gte: new Date(fromDate),
