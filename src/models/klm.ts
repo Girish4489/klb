@@ -94,8 +94,9 @@ interface IBill extends Document {
 }
 
 interface IReceipt extends Document {
-  receiptId: mongoose.Types.ObjectId;
-  bill?: mongoose.Types.ObjectId;
+  receiptNumber: number;
+  bill?: { _id: mongoose.Types.ObjectId; billNumber?: number; mobile?: number; name?: string };
+  receiptBy?: { _id: mongoose.Types.ObjectId; name: string };
   amount: number;
   paymentDate: Date;
   paymentMethod?: string;
@@ -306,18 +307,20 @@ const billSchema: Schema<IBill> = new Schema<IBill>({
 
 // Schema for Receipts
 const receiptSchema: Schema<IReceipt> = new Schema<IReceipt>({
-  receiptId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Receipt',
-    required: true,
+  receiptNumber: {
+    type: Number,
+    required: [true, 'Receipt number is required.'],
+    unique: true,
   },
   bill: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Bill',
+    _id: { type: mongoose.Schema.Types.ObjectId, ref: 'Bill' },
+    billNumber: Number,
+    name: String,
+    mobile: Number,
   },
-  amount: Number,
+  amount: { type: Number, required: [true, 'Amount is required.'] },
   paymentDate: Date,
-  paymentMethod: String,
+  paymentMethod: { type: String, enum: ['Cash', 'Online', 'UPI', 'Card'], default: 'Cash' },
   createdAt: {
     type: Date,
     default: Date.now,

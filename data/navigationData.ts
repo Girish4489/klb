@@ -73,7 +73,7 @@ const navigationData = [
     onclick: 'transactionDropdown',
     imgSrc: '/apps_logos/docs.svg',
     subNav: [
-      { title: 'Receipt', href: '#t1' },
+      { title: 'Receipt', href: '/dashboard/transaction/receipt' },
       { title: 'Receipt Credit', href: '#t2' },
       { title: 'Worker Payment', href: '#t3' },
       { title: 'Counter', href: '#t4' },

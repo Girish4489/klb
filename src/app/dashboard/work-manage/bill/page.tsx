@@ -502,7 +502,7 @@ export default function BillPage() {
                     name="mobile"
                     placeholder="Mobile No"
                     id="mobile"
-                    type="number"
+                    type="tel"
                     className="input input-bordered input-primary max-sm:input-sm"
                     value={bill?.mobile ?? ''}
                     onChange={(e) => {
@@ -893,11 +893,15 @@ export default function BillPage() {
                   <div className="flex flex-row justify-between gap-1 max-sm:flex-col">
                     <div className="flex flex-row items-center justify-between">
                       <b className="label-text">Paid:</b>
-                      <p className="label label-text">0000</p>
+                      <p className="label label-text">{bill.paidAmount}</p>
                     </div>
                     <div className="flex flex-row items-center justify-between">
                       <b className="label-text">Due:</b>
-                      <p className="label label-text">0000</p>
+                      <p className="label label-text">{bill.dueAmount}</p>
+                    </div>
+                    <div className="flex flex-row items-center justify-between">
+                      <b className="label-text">Status:</b>
+                      <p className="label label-text">{bill.paymentStatus}</p>
                     </div>
                   </div>
                 </div>

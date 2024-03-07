@@ -1,5 +1,5 @@
 // /src/app/util/makeApiRequest/makeApiRequest.ts
-import { ITax } from '@/models/klm';
+import { IReceipt, ITax } from '@/models/klm';
 import axios from 'axios';
 
 export const ApiPost = {
@@ -26,6 +26,16 @@ export const ApiPost = {
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'An error occurred');
     }
+  },
+  Receipt: {
+    SaveReceipt: async (data: IReceipt) => {
+      try {
+        const res = await axios.post('/api/dashboard/transaction/receipt', data);
+        return res.data;
+      } catch (error: any) {
+        throw new Error(error.response?.data?.message || 'An error occurred');
+      }
+    },
   },
 };
 
@@ -85,6 +95,32 @@ export const ApiGet = {
         const res = await axios.get(
           `/api/dashboard/report/bill-details?fromDate=${fromDate}&toDate=${toDate}&page=${page}`,
         );
+        return res.data;
+      } catch (error: any) {
+        throw new Error(error.response?.data?.message || 'An error occurred');
+      }
+    },
+  },
+  Receipt: {
+    ReceiptSearch: async (number: number) => {
+      try {
+        const res = await axios.get(`/api/dashboard/transaction/receipt?searchValue=${number}`);
+        return res.data;
+      } catch (error: any) {
+        throw new Error(error.response?.data?.message || 'An error occurred');
+      }
+    },
+    LastReceipt: async () => {
+      try {
+        const res = await axios.get('/api/dashboard/transaction/receipt?last=receipt');
+        return res.data;
+      } catch (error: any) {
+        throw new Error(error.response?.data?.message || 'An error occurred');
+      }
+    },
+    RecentReceipt: async () => {
+      try {
+        const res = await axios.get('/api/dashboard/transaction/receipt?recent=receipt');
         return res.data;
       } catch (error: any) {
         throw new Error(error.response?.data?.message || 'An error occurred');
