@@ -89,7 +89,7 @@ const navigationData = [
     imgSrc: '/apps_logos/docs.svg',
     subNav: [
       { title: 'Bill Details', href: '/dashboard/report/bill-details' },
-      { title: 'Receipt Details', href: '#r2' },
+      { title: 'Receipt Details', href: '/dashboard/report/receipt' },
       { title: 'Worker Details', href: '#r3' },
       { title: 'GST', href: '#r4' },
       { title: 'Payroll Sheet', href: '#r5' },
