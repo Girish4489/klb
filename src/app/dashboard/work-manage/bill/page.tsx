@@ -2,19 +2,22 @@
 import { userConfirmaion } from '@/app/util/confirmation/confirmationUtil';
 import formatDate from '@/app/util/format/dateUtils';
 import { ApiGet, ApiPost, ApiPut } from '@/app/util/makeApiRequest/makeApiRequest';
+import { printDocument } from '@/helpers/printDocument';
 import { IBill, ICategory, ITax } from '@/models/klm';
 import { Types } from 'mongoose';
 import React, { useMemo } from 'react';
 import toast from 'react-hot-toast';
 
 export default function BillPage() {
-  const [category, setCategory] = React.useState<ICategory[]>([]);
+  const [category, setCategory] = React.useState<ICategory[] | []>([]);
   const [tax, setTax] = React.useState<ITax[]>([]);
   const [bill, setBill] = React.useState<IBill>();
   const [todayBill, setTodayBill] = React.useState<IBill[]>([]);
   const [thisWeekBill, setThisWeekBill] = React.useState<IBill[]>([]);
   const [searchBill, setSearchBill] = React.useState<IBill[] | undefined>(undefined);
   const [newBill, setNewBill] = React.useState<boolean>(true);
+
+  const [printType, setPrintType] = React.useState<string>('bill');
 
   React.useEffect(() => {
     (async () => {
@@ -59,6 +62,7 @@ export default function BillPage() {
   async function createNewBill() {
     setNewBill(true);
     setSearchBill(undefined);
+    setBill(undefined);
     const lastBill = await ApiGet.Bill.LastBill();
     setBill({
       billNumber: (lastBill?.lastBill?.billNumber ?? 0) + 1,
@@ -77,12 +81,14 @@ export default function BillPage() {
   }
 
   const handleNewOrder = () => {
-    // Create a new order object with default values
+    // Create a new order object with default values and empty dimension and styleProcess arrays
     const newOrder = {
       category: {
         catId: new Types.ObjectId(),
         categoryName: '',
       },
+      dimension: [],
+      styleProcess: [],
       work: false,
       barcode: false,
       measurement: '',
@@ -100,7 +106,83 @@ export default function BillPage() {
     } as IBill);
   };
 
-  function handleRemoveOrder(index: number): React.MouseEventHandler<HTMLButtonElement> | undefined {
+  async function handleDimensionChange(
+    dimensionTypeName: string,
+    dimensionName: string,
+    note: string,
+    orderIndex: number,
+    dimIndex: number,
+    dimLength: number,
+  ) {
+    setBill((prevBill) => {
+      if (!prevBill) return prevBill;
+
+      const updatedOrder = [...prevBill.order];
+      const order = updatedOrder[orderIndex];
+      if (!order) return prevBill;
+
+      const updatedDimension = [...order.dimension];
+      const existingDimension = updatedDimension[dimIndex];
+
+      // Update the existing dimension fields
+      updatedDimension[dimIndex] = {
+        ...existingDimension,
+        dimensionTypeName: dimensionTypeName === ('none' || undefined) ? '' : dimensionTypeName,
+        dimensionName: dimensionName === ('none' || undefined) ? '' : dimensionName,
+        note: note === ('none' || undefined) ? '' : note,
+      };
+
+      // filter the dimensions array which index greater than dimLength
+      const filteredDimension = updatedDimension.filter((_, index) => index < dimLength);
+
+      updatedOrder[orderIndex] = {
+        ...order,
+        dimension: filteredDimension,
+      };
+
+      return {
+        ...prevBill,
+        order: updatedOrder,
+      } as IBill;
+    });
+  }
+
+  async function handleStyleProcessChange(
+    styleName: string,
+    styleProcessName: string,
+    orderIndex: number,
+    styleProcessIndex: number,
+    styleProcessLength: number,
+  ) {
+    setBill((prevBill) => {
+      if (!prevBill) return prevBill;
+
+      const updatedOrder = [...prevBill.order];
+      const order = updatedOrder[orderIndex];
+      if (!order) return prevBill;
+
+      const updatedStyleProcess = [...order.styleProcess];
+
+      updatedStyleProcess[styleProcessIndex] = {
+        styleProcessName: styleProcessName,
+        styleName: styleName === 'none' ? '' : styleName,
+      };
+
+      // filter the styleProcess array which index greater than styleProcessLength
+      const filteredStyleProcess = updatedStyleProcess.filter((_, index) => index < styleProcessLength);
+
+      updatedOrder[orderIndex] = {
+        ...order,
+        styleProcess: filteredStyleProcess,
+      };
+      return {
+        ...(prevBill as IBill),
+        order: updatedOrder,
+      } as IBill;
+    });
+  }
+
+  function handleRemoveOrder(orderIndex: number): React.MouseEventHandler<HTMLButtonElement> | undefined {
     return async () => {
       const Confirmed = await userConfirmaion({
         header: 'Confirm Deletion',
@@ -109,9 +191,9 @@ export default function BillPage() {
       if (!Confirmed) return;
 
       try {
-        if (index >= 0 && (bill?.order?.length ?? 0) >= 0) {
-          // Remove the order at the specified index and update the total amount
-          const updatedOrder = bill?.order.filter((_, i) => i !== index);
+        if (orderIndex >= 0 && (bill?.order?.length ?? 0) >= 0) {
+          // Remove the order at the specified orderIndex and update the total amount
+          const updatedOrder = bill?.order.filter((_, i) => i !== orderIndex);
           const newTotalAmount = updatedOrder?.reduce((total, item) => total + (item.amount || 0), 0);
           setBill({
             ...bill,
@@ -561,9 +643,9 @@ export default function BillPage() {
               <div className="flex h-full grow flex-col justify-between rounded-box border border-base-300">
                 <div className="flex max-h-96 min-h-[92%] w-full grow flex-col gap-1 overflow-auto rounded-box bg-base-200">
                   {/* orders */}
-                  {bill?.order?.map((order, index) => (
+                  {bill?.order?.map((order, orderIndex) => (
                     <div
-                      key={index}
+                      key={orderIndex}
                       className="flex w-full justify-between gap-1 rounded-box border border-base-300 bg-base-100 p-1 shadow max-sm:flex-wrap max-sm:justify-around"
                     >
                       <div className="flex grow flex-col gap-1 rounded-box border-2 border-base-300 bg-base-200 p-2 shadow">
@@ -571,26 +653,26 @@ export default function BillPage() {
                         <div className="flex w-full flex-row items-center justify-between gap-1 max-sm:flex-col-reverse">
                           <div className="flex w-full flex-row flex-wrap justify-start gap-1">
                             <div className="flex flex-row items-center justify-between gap-1 max-sm:w-full">
-                              <label htmlFor={`slNo_${index}`} className="label label-text">
+                              <label htmlFor={`slNo_${orderIndex}`} className="label label-text">
                                 Sl No
                               </label>
                               <input
                                 type="text"
-                                name={`slNo_${index}`}
-                                id={`slNo_${index}`}
+                                name={`slNo_${orderIndex}`}
+                                id={`slNo_${orderIndex}`}
                                 placeholder="Sl No"
                                 className="input input-bordered input-primary input-sm w-16 select-none"
-                                value={index + 1}
+                                value={orderIndex + 1}
                                 readOnly
                               />
                             </div>
                             <div className="flex flex-row items-center justify-between gap-1 max-sm:w-full">
-                              <label htmlFor={`category_${index}`} className="label label-text">
+                              <label htmlFor={`category_${orderIndex}`} className="label label-text">
                                 Category
                               </label>
                               <select
-                                name={`category_${index}`}
-                                id={`category_${index}`}
+                                name={`category_${orderIndex}`}
+                                id={`category_${orderIndex}`}
                                 className="select select-primary select-sm"
                                 onChange={(e) => {
                                   const selectedCategoryId = e.target.selectedOptions[0]?.getAttribute('itemID');
@@ -598,7 +680,7 @@ export default function BillPage() {
                                     setBill({
                                       ...bill,
                                       order: bill.order?.map((o, i) =>
-                                        i === index
+                                        i === orderIndex
                                           ? {
                                               ...o,
                                               category: {
@@ -613,7 +695,7 @@ export default function BillPage() {
                                     setBill({
                                       ...bill,
                                       order: bill.order?.map((o, i) =>
-                                        i === index
+                                        i === orderIndex
                                           ? {
                                               ...o,
                                               category: undefined,
@@ -624,7 +706,9 @@ export default function BillPage() {
                                   }
                                 }}
                               >
-                                <option value={'none'}>soon</option>
+                                <option value={`${order.category?.categoryName ?? 'none'}`}>
+                                  {order.category?.categoryName ?? 'Select category'}
+                                </option>
                                 {category?.map((category, categoryIndex) => (
                                   <option key={categoryIndex} value={category.categoryName} itemID={category._id}>
                                     {category.categoryName}
@@ -633,40 +717,40 @@ export default function BillPage() {
                               </select>
                             </div>
                             <div className="flex flex-row items-center justify-between gap-1 max-sm:w-full">
-                              <label htmlFor={`work_${index}`} className="label label-text">
+                              <label htmlFor={`work_${orderIndex}`} className="label label-text">
                                 Work
                               </label>
                               <input
                                 type="checkbox"
-                                name={`work_${index}`}
-                                id={`work_${index}`}
+                                name={`work_${orderIndex}`}
+                                id={`work_${orderIndex}`}
                                 className="checkbox-primary checkbox checkbox-sm"
                                 checked={order.work}
                                 onChange={(e) =>
                                   setBill({
                                     ...bill,
                                     order: bill.order?.map((o, i) =>
-                                      i === index ? { ...o, work: e.target.checked } : o,
+                                      i === orderIndex ? { ...o, work: e.target.checked } : o,
                                     ),
                                   } as IBill)
                                 }
                               />
                             </div>
                             <div className="flex flex-row items-center justify-between gap-1 max-sm:w-full">
-                              <label htmlFor={`barcode_${index}`} className="label label-text">
+                              <label htmlFor={`barcode_${orderIndex}`} className="label label-text">
                                 Barcode
                               </label>
                               <input
                                 type="checkbox"
-                                name={`barcode_${index}`}
-                                id={`barcode_${index}`}
+                                name={`barcode_${orderIndex}`}
+                                id={`barcode_${orderIndex}`}
                                 className="checkbox-primary checkbox checkbox-sm"
                                 checked={order.barcode}
                                 onChange={(e) =>
                                   setBill({
                                     ...bill,
                                     order: bill.order?.map((o, i) =>
-                                      i === index ? { ...o, barcode: e.target.checked } : o,
+                                      i === orderIndex ? { ...o, barcode: e.target.checked } : o,
                                     ),
                                   } as IBill)
                                 }
@@ -677,7 +761,7 @@ export default function BillPage() {
                           <div className="flex items-center justify-end max-sm:w-full">
                             <span
                               className="btn btn-secondary btn-xs select-none font-bold"
-                              onClick={handleRemoveOrder(index)}
+                              onClick={handleRemoveOrder(orderIndex)}
                             >
                               Remove
                             </span>
@@ -686,8 +770,8 @@ export default function BillPage() {
 
                         <div className="flex flex-row justify-between gap-1 max-sm:flex-wrap">
                           {/*2nd row  Render dropdown select options for dimensions based on the selected category */}
-                          {(category || []).map((cat) => {
-                            if (cat._id === bill?.order?.[index]?.category?.catId?.toString()) {
+                          {category.map((cat) => {
+                            if (cat._id === bill?.order?.[orderIndex]?.category?.catId?.toString()) {
                               return cat.dimension?.map((typ: any, typIndex: any) => (
                                 <div
                                   key={typIndex}
@@ -702,26 +786,20 @@ export default function BillPage() {
                                       id={typ.dimensionTypeName}
                                       className="select select-primary select-sm max-w-sm"
                                       onChange={(e) => {
-                                        setBill({
-                                          ...bill,
-                                          order: bill.order?.map((o, i) =>
-                                            i === index
-                                              ? {
-                                                  ...o,
-                                                  dimension: {
-                                                    ...o.dimension,
-                                                    [typIndex]: {
-                                                      dimensionTypeName: typ.dimensionTypeName,
-                                                      dimensionName: e.target.value === 'none' ? null : e.target.value,
-                                                    },
-                                                  },
-                                                }
-                                              : o,
-                                          ),
-                                        } as IBill);
+                                        const selectedDimensionTypeName = typ.dimensionTypeName;
+                                        handleDimensionChange(
+                                          selectedDimensionTypeName,
+                                          e.target.value,
+                                          order.dimension?.[typIndex]?.note ?? '',
+                                          orderIndex,
+                                          typIndex,
+                                          cat.dimension?.length ?? 0,
+                                        );
                                       }}
                                     >
-                                      <option value="none">Select dimension</option>
+                                      <option value={`${order.dimension?.[typIndex]?.dimensionName ?? 'none'}`}>
+                                        {order.dimension?.[typIndex]?.dimensionName ?? 'Select dimension'}
+                                      </option>
                                       {typ.dimensionTypes &&
                                         typ.dimensionTypes.map((dim: any, dimIndex: number) => (
                                           <option key={dimIndex} value={dim.dimensionName}>
@@ -734,25 +812,17 @@ export default function BillPage() {
                                       name={typ.dimensionTypeName}
                                       placeholder={`${typ.dimensionTypeName} Note`}
                                       className="input input-primary input-sm"
-                                      value={typ.note}
+                                      value={order.dimension?.[typIndex]?.note}
                                       onChange={(e) => {
-                                        setBill({
-                                          ...bill,
-                                          order: bill.order?.map((o, i) =>
-                                            i === index
-                                              ? {
-                                                  ...o,
-                                                  dimension: {
-                                                    ...o.dimension,
-                                                    [typIndex]: {
-                                                      ...(o.dimension ?? [{}])[typIndex],
-                                                      note: e.target.value,
-                                                    },
-                                                  },
-                                                }
-                                              : o,
-                                          ),
-                                        } as IBill);
+                                        const selectedDimensionTypeName = typ.dimensionTypeName;
+                                        handleDimensionChange(
+                                          selectedDimensionTypeName,
+                                          order.dimension?.[typIndex]?.dimensionName ?? 'none',
+                                          e.target.value,
+                                          orderIndex,
+                                          typIndex,
+                                          cat.dimension?.length ?? 0,
+                                        );
                                       }}
                                     />
                                   </div>
@@ -766,12 +836,12 @@ export default function BillPage() {
                           {/* 3rd row */}
                           <div className="flex grow flex-row flex-wrap items-center gap-1 max-sm:flex-col">
                             <span className="flex grow flex-row justify-between max-sm:w-full">
-                              <label htmlFor={`measure_${index}`} className="label label-text">
+                              <label htmlFor={`measure_${orderIndex}`} className="label label-text">
                                 Measure
                               </label>
                               <textarea
-                                name={`measure_${index}`}
-                                id={`measure_${index}`}
+                                name={`measure_${orderIndex}`}
+                                id={`measure_${orderIndex}`}
                                 placeholder="Measure"
                                 className="textarea textarea-bordered textarea-primary textarea-sm grow"
                                 value={order.measurement}
@@ -779,19 +849,19 @@ export default function BillPage() {
                                   setBill({
                                     ...bill,
                                     order: bill.order?.map((o, i) =>
-                                      i === index ? { ...o, measurement: e.target.value } : o,
+                                      i === orderIndex ? { ...o, measurement: e.target.value } : o,
                                     ),
                                   } as IBill)
                                 }
                               />
                             </span>
                             <span className="flex flex-row justify-between max-sm:w-full">
-                              <label htmlFor={`amount_${index}`} className="label label-text">
+                              <label htmlFor={`amount_${orderIndex}`} className="label label-text">
                                 Amount
                               </label>
                               <input
-                                name={`amount_${index}`}
-                                id={`amount_${index}`}
+                                name={`amount_${orderIndex}`}
+                                id={`amount_${orderIndex}`}
                                 placeholder="Amount"
                                 type="number"
                                 className="input input-bordered input-primary input-sm max-w-32"
@@ -799,7 +869,7 @@ export default function BillPage() {
                                 onChange={(e) => {
                                   const amount = parseFloat(e.currentTarget.value) || 0;
                                   const updatedOrder = bill.order.map((o, i) =>
-                                    i === index ? { ...o, amount: amount } : o,
+                                    i === orderIndex ? { ...o, amount: amount } : o,
                                   );
                                   const newTotalAmount = updatedOrder.reduce(
                                     (total, item) => total + (item.amount || 0),
@@ -825,8 +895,8 @@ export default function BillPage() {
                         <h2 className="label label-text p-0 text-center">Style</h2>
                         <div className="flex w-full flex-col flex-wrap justify-between gap-1 max-sm:flex-row">
                           {(category || []).map((cat) => {
-                            if (cat._id === bill?.order?.[index]?.category?.catId?.toString()) {
-                              return cat.styleProcess?.map((styleProcess: any, styleProcessIndex: any) => (
+                            if (cat._id === bill?.order?.[orderIndex]?.category?.catId?.toString()) {
+                              return cat.styleProcess?.map((styleProcess: any, styleProcessIndex: number) => (
                                 <div
                                   key={styleProcessIndex}
                                   className="flex w-full flex-row flex-wrap items-center gap-1 rounded-box bg-base-300 p-2 max-sm:justify-between"
@@ -839,23 +909,13 @@ export default function BillPage() {
                                     id={styleProcess.styleProcessName}
                                     className="select select-primary select-sm"
                                     onChange={(e) => {
-                                      setBill({
-                                        ...bill,
-                                        order: bill.order?.map((o, i) =>
-                                          i === index
-                                            ? {
-                                                ...o,
-                                                styleProcess: {
-                                                  ...o.styleProcess,
-                                                  [styleProcessIndex]: {
-                                                    styleProcessName: styleProcess.styleProcessName,
-                                                    styleName: e.target.value === 'none' ? null : e.target.value,
-                                                  },
-                                                },
-                                              }
-                                            : o,
-                                        ),
-                                      } as IBill);
+                                      handleStyleProcessChange(
+                                        e.target.value,
+                                        styleProcess.styleProcessName,
+                                        orderIndex,
+                                        styleProcessIndex,
+                                        cat.styleProcess?.length ?? 0,
+                                      );
                                     }}
                                     value={order.styleProcess?.[styleProcessIndex]?.styleName || 'none'}
                                   >
@@ -888,7 +948,26 @@ export default function BillPage() {
                         Update
                       </button>
                     )}
-                    <button className="btn btn-accent btn-sm">Print</button>
+                    <span className="join">
+                      <select
+                        name="printType"
+                        aria-label="Print Type"
+                        className="join-item select select-bordered select-accent select-sm"
+                        value={printType}
+                        onChange={(e) => setPrintType(e.target.value)}
+                      >
+                        <option value="Customer Bill">Customer Bill</option>
+                        <option value="Worker Bill">Worker Bill</option>
+                      </select>
+                      <button
+                        className="btn btn-accent join-item btn-sm"
+                        onClick={() => {
+                          printDocument(bill as IBill, printType as string);
+                        }}
+                      >
+                        Print
+                      </button>
+                    </span>
                   </span>
                   <div className="flex flex-row justify-between gap-1 max-sm:flex-col">
                     <div className="flex flex-row items-center justify-between">
@@ -926,16 +1005,16 @@ export default function BillPage() {
                       <tbody>
                         {/* row 1 */}
                         {/* Initialize the running total variable */}
-                        {bill?.order?.map((order, index) => {
+                        {bill?.order?.map((order, orderIndex) => {
                           let runningTotal: number = 0;
                           return (
-                            <tr key={index}>
-                              <th>{index + 1}</th>
+                            <tr key={orderIndex}>
+                              <th>{orderIndex + 1}</th>
                               <td>{order.amount}</td>
                               <td>0</td>
                               <td>
                                 {/* Calculate the running total */}
-                                {bill.order.slice(0, index + 1).map((o) => {
+                                {bill.order.slice(0, orderIndex + 1).map((o) => {
                                   runningTotal += o.amount ?? 0;
                                   return null;
                                 })}
@@ -1007,7 +1086,7 @@ export default function BillPage() {
                                       className="checkbox-primary checkbox checkbox-sm"
                                       name={tax.taxName}
                                       id={tax.taxName}
-                                      defaultChecked={bill?.tax?.some((t) => t._id === tax._id)}
+                                      // defaultChecked={bill?.tax?.some((t) => t._id === tax._id)}
                                       checked={bill?.tax?.some((t) => t._id === tax._id) ?? false}
                                       onChange={() => handleRowClick(tax._id)}
                                     />

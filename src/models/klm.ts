@@ -54,28 +54,27 @@ interface IBill extends Document {
   mobile?: number;
   name?: string;
   email?: string;
-  order: [
-    {
-      category?: {
-        catId?: { tyepe: mongoose.Types.ObjectId; ref: 'Category' };
-        categoryName?: string;
-      };
-      dimension?: {
-        dimensionTypeName?: string;
-        dimensionName?: string;
-        note?: string;
-      }[];
-      styleProcess?: {
-        styleProcessName?: string;
-        styleName?: string;
-      }[];
-      work?: boolean;
-      barcode?: boolean;
-      measurement?: string;
-      amount?: number;
-      status?: 'Pending' | 'In Progress' | 'Completed' | 'Cancelled';
-    },
-  ];
+  order: {
+    _id?: mongoose.Types.ObjectId;
+    category?: {
+      catId?: { tyepe: mongoose.Types.ObjectId; ref: 'Category' };
+      categoryName?: string;
+    };
+    dimension: {
+      dimensionTypeName: string;
+      dimensionName: string;
+      note: string;
+    }[];
+    styleProcess: {
+      styleProcessName: string;
+      styleName: string;
+    }[];
+    work?: boolean;
+    barcode?: boolean;
+    measurement?: string;
+    amount?: number;
+    status?: 'Pending' | 'In Progress' | 'Completed' | 'Cancelled';
+  }[];
   totalAmount: number;
   discount: number;
   tax: {
@@ -234,19 +233,19 @@ const billSchema: Schema<IBill> = new Schema<IBill>({
     {
       category: {
         catId: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
-        categoryName: String,
+        categoryName: { type: String, default: '' },
       },
       dimension: [
         {
-          dimensionTypeName: String,
-          dimensionName: String,
-          note: String,
+          dimensionTypeName: { type: String, default: '' },
+          dimensionName: { type: String, default: '' },
+          note: { type: String, default: '' },
         },
       ],
       styleProcess: [
         {
-          styleProcessName: String,
-          styleName: String,
+          styleProcessName: { type: String, default: '' },
+          styleName: { type: String, default: '' },
         },
       ],
       work: Boolean,

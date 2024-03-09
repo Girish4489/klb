@@ -128,9 +128,7 @@ export const ApiGet = {
     },
     ReceiptFromToDate: async (fromDate: Date, toDate: Date, page: number) => {
       try {
-        const res = await axios.get(
-          `/api/dashboard/report/receipt?fromDate=${fromDate}&toDate=${toDate}&page=${page}`,
-        );
+        const res = await axios.get(`/api/dashboard/report/receipt?fromDate=${fromDate}&toDate=${toDate}&page=${page}`);
         return res.data;
       } catch (error: any) {
         throw new Error(error.response?.data?.message || 'An error occurred');

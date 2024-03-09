@@ -1,6 +1,6 @@
 import { connect } from '@/dbConfig/dbConfig';
 import { getDataFromToken } from '@/helpers/getDataFromToken';
-import { Bill } from '@/models/klm';
+import { Bill, IBill } from '@/models/klm';
 import User from '@/models/userModel';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -120,8 +120,9 @@ export async function PUT(request: NextRequest) {
     if (!user) throw new Error('User not found');
     const billId = request.nextUrl.searchParams.get('updateBillId');
     if (!billId) throw new Error('Bill id is required');
-    const data = await request.json();
-    data.updatedAt = new Date();
+    const data: IBill = await request.json();
+    const billExists = await Bill.findOne({ _id: billId });
+    if (!billExists) throw new Error('Bill not found');
     const bill = await Bill.findByIdAndUpdate(billId, data, { new: true });
     if (!bill) throw new Error('Bill not found');
     // Update dueAmount based on grandTotal and paidAmount
@@ -134,6 +135,7 @@ export async function PUT(request: NextRequest) {
     } else if (paidAmount > 0 && paidAmount < grandTotal) {
       bill.paymentStatus = 'Partially Paid';
     }
+    bill.updatedAt = new Date();
     await bill.save();
     return NextResponse.json({ message: 'Bill updated', success: true, user: user, bill: bill });
   } catch (error: any) {
