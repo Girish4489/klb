@@ -102,9 +102,9 @@ export const ApiGet = {
     },
   },
   Receipt: {
-    ReceiptSearch: async (number: number) => {
+    ReceiptSearch: async (number: number, type: string) => {
       try {
-        const res = await axios.get(`/api/dashboard/transaction/receipt?searchValue=${number}`);
+        const res = await axios.get(`/api/dashboard/transaction/receipt?searchValue=${number}&searchType=${type}`);
         return res.data;
       } catch (error: any) {
         throw new Error(error.response?.data?.message || 'An error occurred');
@@ -129,6 +129,28 @@ export const ApiGet = {
     ReceiptFromToDate: async (fromDate: Date, toDate: Date, page: number) => {
       try {
         const res = await axios.get(`/api/dashboard/report/receipt?fromDate=${fromDate}&toDate=${toDate}&page=${page}`);
+        return res.data;
+      } catch (error: any) {
+        throw new Error(error.response?.data?.message || 'An error occurred');
+      }
+    },
+  },
+  printDocument: {
+    PrintBill: async (printType: string, billNumber: number) => {
+      try {
+        const res = await axios.get(
+          `/api/dashboard/print-document/print-bill?printType=${printType}&billNumber=${billNumber}`,
+        );
+        return res.data;
+      } catch (error: any) {
+        throw new Error(error.response?.data?.message || 'An error occurred');
+      }
+    },
+    PrintReceipt: async (printType: string, receiptNumber: number) => {
+      try {
+        const res = await axios.get(
+          `/api/dashboard/print-document/print-receipt?printType=${printType}&receiptNumber=${receiptNumber}`,
+        );
         return res.data;
       } catch (error: any) {
         throw new Error(error.response?.data?.message || 'An error occurred');
