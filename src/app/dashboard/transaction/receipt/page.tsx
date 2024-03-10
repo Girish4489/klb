@@ -1,6 +1,7 @@
 'use client';
-import formatDate from '@/app/util/format/dateUtils';
+import { formatDate } from '@/app/util/format/dateUtils';
 import { ApiGet, ApiPost } from '@/app/util/makeApiRequest/makeApiRequest';
+import { printDocument } from '@/helpers/printDocument';
 import { IBill, IReceipt } from '@/models/klm';
 import React from 'react';
 import toast from 'react-hot-toast';
@@ -16,6 +17,7 @@ export default function RecieptPage() {
   const [searchBill, setSearchBill] = React.useState<IBill[] | undefined>(undefined);
   const [receipt, setReceipt] = React.useState<IReceipt>();
   const [recentReceipt, setRecentReceipt] = React.useState<IReceipt[] | undefined>(undefined);
+  const [searchReceipt, setSearchReceipt] = React.useState<IReceipt[] | undefined>(undefined);
 
   const [amtTrack, setAmtTrack] = React.useState<AmtTrack>({
     total: 0,
@@ -52,6 +54,25 @@ export default function RecieptPage() {
         setSearchBill(res.bill);
       } else {
         setSearchBill(undefined);
+        throw new Error(res.message);
+      }
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
+
+  const receiptSearch = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    try {
+      const inputValue: number = (event.target as HTMLFormElement).receiptSearch.value;
+      const typeReceiptOrBillOrMobile: string = (event.target as HTMLFormElement).selectReceipt.value;
+
+      const res = await ApiGet.Receipt.ReceiptSearch(inputValue, typeReceiptOrBillOrMobile);
+
+      if (res.success === true) {
+        setSearchReceipt(res.receipt);
+      } else {
+        setSearchReceipt(undefined);
         throw new Error(res.message);
       }
     } catch (error: any) {
@@ -146,14 +167,14 @@ export default function RecieptPage() {
     }
   };
 
-  const recentReceiptTable = (receipt: IReceipt[]) => {
+  const recentReceiptTable = (receipt: IReceipt[], caption: string) => {
     return (
       <table className="table table-zebra table-pin-rows">
-        <caption className="px-1 py-2 font-bold">Recent Receipts</caption>
+        <caption className="px-1 py-2 font-bold">{caption}</caption>
         {receipt?.length === 0 && (
           <tbody>
             <tr>
-              <td colSpan={7} className="text-warning">
+              <td colSpan={8} className="text-warning">
                 No receipts
               </td>
             </tr>
@@ -170,6 +191,7 @@ export default function RecieptPage() {
                 <th>Date</th>
                 <th>Amount</th>
                 <th>Payment Method</th>
+                <th>Print</th>
               </tr>
             </thead>
             <tbody>
@@ -183,6 +205,16 @@ export default function RecieptPage() {
                     <td>{receipt?.paymentDate ? formatDate(receipt?.paymentDate) : ''}</td>
                     <td>{receipt?.amount}</td>
                     <td>{receipt?.paymentMethod}</td>
+                    <td>
+                      <button
+                        className="btn btn-secondary btn-xs"
+                        onClick={async () => {
+                          await printDocument(receipt?.receiptNumber, 'Receipt');
+                        }}
+                      >
+                        Print
+                      </button>
+                    </td>
                   </tr>
                 </React.Fragment>
               ))}
@@ -205,7 +237,7 @@ export default function RecieptPage() {
               name="billSearch"
               id="billSearch"
               onFocus={(e) => e.target.select()}
-              className="input join-item input-bordered input-primary input-sm w-40 bg-accent/5"
+              className="input input-sm join-item input-bordered input-primary w-40 bg-accent/5"
               placeholder="Search"
               required
             />
@@ -304,7 +336,7 @@ export default function RecieptPage() {
                   const parsedValue = limitedValue === '' ? '' : parseInt(limitedValue);
                   setReceipt({ ...receipt, receiptNumber: parsedValue } as IReceipt);
                 }}
-                className="input input-bordered input-primary input-sm w-32"
+                className="input input-sm input-bordered input-primary w-32"
                 required
               />
             </div>
@@ -323,7 +355,7 @@ export default function RecieptPage() {
                   const parsedValue = limitedValue === '' ? '' : parseInt(limitedValue);
                   setReceipt({ ...receipt, bill: { ...receipt?.bill, billNumber: parsedValue } } as IReceipt);
                 }}
-                className="input input-bordered input-primary input-sm w-32"
+                className="input input-sm input-bordered input-primary w-32"
                 required
               />
             </div>
@@ -340,7 +372,7 @@ export default function RecieptPage() {
                 onChange={(e) => {
                   setReceipt({ ...receipt, bill: { ...receipt?.bill, name: e.target.value } } as IReceipt);
                 }}
-                className="input input-bordered input-primary input-sm w-32"
+                className="input input-sm input-bordered input-primary w-32"
               />
             </div>
             <div className="flex flex-row flex-wrap items-center max-sm:w-full max-sm:justify-between">
@@ -356,7 +388,7 @@ export default function RecieptPage() {
                 onChange={(e) => {
                   setReceipt({ ...receipt, bill: { ...receipt?.bill, mobile: parseInt(e.target.value) } } as IReceipt);
                 }}
-                className="input input-bordered input-primary input-sm w-32"
+                className="input input-sm input-bordered input-primary w-32"
               />
             </div>
             <div className="flex flex-row flex-wrap items-center max-sm:w-full max-sm:justify-between">
@@ -371,7 +403,7 @@ export default function RecieptPage() {
                 onChange={(e) => {
                   setReceipt({ ...receipt, paymentDate: new Date(e.target.value) } as IReceipt);
                 }}
-                className="input input-bordered input-primary input-sm"
+                className="input input-sm input-bordered input-primary"
               />
             </div>
             <div className="flex flex-row flex-wrap items-center max-sm:w-full max-sm:justify-between">
@@ -389,7 +421,7 @@ export default function RecieptPage() {
                   const parsedValue = limitedValue === '' ? '' : parseInt(limitedValue);
                   setReceipt({ ...receipt, amount: parsedValue } as IReceipt);
                 }}
-                className="input input-bordered input-primary input-sm w-32"
+                className="input input-sm input-bordered input-primary w-32"
                 required
               />
             </div>
@@ -431,8 +463,37 @@ export default function RecieptPage() {
             Save
           </button>
         </div>
-        <div className="receiptTrack grow rounded-box bg-base-300/80 p-2">
-          <span>{recentReceiptTable(recentReceipt ?? [])}</span>
+        <div className="receiptTrack flex grow flex-col rounded-box bg-base-300/80 p-2">
+          <div className="searchReceipt flex">
+            <form onSubmit={receiptSearch} className="join flex flex-wrap items-center justify-between max-sm:flex-col">
+              <label htmlFor="receiptSearch" className="join-item label-text">
+                <input
+                  name="receiptSearch"
+                  id="receiptSearch"
+                  onFocus={(e) => e.target.select()}
+                  className="input input-sm join-item input-bordered input-primary w-40 bg-accent/5"
+                  placeholder="Search"
+                  required
+                />
+              </label>
+              <select
+                name="selectReceipt"
+                aria-label="Search-receipt"
+                className="join-item select select-bordered select-primary select-sm"
+              >
+                <option value={'receipt'}>Receipt No</option>
+                <option value={'bill'}>Bill No</option>
+                <option value={'mobile'}>Mobile</option>
+              </select>
+              <span className="dropdown dropdown-end dropdown-bottom w-fit">
+                <button tabIndex={0} role="button" className="btn btn-primary btn-sm rounded-l-none">
+                  Search
+                </button>
+              </span>
+            </form>
+          </div>
+          {searchReceipt && <span>{recentReceiptTable(searchReceipt ?? [], 'Searched Receipts')}</span>}
+          {recentReceipt && <span>{recentReceiptTable(recentReceipt ?? [], 'Recent Receipts')}</span>}
         </div>
       </div>
     </div>

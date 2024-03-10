@@ -10,8 +10,8 @@ export async function GET(request: NextRequest) {
   try {
     const userId = await getDataFromToken(request);
     const urlSearchParams = new URLSearchParams(request.nextUrl.search);
-    const billOrMobileNumber = urlSearchParams.get('searchValue');
-    const billType = urlSearchParams.get('type');
+    const receiptBillOrMobileNumber = urlSearchParams.get('searchValue');
+    const searchType = urlSearchParams.get('searchType');
     const last = urlSearchParams.get('last');
     const recent = urlSearchParams.get('recent');
 
@@ -21,20 +21,20 @@ export async function GET(request: NextRequest) {
 
     if (!user) throw new Error('User not found');
 
-    if (billOrMobileNumber && billType) {
-      let bill;
-      if (billType === 'bill') {
-        bill = await Bill.find({ billNumber: billOrMobileNumber });
-        if (!bill || bill.length === 0) {
-          throw new Error('Bill number not found');
-        }
-      } else {
-        bill = await Bill.find({ mobile: billOrMobileNumber });
-        if (!bill || bill.length === 0) {
-          throw new Error('Mobile number not found');
-        }
+    if (receiptBillOrMobileNumber && searchType) {
+      if (searchType === 'receipt') {
+        const receipt = await Receipt.find({ receiptNumber: receiptBillOrMobileNumber });
+        if (!receipt) throw new Error('Receipt not found');
+        return NextResponse.json({ message: 'Receipt found', success: true, receipt: receipt });
+      } else if (searchType === 'bill') {
+        const receipt = await Receipt.find({ 'bill.billNumber': receiptBillOrMobileNumber });
+        if (!receipt) throw new Error('Bill not found');
+        return NextResponse.json({ message: 'Bill found', success: true, receipt: receipt });
+      } else if (searchType === 'mobile') {
+        const receipt = await Receipt.find({ 'bill.mobile': receiptBillOrMobileNumber });
+        if (!receipt) throw new Error('Mobile not found');
+        return NextResponse.json({ message: 'Mobile found', success: true, receipt: receipt });
       }
-      return NextResponse.json({ message: 'Bill data', success: true, bill: bill });
     }
 
     if (last) {
