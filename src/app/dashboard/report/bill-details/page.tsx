@@ -1,5 +1,5 @@
 'use client';
-import formatDate from '@/app/util/format/dateUtils';
+import { formatDate } from '@/app/util/format/dateUtils';
 import { ApiGet } from '@/app/util/makeApiRequest/makeApiRequest';
 import { IBill } from '@/models/klm';
 import { useState } from 'react';
@@ -138,7 +138,7 @@ export default function BillDetails() {
           <input
             type="date"
             id="fromDate"
-            className="input input-primary input-sm"
+            className="input input-sm input-primary"
             value={fromDate ? new Date(fromDate).toISOString().split('T')[0] : ''}
             onChange={(e) => setFromDate(new Date(e.target.value))}
           />
@@ -150,7 +150,7 @@ export default function BillDetails() {
           <input
             type="date"
             id="toDate"
-            className="input input-primary input-sm"
+            className="input input-sm input-primary"
             value={toDate ? new Date(toDate).toISOString().split('T')[0] : ''}
             onChange={(e) => setToDate(new Date(e.target.value))}
           />

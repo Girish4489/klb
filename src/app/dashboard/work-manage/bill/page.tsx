@@ -1,6 +1,6 @@
 'use client';
 import { userConfirmaion } from '@/app/util/confirmation/confirmationUtil';
-import formatDate from '@/app/util/format/dateUtils';
+import { formatDate } from '@/app/util/format/dateUtils';
 import { ApiGet, ApiPost, ApiPut } from '@/app/util/makeApiRequest/makeApiRequest';
 import { printDocument } from '@/helpers/printDocument';
 import { IBill, ICategory, ITax } from '@/models/klm';
@@ -17,7 +17,7 @@ export default function BillPage() {
   const [searchBill, setSearchBill] = React.useState<IBill[] | undefined>(undefined);
   const [newBill, setNewBill] = React.useState<boolean>(true);
 
-  const [printType, setPrintType] = React.useState<string>('bill');
+  const [printType, setPrintType] = React.useState<string>('Customer Bill');
 
   React.useEffect(() => {
     (async () => {
@@ -419,7 +419,7 @@ export default function BillPage() {
                 name="billSearch"
                 id="billSearch"
                 onFocus={(e) => e.target.select()}
-                className="input join-item input-bordered input-primary input-sm w-40 bg-accent/5"
+                className="input input-sm join-item input-bordered input-primary w-40 bg-accent/5"
                 placeholder="Search"
                 required
               />
@@ -661,7 +661,7 @@ export default function BillPage() {
                                 name={`slNo_${orderIndex}`}
                                 id={`slNo_${orderIndex}`}
                                 placeholder="Sl No"
-                                className="input input-bordered input-primary input-sm w-16 select-none"
+                                className="input input-sm input-bordered input-primary w-16 select-none"
                                 value={orderIndex + 1}
                                 readOnly
                               />
@@ -811,7 +811,7 @@ export default function BillPage() {
                                       type="text"
                                       name={typ.dimensionTypeName}
                                       placeholder={`${typ.dimensionTypeName} Note`}
-                                      className="input input-primary input-sm"
+                                      className="input input-sm input-primary"
                                       value={order.dimension?.[typIndex]?.note}
                                       onChange={(e) => {
                                         const selectedDimensionTypeName = typ.dimensionTypeName;
@@ -864,7 +864,7 @@ export default function BillPage() {
                                 id={`amount_${orderIndex}`}
                                 placeholder="Amount"
                                 type="number"
-                                className="input input-bordered input-primary input-sm max-w-32"
+                                className="input input-sm input-bordered input-primary max-w-32"
                                 value={order.amount || ''}
                                 onChange={(e) => {
                                   const amount = parseFloat(e.currentTarget.value) || 0;
@@ -961,8 +961,8 @@ export default function BillPage() {
                       </select>
                       <button
                         className="btn btn-accent join-item btn-sm"
-                        onClick={() => {
-                          printDocument(bill as IBill, printType as string);
+                        onClick={async () => {
+                          await printDocument(bill.billNumber, printType as string);
                         }}
                       >
                         Print
@@ -1037,7 +1037,7 @@ export default function BillPage() {
                       placeholder="Total Net"
                       id="totalNet"
                       type="number"
-                      className="input input-bordered input-sm w-32"
+                      className="input input-sm input-bordered w-32"
                       value={bill?.totalAmount || ''}
                       readOnly
                       aria-readonly
@@ -1052,7 +1052,7 @@ export default function BillPage() {
                       placeholder="Discount"
                       id="discount"
                       type="number"
-                      className={`input input-bordered input-sm w-32`}
+                      className={`input input-sm input-bordered w-32`}
                       value={bill?.discount || ''}
                       onChange={(e) =>
                         setBill({
@@ -1132,7 +1132,7 @@ export default function BillPage() {
                       placeholder="Grand Total"
                       id="grandTotal"
                       type="number"
-                      className="input input-bordered input-sm w-32"
+                      className="input input-sm input-bordered w-32"
                       value={bill?.grandTotal || ''}
                       readOnly
                       aria-readonly

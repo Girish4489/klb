@@ -795,7 +795,7 @@ export default function CategoryPage() {
             <input
               type="text"
               placeholder="Category Name"
-              className="input input-bordered input-primary input-sm w-full max-w-xs max-sm:w-full max-sm:max-w-full"
+              className="input input-sm input-bordered input-primary w-full max-w-xs max-sm:w-full max-sm:max-w-full"
               required
               spellCheck="true"
               name="category"
@@ -808,7 +808,7 @@ export default function CategoryPage() {
             <input
               type="text"
               placeholder="Category Description"
-              className="input input-bordered input-primary input-sm w-full max-w-xs max-sm:w-full max-sm:max-w-full"
+              className="input input-sm input-bordered input-primary w-full max-w-xs max-sm:w-full max-sm:max-w-full"
               name="description"
               id="description"
               onFocus={(e) => e.currentTarget.select()}

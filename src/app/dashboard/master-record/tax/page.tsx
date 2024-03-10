@@ -156,7 +156,7 @@ export default function TaxPage() {
               id="taxName"
               name="taxName"
               placeholder="Tax Name"
-              className="input input-bordered input-primary input-sm"
+              className="input input-sm input-bordered input-primary"
             />
           </div>
           <div className="flex flex-wrap items-center gap-1 pr-3 max-sm:w-full max-sm:justify-between">
@@ -173,7 +173,7 @@ export default function TaxPage() {
               id="taxPercentage"
               name="taxPercentage"
               placeholder="Tax Value"
-              className="input input-bordered input-primary input-sm"
+              className="input input-sm input-bordered input-primary"
               step="0.01"
             />
           </div>
@@ -194,7 +194,7 @@ export default function TaxPage() {
                 id="taxEditName"
                 name="taxEditName"
                 placeholder="Tax Name"
-                className="input input-bordered input-primary input-sm"
+                className="input input-sm input-bordered input-primary"
               />
             </div>
             <div className="flex w-full flex-wrap items-center justify-between gap-1 pr-3">
@@ -211,7 +211,7 @@ export default function TaxPage() {
                 id="taxEditPercentage"
                 name="taxEditPercentage"
                 placeholder="Tax Value"
-                className="input input-bordered input-primary input-sm"
+                className="input input-sm input-bordered input-primary"
                 step="0.01"
               />
             </div>

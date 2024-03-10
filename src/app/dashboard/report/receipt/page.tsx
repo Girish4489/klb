@@ -1,5 +1,5 @@
 'use client';
-import formatDate from '@/app/util/format/dateUtils';
+import { formatDate } from '@/app/util/format/dateUtils';
 import { ApiGet } from '@/app/util/makeApiRequest/makeApiRequest';
 import { IReceipt } from '@/models/klm';
 import { useState } from 'react';

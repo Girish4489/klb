@@ -1,7 +1,7 @@
 // /src/app/dashboard/report/customer-details/page.tsx
 'use client';
 import { userConfirmaion } from '@/app/util/confirmation/confirmationUtil';
-import formatDate from '@/app/util/format/dateUtils';
+import { formatDate } from '@/app/util/format/dateUtils';
 import { ICustomer } from '@/models/klm';
 import axios from 'axios';
 import { useEffect, useRef, useState } from 'react';
