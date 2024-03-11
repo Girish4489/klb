@@ -1,8 +1,8 @@
 'use client';
-import { formatDate } from '@/app/util/format/dateUtils';
+import { formatD } from '@/app/util/format/dateUtils';
 import { ApiGet, ApiPost } from '@/app/util/makeApiRequest/makeApiRequest';
-import { printDocument } from '@/helpers/printDocument';
 import { IBill, IReceipt } from '@/models/klm';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 import toast from 'react-hot-toast';
 
@@ -18,7 +18,7 @@ export default function RecieptPage() {
   const [receipt, setReceipt] = React.useState<IReceipt>();
   const [recentReceipt, setRecentReceipt] = React.useState<IReceipt[] | undefined>(undefined);
   const [searchReceipt, setSearchReceipt] = React.useState<IReceipt[] | undefined>(undefined);
-
+  const router = useRouter();
   const [amtTrack, setAmtTrack] = React.useState<AmtTrack>({
     total: 0,
     grand: 0,
@@ -202,14 +202,14 @@ export default function RecieptPage() {
                     <td>{receipt?.receiptNumber}</td>
                     <td>{receipt?.bill?.billNumber}</td>
                     <td>{receipt?.bill?.mobile}</td>
-                    <td>{receipt?.paymentDate ? formatDate(receipt?.paymentDate) : ''}</td>
+                    <td>{receipt?.paymentDate ? formatD(receipt?.paymentDate) : ''}</td>
                     <td>{receipt?.amount}</td>
                     <td>{receipt?.paymentMethod}</td>
                     <td>
                       <button
                         className="btn btn-secondary btn-xs"
                         onClick={async () => {
-                          await printDocument(receipt?.receiptNumber, 'Receipt');
+                          router.push(`/print-preview?billNumber=${receipt?.receiptNumber}&type=Receipt`);
                         }}
                       >
                         Print
@@ -294,8 +294,8 @@ export default function RecieptPage() {
                                 <td>{index + 1}</td>
                                 <td>{bill?.billNumber}</td>
                                 <td>{bill?.mobile}</td>
-                                <td>{bill?.date ? formatDate(bill?.date) : ''}</td>
-                                <td>{bill?.dueDate ? formatDate(bill?.dueDate) : ''}</td>
+                                <td>{bill?.date ? formatD(bill?.date) : ''}</td>
+                                <td>{bill?.dueDate ? formatD(bill?.dueDate) : ''}</td>
                                 <td className="w-fit items-center font-bold">
                                   {bill?.urgent && <span className={'text-error'}>U</span>}
                                   {bill?.urgent && bill.trail && <span>|</span>}

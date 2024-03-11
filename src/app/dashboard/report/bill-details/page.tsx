@@ -1,5 +1,5 @@
 'use client';
-import { formatDate } from '@/app/util/format/dateUtils';
+import { formatD } from '@/app/util/format/dateUtils';
 import { ApiGet } from '@/app/util/makeApiRequest/makeApiRequest';
 import { IBill } from '@/models/klm';
 import { useState } from 'react';
@@ -85,8 +85,8 @@ export default function BillDetails() {
                     <td>{index + 1}</td>
                     <td>{bill.billNumber}</td>
                     <td>{bill.mobile}</td>
-                    <td>{bill?.date ? formatDate(bill?.date) : ''}</td>
-                    <td>{bill?.dueDate ? formatDate(bill?.dueDate) : ''}</td>
+                    <td>{bill?.date ? formatD(bill?.date) : ''}</td>
+                    <td>{bill?.dueDate ? formatD(bill?.dueDate) : ''}</td>
                     <td className="font-bold">
                       {bill?.urgent && <span className={'text-error'}>U</span>}
                       {bill?.urgent && bill.trail && <span> | </span>}

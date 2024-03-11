@@ -1,5 +1,5 @@
 'use client';
-import { formatDate } from '@/app/util/format/dateUtils';
+import { formatD } from '@/app/util/format/dateUtils';
 import { ApiGet } from '@/app/util/makeApiRequest/makeApiRequest';
 import { IReceipt } from '@/models/klm';
 import { useState } from 'react';
@@ -82,7 +82,7 @@ export default function Receipt() {
                     <td>{receipt.bill?.billNumber}</td>
                     <td>{receipt.amount}</td>
                     <td>{receipt.paymentMethod}</td>
-                    <td>{formatDate(receipt.paymentDate)}</td>
+                    <td>{formatD(receipt.paymentDate)}</td>
                     <td>{receipt.bill?.name}</td>
                   </tr>
                 ))}

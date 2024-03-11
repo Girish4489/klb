@@ -1,10 +1,11 @@
 'use client';
 import { userConfirmaion } from '@/app/util/confirmation/confirmationUtil';
-import { formatDate } from '@/app/util/format/dateUtils';
+import { formatD } from '@/app/util/format/dateUtils';
 import { ApiGet, ApiPost, ApiPut } from '@/app/util/makeApiRequest/makeApiRequest';
-import { printDocument } from '@/helpers/printDocument';
 import { IBill, ICategory, ITax } from '@/models/klm';
 import { Types } from 'mongoose';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React, { useMemo } from 'react';
 import toast from 'react-hot-toast';
 
@@ -18,7 +19,7 @@ export default function BillPage() {
   const [newBill, setNewBill] = React.useState<boolean>(true);
 
   const [printType, setPrintType] = React.useState<string>('Customer Bill');
-
+  const router = useRouter();
   React.useEffect(() => {
     (async () => {
       try {
@@ -335,8 +336,8 @@ export default function BillPage() {
                     <td>{index + 1}</td>
                     <td>{bill.billNumber}</td>
                     <td>{bill.mobile}</td>
-                    <td>{bill?.date ? formatDate(bill?.date) : ''}</td>
-                    <td>{bill?.dueDate ? formatDate(bill?.dueDate) : ''}</td>
+                    <td>{bill?.date ? formatD(bill?.date) : ''}</td>
+                    <td>{bill?.dueDate ? formatD(bill?.dueDate) : ''}</td>
                     <td className="font-bold">
                       {bill?.urgent && <span className={'text-error'}>U</span>}
                       {bill?.urgent && bill.trail && <span> | </span>}
@@ -356,8 +357,8 @@ export default function BillPage() {
     () =>
       (todayBill || []).map((bill) => ({
         ...bill,
-        date: formatDate(bill?.date as Date),
-        dueDate: formatDate(bill?.dueDate as Date),
+        date: formatD(bill?.date as Date),
+        dueDate: formatD(bill?.dueDate as Date),
       })),
     [todayBill],
   );
@@ -365,8 +366,8 @@ export default function BillPage() {
     () =>
       (thisWeekBill || []).map((bill) => ({
         ...bill,
-        date: formatDate(bill?.date as Date),
-        dueDate: formatDate(bill?.dueDate as Date),
+        date: formatD(bill?.date as Date),
+        dueDate: formatD(bill?.dueDate as Date),
       })),
     [thisWeekBill],
   );
@@ -476,8 +477,8 @@ export default function BillPage() {
                                   <td>{index + 1}</td>
                                   <td>{bill?.billNumber}</td>
                                   <td>{bill?.mobile}</td>
-                                  <td>{bill?.date ? formatDate(bill?.date) : ''}</td>
-                                  <td>{bill?.dueDate ? formatDate(bill?.dueDate) : ''}</td>
+                                  <td>{bill?.date ? formatD(bill?.date) : ''}</td>
+                                  <td>{bill?.dueDate ? formatD(bill?.dueDate) : ''}</td>
                                   <td className="w-fit items-center font-bold">
                                     {bill?.urgent && <span className={'text-error'}>U</span>}
                                     {bill?.urgent && bill.trail && <span>|</span>}
@@ -640,8 +641,8 @@ export default function BillPage() {
             </div>
             {/* items and track in row */}
             <div className="flex h-full w-full flex-row items-start gap-1 rounded-box bg-base-300 p-1 max-sm:flex-col max-sm:items-center">
-              <div className="flex h-full grow flex-col justify-between rounded-box border border-base-300">
-                <div className="flex max-h-96 min-h-[92%] w-full grow flex-col gap-1 overflow-auto rounded-box bg-base-200">
+              <div className="flex min-h-[90%] grow flex-col justify-between rounded-box border border-base-300">
+                <div className="flex max-h-[30rem] min-h-[98%] w-full grow flex-col gap-1 overflow-auto rounded-box bg-base-200">
                   {/* orders */}
                   {bill?.order?.map((order, orderIndex) => (
                     <div
@@ -959,14 +960,13 @@ export default function BillPage() {
                         <option value="Customer Bill">Customer Bill</option>
                         <option value="Worker Bill">Worker Bill</option>
                       </select>
-                      <button
+                      <Link
                         className="btn btn-accent join-item btn-sm"
-                        onClick={async () => {
-                          await printDocument(bill.billNumber, printType as string);
-                        }}
+                        href={`/print-preview?billNumber=${bill.billNumber}&type=${printType}`}
+                        prefetch={false}
                       >
                         Print
-                      </button>
+                      </Link>
                     </span>
                   </span>
                   <div className="flex flex-row justify-between gap-1 max-sm:flex-col">

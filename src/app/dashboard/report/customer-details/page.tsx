@@ -1,7 +1,7 @@
 // /src/app/dashboard/report/customer-details/page.tsx
 'use client';
 import { userConfirmaion } from '@/app/util/confirmation/confirmationUtil';
-import { formatDate } from '@/app/util/format/dateUtils';
+import { formatD } from '@/app/util/format/dateUtils';
 import { ICustomer } from '@/models/klm';
 import axios from 'axios';
 import { useEffect, useRef, useState } from 'react';
@@ -393,8 +393,8 @@ export default function CustomerDetails() {
                     <td>{customerItem.pin}</td>
                     <td>{customerItem.address}</td>
                     <td>{customerItem.notes}</td>
-                    <td>{formatDate(customerItem.createdAt)}</td>
-                    <td>{formatDate(customerItem.updatedAt)}</td>
+                    <td>{formatD(customerItem.createdAt)}</td>
+                    <td>{formatD(customerItem.updatedAt)}</td>
                   </tr>
                 ))
               ) : (

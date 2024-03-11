@@ -12,7 +12,7 @@ const formatDate = (dateString: Date) => {
   return date.toLocaleDateString('en-IN', options);
 };
 
-const formatDateWithSlash = (dateString: Date) => {
+const formatDateSlash = (dateString: Date) => {
   const options: Intl.DateTimeFormatOptions = {
     day: '2-digit',
     month: '2-digit',
@@ -26,10 +26,10 @@ const formatDateWithSlash = (dateString: Date) => {
   return date.toLocaleDateString('en-IN', options).replace(/-/g, '/');
 };
 
-const formatDateWithSlashWithoutTime = (dateString: Date) => {
+const formatDateSlashNoTime = (dateString: Date) => {
   const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: '2-digit', year: 'numeric' };
   const date = new Date(dateString);
   return date.toLocaleDateString('en-IN', options).replace(/-/g, '/');
 };
 
-export { formatDate, formatDateWithSlash, formatDateWithSlashWithoutTime };
+export { formatDate as formatD, formatDateSlash as formatDS, formatDateSlashNoTime as formatDSNT };
