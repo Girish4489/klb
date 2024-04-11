@@ -263,7 +263,7 @@ export default function BillPage() {
       const res = await ApiPost.Bill(bill);
       if (res.success === true) {
         setTodayBill([...todayBill, res.today]);
-        setBill(undefined);
+        setBill(res.bill);
         toast.success(res.message);
       } else {
         throw new Error(res.message);
