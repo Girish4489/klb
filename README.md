@@ -75,3 +75,8 @@ You can check out [GitHub repository](https://github.com/Girish4489/kalamandir/)
 ## Credits
 
 - [Authentication](https://youtube.com/playlist?list=PLRAV69dS1uWR7KF-zV6YPYtKYEHENETyE&si=fWih85bZai-wrBHY) and verification ideas by [Hitesh Choudhary](https://www.youtube.com/@HiteshChoudharydotcom)
+
+## License
+
+This project is licensed under the GNU Lesser General Public License v2.1 - see the [LICENSE](LICENSE) file for details.
+
