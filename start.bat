@@ -24,12 +24,12 @@ REM Start the server
 
 IF EXIST ".next\" (
   echo Build folder found. Starting server...
-  start /B yarn start
+  start /B npm run dev
   echo Server started.
   GOTO EXIT_SCRIPT
 ) ELSE (
   echo Build folder not found. Building project...
-  yarn build
+  npm run build
   echo Build complete. Starting server...
   GOTO START_SERVER
 )

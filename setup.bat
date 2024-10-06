@@ -11,7 +11,7 @@ SET "DESKTOP_PATH=%USERPROFILE%\Desktop"
 ECHO Desktop path: %DESKTOP_PATH%
 
 REM Create a shortcut for the script and set its icon
-powershell -Command "$WScriptShell = New-Object -ComObject WScript.Shell; $Shortcut = $WScriptShell.CreateShortcut('%DESKTOP_PATH%\Kalamandir.lnk'); $Shortcut.TargetPath = '%SCRIPT_PATH%\start.bat'; $Shortcut.IconLocation = '%SCRIPT_PATH%\public\icons\logo\favicon.ico'; $Shortcut.Save()"
+powershell -Command "$WScriptShell = New-Object -ComObject WScript.Shell; $Shortcut = $WScriptShell.CreateShortcut('%DESKTOP_PATH%\Kalamandir Server.lnk'); $Shortcut.TargetPath = '%SCRIPT_PATH%\start_npm.bat'; $Shortcut.IconLocation = '%SCRIPT_PATH%\public\icons\logo\favicon.ico'; $Shortcut.Save()"
 ECHO Shortcut created on the desktop.
 
 REM Check for Node.js installation
@@ -28,9 +28,9 @@ WHERE node.exe > NUL 2>&1 (
 
 :CHECK_YARN
 
-REM Check for Yarn installation
-WHERE yarn.exe > NUL 2>&1 (
-  ECHO Yarn is installed.
+REM Check for npm installation
+WHERE npm.exe > NUL 2>&1 (
+  ECHO npm is installed.
   ECHO Checking for dependencies...
 
   REM Jump to the next step if Yarn is installed
@@ -41,8 +41,8 @@ WHERE yarn.exe > NUL 2>&1 (
   npm install -g yarn
   REM Jump back to the beginning of the script to check Node.js and Yarn installation again
   ECHO Updating Yarn to the latest stable version...
-  yarn set version stable
-  yarn install
+@REM   yarn set version stable
+  npm install
   ECHO Yarn updated to the latest stable version.
   GOTO CHECK_ENV
 )
@@ -63,19 +63,20 @@ IF EXIST ".env" (
 REM Install dependencies if node_modules folder is not found
 IF NOT EXIST "node_modules" (
   echo Installing dependencies...
-  yarn install
+  npm install
+  npm fund
   echo Installation complete.
-  GOTO EXIT_SCRIPT
+@REM   GOTO EXIT_SCRIPT
 ) ELSE (
   echo Dependencies found. Skipping installation.
-  GOTO EXIT_SCRIPT
+@REM   GOTO EXIT_SCRIPT
 )
 
-:EXIT_SCRIPT
+@REM :EXIT_SCRIPT
 
-REM Pause to allow the server to start
-timeout /t 5 >nul
+@REM REM Pause to allow the server to start
+@REM timeout /t 5 >nul
 
-REM Exit the script and close the terminal
-EXIT /B
+@REM REM Exit the script and close the terminal
+@REM EXIT /B
 

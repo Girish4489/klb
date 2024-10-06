@@ -79,4 +79,3 @@ You can check out [GitHub repository](https://github.com/Girish4489/kalamandir/)
 ## License
 
 This project is licensed under the GNU Lesser General Public License v2.1 - see the [LICENSE](LICENSE) file for details.
-
