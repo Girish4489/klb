@@ -2,12 +2,9 @@ import TopbarLoader from '@/app/components/topbarLoader/page';
 import { ThemeProvider } from '@/app/context/ThemeContext';
 import { UserProvider } from '@/app/context/userContext';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import React from 'react';
 import { Toaster } from 'react-hot-toast';
 import './globals.css';
-
-const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Kalamandir',
@@ -29,7 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
       <ThemeProvider>
         <UserProvider>
-          <body className={`${inter.className}`}>
+          <body>
             <TopbarLoader />
             <Toaster />
             {children}
