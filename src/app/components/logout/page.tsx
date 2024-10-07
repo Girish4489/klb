@@ -1,8 +1,10 @@
 'use client';
 import { useUser } from '@/app/context/userContext';
+import handleError from '@/app/util/error/handleError';
 import { IUser } from '@/models/userModel';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import React from 'react';
 import { toast } from 'react-hot-toast';
 
 export default function LogoutPage() {
@@ -26,18 +28,21 @@ export default function LogoutPage() {
         isAdmin: false,
         createdAt: new Date(),
         updatedAt: new Date(),
-      } as IUser);
+      } as unknown as IUser);
       setTimeout(() => {
         router.push('/auth/login');
       }, 1000);
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error) {
+      // toast.error(error.message);
+      handleError.toastAndLog(error);
     }
   };
 
   return (
-    <span onClick={logout}>
-      <button>Logout</button>
-    </span>
+    <React.Fragment>
+      <span onClick={logout}>
+        <button>Logout</button>
+      </span>
+    </React.Fragment>
   );
 }

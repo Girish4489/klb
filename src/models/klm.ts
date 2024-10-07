@@ -1,7 +1,10 @@
-import mongoose, { Document, Model, Schema } from 'mongoose';
+import mongoose, { Document, Model, Schema, Types } from 'mongoose';
+
+type ObjectId = Types.ObjectId;
 
 // Interfaces
 interface ICustomer extends Document {
+  _id: ObjectId;
   name: string;
   phone: number;
   email?: string;
@@ -16,6 +19,7 @@ interface ICustomer extends Document {
 }
 
 interface ITax extends Document {
+  _id: ObjectId;
   taxName: string;
   taxType: string;
   taxPercentage: number;
@@ -24,28 +28,38 @@ interface ITax extends Document {
 }
 
 interface ICategory extends Document {
+  _id: ObjectId;
   categoryName?: string;
   description?: string;
-  styleProcess?: [
-    {
-      styleProcessName: string;
-      styles: {
-        styleName: string;
-      };
-    },
-  ];
-  dimension?: [
-    {
-      dimensionTypeName: string;
-      dimensionTypes: {
-        dimensionName: string;
-      };
-      note?: string;
-    },
-  ];
+  styleProcess?: IStyleProcess[];
+  dimension?: IDimension[];
+}
+
+interface IStyle {
+  _id: ObjectId;
+  styleName: string;
+}
+
+interface IStyleProcess {
+  _id: ObjectId;
+  styleProcessName: string;
+  styles: IStyle[];
+}
+
+interface IDimensionType {
+  _id: ObjectId;
+  dimensionName: string;
+}
+
+interface IDimension {
+  _id: ObjectId;
+  dimensionTypeName: string;
+  dimensionTypes: IDimensionType[];
+  note?: string;
 }
 
 interface IBill extends Document {
+  _id: ObjectId;
   billNumber: number;
   date?: Date;
   dueDate?: Date;
@@ -55,9 +69,9 @@ interface IBill extends Document {
   name?: string;
   email?: string;
   order: {
-    _id?: mongoose.Types.ObjectId;
+    _id?: ObjectId;
     category?: {
-      catId?: { tyepe: mongoose.Types.ObjectId; ref: 'Category' };
+      catId?: ObjectId;
       categoryName?: string;
     };
     dimension: {
@@ -78,7 +92,7 @@ interface IBill extends Document {
   totalAmount: number;
   discount: number;
   tax: {
-    _id: { type: mongoose.Types.ObjectId; ref: 'Tax' };
+    _id: ObjectId;
     taxName: string;
     taxType: string;
     taxPercentage: number;
@@ -87,15 +101,16 @@ interface IBill extends Document {
   paidAmount: number;
   dueAmount: number;
   paymentStatus?: 'Unpaid' | 'Partially Paid' | 'Paid';
-  billBy?: { _id: mongoose.Types.ObjectId; name: string };
+  billBy?: { _id: ObjectId; name: string };
   createdAt: Date;
   updatedAt: Date;
 }
 
 interface IReceipt extends Document {
+  _id: ObjectId;
   receiptNumber: number;
-  bill?: { _id: mongoose.Types.ObjectId; billNumber?: number; mobile?: number; name?: string };
-  receiptBy?: { _id: mongoose.Types.ObjectId; name: string };
+  bill?: { _id: ObjectId; billNumber?: number; mobile?: number; name?: string };
+  receiptBy?: { _id: ObjectId; name: string };
   amount: number;
   paymentDate: Date;
   paymentMethod?: string;
@@ -109,11 +124,13 @@ const customerSchema: Schema<ICustomer> = new Schema<ICustomer>({
     type: String,
     default: 'NA',
     required: [true, 'Name is required.'],
+    trim: true,
   },
   phone: {
     type: Number,
     required: [true, 'Phone number is required.'],
     unique: true,
+    trim: true,
   },
   email: String,
   city: String,
@@ -266,6 +283,7 @@ const billSchema: Schema<IBill> = new Schema<IBill>({
   },
   tax: [
     {
+      _id: { type: mongoose.Schema.Types.ObjectId, ref: 'Tax' },
       taxName: String,
       taxType: String,
       taxPercentage: Number,
@@ -343,4 +361,15 @@ const Receipt: Model<IReceipt> = mongoose.models.Receipt || mongoose.model<IRece
 
 // Export the models
 export { Bill, Category, Customer, Receipt, Tax };
-export type { IBill, ICategory, ICustomer, IReceipt, ITax };
+export type {
+  IBill,
+  ICategory,
+  ICustomer,
+  IDimension,
+  IDimensionType,
+  IReceipt,
+  IStyle,
+  IStyleProcess,
+  ITax,
+  ObjectId,
+};

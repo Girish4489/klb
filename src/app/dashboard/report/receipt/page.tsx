@@ -1,14 +1,15 @@
 'use client';
+import handleError from '@/app/util/error/handleError';
 import { formatD } from '@/app/util/format/dateUtils';
 import { ApiGet } from '@/app/util/makeApiRequest/makeApiRequest';
 import { IReceipt } from '@/models/klm';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 
 const PAGE_SIZE = 10; // Number of receipts per page
 
 export default function Receipt() {
-  const [fromDate, setFromDate] = useState<Date>();
+  const [fromDate, setFromDate] = React.useState<Date>();
   const [toDate, setToDate] = useState<Date>();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -35,7 +36,9 @@ export default function Receipt() {
         } else {
           throw new Error('An error occurred');
         }
-      } catch (error) {}
+      } catch (error) {
+        handleError.log(error);
+      }
     };
     try {
       toast.promise(filter(), {
@@ -43,10 +46,12 @@ export default function Receipt() {
         success: (message) => <b>{message}</b>,
         error: (error) => <b>{error.message}</b>,
       });
-    } catch (error) {}
+    } catch (error) {
+      handleError.log(error);
+    }
   };
 
-  const ReceiptTable = ({ caption, receipts }: { caption: string; receipts: any[] }) => {
+  const ReceiptTable = ({ caption, receipts }: { caption: string; receipts: IReceipt[] }) => {
     return (
       <div
         className={`table-row overflow-auto rounded-box border-2 border-base-300 bg-base-100 ${receipts.length === 0 && 'min-h-24'}`}

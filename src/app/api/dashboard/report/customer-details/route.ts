@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import handleError from '@/app/util/error/handleError';
 import { connect } from '@/dbConfig/dbConfig';
 import { Customer } from '@/models/klm';
 import { NextRequest, NextResponse } from 'next/server';
@@ -63,6 +65,7 @@ export async function POST(request: NextRequest) {
         }
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const result = await Customer.findByIdAndUpdate(customerId, editedCustomer, { new: true }).exec();
 
       return NextResponse.json({
@@ -88,9 +91,7 @@ export async function POST(request: NextRequest) {
 
     const result = await handleRequest(reqBody);
     return result;
-  } catch (error: any) {
-    return NextResponse.json({
-      message: error.message,
-    });
+  } catch (error) {
+    return handleError.api(error);
   }
 }

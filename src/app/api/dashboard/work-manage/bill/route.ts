@@ -1,3 +1,4 @@
+import handleError from '@/app/util/error/handleError';
 import { connect } from '@/dbConfig/dbConfig';
 import { getDataFromToken } from '@/helpers/getDataFromToken';
 import { Bill, IBill } from '@/models/klm';
@@ -64,8 +65,8 @@ export async function GET(request: NextRequest) {
         weekBill: weekBill,
       });
     }
-  } catch (error: any) {
-    return NextResponse.json({ message: error.message });
+  } catch (error) {
+    return handleError.api(error);
   }
 }
 
@@ -106,8 +107,8 @@ export async function POST(request: NextRequest) {
       billNumber: bill.billNumber,
     }).select('-__v -updatedAt -createdAt -_id -order -paymentStatus -email -tax');
     return NextResponse.json({ message: 'Bill created', success: true, bill: bill, today: today });
-  } catch (error: any) {
-    return NextResponse.json({ message: error.message });
+  } catch (error) {
+    return handleError.api(error);
   }
 }
 
@@ -138,8 +139,8 @@ export async function PUT(request: NextRequest) {
     bill.updatedAt = new Date();
     await bill.save();
     return NextResponse.json({ message: 'Bill updated', success: true, user: user, bill: bill });
-  } catch (error: any) {
-    return NextResponse.json({ message: error.message });
+  } catch (error) {
+    return handleError.api(error);
   }
 }
 
@@ -154,7 +155,7 @@ export async function DELETE(request: NextRequest) {
     const bill = await Bill.findOneAndDelete({ bill: billNumber });
     if (!bill) throw new Error('Bill not found');
     return NextResponse.json({ message: 'Bill deleted', success: true, user: user, bill: bill });
-  } catch (error: any) {
-    return NextResponse.json({ message: error.message });
+  } catch (error) {
+    return handleError.api(error);
   }
 }

@@ -1,5 +1,6 @@
 'use client';
-import { userConfirmaion } from '@/app/util/confirmation/confirmationUtil';
+import { userConfirmation } from '@/app/util/confirmation/confirmationUtil';
+import handleError from '@/app/util/error/handleError';
 import { ApiDelete, ApiGet, ApiPost, ApiPut } from '@/app/util/makeApiRequest/makeApiRequest';
 import { ITax } from '@/models/klm';
 import React from 'react';
@@ -15,6 +16,7 @@ export default function TaxPage() {
     })();
   }, []);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const configureToastPromise = async (promise: Promise<any>, loadingMessage: string) => {
     try {
       await toast.promise(promise, {
@@ -22,7 +24,9 @@ export default function TaxPage() {
         success: (message) => <b>{message}</b>,
         error: (error) => <b>{error.message}</b>,
       });
-    } catch (error) {}
+    } catch (error) {
+      handleError.toastAndLog(error);
+    }
   };
 
   const saveTax = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -52,17 +56,17 @@ export default function TaxPage() {
         } else {
           throw new Error(tax.message);
         }
-      } catch (error: any) {
-        throw new Error(error.message);
+      } catch (error) {
+        handleError.toastAndLog(error);
       }
     };
 
     await configureToastPromise(save(taxName, taxType, taxPercentage), 'Saving tax...');
   };
 
-  function handleDelete(_id: any): React.MouseEventHandler<HTMLButtonElement> | undefined {
+  function handleDelete(_id: string): React.MouseEventHandler<HTMLButtonElement> | undefined {
     return async () => {
-      const Confirmed = await userConfirmaion({
+      const Confirmed = await userConfirmation({
         header: 'Confirm Deletion',
         message: 'Are you sure you want to delete this tax?',
       });
@@ -71,12 +75,14 @@ export default function TaxPage() {
         try {
           const res = await ApiDelete.Tax(_id);
           if (res.success === true) {
-            setTaxes(taxes.filter((tax) => tax._id !== _id));
+            setTaxes(taxes.filter((tax) => tax._id.toString() !== _id));
             return res.message;
           } else {
             throw new Error(res.message);
           }
-        } catch (error) {}
+        } catch (error) {
+          handleError.toastAndLog(error);
+        }
       };
       await configureToastPromise(deleteTax(), 'Deleting tax...');
     };
@@ -119,7 +125,7 @@ export default function TaxPage() {
         if (res.success === true) {
           setTaxes(
             taxes.map((tax) => {
-              if (tax._id === id) {
+              if (tax._id.toString() === id) {
                 return {
                   ...res.data,
                 } as ITax;
@@ -136,8 +142,8 @@ export default function TaxPage() {
         } else {
           throw new Error(res.message);
         }
-      } catch (error: any) {
-        throw new Error(error.message);
+      } catch (error) {
+        handleError.throw(error);
       }
     };
     configureToastPromise(editTax(), 'Updating tax...');
@@ -254,16 +260,19 @@ export default function TaxPage() {
                 </thead>
                 <tbody>
                   {taxes.map((tax, taxIndex) => (
-                    <tr key={tax._id} className="hover text-center">
+                    <tr key={tax._id.toString()} className="hover text-center">
                       <td>{taxIndex + 1}</td>
                       <td>{tax.taxName}</td>
                       <td>{tax.taxType}</td>
                       <td>{tax.taxPercentage}</td>
                       <td className="flex items-center justify-center gap-1 max-sm:flex-col">
-                        <button className="btn btn-warning btn-sm" onClick={() => openEditDialog(tax, tax._id)}>
+                        <button
+                          className="btn btn-warning btn-sm"
+                          onClick={() => openEditDialog(tax, tax._id.toString())}
+                        >
                           Edit
                         </button>
-                        <button className="btn btn-error btn-sm" onClick={handleDelete(tax._id)}>
+                        <button className="btn btn-error btn-sm" onClick={handleDelete(tax._id.toString())}>
                           Delete
                         </button>
                       </td>

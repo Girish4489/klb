@@ -1,10 +1,10 @@
 // /src/app/dashboard/report/customer-details/page.tsx
 'use client';
-import { userConfirmaion } from '@/app/util/confirmation/confirmationUtil';
+import { userConfirmation } from '@/app/util/confirmation/confirmationUtil';
 import { formatD } from '@/app/util/format/dateUtils';
 import { ICustomer } from '@/models/klm';
 import axios from 'axios';
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 
 interface IPagination {
@@ -49,9 +49,14 @@ export default function CustomerDetails() {
             success: (message) => <b>{message}</b>,
             error: (error) => <b>{error.message}</b>,
           });
-        } catch (error: any) {
+        } catch (error) {
           // Handle error
-          // toast.error(error.message);
+          if (error instanceof Error) {
+            console.error(error.message);
+            // toast.error(error.message);
+          } else {
+            console.error('An unknown error occurred');
+          }
         }
       }
     };
@@ -79,7 +84,7 @@ export default function CustomerDetails() {
 
   const handleEditModal = async (customerId: string) => {
     // Implement your edit logic here
-    setEditCustomer(customer.find((customer) => customer._id === customerId));
+    setEditCustomer(customer.find((customer) => customer._id.toString() === customerId));
     const element = document.getElementById('CustomerEditModal') as HTMLDialogElement | null;
     if (element) {
       element.showModal();
@@ -121,15 +126,20 @@ export default function CustomerDetails() {
         success: (message) => <b>{message}</b>,
         error: (error) => <b>{error.message}</b>,
       });
-    } catch (error: any) {
+    } catch (error) {
       // Handle error
-      // toast.error(error.message);
+      if (error instanceof Error) {
+        console.error(error.message);
+        // toast.error(error.message);
+      } else {
+        console.error('An unknown error occurred');
+      }
     }
     return;
   };
 
   const handleDelete = async (customerId: string) => {
-    const confirmation = await userConfirmaion({
+    const confirmation = await userConfirmation({
       header: 'Delete Confirmation',
       message: 'Are you sure you want to delete this customer?',
     });
@@ -141,7 +151,7 @@ export default function CustomerDetails() {
           customerId: customerId,
         });
         if (res.data.success === true) {
-          setCustomer((prevCustomers) => prevCustomers.filter((customer) => customer._id !== customerId));
+          setCustomer((prevCustomers) => prevCustomers.filter((customer) => customer._id.toString() !== customerId));
           return res.data.message;
         } else {
           throw new Error(res.data.message);
@@ -153,9 +163,14 @@ export default function CustomerDetails() {
           success: (message) => <b>{message}</b>,
           error: (error) => <b>{error.message}</b>,
         });
-      } catch (error: any) {
+      } catch (error) {
         // Handle error
-        // toast.error(error.message);
+        if (error instanceof Error) {
+          console.error(error.message);
+          // toast.error(error.message);
+        } else {
+          console.error('An unknown error occurred');
+        }
       }
     }
     return;
@@ -369,17 +384,20 @@ export default function CustomerDetails() {
             <tbody>
               {customer.length > 0 ? (
                 customer.map((customerItem, index) => (
-                  <tr key={customerItem._id}>
+                  <tr key={customerItem._id.toString()}>
                     <th>{index + 1}</th>
                     <td className="text-center">
                       <span className="flex h-full w-full flex-col items-center justify-center gap-1 max-sm:flex-row">
                         <button
                           className="btn btn-secondary btn-sm md:w-full"
-                          onClick={() => handleEditModal(customerItem._id)}
+                          onClick={() => handleEditModal(customerItem._id.toString())}
                         >
                           Edit
                         </button>
-                        <button className="btn btn-warning btn-sm" onClick={() => handleDelete(customerItem._id)}>
+                        <button
+                          className="btn btn-warning btn-sm"
+                          onClick={() => handleDelete(customerItem._id.toString())}
+                        >
                           Delete
                         </button>
                       </span>

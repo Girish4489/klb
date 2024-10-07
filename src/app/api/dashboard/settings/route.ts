@@ -1,4 +1,5 @@
 // Import necessary modules and models
+import handleError from '@/app/util/error/handleError';
 import { connect } from '@/dbConfig/dbConfig';
 import { getDataFromToken } from '@/helpers/getDataFromToken';
 import User from '@/models/userModel';
@@ -35,8 +36,8 @@ export async function POST(request: NextRequest) {
     await user.save();
 
     return NextResponse.json({ success: true, message: 'Profile updated', profileImage: user.profileImage });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message });
+  } catch (error) {
+    return handleError.api(error);
   }
 }
 
@@ -57,7 +58,7 @@ export async function DELETE(request: NextRequest) {
     await user.save();
 
     return NextResponse.json({ success: true, message: 'Profile image removed', profileImage: user.profileImage });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message });
+  } catch (error) {
+    return handleError.api(error);
   }
 }

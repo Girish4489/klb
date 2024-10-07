@@ -2,7 +2,7 @@
 'use client';
 import { fetchUserData } from '@/app/util/user/userFetchUtil/userUtils';
 import { IUser } from '@/models/userModel';
-import { ReactNode, createContext, useCallback, useContext, useEffect, useState } from 'react';
+import React, { ReactNode, createContext, useCallback, useContext, useEffect } from 'react';
 import toast from 'react-hot-toast';
 
 interface UserContextProps {
@@ -21,7 +21,7 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider: React.FC<UserContextProps> = ({ children }) => {
-  const [user, setUser] = useState<UserState>({
+  const [user, setUser] = React.useState<UserState>({
     username: '',
     email: '',
     theme: 'default',
@@ -35,7 +35,7 @@ export const UserProvider: React.FC<UserContextProps> = ({ children }) => {
     isAdmin: false,
     createdAt: new Date(),
     updatedAt: new Date(),
-  } as UserState);
+  } as unknown as UserState);
 
   // Function to fetch and set user data
   const fetchAndSetUser = useCallback(async () => {
@@ -44,6 +44,7 @@ export const UserProvider: React.FC<UserContextProps> = ({ children }) => {
       setUser(userData);
 
       document.documentElement.setAttribute('data-theme', userData.theme);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       // console.error(error);
       toast.error(error.response.data.message + '\n😢 Please try sometime later or Login again');

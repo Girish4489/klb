@@ -1,3 +1,4 @@
+import handleError from '@/app/util/error/handleError';
 import { connect } from '@/dbConfig/dbConfig';
 import { Customer } from '@/models/klm';
 import { NextRequest, NextResponse } from 'next/server';
@@ -18,9 +19,7 @@ export async function POST(request: NextRequest) {
       message: 'Customer created successfully',
       success: true,
     });
-  } catch (error: any) {
-    return NextResponse.json({
-      message: error.message,
-    });
+  } catch (error) {
+    return handleError.api(error);
   }
 }

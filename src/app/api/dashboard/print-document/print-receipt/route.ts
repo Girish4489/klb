@@ -1,6 +1,7 @@
+import handleError from '@/app/util/error/handleError';
 import { connect } from '@/dbConfig/dbConfig';
 import { getDataFromToken } from '@/helpers/getDataFromToken';
-import { Bill, IReceipt, Receipt } from '@/models/klm';
+import { Bill, IBill, IReceipt, Receipt } from '@/models/klm';
 import User from '@/models/userModel';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -24,7 +25,7 @@ export async function GET(request: NextRequest) {
       if (!receipt) {
         throw new Error('Receipt not found');
       }
-      let bill: any;
+      let bill: IBill | null = null;
       if (receipt.bill?.billNumber) {
         bill = await Bill.findOne({ billNumber: receipt.bill.billNumber }).select(
           '-__v -createdAt -updatedAt -billBy -order -tax -urgent -trail -mobile -name -date -dueDate',
@@ -36,7 +37,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ message: 'Receipt data', success: true, receipt: receipt, bill: bill });
     }
     return NextResponse.json({ message: 'Receipt not found', success: false });
-  } catch (error: any) {
-    return NextResponse.json({ message: error.message, success: false });
+  } catch (error) {
+    handleError.apiSuccess(error, false);
   }
 }

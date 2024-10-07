@@ -1,3 +1,4 @@
+import handleError from '@/app/util/error/handleError';
 import { connect } from '@/dbConfig/dbConfig';
 import { sendEmail } from '@/helpers/mailer';
 import User from '@/models/userModel';
@@ -27,13 +28,13 @@ export async function POST(request: NextRequest) {
     await sendEmail({
       email,
       emailType: 'RESET',
-      userId: user._id,
+      userId: user._id.toString(),
     });
     return NextResponse.json({
       message: 'Check mail to reset password',
       success: true,
     });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message });
+  } catch (error) {
+    return handleError.api(error);
   }
 }

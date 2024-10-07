@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // /src/app/api/dashboard/master-record/category/route.ts
+import handleError from '@/app/util/error/handleError';
 import { connect } from '@/dbConfig/dbConfig';
 import { getDataFromToken } from '@/helpers/getDataFromToken';
 import { Category } from '@/models/klm';
@@ -408,8 +410,6 @@ export async function POST(request: NextRequest) {
           return handleAddDimension(reqBody);
         case 'editDimension':
           return handleEditDimension(reqBody);
-        case 'delDimension':
-          return handleDeleteDimension(reqBody);
         default:
           throw new Error('Invalid request type');
       }
@@ -430,14 +430,13 @@ export async function POST(request: NextRequest) {
     } else {
       throw new Error('Only admin can create a category');
     }
-  } catch (error: any) {
-    return NextResponse.json({
-      message: error.message,
-    });
+  } catch (error) {
+    return handleError.api(error);
   }
 }
 
-export async function GET(request: NextRequest) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function GET(_request: NextRequest) {
   try {
     const categories = await Category.find();
     return NextResponse.json({
@@ -445,9 +444,7 @@ export async function GET(request: NextRequest) {
       success: true,
       categories,
     });
-  } catch (error: any) {
-    return NextResponse.json({
-      message: error.message,
-    });
+  } catch (error) {
+    return handleError.api(error);
   }
 }

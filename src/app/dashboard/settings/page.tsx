@@ -2,6 +2,7 @@
 import Logout from '@/app/components/logout/page';
 import ThemerPage from '@/app/components/themer/page';
 import { useUser } from '@/app/context/userContext';
+import handleError from '@/app/util/error/handleError';
 import axios from 'axios';
 import Image from 'next/image';
 import React, { useState } from 'react';
@@ -87,6 +88,7 @@ export default function SettingsPage() {
     } catch (error) {
       // toast.error('Error uploading profile photo: ' + error);
       // console.error(error);
+      handleError.log(error);
     }
   }
 
@@ -116,6 +118,7 @@ export default function SettingsPage() {
     } catch (error) {
       // toast.error('Error removing profile photo: ' + error);
       // console.error(error);
+      handleError.log(error);
     }
   };
 
@@ -148,7 +151,7 @@ export default function SettingsPage() {
                   <Image
                     src={
                       user.profileImage.__filename !== 'USER_PROFILE_404_ERROR'
-                        ? `data:${user.profileImage.contentType};base64,${Buffer.from(user.profileImage?.data || []).toString('base64')}`
+                        ? `data:${user.profileImage.contentType};base64,${Buffer.from(new Uint8Array(user.profileImage?.data || [])).toString('base64')}`
                         : '/klm.webp'
                     }
                     alt="Landscape picture"
@@ -169,7 +172,7 @@ export default function SettingsPage() {
                         <Image
                           src={
                             user.profileImage.__filename !== 'USER_PROFILE_404_ERROR'
-                              ? `data:${user.profileImage.contentType};base64,${Buffer.from(user.profileImage?.data || []).toString('base64')}`
+                              ? `data:${user.profileImage.contentType};base64,${Buffer.from(new Uint8Array(user.profileImage?.data || [])).toString('base64')}`
                               : '/klm.webp'
                           }
                           alt="Landscape picture"

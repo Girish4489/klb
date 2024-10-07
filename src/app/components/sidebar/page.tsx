@@ -2,11 +2,12 @@
 import navigationData from '@/../../data/navigationData';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import React from 'react';
 
 export default function SidebarPage() {
   const currentPathname = usePathname();
   return (
-    <>
+    <React.Fragment>
       <div
         className={
           'flex h-full w-full flex-col justify-around overflow-hidden transition-all duration-300 ease-in-out max-sm:fixed max-sm:bottom-0 max-sm:left-0 max-sm:right-0 max-sm:top-0 max-sm:z-50'
@@ -121,6 +122,6 @@ export default function SidebarPage() {
           </ul>
         </div>
       </div>
-    </>
+    </React.Fragment>
   );
 }

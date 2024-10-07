@@ -1,3 +1,4 @@
+import handleError from '@/app/util/error/handleError';
 import { connect } from '@/dbConfig/dbConfig';
 import { getDataFromToken } from '@/helpers/getDataFromToken';
 import { Receipt } from '@/models/klm';
@@ -49,7 +50,7 @@ export async function GET(request: NextRequest) {
       receipt: receipts,
       totalReceipts: totalReceiptsCount,
     });
-  } catch (error: any) {
-    return NextResponse.json({ message: error.message, success: false });
+  } catch (error) {
+    return handleError.apiSuccess(error, false);
   }
 }

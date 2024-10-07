@@ -1,4 +1,5 @@
 'use client';
+import handleError from '@/app/util/error/handleError';
 import axios from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -34,9 +35,10 @@ export default function ResetPasswordPage() {
       setTimeout(() => {
         router.push('/auth/login');
       }, 1000);
-    } catch (error: any) {
+    } catch (error) {
       // console.error(error.response.data.error);
       // toast.error(error.response.data.error);
+      handleError.log(error);
     }
   };
 

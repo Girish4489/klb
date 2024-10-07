@@ -9,8 +9,8 @@
   scroll-behavior: smooth;
 }
 
+/* Mobile width */
 @media (max-width: 640px) {
-  /* Mobile width */
   ::-webkit-scrollbar {
     width: 3px;
     height: 3px;

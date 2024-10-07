@@ -1,3 +1,4 @@
+import handleError from '@/app/util/error/handleError';
 import { connect } from '@/dbConfig/dbConfig';
 import { getDataFromToken } from '@/helpers/getDataFromToken';
 import { Bill, IReceipt, Receipt } from '@/models/klm';
@@ -46,8 +47,8 @@ export async function GET(request: NextRequest) {
       const recentReceipt = await Receipt.find().sort({ createdAt: -1 }).limit(10);
       return NextResponse.json({ message: 'Recent receipt', success: true, recentReceipt: recentReceipt });
     }
-  } catch (error: any) {
-    return NextResponse.json({ message: error.message });
+  } catch (error) {
+    return handleError.api(error);
   }
 }
 
@@ -87,7 +88,7 @@ export async function POST(request: NextRequest) {
 
     await receipt.save();
     return NextResponse.json({ message: 'Receipt added successfully', success: true, receipt: receipt });
-  } catch (error: any) {
-    return NextResponse.json({ message: error.message });
+  } catch (error) {
+    return handleError.api(error);
   }
 }

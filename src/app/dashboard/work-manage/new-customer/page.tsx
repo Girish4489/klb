@@ -1,4 +1,5 @@
 'use client';
+import handleError from '@/app/util/error/handleError';
 import { ICustomer } from '@/models/klm';
 import axios from 'axios';
 import React, { useState } from 'react';
@@ -38,8 +39,9 @@ export default function NewCustomerPage() {
         success: (message) => <b>{message}</b>,
         error: (error) => <b>{error.message}</b>,
       });
-    } catch (error: any) {
+    } catch (error) {
       // toast.error(error.message);
+      handleError.log(error);
     }
   };
 

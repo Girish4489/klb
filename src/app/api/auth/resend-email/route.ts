@@ -23,13 +23,14 @@ export async function POST(request: NextRequest) {
     await sendEmail({
       email: email,
       emailType: 'VERIFY',
-      userId: user._id,
+      userId: user._id.toString(),
     });
 
     return NextResponse.json({
       message: 'Verification email sent',
       success: true,
     });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     return NextResponse.json({ error: error.message, status: 500 });
   }

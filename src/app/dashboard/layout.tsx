@@ -29,7 +29,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <Image
               src={
                 user.profileImage.__filename !== 'USER_PROFILE_404_ERROR'
-                  ? `data:${user.profileImage.contentType};base64,${Buffer.from(user.profileImage?.data || []).toString('base64')}`
+                  ? `data:${user.profileImage.contentType};base64,${Buffer.from(new Uint8Array(user.profileImage?.data || [])).toString('base64')}`
                   : '/klm.webp'
               }
               alt="profile image"

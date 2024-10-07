@@ -1,30 +1,22 @@
 'use client';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
 export default function Home() {
-  const [countdown, setCountdown] = useState(5); // Initial countdown time
+  const [countdown, setCountdown] = React.useState(5);
 
   useEffect(() => {
-    // Function to decrement the countdown timer
-    const decrementCountdown = () => {
-      if (countdown > 0) {
-        setCountdown(countdown - 1);
-      }
-    };
-
-    const timer = setInterval(decrementCountdown, 1000); // Decrease countdown every second
-
-    // Redirect to the dashboard page when the countdown reaches 0
     if (countdown === 0) {
-      clearInterval(timer); // Clear the interval
-      window.location.href = '/dashboard'; // Redirect to the dashboard page
+      window.location.href = '/dashboard';
+      return;
     }
 
-    // Cleanup the interval when the component unmounts
-    return () => {
-      clearInterval(timer);
-    };
+    const timer = setInterval(() => {
+      setCountdown((prevCountdown) => prevCountdown - 1);
+    }, 1000);
+
+    // Cleanup the interval when the component unmounts or countdown reaches 0
+    return () => clearInterval(timer);
   }, [countdown]);
 
   return (

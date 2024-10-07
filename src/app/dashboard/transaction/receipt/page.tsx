@@ -1,7 +1,9 @@
 'use client';
+import handleError from '@/app/util/error/handleError';
 import { formatD } from '@/app/util/format/dateUtils';
 import { ApiGet, ApiPost } from '@/app/util/makeApiRequest/makeApiRequest';
 import { IBill, IReceipt } from '@/models/klm';
+import { ObjectId } from '@/models/userModel';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import toast from 'react-hot-toast';
@@ -35,8 +37,8 @@ export default function RecieptPage() {
         } else {
           throw new Error(res.message);
         }
-      } catch (error: any) {
-        toast.error(error.message);
+      } catch (error) {
+        handleError.toastAndLog(error);
       }
     };
     fetchLastReceipt();
@@ -56,8 +58,8 @@ export default function RecieptPage() {
         setSearchBill(undefined);
         throw new Error(res.message);
       }
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error) {
+      handleError.toastAndLog(error);
     }
   };
 
@@ -75,44 +77,34 @@ export default function RecieptPage() {
         setSearchReceipt(undefined);
         throw new Error(res.message);
       }
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error) {
+      handleError.toastAndLog(error);
     }
   };
 
   const saveReceipt = async () => {
     try {
-      if (receipt?.amount === 0) {
-        throw new Error('Amount cannot be zero');
-      }
-      if (receipt?.bill?.billNumber === 0) {
-        throw new Error('Bill number cannot be zero');
-      }
-      if (receipt?.paymentMethod === '') {
-        throw new Error('Payment method cannot be empty');
-      }
-      if (receipt?.paymentDate?.toISOString() === '') {
-        throw new Error('Payment date cannot be empty');
-      }
-      if (amtTrack.due < 0) {
-        throw new Error('Amount exceeds due');
-      }
-      const res = await ApiPost.Receipt.SaveReceipt(receipt as IReceipt);
-      if (res.success === true) {
+      if (!receipt) throw new Error('Receipt is undefined');
+      const { amount, bill, paymentMethod, paymentDate } = receipt;
+      if (!amount) throw new Error('Amount cannot be zero');
+      if (!bill?.billNumber) throw new Error('Bill number cannot be zero');
+      if (!paymentMethod) throw new Error('Payment method cannot be empty');
+      if (!paymentDate) throw new Error('Payment date cannot be empty');
+      if (!bill?.name) throw new Error('Name cannot be empty');
+      if (amtTrack.paid >= amtTrack.grand || amtTrack.due <= 0) throw new Error('Bill already paid');
+      if (amount > amtTrack.due) throw new Error('Amount cannot be greater than bill amount');
+
+      const res = await ApiPost.Receipt.SaveReceipt(receipt);
+      if (res.success) {
         toast.success('Receipt saved');
         setReceipt(undefined);
         setRecentReceipt([res.receipt, ...(recentReceipt ?? [])]);
-        setAmtTrack({
-          total: 0,
-          grand: 0,
-          paid: 0,
-          due: 0,
-        });
+        setAmtTrack({ total: 0, grand: 0, paid: 0, due: 0 });
       } else {
         throw new Error(res.message);
       }
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error) {
+      handleError.toastAndLog(error);
     }
   };
 
@@ -133,7 +125,7 @@ export default function RecieptPage() {
     } as IReceipt);
   }
 
-  const searchRowClicked = (billId: string) => async () => {
+  const searchRowClicked = (billId: ObjectId) => async () => {
     try {
       const selectedBill = await (searchBill ?? []).find((bill) => bill._id === billId);
       if (selectedBill) {
@@ -162,10 +154,47 @@ export default function RecieptPage() {
       } else {
         toast.error('Bill not found');
       }
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error) {
+      handleError.toastAndLog(error);
     }
   };
+
+  React.useEffect(() => {
+    const fetchReceipt = async (receiptNumber: number) => {
+      try {
+        const res = await ApiGet.Receipt.ReceiptSearch(receiptNumber, 'receipt');
+        if (res.success && res.receipt.length > 0) {
+          const fetchedReceipt = res.receipt[0];
+          setReceipt(fetchedReceipt);
+          const billNumber = fetchedReceipt?.bill?.billNumber;
+          if (billNumber) {
+            const billRes = await ApiGet.Bill.BillSearch(billNumber, 'bill');
+            if (billRes.success && billRes.bill.length > 0) {
+              const bill = billRes.bill[0];
+              setAmtTrack({
+                total: bill.totalAmount,
+                grand: bill.grandTotal,
+                paid: bill.paidAmount,
+                due: bill.dueAmount,
+              });
+            } else {
+              throw new Error('Bill not found');
+            }
+          }
+        } else {
+          throw new Error('Receipt not found');
+        }
+      } catch (error) {
+        handleError.toastAndLog(error);
+      }
+    };
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const receiptNumber = urlParams.get('receiptNumber');
+    if (receiptNumber) {
+      fetchReceipt(parseInt(receiptNumber));
+    }
+  }, []);
 
   const recentReceiptTable = (receipt: IReceipt[], caption: string) => {
     return (
@@ -399,7 +428,7 @@ export default function RecieptPage() {
                 name="receiptDate"
                 id="receiptDate"
                 type="date"
-                value={receipt?.paymentDate?.toISOString().split('T')[0] ?? ''}
+                value={receipt?.paymentDate ? new Date(receipt.paymentDate).toISOString().split('T')[0] : ''}
                 onChange={(e) => {
                   setReceipt({ ...receipt, paymentDate: new Date(e.target.value) } as IReceipt);
                 }}
@@ -454,7 +483,11 @@ export default function RecieptPage() {
                   className="flex flex-row flex-wrap items-center gap-1 max-sm:w-full max-sm:justify-between"
                 >
                   <h3 className="label-text font-bold">{key.charAt(0).toUpperCase() + key.slice(1)}: </h3>
-                  <h3 className="label-text">{key === 'due' ? value - (receipt?.amount ?? 0) : (value as number)}</h3>
+                  <h3
+                    className={`label-text ${key === 'due' && amtTrack.due <= 0 ? 'text-warning' : ''} ${key === 'paid' && amtTrack.paid === amtTrack.grand ? 'text-success' : ''}`}
+                  >
+                    {key === 'due' ? value - (receipt?.amount ?? 0) : (value as number)}
+                  </h3>
                 </div>
               ))}
             </div>

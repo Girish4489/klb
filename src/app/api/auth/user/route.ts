@@ -16,6 +16,7 @@ export async function GET(request: NextRequest) {
       message: 'User found',
       data: user,
     });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }

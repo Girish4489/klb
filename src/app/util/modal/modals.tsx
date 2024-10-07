@@ -3,7 +3,7 @@ import React, { ChangeEvent, FormEvent, useState } from 'react';
 interface FormModalProps {
   id: string;
   title: string;
-  onSubmit: (formData: any) => void;
+  onSubmit: (formData: { [key: string]: string }) => void;
   fields: Array<{ label: string; name: string; type?: string; placeholder?: string; required?: boolean }>;
   onClose: () => void;
 }

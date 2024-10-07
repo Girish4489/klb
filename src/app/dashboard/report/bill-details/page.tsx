@@ -1,14 +1,15 @@
 'use client';
+import handleError from '@/app/util/error/handleError';
 import { formatD } from '@/app/util/format/dateUtils';
 import { ApiGet } from '@/app/util/makeApiRequest/makeApiRequest';
 import { IBill } from '@/models/klm';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 
 const PAGE_SIZE = 10; // Number of bills per page
 
 export default function BillDetails() {
-  const [fromDate, setFromDate] = useState<Date>();
+  const [fromDate, setFromDate] = React.useState<Date>();
   const [toDate, setToDate] = useState<Date>();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -34,7 +35,9 @@ export default function BillDetails() {
         } else {
           throw new Error('An error occurred');
         }
-      } catch (error) {}
+      } catch (error) {
+        handleError.throw(error);
+      }
     };
     try {
       toast.promise(filter(), {
@@ -42,10 +45,12 @@ export default function BillDetails() {
         success: (message) => <b>{message}</b>,
         error: (error) => <b>{error.message}</b>,
       });
-    } catch (error) {}
+    } catch (error) {
+      handleError.log(error);
+    }
   };
 
-  const BillTable = ({ caption, bills }: { caption: string; bills: any[] }) => {
+  const BillTable = ({ caption, bills }: { caption: string; bills: IBill[] }) => {
     return (
       <div
         className={`table-row overflow-auto rounded-box border-2 border-base-300 bg-base-100 ${bills.length === 0 && 'min-h-24'}`}

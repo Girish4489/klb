@@ -1,6 +1,7 @@
 'use client';
 import { Theme, useTheme } from '@/app/context/ThemeContext';
 import { useUser } from '@/app/context/userContext';
+import handleError from '@/app/util/error/handleError';
 import axios from 'axios';
 import React from 'react';
 import toast from 'react-hot-toast';
@@ -44,8 +45,9 @@ export default function ThemerPage() {
         ),
         error: (error) => <b>{error.message}</b>,
       });
-    } catch (error: any) {
+    } catch (error) {
       // toast.error(error.response.data.message);
+      handleError.toastAndLog(error);
     }
   };
 

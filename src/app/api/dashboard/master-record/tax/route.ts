@@ -1,4 +1,5 @@
 // /src/app/api/dashboard/master-record/tax/route.ts
+import handleError from '@/app/util/error/handleError';
 import { connect } from '@/dbConfig/dbConfig';
 import { Tax } from '@/models/klm';
 import { NextRequest, NextResponse } from 'next/server';
@@ -15,8 +16,8 @@ export async function POST(req: NextRequest) {
     const tax = await Tax.create(reqBody);
     await tax.save();
     return NextResponse.json({ message: 'Tax created successfully', success: true, data: tax });
-  } catch (error: any) {
-    return NextResponse.json({ message: error.message });
+  } catch (error) {
+    handleError.api(error);
   }
 }
 
@@ -24,8 +25,8 @@ export async function GET() {
   try {
     const taxes = await Tax.find();
     return NextResponse.json(taxes);
-  } catch (error: any) {
-    return NextResponse.json({ message: error.message });
+  } catch (error) {
+    handleError.api(error);
   }
 }
 
@@ -48,8 +49,8 @@ export async function PUT(req: NextRequest) {
     }
     await tax.save();
     return NextResponse.json({ message: 'Tax updated successfully', success: true, data: tax });
-  } catch (error: any) {
-    return NextResponse.json({ message: error.message });
+  } catch (error) {
+    handleError.api(error);
   }
 }
 
@@ -67,7 +68,7 @@ export async function DELETE(req: NextRequest) {
     }
 
     return NextResponse.json({ message: 'Tax deleted successfully', success: true });
-  } catch (error: any) {
-    return NextResponse.json({ message: error.message });
+  } catch (error) {
+    handleError.api(error);
   }
 }

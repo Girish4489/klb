@@ -1,4 +1,5 @@
 'use client';
+import handleError from '@/app/util/error/handleError';
 import axios from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -37,9 +38,10 @@ export default function LoginPage() {
       setTimeout(() => {
         router.push('/');
       }, 1000);
-    } catch (error: any) {
+    } catch (error) {
       // console.error(error);
       // toast.error(error.response.data.error);
+      handleError.log(error);
     }
   };
 
@@ -62,9 +64,10 @@ export default function LoginPage() {
         success: (message) => <b>{message}</b>,
         error: (error) => <b>{error.message}</b>,
       });
-    } catch (error: any) {
+    } catch (error) {
       // console.error(error);
       // toast.error(error.response.data.error);
+      handleError.log(error);
     }
   };
 
@@ -122,6 +125,7 @@ export default function LoginPage() {
             <div className="flex flex-col justify-center">
               <details className="collapse collapse-arrow bg-base-200">
                 <summary className="collapse-title select-none py-1 text-xs font-normal">Forgot your password?</summary>
+                {/* eslint-disable-next-line react/no-unknown-property */}
                 <style jsx>{`
                   .collapse-title {
                     height: fit-content;

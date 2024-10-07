@@ -1,13 +1,14 @@
 'use client';
+import handleError from '@/app/util/error/handleError';
 import axios from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import React from 'react';
 import { toast } from 'react-hot-toast';
 
 export default function SignupPage() {
   const router = useRouter();
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = React.useState(false);
 
   const handleShowPassword = () => {
     setShowPassword(!showPassword);
@@ -35,9 +36,10 @@ export default function SignupPage() {
       setTimeout(() => {
         router.push('/auth/login');
       }, 1000);
-    } catch (error: any) {
+    } catch (error) {
       // console.log("Signup failed", error.message);
       // toast.error(error.message);
+      handleError.log(error);
     }
   };
 
@@ -61,9 +63,10 @@ export default function SignupPage() {
       setTimeout(() => {
         router.push('/auth/login');
       }, 1000);
-    } catch (error: any) {
+    } catch (error) {
       // console.log("resend verification failed", error.message);
       // toast.error(error.message);
+      handleError.log(error);
     }
   };
 
@@ -146,6 +149,7 @@ export default function SignupPage() {
                 >
                   Verify your Account?
                 </summary>
+                {/* eslint-disable-next-line react/no-unknown-property */}
                 <style jsx>{`
                   .collapse-title {
                     height: fit-content;

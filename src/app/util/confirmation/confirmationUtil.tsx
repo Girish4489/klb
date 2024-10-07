@@ -40,13 +40,12 @@ const ConfirmationModal: React.FC<{
   );
 };
 
-export const userConfirmaion = ({ header, message }: ConfirmationParams): Promise<boolean> => {
+export const userConfirmation = ({ header, message }: ConfirmationParams): Promise<boolean> => {
   return new Promise((resolve) => {
     const container = document.createElement('dialog');
     container.id = 'confirm';
     container.className = 'modal z-50';
 
-    // Create the root once outside the handleClose function
     const root = createRoot(container);
 
     document.body.appendChild(container);
@@ -56,7 +55,7 @@ export const userConfirmaion = ({ header, message }: ConfirmationParams): Promis
     }
 
     const handleClose = (confirmed: boolean) => {
-      root.unmount(); // Use the existing root to unmount
+      root.unmount();
       document.body.removeChild(container);
       resolve(confirmed);
     };

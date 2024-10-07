@@ -32,13 +32,14 @@ export async function POST(request: NextRequest) {
     const savedUser = await newUser.save();
 
     //send verification email
-    await sendEmail({ email, emailType: 'VERIFY', userId: savedUser._id });
+    await sendEmail({ email, emailType: 'VERIFY', userId: savedUser._id.toString() });
 
     return NextResponse.json({
       message: 'Signup Successfull \n Please verify your email',
       success: true,
       savedUser,
     });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     return NextResponse.json({ error: error.message });
   }

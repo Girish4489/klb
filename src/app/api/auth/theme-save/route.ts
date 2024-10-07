@@ -1,3 +1,4 @@
+import handleError from '@/app/util/error/handleError';
 import { connect } from '@/dbConfig/dbConfig';
 import { getDataFromToken } from '@/helpers/getDataFromToken';
 import User from '@/models/userModel';
@@ -21,8 +22,8 @@ export async function POST(request: NextRequest) {
       success: true,
       user,
     });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message });
+  } catch (error) {
+    return handleError.api(error);
   }
 }
 
@@ -40,7 +41,7 @@ export async function GET(request: NextRequest) {
       success: true,
       user,
     });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message });
+  } catch (error) {
+    return handleError.api(error);
   }
 }

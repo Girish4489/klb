@@ -1,3 +1,4 @@
+import handleError from '@/app/util/error/handleError';
 import { connect } from '@/dbConfig/dbConfig';
 import { getDataFromToken } from '@/helpers/getDataFromToken';
 import { Bill } from '@/models/klm';
@@ -44,7 +45,7 @@ export async function GET(request: NextRequest) {
       }),
     ]);
     return NextResponse.json({ message: 'Bill data', success: true, bill: bills, totalBills: totalBillsCount });
-  } catch (error: any) {
-    return NextResponse.json({ message: error.message, success: false });
+  } catch (error) {
+    handleError.apiSuccess(error, false);
   }
 }

@@ -1,11 +1,11 @@
 'use client';
-import { userConfirmaion } from '@/app/util/confirmation/confirmationUtil';
+import { userConfirmation } from '@/app/util/confirmation/confirmationUtil';
+import handleError from '@/app/util/error/handleError';
 import { formatD } from '@/app/util/format/dateUtils';
 import { ApiGet, ApiPost, ApiPut } from '@/app/util/makeApiRequest/makeApiRequest';
-import { IBill, ICategory, ITax } from '@/models/klm';
+import { IBill, ICategory, IDimension, IDimensionType, IStyle, IStyleProcess, ITax } from '@/models/klm';
 import { Types } from 'mongoose';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import React, { useMemo } from 'react';
 import toast from 'react-hot-toast';
 
@@ -19,7 +19,6 @@ export default function BillPage() {
   const [newBill, setNewBill] = React.useState<boolean>(true);
 
   const [printType, setPrintType] = React.useState<string>('Customer Bill');
-  const router = useRouter();
   React.useEffect(() => {
     (async () => {
       try {
@@ -54,8 +53,9 @@ export default function BillPage() {
           toast.error("An error occurred while fetching today's bill data. Please try again later.");
           throw new Error(BillResponse.message);
         }
-      } catch (error: any) {
-        toast.error(error.message);
+      } catch (error) {
+        // toast.error(error.message);
+        handleError.toastAndLog(error);
       }
     })();
   }, []);
@@ -128,9 +128,9 @@ export default function BillPage() {
       // Update the existing dimension fields
       updatedDimension[dimIndex] = {
         ...existingDimension,
-        dimensionTypeName: dimensionTypeName === ('none' || undefined) ? '' : dimensionTypeName,
-        dimensionName: dimensionName === ('none' || undefined) ? '' : dimensionName,
-        note: note === ('none' || undefined) ? '' : note,
+        dimensionTypeName: dimensionTypeName === 'none' || dimensionTypeName === undefined ? '' : dimensionTypeName,
+        dimensionName: dimensionName === 'none' || dimensionName === undefined ? '' : dimensionName,
+        note: note === 'none' || note === undefined ? '' : note,
       };
 
       // filter the dimensions array which index greater than dimLength
@@ -185,7 +185,7 @@ export default function BillPage() {
 
   function handleRemoveOrder(orderIndex: number): React.MouseEventHandler<HTMLButtonElement> | undefined {
     return async () => {
-      const Confirmed = await userConfirmaion({
+      const Confirmed = await userConfirmation({
         header: 'Confirm Deletion',
         message: 'Are you sure you want to delete this order?',
       });
@@ -202,13 +202,15 @@ export default function BillPage() {
             totalAmount: newTotalAmount,
           } as IBill);
         }
-      } catch (error) {}
+      } catch (error) {
+        handleError.log(error);
+      }
     };
   }
 
   const handleRowClick = (taxId: string) => {
     // Find the tax object with the given ID
-    const selectedTax = tax.find((t) => t._id === taxId);
+    const selectedTax = tax.find((t) => t._id.toString() === taxId);
     if (selectedTax === undefined) {
       toast.error('Selected tax not found');
     }
@@ -268,19 +270,20 @@ export default function BillPage() {
       } else {
         throw new Error(res.message);
       }
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error) {
+      // toast.error(error.message);
+      handleError.toastAndLog(error);
     }
   }
 
   async function handleUpdateBill() {
-    const update = await userConfirmaion({
+    const update = await userConfirmation({
       header: 'Confirm Update',
       message: 'Are you sure you want to update this bill?',
     });
     if (!update) return;
     const updateBill = async () => {
-      const res = await ApiPut.Bill(bill?._id, bill as IBill);
+      const res = await ApiPut.Bill(bill?._id?.toString() ?? '', bill as IBill);
       if (res.success === true) {
         setTodayBill([...todayBill, res.today]);
         setBill(res.bill);
@@ -299,10 +302,12 @@ export default function BillPage() {
         success: (message) => <b>{message}</b>,
         error: (error) => <b>{error.message}</b>,
       });
-    } catch (error: any) {}
+    } catch (error) {
+      handleError.log(error);
+    }
   }
 
-  const BillTable = ({ caption, bills }: { caption: string; bills: any[] }) => {
+  const BillTable = ({ caption, bills }: { caption: string; bills: IBill[] }) => {
     return (
       <div
         className={`max-h-96 overflow-x-auto rounded-box border-2 border-base-300 bg-base-100 ${bills.length === 0 && 'min-h-24'}`}
@@ -387,14 +392,15 @@ export default function BillPage() {
         setSearchBill(undefined);
         throw new Error(res.message);
       }
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error) {
+      // toast.error(error.message);
+      handleError.toastAndLog(error);
     }
   };
 
   const searchRowClicked = (billId: string) => async () => {
     try {
-      const selectedBill = (searchBill ?? []).find((bill) => bill._id === billId);
+      const selectedBill = (searchBill ?? []).find((bill) => bill._id.toString() === billId);
       if (selectedBill) {
         setNewBill(false);
         setBill(selectedBill);
@@ -402,10 +408,32 @@ export default function BillPage() {
       } else {
         toast.error('Bill not found');
       }
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error) {
+      // toast.error(error.message);
+      handleError.toastAndLog(error);
     }
   };
+
+  React.useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const billNumber = urlParams.get('billNumber');
+
+    if (billNumber) {
+      (async () => {
+        try {
+          const res = await ApiGet.Bill.BillSearch(parseInt(billNumber), 'bill');
+          if (res.success === true && res.bill.length > 0) {
+            setNewBill(false);
+            setBill(res.bill[0]);
+          } else {
+            throw new Error(res.message);
+          }
+        } catch (error) {
+          handleError.toastAndLog(error);
+        }
+      })();
+    }
+  }, []);
 
   return (
     <span className="table-column h-full">
@@ -473,7 +501,7 @@ export default function BillPage() {
                           <>
                             {searchBill.map((bill: IBill, index: number) => (
                               <React.Fragment key={index}>
-                                <tr className="hover text-center" onClick={searchRowClicked(bill._id)}>
+                                <tr className="hover text-center" onClick={searchRowClicked(bill._id.toString())}>
                                   <td>{index + 1}</td>
                                   <td>{bill?.billNumber}</td>
                                   <td>{bill?.mobile}</td>
@@ -711,7 +739,11 @@ export default function BillPage() {
                                   {order.category?.categoryName ?? 'Select category'}
                                 </option>
                                 {category?.map((category, categoryIndex) => (
-                                  <option key={categoryIndex} value={category.categoryName} itemID={category._id}>
+                                  <option
+                                    key={categoryIndex}
+                                    value={category.categoryName}
+                                    itemID={category._id.toString()}
+                                  >
                                     {category.categoryName}
                                   </option>
                                 ))}
@@ -772,8 +804,8 @@ export default function BillPage() {
                         <div className="flex flex-row justify-between gap-1 max-sm:flex-wrap">
                           {/*2nd row  Render dropdown select options for dimensions based on the selected category */}
                           {category.map((cat) => {
-                            if (cat._id === bill?.order?.[orderIndex]?.category?.catId?.toString()) {
-                              return cat.dimension?.map((typ: any, typIndex: any) => (
+                            if (cat._id.toString() === bill?.order?.[orderIndex]?.category?.catId?.toString()) {
+                              return cat.dimension?.map((typ: IDimension, typIndex: number) => (
                                 <div
                                   key={typIndex}
                                   className="flex w-full flex-row flex-wrap items-center gap-1 max-sm:justify-between"
@@ -802,7 +834,7 @@ export default function BillPage() {
                                         {order.dimension?.[typIndex]?.dimensionName ?? 'Select dimension'}
                                       </option>
                                       {typ.dimensionTypes &&
-                                        typ.dimensionTypes.map((dim: any, dimIndex: number) => (
+                                        typ.dimensionTypes.map((dim: IDimensionType, dimIndex: number) => (
                                           <option key={dimIndex} value={dim.dimensionName}>
                                             {dim.dimensionName}
                                           </option>
@@ -896,8 +928,8 @@ export default function BillPage() {
                         <h2 className="label label-text p-0 text-center">Style</h2>
                         <div className="flex w-full flex-col flex-wrap justify-between gap-1 max-sm:flex-row">
                           {(category || []).map((cat) => {
-                            if (cat._id === bill?.order?.[orderIndex]?.category?.catId?.toString()) {
-                              return cat.styleProcess?.map((styleProcess: any, styleProcessIndex: number) => (
+                            if (cat._id.toString() === bill?.order?.[orderIndex]?.category?.catId?.toString()) {
+                              return cat.styleProcess?.map((styleProcess: IStyleProcess, styleProcessIndex: number) => (
                                 <div
                                   key={styleProcessIndex}
                                   className="flex w-full flex-row flex-wrap items-center gap-1 rounded-box bg-base-300 p-2 max-sm:justify-between"
@@ -921,7 +953,7 @@ export default function BillPage() {
                                     value={order.styleProcess?.[styleProcessIndex]?.styleName || 'none'}
                                   >
                                     <option value="none">Select style</option>
-                                    {styleProcess.styles?.map((styles: any, stylesIndex: any) => (
+                                    {styleProcess.styles?.map((styles: IStyle, stylesIndex: number) => (
                                       <option key={stylesIndex} value={styles.styleName}>
                                         {styles.styleName}
                                       </option>
@@ -1077,7 +1109,11 @@ export default function BillPage() {
                           </thead>
                           <tbody>
                             {tax.map((tax, taxIndex) => (
-                              <tr key={tax._id} className="hover" onClick={() => handleRowClick(tax._id)}>
+                              <tr
+                                key={tax._id.toString()}
+                                className="hover"
+                                onClick={() => handleRowClick(tax._id.toString())}
+                              >
                                 <td>{taxIndex + 1}</td>
                                 <td>
                                   <label htmlFor={tax.taxName}>
@@ -1088,7 +1124,7 @@ export default function BillPage() {
                                       id={tax.taxName}
                                       // defaultChecked={bill?.tax?.some((t) => t._id === tax._id)}
                                       checked={bill?.tax?.some((t) => t._id === tax._id) ?? false}
-                                      onChange={() => handleRowClick(tax._id)}
+                                      onChange={() => handleRowClick(tax._id.toString())}
                                     />
                                   </label>
                                 </td>
@@ -1147,8 +1183,8 @@ export default function BillPage() {
       <div className="my-0.5 flex w-full flex-col rounded-box bg-base-300 p-2">
         {todayBill?.length || thisWeekBill?.length ? (
           <>
-            <BillTable caption="Today" bills={formattedTodayBill} />
-            <BillTable caption="This Week(excluding today)" bills={formattedThisWeekBill} />
+            <BillTable caption="Today" bills={formattedTodayBill as unknown as IBill[]} />
+            <BillTable caption="This Week (excluding today)" bills={formattedThisWeekBill as unknown as IBill[]} />
           </>
         ) : (
           <div className="text-warning">No bills for today or this week</div>

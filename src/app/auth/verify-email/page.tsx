@@ -1,12 +1,13 @@
 'use client';
+import handleError from '@/app/util/error/handleError';
 import axios from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 
 export default function VerifyEmailPage() {
-  const [token, setToken] = useState('');
+  const [token, setToken] = React.useState('');
   const router = useRouter();
 
   useEffect(() => {
@@ -34,9 +35,10 @@ export default function VerifyEmailPage() {
         setTimeout(() => {
           router.push('/auth/login');
         }, 3000);
-      } catch (error: any) {
+      } catch (error) {
         // console.log(error.response);
         // toast.error(error.response.data.error + ' ' + error.response.status);
+        handleError.log(error);
       }
     };
 
