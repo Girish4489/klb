@@ -1,15 +1,12 @@
 // src/app/context/UserContext.tsx
 'use client';
-import { fetchUserData } from '@/app/util/user/userFetchUtil/userUtils';
-import { IUser } from '@/models/userModel';
-import React, { ReactNode, createContext, useCallback, useContext, useEffect } from 'react';
-import toast from 'react-hot-toast';
+import { fetchUserData, UserState } from '@/app/util/user/userFetchUtil/userUtils';
+import React, { createContext, ReactNode, useCallback, useContext, useEffect } from 'react';
+import handleError from '../util/error/handleError';
 
 interface UserContextProps {
   children: ReactNode;
 }
-
-type UserState = Omit<IUser, 'password'>;
 
 interface UserContextType {
   user: UserState;
@@ -40,14 +37,16 @@ export const UserProvider: React.FC<UserContextProps> = ({ children }) => {
   // Function to fetch and set user data
   const fetchAndSetUser = useCallback(async () => {
     try {
-      const userData = await fetchUserData();
+      const userData: UserState =
+        (await fetchUserData()) ??
+        (() => {
+          throw new Error('Failed to fetch user data');
+        })();
       setUser(userData);
 
       document.documentElement.setAttribute('data-theme', userData.theme);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      // console.error(error);
-      toast.error(error.response.data.message + '\n😢 Please try sometime later or Login again');
+    } catch (error) {
+      handleError.toast(error);
     }
   }, []);
 
