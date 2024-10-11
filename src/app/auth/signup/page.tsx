@@ -19,15 +19,15 @@ export default function SignupPage() {
     const username = e.currentTarget.username.value.trim();
     const email = e.currentTarget.email.value.trim();
     const password = e.currentTarget.password.value.trim();
-    const signup = async () => {
-      const response = await axios.post('/api/auth/signup', { username: username, email: email, password: password });
-      if (response.data.success === true) {
-        return response.data.message;
-      } else {
-        throw new Error(response.data.error);
-      }
-    };
     try {
+      const signup = async () => {
+        const response = await axios.post('/api/auth/signup', { username: username, email: email, password: password });
+        if (response.data.success === true) {
+          return response.data.message;
+        } else {
+          throw new Error(response.data.message ?? response.data.error);
+        }
+      };
       await toast.promise(signup(), {
         loading: 'Signing up...',
         success: (message) => <b>{message}</b>,
@@ -46,15 +46,15 @@ export default function SignupPage() {
   const handleResendVerification = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const email = e.currentTarget.resendEmail.value.trim();
-    const resendVerification = async () => {
-      const response = await axios.post('/api/auth/resend-email', { email: email });
-      if (response.data.success === true) {
-        return response.data.message;
-      } else {
-        throw new Error(response.data.error);
-      }
-    };
     try {
+      const resendVerification = async () => {
+        const response = await axios.post('/api/auth/resend-email', { email: email });
+        if (response.data.success === true) {
+          return response.data.message;
+        } else {
+          throw new Error(response.data.message ?? response.data.error);
+        }
+      };
       await toast.promise(resendVerification(), {
         loading: 'Sending verification email',
         success: (message) => <b>{message}</b>,

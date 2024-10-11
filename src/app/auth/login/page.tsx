@@ -19,17 +19,17 @@ export default function LoginPage() {
     const email = e.currentTarget.email.value.trim();
     const password = e.currentTarget.password.value.trim();
 
-    const login = async () => {
-      if (email.length === 0) throw new Error('Please enter email');
-      if (password.length === 0) throw new Error('Please enter password');
-      const response = await axios.post('/api/auth/login', { email: email, password: password });
-      if (response.data.success === true) {
-        return response.data.message;
-      } else {
-        throw new Error(response.data.error);
-      }
-    };
     try {
+      const login = async () => {
+        if (email.length === 0) throw new Error('Please enter email');
+        if (password.length === 0) throw new Error('Please enter password');
+        const response = await axios.post('/api/auth/login', { email: email, password: password });
+        if (response.data.success === true) {
+          return response.data.message;
+        } else {
+          throw new Error(response.data.message ?? response.data.error);
+        }
+      };
       await toast.promise(login(), {
         loading: 'Logging in...',
         success: (message) => <b>{message}</b>,
@@ -48,17 +48,17 @@ export default function LoginPage() {
   const handleForgotPassword = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const forgot = e.currentTarget.forgotEmail.value.trim();
-    const forgotPassword = async () => {
-      if (forgot.lenght === 0) throw new Error('Please enter email');
-
-      const response = await axios.post('/api/auth/forgot-password', { email: forgot });
-      if (response.data.success === true) {
-        return response.data.message;
-      } else {
-        throw new Error(response.data.error);
-      }
-    };
     try {
+      const forgotPassword = async () => {
+        if (forgot.lenght === 0) throw new Error('Please enter email');
+
+        const response = await axios.post('/api/auth/forgot-password', { email: forgot });
+        if (response.data.success === true) {
+          return response.data.message;
+        } else {
+          throw new Error(response.data.message ?? response.data.error);
+        }
+      };
       await toast.promise(forgotPassword(), {
         loading: 'Sending reset link...',
         success: (message) => <b>{message}</b>,

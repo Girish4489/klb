@@ -50,6 +50,6 @@ export async function POST(request: NextRequest) {
 
     return response;
   } catch (error) {
-    return handleError.api(error);
+    return handleError.api(error, false);
   }
 }

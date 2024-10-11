@@ -1,3 +1,4 @@
+import handleError from '@/app/util/error/handleError';
 import { connect } from '@/dbConfig/dbConfig';
 import { sendEmail } from '@/helpers/mailer';
 import User from '@/models/userModel';
@@ -30,8 +31,7 @@ export async function POST(request: NextRequest) {
       message: 'Verification email sent',
       success: true,
     });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message, status: 500 });
+  } catch (error) {
+    return handleError.api(error, false);
   }
 }

@@ -1,3 +1,4 @@
+import handleError from '@/app/util/error/handleError';
 import { connect } from '@/dbConfig/dbConfig';
 import User from '@/models/userModel';
 import { NextRequest, NextResponse } from 'next/server';
@@ -32,8 +33,7 @@ export async function POST(request: NextRequest) {
       message: 'Email verified Successfully',
       success: true,
     });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message, status: 500 });
+  } catch (error) {
+    return handleError.api(error, false);
   }
 }

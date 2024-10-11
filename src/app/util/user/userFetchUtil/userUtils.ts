@@ -1,6 +1,7 @@
 // userUtils.ts
 import { IUser } from '@/models/userModel';
 import axios from 'axios';
+import handleError from '../../error/handleError';
 
 export async function fetchUserData() {
   const theme = document.documentElement.getAttribute('data-theme');
@@ -24,7 +25,7 @@ export async function fetchUserData() {
       updatedAt: userData.updatedAt ? new Date(userData.updatedAt) : new Date(),
     } as IUser;
   } catch (error) {
-    console.error('Error fetching user data:', error);
-    throw new Error('Failed to fetch user data');
+    // console.error(error);
+    handleError.throw(error);
   }
 }

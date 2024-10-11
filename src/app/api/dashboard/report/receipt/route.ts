@@ -51,6 +51,6 @@ export async function GET(request: NextRequest) {
       totalReceipts: totalReceiptsCount,
     });
   } catch (error) {
-    return handleError.apiSuccess(error, false);
+    return handleError.api(error, false);
   }
 }

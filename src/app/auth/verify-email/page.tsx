@@ -11,22 +11,21 @@ export default function VerifyEmailPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const urlToken = window.location.search.split('=')[1];
+    const urlToken = new URLSearchParams(window.location.search).get('token');
     setToken(urlToken || '');
   }, []);
 
   useEffect(() => {
     const verifyUserEmail = async () => {
-      const verifyUser = async () => {
-        const response = await axios.post('/api/auth/verify-email', { token: token });
-        if (response.data.success === true) {
-          return response.data.message;
-        } else {
-          throw new Error(response.data.error);
-        }
-      };
-
       try {
+        const verifyUser = async () => {
+          const response = await axios.post('/api/auth/verify-email', { token: token });
+          if (response.data.success === true) {
+            return response.data.message;
+          } else {
+            throw new Error(response.data.message ?? response.data.error);
+          }
+        };
         await toast.promise(verifyUser(), {
           loading: 'Verifying email...',
           success: (message) => <b>{message}</b>,

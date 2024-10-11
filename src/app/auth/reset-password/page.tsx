@@ -18,15 +18,15 @@ export default function ResetPasswordPage() {
       toast.error('Passwords do not match');
       return;
     }
-    const resetPassword = async () => {
-      const response = await axios.post('/api/auth/reset-password', { token: token, password: password });
-      if (response.data.success === true) {
-        return response.data.message;
-      } else {
-        throw new Error(response.data.error);
-      }
-    };
     try {
+      const resetPassword = async () => {
+        const response = await axios.post('/api/auth/reset-password', { token: token, password: password });
+        if (response.data.success === true) {
+          return response.data.message;
+        } else {
+          throw new Error(response.data.message ?? response.data.error);
+        }
+      };
       await toast.promise(resetPassword(), {
         loading: 'Resetting Password...',
         success: (message) => <b>{message}</b>,
@@ -36,6 +36,7 @@ export default function ResetPasswordPage() {
         router.push('/auth/login');
       }, 1000);
     } catch (error) {
+      console.error(error);
       // console.error(error.response.data.error);
       // toast.error(error.response.data.error);
       handleError.log(error);
@@ -43,7 +44,7 @@ export default function ResetPasswordPage() {
   };
 
   useEffect(() => {
-    const urlToken = window.location.search.split('=')[1];
+    const urlToken = new URLSearchParams(window.location.search).get('token');
     setToken(urlToken || '');
   }, []);
 
@@ -91,17 +92,11 @@ export default function ResetPasswordPage() {
               </div>
             </form>
             <div className="card-body px-2 py-3">
-              <div className="flex items-center justify-between gap-2">
-                <p className="label label-text text-secondary">If Already Verified</p>
-                <Link href="/auth/login" className="btn btn-link p-0">
-                  Login
-                </Link>
-              </div>
               <hr className="border-t-2 border-neutral bg-base-300" />
               <div className="flex items-center justify-between gap-2">
-                <p className="label label-text text-secondary">If Link expired resend verification go to signup</p>
-                <Link href="/auth/signup" className="btn btn-link p-0">
-                  Signup
+                <p className="label label-text text-secondary">If Link expired resend password link go to Login Page</p>
+                <Link href="/auth/login" className="btn btn-link p-0">
+                  Login
                 </Link>
               </div>
             </div>

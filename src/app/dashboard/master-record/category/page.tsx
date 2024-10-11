@@ -37,8 +37,7 @@ export default function CategoryPage() {
     isMounted.current = true;
   }, []);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const configureToastPromise = async (promise: Promise<any>, loadingMessage: string) => {
+  const configureToastPromise = async (promise: Promise<string>, loadingMessage: string) => {
     try {
       await toast.promise(promise, {
         loading: loadingMessage,

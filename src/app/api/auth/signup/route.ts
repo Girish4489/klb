@@ -1,3 +1,4 @@
+import handleError from '@/app/util/error/handleError';
 import { connect } from '@/dbConfig/dbConfig';
 import { sendEmail } from '@/helpers/mailer';
 import User from '@/models/userModel';
@@ -39,8 +40,7 @@ export async function POST(request: NextRequest) {
       success: true,
       savedUser,
     });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message });
+  } catch (error) {
+    return handleError.api(error, false);
   }
 }

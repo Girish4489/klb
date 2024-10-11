@@ -35,6 +35,6 @@ export async function POST(request: NextRequest) {
       success: true,
     });
   } catch (error) {
-    return handleError.api(error);
+    return handleError.api(error, false);
   }
 }

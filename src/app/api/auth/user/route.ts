@@ -1,3 +1,4 @@
+import handleError from '@/app/util/error/handleError';
 import { connect } from '@/dbConfig/dbConfig';
 import { getDataFromToken } from '@/helpers/getDataFromToken';
 import User from '@/models/userModel';
@@ -15,9 +16,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       message: 'User found',
       data: user,
+      success: true,
     });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+  } catch (error) {
+    return handleError.api(error, false);
   }
 }
