@@ -1,0 +1,9 @@
+packages:
+  - 'packages/*'
+  - 'apps/*'
+  - 'libs/*'
+  - 'src/*'
+  - 'data/*'
+  - '.vscode/*'
+  - '.husky/*'
+  - 'public/*'
