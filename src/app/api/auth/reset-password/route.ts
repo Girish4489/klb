@@ -1,3 +1,4 @@
+import bcryptUtil from '@/app/util/bcrypt/bcrypt';
 import handleError from '@/app/util/error/handleError';
 import { connect } from '@/dbConfig/dbConfig';
 import User from '@/models/userModel';
@@ -25,14 +26,13 @@ export async function POST(request: NextRequest) {
     }
 
     const prevHashedPassword = user.password;
-    const decryptedPassword = await bcryptjs.compare(password, prevHashedPassword);
-    if (decryptedPassword) {
+    const isSamePassword = await bcryptUtil.verify(password, prevHashedPassword);
+    if (isSamePassword) {
       throw new Error('New password cannot be the same as the old password');
     }
 
     //hash password
-    const salt = await bcryptjs.genSalt(10);
-    const hashedPassword = await bcryptjs.hash(password, salt);
+    const hashedPassword = await bcryptjs.hash(password, 12);
 
     user.password = hashedPassword;
     user.forgotPasswordToken = '';

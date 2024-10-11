@@ -1,6 +1,6 @@
 import handleError from '@/app/util/error/handleError';
+import { token } from '@/app/util/token/token';
 import User from '@/models/userModel';
-import bcryptjs from 'bcryptjs';
 import nodemailer from 'nodemailer';
 
 interface SendEmailParams {
@@ -21,21 +21,21 @@ const createTransporter = () => {
   });
 };
 
-const generateEmailContent = (emailType: 'VERIFY' | 'RESET', hashedToken: string, tokenExpiryTime: number) => {
-  const indianDate = new Date(tokenExpiryTime).toLocaleString('en-IN');
+const generateEmailContent = (emailType: 'VERIFY' | 'RESET', token: string, tokenExpiryTime: number) => {
+  const indianDate = new Date(tokenExpiryTime * 1000).toLocaleString('en-IN');
   const baseUrl = process.env.DOMAIN;
   const emailContent = {
     VERIFY: {
       subject: 'Verify Your Email',
       actionDescription: 'verify your email',
       actionLinkText: 'Verify Email',
-      actionLink: `${baseUrl}/auth/verify-email?token=${hashedToken}`,
+      actionLink: `${baseUrl}/auth/verify-email?token=${token}`,
     },
     RESET: {
       subject: 'Reset Your Password',
       actionDescription: 'reset your password',
       actionLinkText: 'Reset Password',
-      actionLink: `${baseUrl}/auth/reset-password?token=${hashedToken}`,
+      actionLink: `${baseUrl}/auth/reset-password?token=${token}`,
     },
   };
 
@@ -54,18 +54,20 @@ const generateEmailContent = (emailType: 'VERIFY' | 'RESET', hashedToken: string
 
 export const sendEmail = async ({ email, emailType, userId }: SendEmailParams) => {
   try {
-    const hashedToken = await bcryptjs.hash(userId.toString(), 10);
-    const tokenExpiryTime = Date.now() + 30 * 60 * 1000; // 30 minutes in milliseconds
+    const tokenData = { id: userId, email };
+    const emailToken = await token.create(tokenData, '30m');
+    const decodedToken = await token.verify(emailToken);
+    const tokenExpiryTime = decodedToken?.exp || 0;
 
     const updateUser =
       emailType === 'VERIFY'
-        ? { verifyToken: hashedToken, verifyTokenExpiry: tokenExpiryTime }
-        : { forgotPasswordToken: hashedToken, forgotPasswordTokenExpiry: tokenExpiryTime };
+        ? { verifyToken: emailToken, verifyTokenExpiry: new Date(tokenExpiryTime * 1000) }
+        : { forgotPasswordToken: emailToken, forgotPasswordTokenExpiry: new Date(tokenExpiryTime * 1000) };
 
     await User.findByIdAndUpdate(userId, updateUser);
 
     const transporter = createTransporter();
-    const { subject, html } = generateEmailContent(emailType, hashedToken, tokenExpiryTime);
+    const { subject, html } = generateEmailContent(emailType, emailToken, tokenExpiryTime);
 
     const mailOptions = {
       from: process.env.GMAIL,

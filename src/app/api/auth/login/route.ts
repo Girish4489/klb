@@ -1,8 +1,8 @@
+import bcryptUtil from '@/app/util/bcrypt/bcrypt';
 import handleError from '@/app/util/error/handleError';
+import { cookie, token } from '@/app/util/token/token';
 import { connect } from '@/dbConfig/dbConfig';
 import User from '@/models/userModel';
-import bcryptjs from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 import { NextRequest, NextResponse } from 'next/server';
 
 connect();
@@ -23,30 +23,26 @@ export async function POST(request: NextRequest) {
     if (isVerified === false || null || undefined) throw new Error('User is not verified');
 
     //check if password is correct
-    const validPassword = await bcryptjs.compare(password, user.password);
+    const validPassword = await bcryptUtil.verify(password, user.password);
     if (!validPassword) throw new Error('Invalid password');
 
-    //create token data
+    // create token data
     const tokenData = {
-      id: user._id,
+      id: user._id.toString(),
       username: user.username,
       email: user.email,
     };
 
-    //create token
-    const token = await jwt.sign(tokenData, process.env.TOKEN_SECRET!, {
-      expiresIn: '1d',
-    });
+    // create token
+    const authToken = await token.create(tokenData, '1d');
 
     const response = NextResponse.json({
       message: 'Login successful',
       success: true,
     });
 
-    response.cookies.set('token', token, {
-      httpOnly: true,
-      expires: new Date(Date.now() + 86400000),
-    });
+    const tokenExpiry = await token.expiry(authToken);
+    await cookie.set(response, authToken, tokenExpiry);
 
     return response;
   } catch (error) {

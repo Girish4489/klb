@@ -1,8 +1,8 @@
+import bcryptUtil from '@/app/util/bcrypt/bcrypt';
 import handleError from '@/app/util/error/handleError';
 import { connect } from '@/dbConfig/dbConfig';
 import { sendEmail } from '@/helpers/mailer';
 import User from '@/models/userModel';
-import bcryptjs from 'bcryptjs';
 import { NextRequest, NextResponse } from 'next/server';
 
 connect();
@@ -20,8 +20,7 @@ export async function POST(request: NextRequest) {
     if (user) throw new Error('User already exists');
 
     //hash password
-    const salt = await bcryptjs.genSalt(10);
-    const hashedPassword = await bcryptjs.hash(password, salt);
+    const hashedPassword = await bcryptUtil.hash(password, 10);
     const newUser = new User({
       username,
       email,
