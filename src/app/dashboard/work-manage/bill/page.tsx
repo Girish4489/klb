@@ -261,6 +261,15 @@ export default function BillPage() {
       if (!bill) throw new Error('No bill data found to save');
       if (!bill.billNumber) throw new Error('Bill number is required');
       if (!bill?.order) throw new Error('No orders added');
+      if (!bill?.date) throw new Error('Date is required');
+      if (!bill?.dueDate) throw new Error('Due date is required');
+      if (!bill?.mobile) throw new Error('Mobile number is required');
+
+      // for each order check amount is greater than 0
+      const invalidOrderIndex = bill.order.findIndex((order) => (order.amount ?? 0) <= 0);
+      if (invalidOrderIndex !== -1) {
+        throw new Error(`Amount should be greater than 0 for order Sl No ${invalidOrderIndex + 1}`);
+      }
 
       const res = await ApiPost.Bill(bill);
       if (res.success === true) {
@@ -297,13 +306,22 @@ export default function BillPage() {
       if (!bill._id) throw new Error('No bill ID found to update');
       if (!bill.billNumber) throw new Error('Bill number is required');
       if (!bill?.order) throw new Error('No orders added');
+      if (!bill?.date) throw new Error('Date is required');
+      if (!bill?.dueDate) throw new Error('Due date is required');
+      if (!bill?.mobile) throw new Error('Mobile number is required');
+
+      // for each order check amount is greater than 0
+      const invalidOrderIndex = bill.order.findIndex((order) => (order.amount ?? 0) <= 0);
+      if (invalidOrderIndex !== -1) {
+        throw new Error(`Amount should be greater than 0 for order Sl No ${invalidOrderIndex + 1}`);
+      }
       await toast.promise(updateBill(), {
         loading: 'Updating bill...',
         success: (message) => <b>{message}</b>,
         error: (error) => <b>{error.message}</b>,
       });
     } catch (error) {
-      handleError.log(error);
+      handleError.toastAndLog(error);
     }
   }
 
