@@ -2,13 +2,19 @@
 import handleError from '@/app/util/error/handleError';
 import axios from 'axios';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 export default function ResetPasswordPage() {
   const [token, setToken] = useState('');
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const urlToken = searchParams.get('token');
+    setToken(urlToken || '');
+  }, [searchParams]);
 
   const resetUserPassword = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -42,11 +48,6 @@ export default function ResetPasswordPage() {
       handleError.log(error);
     }
   };
-
-  useEffect(() => {
-    const urlToken = new URLSearchParams(window.location.search).get('token');
-    setToken(urlToken || '');
-  }, []);
 
   return (
     <div className="hero min-h-screen bg-base-200">

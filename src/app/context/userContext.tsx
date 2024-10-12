@@ -1,8 +1,9 @@
 // src/app/context/UserContext.tsx
 'use client';
+import handleError from '@/app/util/error/handleError';
 import { fetchUserData, UserState } from '@/app/util/user/userFetchUtil/userUtils';
+import { usePathname } from 'next/navigation';
 import React, { createContext, ReactNode, useCallback, useContext, useEffect } from 'react';
-import handleError from '../util/error/handleError';
 
 interface UserContextProps {
   children: ReactNode;
@@ -34,6 +35,8 @@ export const UserProvider: React.FC<UserContextProps> = ({ children }) => {
     updatedAt: new Date(),
   } as unknown as UserState);
 
+  const pathname = usePathname();
+
   // Function to fetch and set user data
   const fetchAndSetUser = useCallback(async () => {
     try {
@@ -54,10 +57,12 @@ export const UserProvider: React.FC<UserContextProps> = ({ children }) => {
     setUser((prevUser) => ({ ...prevUser, ...partialUpdate }));
   }, []);
 
-  // Fetch and set user data on initial mount
+  // Fetch and set user data on initial mount, except for /auth/* routes
   useEffect(() => {
-    fetchAndSetUser();
-  }, [fetchAndSetUser]);
+    if (!pathname.startsWith('/auth')) {
+      fetchAndSetUser();
+    }
+  }, [fetchAndSetUser, pathname]);
 
   return <UserContext.Provider value={{ user, setUser, updateUser, fetchAndSetUser }}>{children}</UserContext.Provider>;
 };

@@ -2,18 +2,19 @@
 import handleError from '@/app/util/error/handleError';
 import axios from 'axios';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 
 export default function VerifyEmailPage() {
   const [token, setToken] = React.useState('');
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
-    const urlToken = new URLSearchParams(window.location.search).get('token');
+    const urlToken = searchParams.get('token');
     setToken(urlToken || '');
-  }, []);
+  }, [searchParams]);
 
   useEffect(() => {
     const verifyUserEmail = async () => {
