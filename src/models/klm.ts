@@ -119,234 +119,217 @@ interface IReceipt extends Document {
 }
 
 // Schema for Customer Data
-const customerSchema: Schema<ICustomer> = new Schema<ICustomer>({
-  name: {
-    type: String,
-    default: 'NA',
-    required: [true, 'Name is required.'],
-    trim: true,
+const customerSchema: Schema<ICustomer> = new Schema<ICustomer>(
+  {
+    name: {
+      type: String,
+      default: 'NA',
+      required: [true, 'Name is required.'],
+      trim: true,
+    },
+    phone: {
+      type: Number,
+      required: [true, 'Phone number is required.'],
+      unique: true,
+      trim: true,
+    },
+    email: String,
+    city: String,
+    state: String,
+    country: String,
+    pin: String,
+    address: String,
+    notes: String,
   },
-  phone: {
-    type: Number,
-    required: [true, 'Phone number is required.'],
-    unique: true,
-    trim: true,
-  },
-  email: String,
-  city: String,
-  state: String,
-  country: String,
-  pin: String,
-  address: String,
-  notes: String,
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
+  { timestamps: true },
+);
 
 // Schema for Tax Data
-const taxSchema: Schema<ITax> = new Schema<ITax>({
-  taxName: {
-    type: String,
-    required: [true, 'Tax name is required.'],
-    unique: true,
+const taxSchema: Schema<ITax> = new Schema<ITax>(
+  {
+    taxName: {
+      type: String,
+      required: [true, 'Tax name is required.'],
+      unique: true,
+    },
+    taxType: {
+      type: String,
+      enum: ['Percentage', 'Fixed'],
+      default: 'Percentage',
+    },
+    taxPercentage: {
+      type: Number,
+      required: [true, 'Tax percentage is required.'],
+    },
   },
-  taxType: {
-    type: String,
-    enum: ['Percentage', 'Fixed'],
-    default: 'Percentage',
-  },
-  taxPercentage: {
-    type: Number,
-    required: [true, 'Tax percentage is required.'],
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
+  { timestamps: true },
+);
 
 // Schema for Category
-const categorySchema: Schema<ICategory> = new Schema<ICategory>({
-  categoryName: {
-    type: String,
-    required: [true, 'Category name is required.'],
-    unique: true,
+const categorySchema: Schema<ICategory> = new Schema<ICategory>(
+  {
+    categoryName: {
+      type: String,
+      required: [true, 'Category name is required.'],
+      unique: true,
+    },
+    description: String,
+    styleProcess: [
+      {
+        styleProcessName: {
+          type: String,
+          required: [true, 'Style Process name is required.'],
+        },
+        styles: [
+          {
+            styleName: {
+              type: String,
+              required: [true, 'Style name is required.'],
+            },
+          },
+        ],
+      },
+    ],
+    dimension: [
+      {
+        dimensionTypeName: {
+          type: String,
+          required: [true, 'Dimension type name is required.'],
+        },
+        dimensionTypes: [
+          {
+            dimensionName: {
+              type: String,
+              required: [true, 'Dimension name is required.'],
+            },
+            note: String,
+          },
+        ],
+      },
+    ],
   },
-  description: String,
-  styleProcess: [
-    {
-      styleProcessName: {
-        type: String,
-        required: [true, 'Style Process name is required.'],
-      },
-      styles: [
-        {
-          styleName: {
-            type: String,
-            required: [true, 'Style name is required.'],
-          },
-        },
-      ],
-    },
-  ],
-  dimension: [
-    {
-      dimensionTypeName: {
-        type: String,
-        required: [true, 'Dimension type name is required.'],
-      },
-      dimensionTypes: [
-        {
-          dimensionName: {
-            type: String,
-            required: [true, 'Dimension name is required.'],
-          },
-          note: String,
-        },
-      ],
-    },
-  ],
-});
+  { timestamps: true },
+);
 
 // Schema for Bill
-const billSchema: Schema<IBill> = new Schema<IBill>({
-  billNumber: {
-    type: Number,
-    required: [true, 'Bill number is required.'],
-    unique: true,
-  },
-  date: {
-    type: Date,
-    default: Date.now,
-  },
-  dueDate: {
-    type: Date,
-    default: Date.now,
-  },
-  urgent: {
-    type: Boolean,
-    default: false,
-  },
-  trail: {
-    type: Boolean,
-    default: false,
-  },
-  mobile: {
-    type: Number,
-  },
-  name: String,
-  email: String,
-  order: [
-    {
-      category: {
-        catId: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
-        categoryName: { type: String, default: '' },
-      },
-      dimension: [
-        {
-          dimensionTypeName: { type: String, default: '' },
-          dimensionName: { type: String, default: '' },
-          note: { type: String, default: '' },
-        },
-      ],
-      styleProcess: [
-        {
-          styleProcessName: { type: String, default: '' },
-          styleName: { type: String, default: '' },
-        },
-      ],
-      work: Boolean,
-      barcode: Boolean,
-      measurement: String,
-      amount: Number,
-      status: {
-        type: String,
-        enum: ['Pending', 'In Progress', 'Completed', 'Cancelled'],
-        default: 'Pending',
-      },
+const billSchema: Schema<IBill> = new Schema<IBill>(
+  {
+    billNumber: {
+      type: Number,
+      required: [true, 'Bill number is required.'],
+      unique: true,
     },
-  ],
-  totalAmount: Number,
-  discount: {
-    type: Number,
-    default: 0,
-  },
-  tax: [
-    {
-      _id: { type: mongoose.Schema.Types.ObjectId, ref: 'Tax' },
-      taxName: String,
-      taxType: String,
-      taxPercentage: Number,
+    date: {
+      type: Date,
+      default: Date.now,
     },
-  ],
-  grandTotal: {
-    type: Number,
-    default: 0,
-  },
-  paidAmount: {
-    type: Number,
-    default: 0,
-  },
-  dueAmount: {
-    type: Number,
-    default: function () {
-      return (isNaN(this.totalAmount) ? 0 : this.totalAmount) - (isNaN(this.paidAmount) ? 0 : this.paidAmount);
+    dueDate: {
+      type: Date,
+      default: Date.now,
     },
-  },
-  paymentStatus: {
-    type: String,
-    enum: ['Paid', 'Unpaid', 'Partially Paid'],
-    default: 'Unpaid',
-  },
-  billBy: {
-    _id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    urgent: {
+      type: Boolean,
+      default: false,
+    },
+    trail: {
+      type: Boolean,
+      default: false,
+    },
+    mobile: {
+      type: Number,
+    },
     name: String,
+    email: String,
+    order: [
+      {
+        category: {
+          catId: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
+          categoryName: { type: String, default: '' },
+        },
+        dimension: [
+          {
+            dimensionTypeName: { type: String, default: '' },
+            dimensionName: { type: String, default: '' },
+            note: { type: String, default: '' },
+          },
+        ],
+        styleProcess: [
+          {
+            styleProcessName: { type: String, default: '' },
+            styleName: { type: String, default: '' },
+          },
+        ],
+        work: Boolean,
+        barcode: Boolean,
+        measurement: String,
+        amount: Number,
+        status: {
+          type: String,
+          enum: ['Pending', 'In Progress', 'Completed', 'Cancelled'],
+          default: 'Pending',
+        },
+      },
+    ],
+    totalAmount: Number,
+    discount: {
+      type: Number,
+      default: 0,
+    },
+    tax: [
+      {
+        _id: { type: mongoose.Schema.Types.ObjectId, ref: 'Tax' },
+        taxName: String,
+        taxType: String,
+        taxPercentage: Number,
+      },
+    ],
+    grandTotal: {
+      type: Number,
+      default: 0,
+    },
+    paidAmount: {
+      type: Number,
+      default: 0,
+    },
+    dueAmount: {
+      type: Number,
+      default: function () {
+        return (isNaN(this.totalAmount) ? 0 : this.totalAmount) - (isNaN(this.paidAmount) ? 0 : this.paidAmount);
+      },
+    },
+    paymentStatus: {
+      type: String,
+      enum: ['Paid', 'Unpaid', 'Partially Paid'],
+      default: 'Unpaid',
+    },
+    billBy: {
+      _id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      name: String,
+    },
   },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
+  { timestamps: true },
+);
 
 // Schema for Receipts
-const receiptSchema: Schema<IReceipt> = new Schema<IReceipt>({
-  receiptNumber: {
-    type: Number,
-    required: [true, 'Receipt number is required.'],
-    unique: true,
+const receiptSchema: Schema<IReceipt> = new Schema<IReceipt>(
+  {
+    receiptNumber: {
+      type: Number,
+      required: [true, 'Receipt number is required.'],
+      unique: true,
+    },
+    bill: {
+      _id: { type: mongoose.Schema.Types.ObjectId, ref: 'Bill' },
+      billNumber: Number,
+      name: String,
+      mobile: Number,
+    },
+    amount: { type: Number, required: [true, 'Amount is required.'] },
+    paymentDate: Date,
+    paymentMethod: { type: String, enum: ['Cash', 'Online', 'UPI', 'Card'], default: 'Cash' },
   },
-  bill: {
-    _id: { type: mongoose.Schema.Types.ObjectId, ref: 'Bill' },
-    billNumber: Number,
-    name: String,
-    mobile: Number,
-  },
-  amount: { type: Number, required: [true, 'Amount is required.'] },
-  paymentDate: Date,
-  paymentMethod: { type: String, enum: ['Cash', 'Online', 'UPI', 'Card'], default: 'Cash' },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
+  { timestamps: true },
+);
 
 // Create models from the schemas
 const Customer: Model<ICustomer> = mongoose.models.Customer || mongoose.model<ICustomer>('Customer', customerSchema);

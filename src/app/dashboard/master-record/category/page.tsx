@@ -8,15 +8,15 @@ import Image from 'next/image';
 import React from 'react';
 import toast from 'react-hot-toast';
 
-export default function CategoryPage() {
-  interface IIds {
-    catId: string;
-    styleProcessId: string;
-    styleId: string;
-    dimensionTypeId: string;
-    dimensionId: string;
-  }
+interface IIds {
+  catId: string;
+  styleProcessId: string;
+  styleId: string;
+  dimensionTypeId: string;
+  dimensionId: string;
+}
 
+export default function CategoryPage() {
   const [category, setCategory] = React.useState<ICategory[]>([]);
   const [ids, setIds] = React.useState<IIds>();
   const isMounted = React.useRef(false);
@@ -26,7 +26,6 @@ export default function CategoryPage() {
       const res = await ApiGet.Category();
       setCategory(res.categories);
     } catch (error) {
-      // console.error(error);
       handleError.log(error);
     }
   };
