@@ -4,7 +4,7 @@ import axios from 'axios';
 import handleError from '../error/handleError';
 
 export const ApiPost = {
-  Category: async (type: string, data: Record<string, unknown>) => {
+  Category: async (type: string, data: Record<string, string>) => {
     try {
       const res = await axios.post('/api/dashboard/master-record/category', { type, ...data });
       return res.data;

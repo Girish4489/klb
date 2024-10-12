@@ -3,7 +3,7 @@ import { userConfirmation } from '@/app/util/confirmation/confirmationUtil';
 import handleError from '@/app/util/error/handleError';
 import { formatD } from '@/app/util/format/dateUtils';
 import { ApiGet, ApiPost, ApiPut } from '@/app/util/makeApiRequest/makeApiRequest';
-import { IBill, ICategory, IDimension, IDimensionType, IStyle, IStyleProcess, ITax } from '@/models/klm';
+import { IBill, ICategory, IDimensionTypes, IDimensions, IStyle, IStyleProcess, ITax } from '@/models/klm';
 import { Types } from 'mongoose';
 import Link from 'next/link';
 import React, { useMemo } from 'react';
@@ -805,7 +805,7 @@ export default function BillPage() {
                           {/*2nd row  Render dropdown select options for dimensions based on the selected category */}
                           {category.map((cat) => {
                             if (cat._id.toString() === bill?.order?.[orderIndex]?.category?.catId?.toString()) {
-                              return cat.dimension?.map((typ: IDimension, typIndex: number) => (
+                              return cat.dimensionTypes?.map((typ: IDimensionTypes, typIndex: number) => (
                                 <div
                                   key={typIndex}
                                   className="flex w-full flex-row flex-wrap items-center gap-1 max-sm:justify-between"
@@ -826,15 +826,15 @@ export default function BillPage() {
                                           order.dimension?.[typIndex]?.note ?? '',
                                           orderIndex,
                                           typIndex,
-                                          cat.dimension?.length ?? 0,
+                                          cat.dimensionTypes?.length ?? 0,
                                         );
                                       }}
                                     >
                                       <option value={`${order.dimension?.[typIndex]?.dimensionName ?? 'none'}`}>
                                         {order.dimension?.[typIndex]?.dimensionName ?? 'Select dimension'}
                                       </option>
-                                      {typ.dimensionTypes &&
-                                        typ.dimensionTypes.map((dim: IDimensionType, dimIndex: number) => (
+                                      {typ.dimensions &&
+                                        typ.dimensions.map((dim: IDimensions, dimIndex: number) => (
                                           <option key={dimIndex} value={dim.dimensionName}>
                                             {dim.dimensionName}
                                           </option>
@@ -854,7 +854,7 @@ export default function BillPage() {
                                           e.target.value,
                                           orderIndex,
                                           typIndex,
-                                          cat.dimension?.length ?? 0,
+                                          cat.dimensionTypes?.length ?? 0,
                                         );
                                       }}
                                     />

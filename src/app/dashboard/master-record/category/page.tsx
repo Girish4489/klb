@@ -3,7 +3,7 @@ import { userConfirmation } from '@/app/util/confirmation/confirmationUtil';
 import handleError from '@/app/util/error/handleError';
 import { ApiGet, ApiPost } from '@/app/util/makeApiRequest/makeApiRequest';
 import { FormModal, closeModal, openModal } from '@/app/util/modal/modals';
-import { ICategory, IDimension, IDimensionType, IStyle, IStyleProcess } from '@/models/klm';
+import { ICategory, IDimensionTypes, IDimensions, IStyle, IStyleProcess } from '@/models/klm';
 import Image from 'next/image';
 import React from 'react';
 import toast from 'react-hot-toast';
@@ -50,13 +50,21 @@ export default function CategoryPage() {
 
   const AddCategory = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const category = e.currentTarget.category.value;
-    const description = e.currentTarget.description.value;
+    const category: string = e.currentTarget.category.value;
+    const description: string = e.currentTarget.description.value;
+    if (typeof category !== 'string' || typeof description !== 'string') {
+      handleError.throw(new Error('Invalid input types'));
+      return;
+    }
+    if (!category || !description) {
+      handleError.throw(new Error('All fields are required'));
+      return;
+    }
 
     const saveCategory = async () => {
       try {
-        const res = await ApiPost.Category('addCategory', { categoryName: category, description });
-        if (res.success === true) {
+        const res = await ApiPost.Category('addCategory', { categoryName: category, description: description });
+        if (res.success) {
           setCategory((prevCategory) => [...prevCategory, res.data]);
           return res.message;
         } else {
@@ -72,13 +80,18 @@ export default function CategoryPage() {
   const AddProcess = async (e: { styleProcess: string }) => {
     const { styleProcess } = e;
 
+    if (!ids?.catId) {
+      throw new Error('Category invalid try to refresh the page');
+      return;
+    }
+
     const saveProcess = async () => {
       try {
         const res = await ApiPost.Category('addProcess', {
           categoryId: ids?.catId,
           styleProcessName: styleProcess,
         });
-        if (res.success === true) {
+        if (res.success) {
           setCategory(
             (prevCategory) =>
               prevCategory.map((cat) => {
@@ -103,37 +116,40 @@ export default function CategoryPage() {
     };
     await configureToastPromise(saveProcess(), 'Adding Process...');
   };
-
-  const AddTypeDimension = async (e: { dimensionType: string }) => {
+  const addDimensionTypes = async (e: { dimensionType: string }) => {
     const { dimensionType } = e;
+
+    if (!ids?.catId) {
+      handleError.throw(new Error('Category ID is invalid. Please refresh the page.'));
+      return;
+    }
 
     const saveDimension = async () => {
       try {
-        const res = await ApiPost.Category('addTypeDimension', {
-          categoryId: ids?.catId,
+        const res = await ApiPost.Category('addDimensionTypes', {
+          categoryId: ids.catId,
           dimensionTypeName: dimensionType,
         });
 
-        if (res.success === true) {
+        if (res.success) {
           setCategory(
             (prevCategory) =>
               prevCategory.map((cat) => {
-                if (cat._id.toString() === ids?.catId) {
+                if (cat._id.toString() === ids.catId) {
                   return {
                     ...(cat as ICategory),
-                    dimension: cat.dimension ? [...cat.dimension, res.data] : [res.data],
+                    dimensionTypes: cat.dimensionTypes ? [...cat.dimensionTypes, res.data] : [res.data],
                   } as ICategory;
                 }
                 return cat as ICategory;
               }) as ICategory[],
           );
-          closeModal('addTypeDimension');
+          closeModal('addDimensionTypes');
           return res.message;
         } else {
           throw new Error(res.message);
         }
       } catch (error) {
-        // throw new Error(error);
         handleError.throw(error);
       }
     };
@@ -143,30 +159,35 @@ export default function CategoryPage() {
   const AddDimension = async (e: { dimension: string }) => {
     const { dimension } = e;
 
+    if (!ids?.catId || !ids?.dimensionTypeId) {
+      handleError.throw(new Error('Category ID or Dimension Type ID is invalid. Please refresh the page.'));
+      return;
+    }
+
     const saveDimension = async () => {
       try {
         const res = await ApiPost.Category('addDimension', {
-          categoryId: ids?.catId,
-          dimensionTypeId: ids?.dimensionTypeId,
+          categoryId: ids.catId,
+          dimensionTypeId: ids.dimensionTypeId,
           dimensionName: dimension,
         });
-        if (res.success === true) {
+        if (res.success) {
           setCategory(
             (prevCategory) =>
               prevCategory.map((cat) => {
-                if (cat._id.toString() === ids?.catId) {
+                if (cat._id.toString() === ids.catId) {
                   return {
                     ...(cat as ICategory),
-                    dimension: cat.dimension?.map((dimensionType) => {
-                      if ((dimensionType as IDimension)?._id.toString() === ids?.dimensionTypeId) {
+                    dimensionTypes: cat.dimensionTypes?.map((dimensionTypes) => {
+                      if ((dimensionTypes as IDimensionTypes)?._id.toString() === ids.dimensionTypeId) {
                         return {
-                          ...(dimensionType as IDimension),
-                          dimensionTypes: dimensionType.dimensionTypes
-                            ? [...(dimensionType.dimensionTypes as IDimensionType[]), res.data]
+                          ...(dimensionTypes as IDimensionTypes),
+                          dimensions: dimensionTypes.dimensions
+                            ? [...(dimensionTypes.dimensions as IDimensions[]), res.data]
                             : [res.data],
                         };
                       }
-                      return dimensionType;
+                      return dimensionTypes;
                     }),
                   } as ICategory;
                 }
@@ -179,7 +200,6 @@ export default function CategoryPage() {
           throw new Error(res.message);
         }
       } catch (error) {
-        // throw new Error(error);
         handleError.throw(error);
       }
     };
@@ -188,23 +208,29 @@ export default function CategoryPage() {
 
   const AddStyle = async (e: { catStyle: string }) => {
     const { catStyle } = e;
+
+    if (!ids?.catId || !ids?.styleProcessId) {
+      handleError.throw(new Error('Category ID or Style Process ID is invalid. Please refresh the page.'));
+      return;
+    }
+
     const saveStyle = async () => {
       try {
         const res = await ApiPost.Category('addStyle', {
-          categoryId: ids?.catId,
-          styleProcessId: ids?.styleProcessId,
+          categoryId: ids.catId,
+          styleProcessId: ids.styleProcessId,
           styleName: catStyle,
         });
 
-        if (res.success === true) {
+        if (res.success) {
           setCategory(
             (prevCategory) =>
               prevCategory.map((cat) => {
-                if (cat._id.toString() === ids?.catId) {
+                if (cat._id.toString() === ids.catId) {
                   return {
                     ...(cat as ICategory),
                     styleProcess: cat.styleProcess?.map((styleProcess) => {
-                      if ((styleProcess as IStyleProcess)?._id.toString() === ids?.styleProcessId) {
+                      if ((styleProcess as IStyleProcess)?._id.toString() === ids.styleProcessId) {
                         return {
                           ...(styleProcess as IStyleProcess),
                           styles: styleProcess.styles ? [...(styleProcess.styles as IStyle[]), res.data] : [res.data],
@@ -223,7 +249,6 @@ export default function CategoryPage() {
           throw new Error(res.message);
         }
       } catch (error) {
-        // throw new Error(error);
         handleError.throw(error);
       }
     };
@@ -242,7 +267,7 @@ export default function CategoryPage() {
         const res = await ApiPost.Category('delCategory', {
           categoryId: id,
         });
-        if (res.success === true) {
+        if (res.success) {
           setCategory(category.filter((cat) => cat._id.toString() !== id));
           return res.message;
         } else {
@@ -270,7 +295,7 @@ export default function CategoryPage() {
             categoryId: id,
             styleProcessId: styleProcessId,
           });
-          if (res.success === true) {
+          if (res.success) {
             setCategory(
               category.map((cat) => {
                 if (cat._id.toString() === id) {
@@ -296,7 +321,7 @@ export default function CategoryPage() {
       await configureToastPromise(deleteProcess(), 'Deleting Process...');
     };
 
-  const DelTypeDimension =
+  const DelDimensionType =
     (id: string, dimensionTypeId: string) => async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       e.preventDefault();
       const confirmed = await userConfirmation({
@@ -306,18 +331,19 @@ export default function CategoryPage() {
       if (!confirmed) return;
       const deleteDimensionType = async () => {
         try {
-          const res = await ApiPost.Category('delTypeDimension', {
+          const res = await ApiPost.Category('delDimensionType', {
             categoryId: id,
             dimensionTypeId: dimensionTypeId,
           });
-          if (res.success === true) {
+          if (res.success) {
             setCategory(
               category.map((cat) => {
                 if (cat._id.toString() === id) {
                   return {
                     ...(cat as ICategory),
-                    dimension: cat.dimension?.filter(
-                      (dimensionType: IDimension) => dimensionType && dimensionType._id.toString() !== dimensionTypeId,
+                    dimensionTypes: cat.dimensionTypes?.filter(
+                      (dimensionType: IDimensionTypes) =>
+                        dimensionType && dimensionType._id.toString() !== dimensionTypeId,
                     ),
                   } as ICategory;
                 }
@@ -352,7 +378,7 @@ export default function CategoryPage() {
             styleProcessId: styleProcessId,
             styleId: styleId,
           });
-          if (res.success === true) {
+          if (res.success) {
             setCategory(
               category.map((cat) => {
                 if (cat._id.toString() === id) {
@@ -402,19 +428,19 @@ export default function CategoryPage() {
             dimensionTypeId: dimensionTypeId,
             dimensionId: dimensionId,
           });
-          if (res.success === true) {
+          if (res.success) {
             setCategory(
               category.map((cat) => {
                 if (cat._id.toString() === id) {
                   return {
                     ...(cat as ICategory),
-                    dimension: cat.dimension?.map((dimensionType: IDimension) => {
-                      if ((dimensionType as IDimension)?._id.toString() === dimensionTypeId) {
+                    dimensionTypes: cat.dimensionTypes?.map((dimensionType: IDimensionTypes) => {
+                      if ((dimensionType as IDimensionTypes)?._id.toString() === dimensionTypeId) {
                         return {
                           ...dimensionType,
-                          dimensionTypes: Array.isArray(dimensionType.dimensionTypes)
-                            ? dimensionType.dimensionTypes.filter(
-                                (dimension: IDimensionType) => dimension && dimension._id.toString() !== dimensionId,
+                          dimensions: Array.isArray(dimensionType.dimensions)
+                            ? dimensionType.dimensions.filter(
+                                (dimension: IDimensions) => dimension && dimension._id.toString() !== dimensionId,
                               )
                             : [],
                         };
@@ -439,20 +465,25 @@ export default function CategoryPage() {
     };
 
   // edit logic
-
   const EditCategory = async (e: { category: string; description: string }) => {
     const { category, description } = e;
+
+    if (!ids?.catId) {
+      handleError.throw(new Error('Category ID is invalid. Please refresh the page.'));
+      return;
+    }
+
     const UpdateCategory = async () => {
       try {
         const res = await ApiPost.Category('editCategory', {
-          categoryId: ids?.catId,
+          categoryId: ids.catId,
           categoryName: category,
           description: description,
         });
-        if (res.success === true) {
+        if (res.success) {
           setCategory((prevCategory) =>
             prevCategory.map((cat: ICategory) => {
-              if (cat._id.toString() === ids?.catId) {
+              if (cat._id.toString() === ids.catId) {
                 return {
                   ...(cat as ICategory),
                   categoryName: category,
@@ -468,7 +499,6 @@ export default function CategoryPage() {
           throw new Error(res.message);
         }
       } catch (error) {
-        // throw new Error(error);
         handleError.throw(error);
       }
     };
@@ -477,22 +507,28 @@ export default function CategoryPage() {
 
   const EditProcess = async (e: { processName: string }) => {
     const { processName } = e;
+
+    if (!ids?.catId || !ids?.styleProcessId) {
+      handleError.throw(new Error('Category ID or Style Process ID is invalid. Please refresh the page.'));
+      return;
+    }
+
     const UpdateProcess = async () => {
       try {
         const res = await ApiPost.Category('editProcess', {
-          categoryId: ids?.catId,
-          styleProcessId: ids?.styleProcessId,
+          categoryId: ids.catId,
+          styleProcessId: ids.styleProcessId,
           styleProcessName: processName,
         });
-        if (res.success === true) {
+        if (res.success) {
           setCategory(
             (prevCategory) =>
               prevCategory.map((cat) => {
-                if (cat._id.toString() === ids?.catId) {
+                if (cat._id.toString() === ids.catId) {
                   return {
                     ...(cat as ICategory),
                     styleProcess: cat.styleProcess?.map((styleProcess: IStyleProcess) => {
-                      if (styleProcess?._id.toString() === ids?.styleProcessId) {
+                      if (styleProcess?._id.toString() === ids.styleProcessId) {
                         return {
                           ...styleProcess,
                           styleProcessName: processName,
@@ -511,50 +547,54 @@ export default function CategoryPage() {
           throw new Error(res.message);
         }
       } catch (error) {
-        // throw new Error(error);
         handleError.throw(error);
       }
     };
     await configureToastPromise(UpdateProcess(), 'Updating Process...');
   };
 
-  const EditTypeDimension = async (e: { dimensionType: string }) => {
-    const { dimensionType } = e;
+  const EditDimensionType = async (e: { dimensionTypeName: string }) => {
+    const { dimensionTypeName } = e;
+
+    if (!ids?.catId || !ids?.dimensionTypeId) {
+      handleError.throw(new Error('Category ID or Dimension Type ID is invalid. Please refresh the page.'));
+      return;
+    }
+
     const UpdateDimension = async () => {
       try {
-        const res = await ApiPost.Category('editTypeDimension', {
-          categoryId: ids?.catId,
-          dimensionTypeId: ids?.dimensionTypeId,
-          dimensionTypeName: dimensionType,
+        const res = await ApiPost.Category('editDimensionType', {
+          categoryId: ids.catId,
+          dimensionTypeId: ids.dimensionTypeId,
+          dimensionTypeName: dimensionTypeName,
         });
-        if (res.success === true) {
+        if (res.success) {
           setCategory(
             (prevCategory) =>
               prevCategory.map((cat) => {
-                if (cat._id.toString() === ids?.catId) {
+                if (cat._id.toString() === ids.catId) {
                   return {
                     ...(cat as ICategory),
-                    dimension: cat.dimension?.map((dimTyp: IDimension) => {
-                      if (dimTyp?._id.toString() === ids?.dimensionTypeId) {
+                    dimensionTypes: cat.dimensionTypes?.map((dimensionType: IDimensionTypes) => {
+                      if (dimensionType?._id.toString() === ids.dimensionTypeId) {
                         return {
-                          ...dimTyp,
-                          dimensionTypeName: dimensionType,
+                          ...dimensionType,
+                          dimensionTypeName: dimensionTypeName,
                         };
                       }
-                      return dimTyp;
+                      return dimensionType;
                     }),
                   } as ICategory;
                 }
                 return cat as ICategory;
               }) as ICategory[],
           );
-          closeModal('editTypeDimension');
+          closeModal('editDimensionType');
           return res.message;
         } else {
           throw new Error(res.message);
         }
       } catch (error) {
-        // throw new Error(error);
         handleError.throw(error);
       }
     };
@@ -563,28 +603,34 @@ export default function CategoryPage() {
 
   const EditStyles = async (e: { styleName: string }) => {
     const { styleName } = e;
+
+    if (!ids?.catId || !ids?.styleProcessId || !ids?.styleId) {
+      handleError.throw(new Error('Category ID, Style Process ID, or Style ID is invalid. Please refresh the page.'));
+      return;
+    }
+
     const UpdateStyles = async () => {
       try {
         const res = await ApiPost.Category('editStyle', {
-          categoryId: ids?.catId,
-          styleProcessId: ids?.styleProcessId,
-          styleId: ids?.styleId,
+          categoryId: ids.catId,
+          styleProcessId: ids.styleProcessId,
+          styleId: ids.styleId,
           styleName: styleName,
         });
-        if (res.success === true) {
+        if (res.success) {
           setCategory(
             (prevCategory) =>
               prevCategory.map((cat) => {
-                if (cat._id.toString() === ids?.catId) {
+                if (cat._id.toString() === ids.catId) {
                   return {
                     ...(cat as ICategory),
                     styleProcess: cat.styleProcess?.map((styleProcess: IStyleProcess) => {
-                      if (styleProcess?._id.toString() === ids?.styleProcessId) {
+                      if (styleProcess?._id.toString() === ids.styleProcessId) {
                         return {
                           ...styleProcess,
                           styles: Array.isArray(styleProcess.styles)
                             ? styleProcess.styles.map((style: IStyle) => {
-                                if (style?._id.toString() === ids?.styleId) {
+                                if (style?._id.toString() === ids.styleId) {
                                   return {
                                     ...style,
                                     styleName: styleName,
@@ -608,7 +654,6 @@ export default function CategoryPage() {
           throw new Error(res.message);
         }
       } catch (error) {
-        // throw new Error(error);
         handleError.throw(error);
       }
     };
@@ -617,28 +662,36 @@ export default function CategoryPage() {
 
   const EditDimension = async (e: { dimension: string }) => {
     const { dimension } = e;
+
+    if (!ids?.catId || !ids?.dimensionTypeId || !ids?.dimensionId) {
+      handleError.throw(
+        new Error('Category ID, Dimension Type ID, or Dimension ID is invalid. Please refresh the page.'),
+      );
+      return;
+    }
+
     const UpdateDimension = async () => {
       try {
         const res = await ApiPost.Category('editDimension', {
-          categoryId: ids?.catId,
-          dimensionTypeId: ids?.dimensionTypeId,
-          dimensionId: ids?.dimensionId,
+          categoryId: ids.catId,
+          dimensionTypeId: ids.dimensionTypeId,
+          dimensionId: ids.dimensionId,
           dimensionName: dimension,
         });
-        if (res.success === true) {
+        if (res.success) {
           setCategory(
             (prevCategory) =>
               prevCategory.map((cat) => {
-                if (cat._id.toString() === ids?.catId) {
+                if (cat._id.toString() === ids.catId) {
                   return {
                     ...(cat as ICategory),
-                    dimension: cat.dimension?.map((dimTyp: IDimension) => {
-                      if (dimTyp?._id.toString() === ids?.dimensionTypeId) {
+                    dimensionTypes: cat.dimensionTypes?.map((dimTyp: IDimensionTypes) => {
+                      if (dimTyp?._id.toString() === ids.dimensionTypeId) {
                         return {
                           ...dimTyp,
-                          dimensionTypes: Array.isArray(dimTyp.dimensionTypes)
-                            ? dimTyp.dimensionTypes.map((dim: IDimensionType) => {
-                                if (dim?._id.toString() === ids?.dimensionId) {
+                          dimensions: Array.isArray(dimTyp.dimensions)
+                            ? dimTyp.dimensions.map((dim: IDimensions) => {
+                                if (dim?._id.toString() === ids.dimensionId) {
                                   return {
                                     ...dim,
                                     dimensionName: dimension,
@@ -662,7 +715,6 @@ export default function CategoryPage() {
           throw new Error(res.message);
         }
       } catch (error) {
-        // throw new Error(error);
         handleError.throw(error);
       }
     };
@@ -744,9 +796,9 @@ export default function CategoryPage() {
           onClose={() => {}}
         />
         <FormModal
-          id="addTypeDimension"
+          id="addDimensionTypes"
           title="Add Dimension Type"
-          onSubmit={(formData) => AddTypeDimension({ dimensionType: formData.dimensionType })}
+          onSubmit={(formData) => addDimensionTypes({ dimensionType: formData.dimensionType })}
           fields={[
             {
               label: 'Dimension Type',
@@ -759,13 +811,13 @@ export default function CategoryPage() {
           onClose={() => {}}
         />
         <FormModal
-          id="editTypeDimension"
+          id="editDimensionType"
           title="Edit Dimension Type"
-          onSubmit={(formData) => EditTypeDimension({ dimensionType: formData.dimensionType })}
+          onSubmit={(formData) => EditDimensionType({ dimensionTypeName: formData.dimensionTypeName })}
           fields={[
             {
               label: 'Dimension Type',
-              name: 'dimensionType',
+              name: 'dimensionTypeName',
               type: 'text',
               required: true,
               placeholder: 'Dimension Type',
@@ -1046,7 +1098,7 @@ export default function CategoryPage() {
                                     dimensionTypeId: '',
                                     dimensionId: '',
                                   } as IIds);
-                                  openModal('addTypeDimension');
+                                  openModal('addDimensionTypes');
                                 }}
                               >
                                 <Image
@@ -1062,12 +1114,12 @@ export default function CategoryPage() {
                           </summary>
                           <div className="collapse-content flex flex-col gap-1 bg-base-100 pt-4">
                             <p className="label label-text-alt w-max">Dimension Types:</p>
-                            {cat.dimension?.map((typ: IDimension, typIndex: number) => (
+                            {cat.dimensionTypes?.map((DimensionType: IDimensionTypes, typIndex: number) => (
                               <div key={typIndex}>
                                 <details className="collapse collapse-arrow border-2 border-base-300 bg-base-200">
                                   <summary className="collapse-title text-xl font-medium">
                                     <div className="flex flex-row items-center justify-between">
-                                      <p className="label label-text">{typ.dimensionTypeName}</p>
+                                      <p className="label label-text">{DimensionType.dimensionTypeName}</p>
                                       <span className="mr-2 flex flex-row gap-1">
                                         <button
                                           className="btn btn-primary btn-sm tooltip tooltip-left px-1"
@@ -1076,7 +1128,7 @@ export default function CategoryPage() {
                                             setIds({
                                               ...ids,
                                               catId: cat._id.toString(),
-                                              dimensionTypeId: typ._id.toString(),
+                                              dimensionTypeId: DimensionType._id.toString(),
                                             } as IIds);
                                             openModal('addDimension');
                                           }}
@@ -1096,9 +1148,9 @@ export default function CategoryPage() {
                                             setIds({
                                               ...ids,
                                               catId: cat._id.toString(),
-                                              dimensionTypeId: typ._id.toString(),
+                                              dimensionTypeId: DimensionType._id.toString(),
                                             } as IIds);
-                                            openModal('editTypeDimension');
+                                            openModal('editDimensionType');
                                           }}
                                         >
                                           <Image
@@ -1112,7 +1164,7 @@ export default function CategoryPage() {
                                         <button
                                           className="btn btn-secondary btn-sm tooltip tooltip-left px-1"
                                           data-tip="Delete Type"
-                                          onClick={() => DelTypeDimension(cat._id.toString(), typ._id.toString())}
+                                          onClick={DelDimensionType(cat._id.toString(), DimensionType._id.toString())}
                                         >
                                           <Image
                                             src="/icons/svg/trash.svg"
@@ -1128,55 +1180,57 @@ export default function CategoryPage() {
                                   <div className="collapse-content transform transition-all">
                                     <div className="m-1 flex max-h-56 flex-col gap-2 overflow-auto rounded-box bg-base-300 p-2">
                                       <p className="label label-text-alt w-max">Dimensions:</p>
-                                      {typ.dimensionTypes?.map((dimension: IDimensionType, dimensionIndex: number) => (
-                                        <div
-                                          key={dimensionIndex}
-                                          className="flex flex-row items-center justify-between"
-                                        >
-                                          <p className="label label-text">{dimension.dimensionName}</p>
-                                          <span className="mr-2 flex flex-row gap-1">
-                                            <button
-                                              className="btn btn-primary btn-sm tooltip tooltip-left px-1"
-                                              data-tip="Edit Dimension"
-                                              onClick={() => {
-                                                setIds({
-                                                  catId: cat._id.toString(),
-                                                  styleProcessId: '',
-                                                  styleId: '',
-                                                  dimensionTypeId: typ._id.toString(),
-                                                  dimensionId: dimension._id.toString(),
-                                                } as IIds);
-                                                openModal('editDimension');
-                                              }}
-                                            >
-                                              <Image
-                                                src="/icons/svg/note-pencil.svg"
-                                                alt="Edit"
-                                                width={32}
-                                                height={32}
-                                                className="h-auto w-7"
-                                              />
-                                            </button>
-                                            <button
-                                              className="btn btn-secondary btn-sm tooltip tooltip-left px-1"
-                                              data-tip="Delete Style"
-                                              onClick={DelDimension(
-                                                cat._id.toString(),
-                                                typ._id.toString(),
-                                                dimension._id.toString(),
-                                              )}
-                                            >
-                                              <Image
-                                                src="/icons/svg/trash.svg"
-                                                alt="Delete"
-                                                width={32}
-                                                height={32}
-                                                className="h-auto w-7"
-                                              />
-                                            </button>
-                                          </span>
-                                        </div>
-                                      ))}
+                                      {DimensionType.dimensions?.map(
+                                        (dimension: IDimensions, dimensionIndex: number) => (
+                                          <div
+                                            key={dimensionIndex}
+                                            className="flex flex-row items-center justify-between"
+                                          >
+                                            <p className="label label-text">{dimension.dimensionName}</p>
+                                            <span className="mr-2 flex flex-row gap-1">
+                                              <button
+                                                className="btn btn-primary btn-sm tooltip tooltip-left px-1"
+                                                data-tip="Edit Dimension"
+                                                onClick={() => {
+                                                  setIds({
+                                                    catId: cat._id.toString(),
+                                                    styleProcessId: '',
+                                                    styleId: '',
+                                                    dimensionTypeId: DimensionType._id.toString(),
+                                                    dimensionId: dimension._id.toString(),
+                                                  } as IIds);
+                                                  openModal('editDimension');
+                                                }}
+                                              >
+                                                <Image
+                                                  src="/icons/svg/note-pencil.svg"
+                                                  alt="Edit"
+                                                  width={32}
+                                                  height={32}
+                                                  className="h-auto w-7"
+                                                />
+                                              </button>
+                                              <button
+                                                className="btn btn-secondary btn-sm tooltip tooltip-left px-1"
+                                                data-tip="Delete Style"
+                                                onClick={DelDimension(
+                                                  cat._id.toString(),
+                                                  DimensionType._id.toString(),
+                                                  dimension._id.toString(),
+                                                )}
+                                              >
+                                                <Image
+                                                  src="/icons/svg/trash.svg"
+                                                  alt="Delete"
+                                                  width={32}
+                                                  height={32}
+                                                  className="h-auto w-7"
+                                                />
+                                              </button>
+                                            </span>
+                                          </div>
+                                        ),
+                                      )}
                                     </div>
                                   </div>
                                 </details>

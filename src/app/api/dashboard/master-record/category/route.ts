@@ -3,8 +3,9 @@
 import handleError from '@/app/util/error/handleError';
 import { connect } from '@/dbConfig/dbConfig';
 import { getDataFromToken } from '@/helpers/getDataFromToken';
-import { Category } from '@/models/klm';
+import { Category, ICategory, IDimensionTypes, IStyleProcess } from '@/models/klm';
 import User from '@/models/userModel';
+import mongoose from 'mongoose';
 import { NextRequest, NextResponse } from 'next/server';
 
 connect();
@@ -27,9 +28,11 @@ export async function POST(request: NextRequest) {
         const existingCategory = await Category.findOne({ categoryName: reqBody.categoryName });
         if (existingCategory) throw new Error('Category name already exists');
 
-        const newCategory = new Category({
+        const newCategory: ICategory = new Category({
           categoryName: reqBody.categoryName,
           description: reqBody.description,
+          styleProcess: [] as ICategory['styleProcess'] | IStyleProcess,
+          dimensionTypes: [] as ICategory['dimensionTypes'] | IDimensionTypes[],
         });
 
         const savedCategory = await newCategory.save();
@@ -115,6 +118,7 @@ export async function POST(request: NextRequest) {
       },
       addStyle: async (reqBody: any) => {
         if (!reqBody.styleName) throw new Error('Style name not provided');
+        if (!reqBody.styleProcessId) throw new Error('Style process id not provided');
 
         const existingStyle = await Category.findOne({
           _id: reqBody.categoryId,
@@ -134,14 +138,14 @@ export async function POST(request: NextRequest) {
           styleName: reqBody.styleName,
         };
 
-        const updatedStyle = (await Category.findOneAndUpdate(
+        const updatedStyle = await Category.findOneAndUpdate(
           {
             _id: reqBody.categoryId,
             'styleProcess._id': reqBody.styleProcessId,
           },
           { $push: { 'styleProcess.$.styles': newStyle } },
           { new: true },
-        )) as { styleProcess: { _id: string; styles: { styleName: string }[] }[] };
+        );
 
         const savedStyle = (updatedStyle?.styleProcess || [])
           .find((process) => process._id.toString() === reqBody.styleProcessId)
@@ -189,57 +193,58 @@ export async function POST(request: NextRequest) {
 
         return handleResponse('Style deleted successfully', true, deletedStyle);
       },
-      addTypeDimension: async (reqBody: any) => {
+      addDimensionTypes: async (reqBody: any) => {
         if (!reqBody.dimensionTypeName) throw new Error('Dimension type name not provided');
 
-        const dimensionType = await Category.findOne({
+        const dimensionTypes = await Category.findOne({
           _id: reqBody.categoryId,
-          'dimension.dimensionTypeName': reqBody.dimensionTypeName,
+          'dimensionTypes.dimensionTypeName': reqBody.dimensionTypeName,
         });
-        if (dimensionType) throw new Error('Dimension type name already exists');
+        if (dimensionTypes) throw new Error('Dimension type name already exists');
 
-        const newDimensionType = {
+        const newDimensionType: IDimensionTypes = {
           dimensionTypeName: reqBody.dimensionTypeName,
-          dimensionTypes: [],
+          dimensions: [],
+          _id: new mongoose.Types.ObjectId(),
         };
 
         const updatedDimensionType = await Category.findOneAndUpdate(
           { _id: reqBody.categoryId },
-          { $push: { dimension: newDimensionType } },
+          { $push: { dimensionTypes: newDimensionType } },
           { new: true },
         );
 
-        const savedDimensionType = updatedDimensionType?.dimension?.find(
-          (dimension) => dimension.dimensionTypeName === reqBody.dimensionTypeName,
+        const savedDimensionType = updatedDimensionType?.dimensionTypes?.find(
+          (type) => type.dimensionTypeName === reqBody.dimensionTypeName,
         );
 
         return handleResponse('Dimension type added successfully', true, savedDimensionType);
       },
-      editTypeDimension: async (reqBody: any) => {
+      editDimensionType: async (reqBody: any) => {
         if (!reqBody.dimensionTypeId) throw new Error('Dimension type id is invalid');
         if (!reqBody.dimensionTypeName) throw new Error('Dimension type name not provided');
 
         const dimensionType = await Category.findOne({
           _id: reqBody.categoryId,
-          'dimension._id': reqBody.dimensionTypeId,
-          'dimension.dimensionTypeName': reqBody.dimensionTypeName,
+          'dimensionTypes._id': reqBody.dimensionTypeId,
+          'dimensionTypes.dimensionTypeName': reqBody.dimensionTypeName,
         });
         if (dimensionType) throw new Error('Dimension type name already exists');
 
         const updatedDimensionType = await Category.findOneAndUpdate(
-          { _id: reqBody.categoryId, 'dimension._id': reqBody.dimensionTypeId },
-          { $set: { 'dimension.$.dimensionTypeName': reqBody.dimensionTypeName } },
+          { _id: reqBody.categoryId, 'dimensionTypes._id': reqBody.dimensionTypeId },
+          { $set: { 'dimensionTypes.$.dimensionTypeName': reqBody.dimensionTypeName } },
           { new: true },
         );
 
         return handleResponse('Dimension type updated successfully', true, updatedDimensionType);
       },
-      delTypeDimension: async (reqBody: any) => {
+      delDimensionType: async (reqBody: any) => {
         if (!reqBody.dimensionTypeId) throw new Error('Dimension type id is invalid');
 
         const deletedDimensionType = await Category.findOneAndUpdate(
           { _id: reqBody.categoryId },
-          { $pull: { dimension: { _id: { $eq: reqBody.dimensionTypeId } } } },
+          { $pull: { dimensionTypes: { _id: { $eq: reqBody.dimensionTypeId } } } },
           { new: true },
         );
 
@@ -249,28 +254,33 @@ export async function POST(request: NextRequest) {
         if (!reqBody.dimensionTypeId) throw new Error('Dimension type id is invalid');
         if (!reqBody.dimensionName) throw new Error('Dimension name not provided');
 
-        const dimension = await Category.findOne({
+        const existingDimension = await Category.findOne({
           _id: reqBody.categoryId,
-          dimension: {
-            $elemMatch: { _id: reqBody.dimensionTypeId, 'dimensionTypes.dimensionName': reqBody.dimensionName },
+          dimensionTypes: {
+            $elemMatch: { _id: reqBody.dimensionTypeId, 'dimensions.dimensionName': reqBody.dimensionName },
           },
+          'dimensionTypes._id': reqBody.dimensionTypeId,
+          'dimensionTypes.dimensions.dimensionName': reqBody.dimensionName,
         });
 
-        if (dimension) throw new Error('Dimension name already exists');
+        if (existingDimension) throw new Error('Dimension name already exists');
 
         const newDimension = {
           dimensionName: reqBody.dimensionName,
         };
 
-        const updatedDimension = (await Category.findOneAndUpdate(
-          { _id: reqBody.categoryId },
-          { $push: { 'dimension.$[dimension].dimensionTypes': newDimension } },
-          { new: true, arrayFilters: [{ 'dimension._id': reqBody.dimensionTypeId }] },
-        )) as { dimension: { _id: string; dimensionTypes: { dimensionName: string }[] }[] };
+        const updatedDimension = await Category.findOneAndUpdate(
+          {
+            _id: reqBody.categoryId,
+            'dimensionTypes._id': reqBody.dimensionTypeId,
+          },
+          { $push: { 'dimensionTypes.$.dimensions': newDimension } },
+          { new: true },
+        );
 
-        const savedDimension = (updatedDimension?.dimension || [])
-          .find((dimension) => dimension._id.toString() === reqBody.dimensionTypeId)
-          ?.dimensionTypes?.find((dimensionType) => dimensionType.dimensionName === reqBody.dimensionName);
+        const savedDimension = (updatedDimension?.dimensionTypes || [])
+          .find((dimensionType) => dimensionType._id.toString() === reqBody.dimensionTypeId)
+          ?.dimensions?.find((dimension) => dimension.dimensionName === reqBody.dimensionName);
 
         return handleResponse('Dimension added successfully', true, savedDimension);
       },
@@ -280,7 +290,7 @@ export async function POST(request: NextRequest) {
 
         const dimension = await Category.findOne({
           _id: reqBody.categoryId,
-          dimension: {
+          dimensionTypes: {
             $elemMatch: {
               _id: reqBody.dimensionTypeId,
               'dimensionTypes.dimensionName': reqBody.dimensionName,

@@ -32,12 +32,7 @@ interface ICategory extends Document {
   categoryName?: string;
   description?: string;
   styleProcess?: IStyleProcess[];
-  dimension?: IDimension[];
-}
-
-interface IStyle {
-  _id: ObjectId;
-  styleName: string;
+  dimensionTypes?: IDimensionTypes[];
 }
 
 interface IStyleProcess {
@@ -46,16 +41,21 @@ interface IStyleProcess {
   styles: IStyle[];
 }
 
-interface IDimensionType {
+interface IStyle {
   _id: ObjectId;
-  dimensionName: string;
+  styleName: string;
 }
 
-interface IDimension {
+interface IDimensionTypes {
   _id: ObjectId;
   dimensionTypeName: string;
-  dimensionTypes: IDimensionType[];
+  dimensions: IDimensions[];
   note?: string;
+}
+
+interface IDimensions {
+  _id: ObjectId;
+  dimensionName: string;
 }
 
 interface IBill extends Document {
@@ -190,13 +190,13 @@ const categorySchema: Schema<ICategory> = new Schema<ICategory>(
         ],
       },
     ],
-    dimension: [
+    dimensionTypes: [
       {
         dimensionTypeName: {
           type: String,
           required: [true, 'Dimension type name is required.'],
         },
-        dimensionTypes: [
+        dimensions: [
           {
             dimensionName: {
               type: String,
@@ -348,8 +348,8 @@ export type {
   IBill,
   ICategory,
   ICustomer,
-  IDimension,
-  IDimensionType,
+  IDimensionTypes,
+  IDimensions,
   IReceipt,
   IStyle,
   IStyleProcess,
