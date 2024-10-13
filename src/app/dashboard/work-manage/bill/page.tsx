@@ -1,9 +1,10 @@
 'use client';
+import ColorPickerButton from '@/app/components/ColorPickerButton/page';
 import { userConfirmation } from '@/app/util/confirmation/confirmationUtil';
 import handleError from '@/app/util/error/handleError';
 import { formatD } from '@/app/util/format/dateUtils';
 import { ApiGet, ApiPost, ApiPut } from '@/app/util/makeApiRequest/makeApiRequest';
-import { IBill, ICategory, IDimensionTypes, IDimensions, IStyle, IStyleProcess, ITax } from '@/models/klm';
+import { IBill, ICategory, IColor, IDimensionTypes, IDimensions, IStyle, IStyleProcess, ITax } from '@/models/klm';
 import { Types } from 'mongoose';
 import Link from 'next/link';
 import React, { useMemo } from 'react';
@@ -192,10 +193,13 @@ export default function BillPage() {
       if (!Confirmed) return;
 
       try {
-        if (orderIndex >= 0 && (bill?.order?.length ?? 0) >= 0) {
+        if (orderIndex >= 0 && (bill?.order?.length ?? 0) > 0) {
           // Remove the order at the specified orderIndex and update the total amount
-          const updatedOrder = bill?.order.filter((_, i) => i !== orderIndex);
-          const newTotalAmount = updatedOrder?.reduce((total, item) => total + (item.amount || 0), 0);
+          const updatedOrder = bill?.order.slice();
+          if (updatedOrder) {
+            updatedOrder.splice(orderIndex, 1);
+          }
+          const newTotalAmount = updatedOrder ? updatedOrder.reduce((total, item) => total + (item.amount || 0), 0) : 0;
           setBill({
             ...bill,
             order: updatedOrder,
@@ -256,31 +260,36 @@ export default function BillPage() {
     calculateGrandTotal();
   }, [calculateGrandTotal]);
 
-  async function handleSaveBill() {
-    try {
-      if (!bill) throw new Error('No bill data found to save');
+  async function validateBill(bill: IBill | undefined) {
+    if (!bill) throw new Error('No bill data found');
       if (!bill.billNumber) throw new Error('Bill number is required');
-      if (!bill?.order) throw new Error('No orders added');
-      if (!bill?.date) throw new Error('Date is required');
-      if (!bill?.dueDate) throw new Error('Due date is required');
-      if (!bill?.mobile) throw new Error('Mobile number is required');
+    if (!bill.order) throw new Error('No orders added');
+    if (!bill.date) throw new Error('Date is required');
+    if (!bill.dueDate) throw new Error('Due date is required');
+    if (!bill.mobile) throw new Error('Mobile number is required');
 
       // for each order check amount is greater than 0
       const invalidOrderIndex = bill.order.findIndex((order) => (order.amount ?? 0) <= 0);
       if (invalidOrderIndex !== -1) {
         throw new Error(`Amount should be greater than 0 for order Sl No ${invalidOrderIndex + 1}`);
       }
+  }
 
+  async function handleSaveBill() {
+    try {
+      await validateBill(bill);
+
+      if (!bill) throw new Error('Bill data is undefined');
       const res = await ApiPost.Bill(bill);
       if (res.success === true) {
         setTodayBill([...todayBill, res.today]);
         setBill(res.bill);
+        setNewBill(false);
         toast.success(res.message);
       } else {
         throw new Error(res.message);
       }
     } catch (error) {
-      // toast.error(error.message);
       handleError.toastAndLog(error);
     }
   }
@@ -291,6 +300,7 @@ export default function BillPage() {
       message: 'Are you sure you want to update this bill?',
     });
     if (!update) return;
+
     const updateBill = async () => {
       const res = await ApiPut.Bill(bill?._id?.toString() ?? '', bill as IBill);
       if (res.success === true) {
@@ -301,20 +311,10 @@ export default function BillPage() {
         throw new Error(res.message);
       }
     };
-    try {
-      if (!bill) throw new Error('No bill data found to update');
-      if (!bill._id) throw new Error('No bill ID found to update');
-      if (!bill.billNumber) throw new Error('Bill number is required');
-      if (!bill?.order) throw new Error('No orders added');
-      if (!bill?.date) throw new Error('Date is required');
-      if (!bill?.dueDate) throw new Error('Due date is required');
-      if (!bill?.mobile) throw new Error('Mobile number is required');
 
-      // for each order check amount is greater than 0
-      const invalidOrderIndex = bill.order.findIndex((order) => (order.amount ?? 0) <= 0);
-      if (invalidOrderIndex !== -1) {
-        throw new Error(`Amount should be greater than 0 for order Sl No ${invalidOrderIndex + 1}`);
-      }
+    try {
+      await validateBill(bill);
+      if (!(bill ?? {})._id) throw new Error('No bill ID found to update');
       await toast.promise(updateBill(), {
         loading: 'Updating bill...',
         success: (message) => <b>{message}</b>,
@@ -453,6 +453,26 @@ export default function BillPage() {
     }
   }, []);
 
+  const handleColorSelect = async (color: IColor, orderIndex: number) => {
+    await setBill((prevBill) => {
+      if (!prevBill) return prevBill;
+
+      const updatedOrder = [...prevBill.order];
+      const order = updatedOrder[orderIndex];
+      if (!order) return prevBill;
+
+      updatedOrder[orderIndex] = {
+        ...order,
+        color: color,
+      };
+
+      return {
+        ...prevBill,
+        order: updatedOrder,
+      } as IBill;
+    });
+  };
+
   return (
     <span className="table-column h-full">
       <div className="flex h-full w-full flex-col shadow max-sm:table-cell">
@@ -563,12 +583,13 @@ export default function BillPage() {
                     id="billNo"
                     type="number"
                     value={bill?.billNumber ?? ''}
+                    readOnly
                     onChange={(e) => {
                       const limitedValue = e.target.value.slice(0, 7);
                       const parsedValue = limitedValue === '' ? '' : parseInt(limitedValue);
                       setBill({ ...bill, billNumber: parsedValue } as IBill);
                     }}
-                    className="input input-bordered input-primary w-32 max-sm:input-sm"
+                    className="input input-sm input-bordered input-primary w-32"
                   />
                 </div>
                 <div className="flex flex-row flex-wrap items-center max-sm:w-full max-sm:justify-between">
@@ -581,7 +602,7 @@ export default function BillPage() {
                     type="date"
                     value={bill?.date ? new Date(bill.date).toISOString().split('T')[0] : ''}
                     onChange={(e) => setBill({ ...bill, date: new Date(e.target.value) } as IBill)}
-                    className="input input-bordered input-primary max-sm:input-sm"
+                    className="input input-sm input-bordered input-primary"
                   />
                 </div>
                 <div className="flex flex-row flex-wrap items-center max-sm:w-full max-sm:justify-between">
@@ -594,7 +615,7 @@ export default function BillPage() {
                     type="date"
                     value={bill.dueDate ? new Date(bill.dueDate).toISOString().split('T')[0] : ''}
                     onChange={(e) => setBill({ ...bill, dueDate: new Date(e.target.value) } as IBill)}
-                    className="input input-bordered input-primary max-sm:input-sm"
+                    className="input input-sm input-bordered input-primary"
                   />
                 </div>
                 <div className="flex flex-row flex-wrap items-center max-sm:w-full max-sm:justify-between">
@@ -687,8 +708,8 @@ export default function BillPage() {
             </div>
             {/* items and track in row */}
             <div className="flex h-full w-full flex-row items-start gap-1 rounded-box bg-base-300 p-1 max-sm:flex-col max-sm:items-center">
-              <div className="flex min-h-[90%] grow flex-col justify-between rounded-box border border-base-300">
-                <div className="flex max-h-[30rem] min-h-[98%] w-full grow flex-col gap-1 overflow-auto rounded-box bg-base-200">
+              <div className="flex min-h-full grow flex-col justify-between rounded-box border border-base-300">
+                <div className="flex max-h-[40rem] min-h-full w-full grow flex-col gap-1 overflow-auto rounded-box bg-base-200">
                   {/* orders */}
                   {bill?.order?.map((order, orderIndex) => (
                     <div
@@ -886,6 +907,17 @@ export default function BillPage() {
                         <div className="flex flex-row justify-between">
                           {/* 3rd row */}
                           <div className="flex grow flex-row flex-wrap items-center gap-1 max-sm:flex-col">
+                            <span className="flex flex-row justify-between rounded-box bg-base-100 p-2 max-sm:w-full">
+                              <ColorPickerButton
+                                onColorSelect={(color) => {
+                                  handleColorSelect(color, orderIndex);
+                                }}
+                                modalId={`colorPickerBillModal_${orderIndex}`}
+                                selectedColor={order.color}
+                                labelHtmlFor={`colorPickerLabel_${orderIndex}`}
+                                inputId={`colorPickerLabel_${orderIndex}`}
+                              />
+                            </span>
                             <span className="flex grow flex-row justify-between max-sm:w-full">
                               <label htmlFor={`measure_${orderIndex}`} className="label label-text">
                                 Measure
@@ -906,7 +938,7 @@ export default function BillPage() {
                                 }
                               />
                             </span>
-                            <span className="flex flex-row justify-between max-sm:w-full">
+                            <span className="flex flex-col justify-between max-sm:w-full">
                               <label htmlFor={`amount_${orderIndex}`} className="label label-text">
                                 Amount
                               </label>

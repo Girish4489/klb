@@ -58,6 +58,12 @@ interface IDimensions {
   dimensionName: string;
 }
 
+interface IColor {
+  type: 'Custom' | 'Selected';
+  name: string;
+  hex: string;
+}
+
 interface IBill extends Document {
   _id: ObjectId;
   billNumber: number;
@@ -87,6 +93,7 @@ interface IBill extends Document {
     barcode?: boolean;
     measurement?: string;
     amount?: number;
+    color?: IColor;
     status?: 'Pending' | 'In Progress' | 'Completed' | 'Cancelled';
   }[];
   totalAmount: number;
@@ -263,6 +270,15 @@ const billSchema: Schema<IBill> = new Schema<IBill>(
         barcode: Boolean,
         measurement: String,
         amount: Number,
+        color: {
+          type: {
+            type: String,
+            enum: ['Custom', 'Selected'],
+            default: 'Selected',
+          },
+          name: { type: String, required: true },
+          hex: { type: String, required: true },
+        },
         status: {
           type: String,
           enum: ['Pending', 'In Progress', 'Completed', 'Cancelled'],
@@ -347,6 +363,7 @@ export { Bill, Category, Customer, Receipt, Tax };
 export type {
   IBill,
   ICategory,
+  IColor,
   ICustomer,
   IDimensionTypes,
   IDimensions,
