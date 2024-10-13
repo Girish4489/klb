@@ -25,12 +25,12 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, isDataL
             <h4 className="billType">Customer Bill</h4>
             <div className="header-box">
               <div className="flex flex-row items-center justify-between">
-                <div className="item-center flex flex-row gap-4">
-                  <span className="profile">
-                    <Image src={klm.src} width={80} height={80} alt="Profile" />
+                <div className="item-center flex grow flex-row gap-4">
+                  <span className="profile w-24">
+                    <Image src={klm.src} width={90} height={80} alt="Profile" className="w-24" priority />
                   </span>
                   <hr className="divider-horizontal w-0.5 rounded bg-black" />
-                  <span className="flex flex-col items-center justify-center">
+                  <span className="flex grow flex-col items-center justify-center">
                     <h2 id="header">Kalamandir Ladies boutique</h2>
                     <address>1st Floor, Muddurandappa Complex Opp/BH Road, Gowribidanur - 561208</address>
                   </span>
@@ -111,6 +111,18 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, isDataL
                       <h1>Qr Code:</h1>
                       <h2>{order.barcode ? 'Yes' : 'No'}</h2>
                     </span>
+                    <span className="flex flex-row items-center justify-center gap-1">
+                      <h1>Color:</h1>
+                      <h2>
+                        {`${
+                          order.color?.name &&
+                          order.color.name
+                            .split(/(?=[A-Z])/)
+                            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                            .join(' ')
+                        }|${order.color?.hex && order.color.hex}`}{' '}
+                      </h2>
+                    </span>
                     <span className="flex flex-row items-center justify-center gap-8">
                       <h1>Amount:</h1>
                       <h2>{order.amount}</h2>
@@ -138,6 +150,7 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, isDataL
                   </span>
                   <hr style={{ margin: 0, padding: 0 }} />
                   <span className="flex flex-row items-center gap-8">
+                    <h1>Dimensions:</h1>
                     {order.dimension.map((dimension, dimensionIndex) => (
                       <span key={dimensionIndex} className="item-center process-box grow-1 flex flex-col justify-start">
                         <span className="flex flex-row items-center justify-around gap-8">

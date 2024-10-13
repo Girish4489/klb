@@ -262,17 +262,17 @@ export default function BillPage() {
 
   async function validateBill(bill: IBill | undefined) {
     if (!bill) throw new Error('No bill data found');
-      if (!bill.billNumber) throw new Error('Bill number is required');
+    if (!bill.billNumber) throw new Error('Bill number is required');
     if (!bill.order) throw new Error('No orders added');
     if (!bill.date) throw new Error('Date is required');
     if (!bill.dueDate) throw new Error('Due date is required');
     if (!bill.mobile) throw new Error('Mobile number is required');
 
-      // for each order check amount is greater than 0
-      const invalidOrderIndex = bill.order.findIndex((order) => (order.amount ?? 0) <= 0);
-      if (invalidOrderIndex !== -1) {
-        throw new Error(`Amount should be greater than 0 for order Sl No ${invalidOrderIndex + 1}`);
-      }
+    // for each order check amount is greater than 0
+    const invalidOrderIndex = bill.order.findIndex((order) => (order.amount ?? 0) <= 0);
+    if (invalidOrderIndex !== -1) {
+      throw new Error(`Amount should be greater than 0 for order Sl No ${invalidOrderIndex + 1}`);
+    }
   }
 
   async function handleSaveBill() {
@@ -1039,8 +1039,15 @@ export default function BillPage() {
                         value={printType}
                         onChange={(e) => setPrintType(e.target.value)}
                       >
-                        <option value="Customer Bill">Customer Bill</option>
-                        <option value="Worker Bill">Worker Bill</option>
+                        <option tabIndex={0} value="Both">
+                          Both
+                        </option>
+                        <option tabIndex={1} value="Customer Bill">
+                          Customer Bill
+                        </option>
+                        <option tabIndex={2} value="Worker Bill">
+                          Worker Bill
+                        </option>
                       </select>
                       <Link
                         className="btn btn-accent join-item btn-sm"

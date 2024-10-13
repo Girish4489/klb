@@ -3,6 +3,7 @@ import { connect } from '@/dbConfig/dbConfig';
 import { getDataFromToken } from '@/helpers/getDataFromToken';
 import { Bill, IReceipt, Receipt } from '@/models/klm';
 import User from '@/models/userModel';
+import mongoose from 'mongoose';
 import { NextRequest, NextResponse } from 'next/server';
 
 connect();
@@ -71,7 +72,21 @@ export async function POST(request: NextRequest) {
       data.bill.name = bill.name;
       data.bill.mobile = bill.mobile;
     }
-    const receipt = new Receipt(data);
+
+    const receipt = new Receipt({
+      _id: new mongoose.Types.ObjectId(),
+      receiptNumber: data.receiptNumber,
+      bill: data.bill,
+      amount: data.amount,
+      paymentDate: data.paymentDate,
+      paymentMethod: data.paymentMethod,
+      receiptBy: {
+        _id: user._id,
+        name: user.username,
+      },
+      createAt: new Date(),
+      updateAt: new Date(),
+    }) as IReceipt;
 
     if (data.amount && data.bill?.billNumber) {
       const bill = await Bill.findOne({ billNumber: data.bill.billNumber });

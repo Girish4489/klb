@@ -11,15 +11,16 @@ interface WorkerBillPreviewProps {
   isDataLoaded: boolean;
   klm: { src: string };
   style: string;
+  type: string;
 }
 
-const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, isDataLoaded, klm, style }) => {
+const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, isDataLoaded, klm, style, type }) => {
   if (!isDataLoaded) {
     return <div>Loading...</div>;
   }
 
   return (
-    <span className="preview">
+    <span className="preview bg-white">
       {bill && (
         <div className="mx-2 mb-0 flex h-full flex-col justify-between gap-2">
           <style>{style}</style>
@@ -27,12 +28,12 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, isDataLoade
             <h4 className="billType">Worker Bill</h4>
             <div className="header-box">
               <div className="flex flex-row items-center justify-between">
-                <div className="item-center flex flex-row gap-4">
-                  <span className="profile">
-                    <Image src={klm.src} width={80} height={80} alt="Profile" />
+                <div className="item-center flex grow flex-row gap-4">
+                  <span className="profile w-24">
+                    <Image src={klm.src} width={90} height={80} alt="Profile" className="w-24" priority />
                   </span>
                   <hr className="divider-horizontal w-0.5 rounded bg-black" />
-                  <div className="header-col w-50per flex flex-col justify-start text-center">
+                  <div className="header-col flex grow flex-col justify-start text-center">
                     <h2 id="text-center">Barcode</h2>
                   </div>
                 </div>
@@ -75,6 +76,18 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, isDataLoade
                       <h1>Qr Code:</h1>
                       <h2>{order.barcode ? 'Yes' : 'No'}</h2>
                     </span>
+                    <span className="flex flex-row items-center justify-center gap-1">
+                      <h1>Color:</h1>
+                      <h2>
+                        {`${
+                          order.color?.name &&
+                          order.color.name
+                            .split(/(?=[A-Z])/)
+                            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                            .join(' ')
+                        } | ${order.color?.hex && order.color.hex}`}{' '}
+                      </h2>
+                    </span>
                   </span>
                   <hr style={{ margin: 0, padding: 0 }} />
                   <span className="flex flex-row items-center gap-8">
@@ -98,6 +111,7 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, isDataLoade
                   </span>
                   <hr style={{ margin: 0, padding: 0 }} />
                   <span className="flex flex-row items-center gap-8">
+                    <h1>Dimensions:</h1>
                     {order.dimension.map((dimension, dimensionIndex) => (
                       <span key={dimensionIndex} className="item-center process-box grow-1 flex flex-col justify-start">
                         <span className="flex flex-row items-center justify-around gap-8">
@@ -118,11 +132,13 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, isDataLoade
               ))}
             </span>
           </span>
-          <span className="fixed bottom-0 m-auto w-full grow gap-2 bg-white text-center">
-            <span className="padding-4 border-1 rounded-20 m-auto flex w-[96%] flex-row items-center justify-between gap-4 border-solid">
+          <span
+            className={`fixed bottom-0 m-auto w-full grow gap-2 bg-white text-center ${type === 'Both' ? 'hidden' : ''}`}
+          >
+            <span className="padding-4 border-1 rounded-20 m-auto flex w-[96%] flex-row items-center justify-between gap-4 border-solid bg-white">
               <span className="field">
                 <h2>Bill By:</h2>
-                <h3>{bill?.billBy?.name}</h3> bg-white bg-white
+                <h3>{bill?.billBy?.name}</h3>
               </span>
               <span className="flex flex-col items-center justify-start">
                 <span className="flex flex-row items-center gap-4">

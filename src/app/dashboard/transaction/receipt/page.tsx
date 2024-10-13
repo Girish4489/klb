@@ -130,6 +130,7 @@ export default function RecieptPage() {
       const selectedBill = await (searchBill ?? []).find((bill) => bill._id === billId);
       if (selectedBill) {
         const lastReceipt = await ApiGet.Receipt.LastReceipt();
+        setReceipt(undefined);
         setReceipt({
           ...receipt,
           receiptNumber: (lastReceipt?.lastReceipt?.receiptNumber ?? 0) + 1,
@@ -257,7 +258,7 @@ export default function RecieptPage() {
   return (
     <div className="flex grow flex-col gap-1">
       <span className="flex min-w-fit flex-row flex-wrap items-center justify-between gap-2 rounded-box bg-accent/10 px-3 py-1.5 backdrop-blur-xl max-sm:flex-col">
-        <button className="btn btn-primary btn-sm" onClick={createNewReceipt}>
+        <button className="btn btn-primary btn-sm" disabled onClick={createNewReceipt}>
           New Receipt
         </button>
         <form onSubmit={billSearch} className="join flex flex-wrap items-center justify-between max-sm:flex-col">
@@ -396,6 +397,7 @@ export default function RecieptPage() {
                 name="name"
                 id="name"
                 placeholder="Name"
+                autoComplete="off"
                 type="text"
                 value={receipt?.bill?.name ?? ''}
                 onChange={(e) => {

@@ -20,18 +20,12 @@ export async function GET(request: NextRequest) {
 
     if (!user) throw new Error('User not found');
     let bill: IBill | null;
-    if (printType === 'Customer Bill') {
+    if (printType === 'Customer Bill' || printType === 'Worker Bill' || printType === 'Both') {
       bill = await Bill.findOne({ billNumber: billNumber });
       if (!bill) {
-        throw new Error('Customer Bill not found');
+        throw new Error(`${printType} not found`);
       }
-      return NextResponse.json({ message: 'Customer Bill data', success: true, bill: bill });
-    } else if (printType === 'Worker Bill') {
-      bill = await Bill.findOne({ billNumber: billNumber });
-      if (!bill) {
-        throw new Error('Worker Bill not found');
-      }
-      return NextResponse.json({ message: 'Worker Bill data', success: true, bill: bill });
+      return NextResponse.json({ message: `${printType} data`, success: true, bill: bill });
     }
 
     return NextResponse.json({ message: 'Print type not found', success: false });
