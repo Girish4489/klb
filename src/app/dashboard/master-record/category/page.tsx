@@ -8,6 +8,16 @@ import { PencilSquareIcon, PlusCircleIcon, TrashIcon } from '@heroicons/react/24
 import React from 'react';
 import toast from 'react-hot-toast';
 
+/**
+ * The `IIds` interface represents the identifiers for a category, style process, style, dimension type, and dimension.
+ *
+ * @interface IIds
+ * @property {string} catId - The category ID.
+ * @property {string} styleProcessId - The style process ID.
+ * @property {string} styleId - The style ID.
+ * @property {string} dimensionTypeId - The dimension type ID.
+ * @property {string} dimensionId - The dimension ID.
+ */
 interface IIds {
   catId: string;
   styleProcessId: string;
@@ -91,10 +101,8 @@ export default function CategoryPage(): JSX.Element {
    * 5. Handles the API response, updating the state with the new category if successful.
    * 6. Uses a toast notification to indicate the status of the category addition.
    */
-  const AddCategory = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
-    e.preventDefault();
-    const category: string = e.currentTarget.category.value;
-    const description: string = e.currentTarget.description.value;
+  const AddCategory = async (e: { category: string; description: string }): Promise<void> => {
+    const { category, description } = e;
     if (typeof category !== 'string' || typeof description !== 'string') {
       handleError.throw(new Error('Invalid input types'));
       return;
@@ -1332,49 +1340,27 @@ export default function CategoryPage(): JSX.Element {
           ]}
           onClose={() => {}}
         />
+        <FormModal
+          id="addCategory"
+          title="Add Category"
+          onSubmit={(formData) => AddCategory({ category: formData.category, description: formData.description })}
+          buttonName="Add"
+          fields={[
+            { label: 'Category', name: 'category', type: 'text', required: true, placeholder: 'Category Name' },
+            { label: 'Description', name: 'description', type: 'text', placeholder: 'Category Description' },
+          ]}
+          onClose={() => {}}
+        />
       </span>
       <span className="container w-full overflow-y-auto">
         <div className="w-full rounded-box border-2 border-base-300 p-2 shadow-lg">
-          <h1 className="text-center text-2xl font-bold">Category</h1>
-          <form
-            onSubmit={AddCategory}
-            className="m-2 mt-1 flex flex-row items-center gap-2 p-2 pt-0 max-sm:max-w-full max-sm:flex-col max-sm:items-start"
-          >
-            <label htmlFor="category" className="label">
-              Category
-            </label>
-            <input
-              type="text"
-              placeholder="Category Name"
-              className="input input-sm input-bordered input-primary w-full max-w-xs max-sm:w-full max-sm:max-w-full"
-              required
-              spellCheck="true"
-              name="category"
-              id="category"
-              onFocus={(e) => e.currentTarget.select()}
-            />
-            <label htmlFor="description" className="label label-text">
-              Description
-            </label>
-            <input
-              type="text"
-              placeholder="Category Description"
-              className="input input-sm input-bordered input-primary w-full max-w-xs max-sm:w-full max-sm:max-w-full"
-              name="description"
-              id="description"
-              onFocus={(e) => e.currentTarget.select()}
-            />
-            <span className="max-sm:flex max-sm:w-full max-sm:justify-end">
-              <CustomButton
-                className="btn-primary form-control btn-sm tooltip tooltip-right flex items-center self-end px-1 max-sm:p-2"
-                tooltip="Add Category"
-                onClick={() => {}}
-              >
-                <PlusCircleIcon className="h-6 w-6 text-primary-content max-sm:hidden" />
-                <span className="hidden max-sm:flex">Add</span>
-              </CustomButton>
-            </span>
-          </form>
+          <div className="flex items-center gap-2 max-sm:justify-between">
+            <h2 className="label text-center font-bold">Category</h2>
+            <button className="btn btn-primary btn-sm" onClick={() => openModal('addCategory')}>
+              <PlusCircleIcon className="h-6 w-6 text-primary-content max-sm:hidden" />
+              <span className="hidden max-sm:flex">Add</span>
+            </button>
+          </div>
           <p className="text-start text-sm text-warning max-sm:text-center">
             Note: General users can view this page for informational purposes. Edits are reserved for authorized
             personnel.
