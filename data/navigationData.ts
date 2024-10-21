@@ -1,16 +1,16 @@
 import {
-  DocumentIcon,
   ChartBarIcon,
-  UserGroupIcon,
-  CurrencyDollarIcon,
   ClipboardDocumentListIcon,
-  CogIcon,
-  LockClosedIcon,
-  KeyIcon,
-  SquaresPlusIcon,
   ClockIcon,
+  CogIcon,
+  CurrencyDollarIcon,
+  DocumentIcon,
+  KeyIcon,
+  LockClosedIcon,
   ServerStackIcon,
-} from "@heroicons/react/24/solid";
+  SquaresPlusIcon,
+  UserGroupIcon,
+} from '@heroicons/react/24/solid';
 
 export interface SubNavItem {
   title: string;
@@ -43,7 +43,13 @@ const masterRecordNav: NavItem = {
   subNav: [
     { title: 'Form Master', href: '#m1', enable: false, icon: DocumentIcon, iconClass: subIconClass },
     { title: 'Input Data', href: '#m2', enable: false, icon: DocumentIcon, iconClass: subIconClass },
-    { title: 'Category', href: '/dashboard/master-record/category', enable: true, icon: DocumentIcon, iconClass: subIconClass },
+    {
+      title: 'Category',
+      href: '/dashboard/master-record/category',
+      enable: true,
+      icon: DocumentIcon,
+      iconClass: subIconClass,
+    },
     { title: 'Work Process', href: '#m4', enable: false, icon: DocumentIcon, iconClass: subIconClass },
     { title: 'Work Process Style', href: '#m5', enable: false, icon: DocumentIcon, iconClass: subIconClass },
     { title: 'Work Master', href: '#m6', enable: false, icon: DocumentIcon, iconClass: subIconClass },
@@ -87,7 +93,13 @@ const workManageNav: NavItem = {
   icon: ChartBarIcon,
   iconClass: navIconClass,
   subNav: [
-    { title: 'New Customer', href: '/dashboard/work-manage/new-customer', enable: true, icon: ChartBarIcon, iconClass: subIconClass },
+    {
+      title: 'New Customer',
+      href: '/dashboard/work-manage/new-customer',
+      enable: true,
+      icon: ChartBarIcon,
+      iconClass: subIconClass,
+    },
     { title: 'Bill', href: '/dashboard/work-manage/bill', enable: true, icon: ChartBarIcon, iconClass: subIconClass },
     { title: 'Edit Bill', href: '#w11', enable: false, icon: ChartBarIcon, iconClass: subIconClass },
     { title: 'Photo Gallery', href: '#w2', enable: false, icon: ChartBarIcon, iconClass: subIconClass },
@@ -126,7 +138,13 @@ const transactionNav: NavItem = {
   icon: CurrencyDollarIcon,
   iconClass: navIconClass,
   subNav: [
-    { title: 'Receipt', href: '/dashboard/transaction/receipt', enable: true, icon: CurrencyDollarIcon, iconClass: subIconClass },
+    {
+      title: 'Receipt',
+      href: '/dashboard/transaction/receipt',
+      enable: true,
+      icon: CurrencyDollarIcon,
+      iconClass: subIconClass,
+    },
     { title: 'Receipt Credit', href: '#t2', enable: false, icon: CurrencyDollarIcon, iconClass: subIconClass },
     { title: 'Worker Payment', href: '#t3', enable: false, icon: CurrencyDollarIcon, iconClass: subIconClass },
     { title: 'Counter', href: '#t4', enable: false, icon: CurrencyDollarIcon, iconClass: subIconClass },
@@ -145,15 +163,39 @@ const reportNav: NavItem = {
   icon: ClipboardDocumentListIcon,
   iconClass: navIconClass,
   subNav: [
-    { title: 'Bill Details', href: '/dashboard/report/bill-details', enable: true, icon: ClipboardDocumentListIcon, iconClass: subIconClass },
-    { title: 'Receipt Details', href: '/dashboard/report/receipt', enable: true, icon: ClipboardDocumentListIcon, iconClass: subIconClass },
+    {
+      title: 'Bill Details',
+      href: '/dashboard/report/bill-details',
+      enable: true,
+      icon: ClipboardDocumentListIcon,
+      iconClass: subIconClass,
+    },
+    {
+      title: 'Receipt Details',
+      href: '/dashboard/report/receipt',
+      enable: true,
+      icon: ClipboardDocumentListIcon,
+      iconClass: subIconClass,
+    },
     { title: 'Worker Details', href: '#r3', enable: false, icon: ClipboardDocumentListIcon, iconClass: subIconClass },
     { title: 'GST', href: '#r4', enable: false, icon: ClipboardDocumentListIcon, iconClass: subIconClass },
     { title: 'Payroll Sheet', href: '#r5', enable: false, icon: ClipboardDocumentListIcon, iconClass: subIconClass },
     { title: 'Bill work status', href: '#r6', enable: false, icon: ClipboardDocumentListIcon, iconClass: subIconClass },
-    { title: 'Bill & Payment Transaction', href: '#r7', enable: false, icon: ClipboardDocumentListIcon, iconClass: subIconClass },
+    {
+      title: 'Bill & Payment Transaction',
+      href: '#r7',
+      enable: false,
+      icon: ClipboardDocumentListIcon,
+      iconClass: subIconClass,
+    },
     { title: 'Inventory', href: '#r8', enable: false, icon: ClipboardDocumentListIcon, iconClass: subIconClass },
-    { title: 'Customer Details', href: '/dashboard/report/customer-details', enable: true, icon: ClipboardDocumentListIcon, iconClass: subIconClass },
+    {
+      title: 'Customer Details',
+      href: '/dashboard/report/customer-details',
+      enable: true,
+      icon: ClipboardDocumentListIcon,
+      iconClass: subIconClass,
+    },
   ],
 };
 

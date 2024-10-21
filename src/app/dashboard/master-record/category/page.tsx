@@ -1370,9 +1370,9 @@ export default function CategoryPage(): JSX.Element {
           <h1 className="m-1 w-max border-b border-base-content text-center text-xl font-bold">Categories</h1>
           <div className="flex h-auto w-full flex-col">
             <div className="flex flex-col items-start justify-between gap-2 max-sm:items-center">
-              {category.map((cat, index) => (
-                <>
-                  <div key={cat.categoryName} className="w-full rounded-box border border-base-300 bg-base-200">
+              {category.map((cat: ICategory, catIndex: number) => (
+                <span className="w-full" key={catIndex}>
+                  <div className="w-full rounded-box border border-base-300 bg-base-200">
                     <div
                       className={
                         'flex w-full flex-row justify-between p-2 max-sm:w-full max-sm:max-w-full max-sm:flex-wrap max-sm:gap-2 max-sm:p-0'
@@ -1536,7 +1536,7 @@ export default function CategoryPage(): JSX.Element {
                                   data-tip="Add Dimension Type"
                                   onClick={() => {
                                     setIds({
-                                      catId: cat._id.toString(),
+                                      catId: cat._id.toString() as string,
                                       styleProcessId: '',
                                       styleId: '',
                                       dimensionTypeId: '',
@@ -1564,9 +1564,11 @@ export default function CategoryPage(): JSX.Element {
                                             data-tip="Add Dimension"
                                             onClick={() => {
                                               setIds({
-                                                ...ids,
-                                                catId: cat._id.toString(),
+                                                catId: cat._id.toString() as string,
+                                                styleProcessId: '',
+                                                styleId: '',
                                                 dimensionTypeId: DimensionType._id.toString(),
+                                                dimensionId: '',
                                               } as IIds);
                                               openModal('addDimension');
                                             }}
@@ -1579,8 +1581,8 @@ export default function CategoryPage(): JSX.Element {
                                             onClick={() => {
                                               setIds({
                                                 ...ids,
-                                                catId: cat._id.toString(),
-                                                dimensionTypeId: DimensionType._id.toString(),
+                                                catId: cat._id.toString() as string,
+                                                dimensionTypeId: DimensionType._id.toString() as string,
                                               } as IIds);
                                               openModal('editDimensionType');
                                             }}
@@ -1590,7 +1592,10 @@ export default function CategoryPage(): JSX.Element {
                                           <button
                                             className="btn btn-error btn-sm tooltip tooltip-left px-1"
                                             data-tip="Delete Type"
-                                            onClick={DelDimensionType(cat._id.toString(), DimensionType._id.toString())}
+                                            onClick={DelDimensionType(
+                                              cat._id.toString() as string,
+                                              DimensionType._id.toString() as string,
+                                            )}
                                           >
                                             <TrashIcon className="h-6 w-6 text-error-content" />
                                           </button>
@@ -1613,11 +1618,11 @@ export default function CategoryPage(): JSX.Element {
                                                   data-tip="Edit Dimension"
                                                   onClick={() => {
                                                     setIds({
-                                                      catId: cat._id.toString(),
+                                                      catId: cat._id.toString() as string,
                                                       styleProcessId: '',
                                                       styleId: '',
-                                                      dimensionTypeId: DimensionType._id.toString(),
-                                                      dimensionId: dimension._id.toString(),
+                                                      dimensionTypeId: DimensionType._id.toString() as string,
+                                                      dimensionId: dimension._id.toString() as string,
                                                     } as IIds);
                                                     openModal('editDimension');
                                                   }}
@@ -1628,9 +1633,9 @@ export default function CategoryPage(): JSX.Element {
                                                   className="btn btn-error btn-sm tooltip tooltip-left px-1"
                                                   data-tip="Delete Dimension"
                                                   onClick={DelDimension(
-                                                    cat._id.toString(),
-                                                    DimensionType._id.toString(),
-                                                    dimension._id.toString(),
+                                                    cat._id.toString() as string,
+                                                    DimensionType._id.toString() as string,
+                                                    dimension._id.toString() as string,
                                                   )}
                                                 >
                                                   <TrashIcon className="h-6 w-6 text-error-content" />
@@ -1650,10 +1655,10 @@ export default function CategoryPage(): JSX.Element {
                       </div>
                     </div>
                   </div>
-                  <div className={`${index === category.length - 1 ? 'hidden' : ''} w-full px-2`}>
+                  <div className={`${catIndex === category.length - 1 ? 'hidden' : ''} w-full px-2`}>
                     <hr className={'divider divider-primary my-1 h-0.5 w-full divide-dashed rounded-box border-0'} />
                   </div>
-                </>
+                </span>
               ))}
             </div>
           </div>

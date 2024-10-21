@@ -3,10 +3,7 @@
   "compounds": [
     {
       "name": "Dev: Edge",
-      "configurations": [
-        "Dev Server",
-        "Launch in Edge"
-      ],
+      "configurations": ["Dev Server", "Launch in Edge"],
       "stopAll": true,
       "presentation": {
         "hidden": false,
@@ -16,10 +13,7 @@
     },
     {
       "name": "Dev: Chrome",
-      "configurations": [
-        "Dev Server",
-        "Launch Chrome"
-      ],
+      "configurations": ["Dev Server", "Launch Chrome"],
       "stopAll": true,
       "presentation": {
         "hidden": false,
@@ -29,10 +23,7 @@
     },
     {
       "name": "Format & Lint",
-      "configurations": [
-        "format",
-        "Lint"
-      ],
+      "configurations": ["format", "Lint"],
       "stopAll": true,
       "presentation": {
         "hidden": false,
@@ -42,10 +33,7 @@
     },
     {
       "name": "Build & Start",
-      "configurations": [
-        "Build",
-        "Start"
-      ],
+      "configurations": ["Build", "Start"],
       "stopAll": true,
       "presentation": {
         "hidden": false,
@@ -60,10 +48,7 @@
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": [
-        "run",
-        "dev"
-      ],
+      "runtimeArgs": ["run", "dev"],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
@@ -78,10 +63,7 @@
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": [
-        "run",
-        "build"
-      ],
+      "runtimeArgs": ["run", "build"],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
@@ -96,10 +78,7 @@
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": [
-        "run",
-        "start"
-      ],
+      "runtimeArgs": ["run", "start"],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
@@ -114,10 +93,7 @@
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": [
-        "run",
-        "format"
-      ],
+      "runtimeArgs": ["run", "format"],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
@@ -132,10 +108,7 @@
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": [
-        "run",
-        "lint"
-      ],
+      "runtimeArgs": ["run", "lint"],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
