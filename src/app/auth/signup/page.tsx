@@ -126,8 +126,8 @@ export default function SignupPage() {
                   required
                 />
               </div>
-              <div className="flex flex-row items-center justify-between pe-1">
-                <label className="label" htmlFor="check">
+              <div className="flex flex-row items-center justify-between p-2 hover:rounded-box hover:bg-base-300/50">
+                <label className="label grow cursor-pointer" htmlFor="check">
                   <span className="label-text-alt">Show password</span>
                 </label>
                 <input type="checkbox" onChange={handleShowPassword} id="check" name="check" className="checkbox" />

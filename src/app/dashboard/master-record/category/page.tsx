@@ -4,7 +4,7 @@ import handleError from '@/app/util/error/handleError';
 import { ApiGet, ApiPost } from '@/app/util/makeApiRequest/makeApiRequest';
 import { FormModal, closeModal, openModal } from '@/app/util/modal/modals';
 import { ICategory, IDimensionTypes, IDimensions, IStyle, IStyleProcess } from '@/models/klm';
-import Image from 'next/image';
+import { PencilSquareIcon, PlusCircleIcon, TrashIcon } from '@heroicons/react/24/outline';
 import React from 'react';
 import toast from 'react-hot-toast';
 
@@ -26,21 +26,6 @@ export default function CategoryPage(): JSX.Element {
   const [category, setCategory] = React.useState<ICategory[]>([]);
   const [ids, setIds] = React.useState<IIds>();
   const isMounted = React.useRef(false);
-  /**
-   * * Constants:
-   * - `svg000`: Path to the plus-circle SVG icon.
-   */
-  const svg000 = '/icons/svg/plus-circle.svg';
-  /**
-   * * Constants:
-   * - `svg001`: Path to the note-pencil SVG icon.
-   */
-  const svg001 = '/icons/svg/note-pencil.svg';
-  /**
-   * * Constants:
-   * - `svg002`: Path to the trash SVG icon.
-   */
-  const svg002 = '/icons/svg/trash.svg';
 
   /**
    * Fetches the category data from the API and updates the state with the retrieved categories.
@@ -1161,36 +1146,6 @@ export default function CategoryPage(): JSX.Element {
   };
 
   /**
-   * CustomImage component renders an image with specified properties.
-   *
-   * @param {Object} props - The properties object.
-   * @param {string} props.src - The source URL of the image.
-   * @param {number} [props.width] - The width of the image. Defaults to 32 if not provided.
-   * @param {number} [props.height] - The height of the image. Defaults to 32 if not provided.
-   * @param {string} props.alt - The alt text for the image.
-   * @param {string} [props.className] - Additional CSS classes for the image.
-   *
-   * @returns {JSX.Element} The rendered image component.
-   */
-  const CustomImage = ({
-    src,
-    width,
-    height,
-    alt,
-    className,
-  }: {
-    src: string;
-    width?: number;
-    height?: number;
-    alt: string;
-    className?: string;
-  }): JSX.Element => {
-    return (
-      <Image src={src} width={width ?? 32} height={height ?? 32} alt={alt} className={`h-auto w-8  ${className}`} />
-    );
-  };
-
-  /**
    * CustomButton component renders a button with optional tooltip and custom styling.
    *
    * @param {Object} props - The properties object.
@@ -1242,6 +1197,7 @@ export default function CategoryPage(): JSX.Element {
           id="editCategory"
           title="Edit Category"
           onSubmit={(formData) => EditCategory(formData as { category: string; description: string })}
+          buttonName="Edit"
           fields={[
             { label: 'Category', name: 'category', type: 'text', required: true, placeholder: 'Category Name' },
             { label: 'Description', name: 'description', type: 'text', placeholder: 'Description Name' },
@@ -1252,6 +1208,7 @@ export default function CategoryPage(): JSX.Element {
           id="addProcess"
           title="Add Process"
           onSubmit={(formData) => AddProcess(formData as { styleProcess: string })}
+          buttonName="Add"
           fields={[
             {
               label: 'Style Process',
@@ -1267,6 +1224,7 @@ export default function CategoryPage(): JSX.Element {
           id="editProcess"
           title="Edit Process"
           onSubmit={(formData) => EditProcess(formData as { processName: string })}
+          buttonName="Edit"
           fields={[
             {
               label: 'Style Process',
@@ -1282,6 +1240,7 @@ export default function CategoryPage(): JSX.Element {
           id="addStyle"
           title="Add Style"
           onSubmit={(formData) => AddStyle(formData as { catStyle: string })}
+          buttonName="Add"
           fields={[
             {
               label: 'Style',
@@ -1297,6 +1256,7 @@ export default function CategoryPage(): JSX.Element {
           id="editStyle"
           title="Edit Style"
           onSubmit={(formData) => EditStyles({ styleName: formData.styleName })}
+          buttonName="Edit"
           fields={[
             {
               label: 'Style',
@@ -1312,6 +1272,7 @@ export default function CategoryPage(): JSX.Element {
           id="addDimensionTypes"
           title="Add Dimension Type"
           onSubmit={(formData) => addDimensionTypes({ dimensionType: formData.dimensionType })}
+          buttonName="Add"
           fields={[
             {
               label: 'Dimension Type',
@@ -1327,6 +1288,7 @@ export default function CategoryPage(): JSX.Element {
           id="editDimensionType"
           title="Edit Dimension Type"
           onSubmit={(formData) => EditDimensionType({ dimensionTypeName: formData.dimensionTypeName })}
+          buttonName="Edit"
           fields={[
             {
               label: 'Dimension Type',
@@ -1342,6 +1304,7 @@ export default function CategoryPage(): JSX.Element {
           id="addDimension"
           title="Add Dimension"
           onSubmit={(formData) => AddDimension({ dimension: formData.dimension })}
+          buttonName="Add"
           fields={[
             {
               label: 'Dimension',
@@ -1357,6 +1320,7 @@ export default function CategoryPage(): JSX.Element {
           id="editDimension"
           title="Edit Dimension"
           onSubmit={(formData) => EditDimension({ dimension: formData.dimension })}
+          buttonName="Edit"
           fields={[
             {
               label: 'Dimension',
@@ -1401,13 +1365,14 @@ export default function CategoryPage(): JSX.Element {
               onFocus={(e) => e.currentTarget.select()}
             />
             <span className="max-sm:flex max-sm:w-full max-sm:justify-end">
-              <button
-                className="btn btn-primary form-control btn-sm tooltip tooltip-right flex items-center self-end"
-                data-tip="Add Category"
+              <CustomButton
+                className="btn-primary form-control btn-sm tooltip tooltip-right flex items-center self-end px-1 max-sm:p-2"
+                tooltip="Add Category"
+                onClick={() => {}}
               >
-                <CustomImage src={svg000} alt="Add Category" className="max-sm:hidden" />
+                <PlusCircleIcon className="h-6 w-6 text-primary-content max-sm:hidden" />
                 <span className="hidden max-sm:flex">Add</span>
-              </button>
+              </CustomButton>
             </span>
           </form>
           <p className="text-start text-sm text-warning max-sm:text-center">
@@ -1429,7 +1394,7 @@ export default function CategoryPage(): JSX.Element {
                     >
                       <div className="flex w-full flex-col items-center gap-2 rounded-box border border-base-200 bg-base-300 p-2 max-sm:flex-col max-sm:items-start max-sm:p-2">
                         <div className="flex w-full flex-row px-2">
-                          <span className="w-wax flex grow flex-row gap-2 max-sm:w-full">
+                          <span className="w-wax flex grow flex-row items-center gap-2 max-sm:w-full">
                             <div className="badge badge-success badge-md flex flex-row flex-wrap gap-1 rounded-lg font-bold max-sm:flex-col">
                               Name:
                               <span>{cat.categoryName}</span>
@@ -1439,23 +1404,23 @@ export default function CategoryPage(): JSX.Element {
                               <span>{cat.description}</span>
                             </div>
                           </span>
-                          <div className="ml-1 flex flex-row items-center justify-center gap-2 max-sm:mb-2 max-sm:mr-2 max-sm:w-full max-sm:flex-row max-sm:justify-end max-sm:pr-2">
+                          <div className="ml-1 flex flex-row items-center justify-center gap-2 max-sm:mb-2 max-sm:mr-2 max-sm:w-fit max-sm:flex-row max-sm:justify-end max-sm:pr-2">
                             <CustomButton
-                              className="btn-primary btn-sm tooltip tooltip-left px-1"
+                              className="btn-secondary btn-sm tooltip tooltip-left px-1"
                               tooltip="Edit Category"
                               onClick={() => {
                                 setIdsState(cat._id.toString());
                                 openModal('editCategory');
                               }}
                             >
-                              <CustomImage src={svg001} alt="Edit Category" />
+                              <PencilSquareIcon className="h-6 w-6 text-secondary-content" />
                             </CustomButton>
                             <button
-                              className="btn btn-secondary btn-sm tooltip tooltip-left px-1"
+                              className="btn btn-error btn-sm tooltip tooltip-left px-1"
                               data-tip="Delete Category"
                               onClick={DelCategory(cat._id.toString())}
                             >
-                              <CustomImage src={svg002} alt="Delete Category" />
+                              <TrashIcon className="h-6 w-6 text-error-content" />
                             </button>
                           </div>
                         </div>
@@ -1465,7 +1430,7 @@ export default function CategoryPage(): JSX.Element {
                               <div className="flex flex-row items-center justify-between gap-2">
                                 <p className="label-text w-max">Styles</p>
                                 <button
-                                  className="btn btn-primary btn-sm tooltip tooltip-left"
+                                  className="btn btn-primary btn-sm tooltip tooltip-left px-1 max-sm:p-2"
                                   data-tip="Add Process"
                                   onClick={() => {
                                     setIds({
@@ -1478,7 +1443,7 @@ export default function CategoryPage(): JSX.Element {
                                     openModal('addProcess');
                                   }}
                                 >
-                                  <CustomImage src={svg000} alt="Add Process" className="max-sm:hidden" />
+                                  <PlusCircleIcon className="h-6 w-6 text-primary-content max-sm:hidden" />
                                   <span className="hidden max-sm:flex">Add</span>
                                 </button>
                               </div>
@@ -1507,10 +1472,10 @@ export default function CategoryPage(): JSX.Element {
                                               openModal('addStyle');
                                             }}
                                           >
-                                            <CustomImage src={svg000} alt="Add" />
+                                            <PlusCircleIcon className="h-6 w-6 text-primary-content" />
                                           </button>
                                           <button
-                                            className="btn btn-primary btn-sm tooltip tooltip-left px-1"
+                                            className="btn btn-secondary btn-sm tooltip tooltip-left px-1"
                                             data-tip="Edit Process"
                                             onClick={() => {
                                               setIds({
@@ -1521,14 +1486,14 @@ export default function CategoryPage(): JSX.Element {
                                               openModal('editProcess');
                                             }}
                                           >
-                                            <CustomImage src={svg001} alt="Edit Process" />
+                                            <PencilSquareIcon className="h-6 w-6 text-secondary-content" />
                                           </button>
                                           <button
-                                            className="btn btn-secondary btn-sm tooltip tooltip-left px-1"
+                                            className="btn btn-error btn-sm tooltip tooltip-left px-1"
                                             data-tip="Delete Process"
                                             onClick={DelProcess(cat._id.toString(), styleProcess._id.toString())}
                                           >
-                                            <CustomImage src={svg002} alt="Delete Process" />
+                                            <TrashIcon className="h-6 w-6 text-error-content" />
                                           </button>
                                         </span>
                                       </div>
@@ -1541,7 +1506,7 @@ export default function CategoryPage(): JSX.Element {
                                             <p className="label label-text">{style.styleName}</p>
                                             <span className="mr-2 flex flex-row gap-1">
                                               <button
-                                                className="btn btn-primary btn-sm tooltip tooltip-left px-1"
+                                                className="btn btn-secondary btn-sm tooltip tooltip-left px-1"
                                                 data-tip="Edit Style"
                                                 onClick={() => {
                                                   setIds({
@@ -1553,10 +1518,10 @@ export default function CategoryPage(): JSX.Element {
                                                   openModal('editStyle');
                                                 }}
                                               >
-                                                <CustomImage src={svg001} alt="Edit Style" />
+                                                <PencilSquareIcon className="h-6 w-6 text-secondary-content" />
                                               </button>
                                               <button
-                                                className="btn btn-secondary btn-sm tooltip tooltip-left px-1"
+                                                className="btn btn-error btn-sm tooltip tooltip-left px-1"
                                                 data-tip="Delete Style"
                                                 onClick={DelStyle(
                                                   cat._id.toString(),
@@ -1564,7 +1529,7 @@ export default function CategoryPage(): JSX.Element {
                                                   style._id.toString(),
                                                 )}
                                               >
-                                                <CustomImage src={svg002} alt="Delete Style" />
+                                                <TrashIcon className="h-6 w-6 text-error-content" />
                                               </button>
                                             </span>
                                           </div>
@@ -1581,7 +1546,7 @@ export default function CategoryPage(): JSX.Element {
                               <div className="flex flex-row items-center justify-between gap-2">
                                 <p className="label-text w-max">Dimensions</p>
                                 <button
-                                  className="btn btn-primary btn-sm tooltip tooltip-left"
+                                  className="btn btn-primary btn-sm tooltip tooltip-left px-1 max-sm:p-2"
                                   data-tip="Add Dimension Type"
                                   onClick={() => {
                                     setIds({
@@ -1594,7 +1559,7 @@ export default function CategoryPage(): JSX.Element {
                                     openModal('addDimensionTypes');
                                   }}
                                 >
-                                  <CustomImage src={svg000} alt="Add Dimension Type" className="max-sm:hidden" />
+                                  <PlusCircleIcon className="h-6 w-6 text-primary-content max-sm:hidden" />
                                   <span className="hidden max-sm:flex">Add</span>
                                 </button>
                               </div>
@@ -1620,10 +1585,10 @@ export default function CategoryPage(): JSX.Element {
                                               openModal('addDimension');
                                             }}
                                           >
-                                            <CustomImage src={svg000} alt="Add Dimension" />
+                                            <PlusCircleIcon className="h-6 w-6 text-primary-content" />
                                           </button>
                                           <button
-                                            className="btn btn-primary btn-sm tooltip tooltip-left px-1"
+                                            className="btn btn-secondary btn-sm tooltip tooltip-left px-1"
                                             data-tip="Edit Type"
                                             onClick={() => {
                                               setIds({
@@ -1634,14 +1599,14 @@ export default function CategoryPage(): JSX.Element {
                                               openModal('editDimensionType');
                                             }}
                                           >
-                                            <CustomImage src={svg001} alt="Edit Type" />
+                                            <PencilSquareIcon className="h-6 w-6 text-secondary-content" />
                                           </button>
                                           <button
-                                            className="btn btn-secondary btn-sm tooltip tooltip-left px-1"
+                                            className="btn btn-error btn-sm tooltip tooltip-left px-1"
                                             data-tip="Delete Type"
                                             onClick={DelDimensionType(cat._id.toString(), DimensionType._id.toString())}
                                           >
-                                            <CustomImage src={svg002} alt="Delete Type" />
+                                            <TrashIcon className="h-6 w-6 text-error-content" />
                                           </button>
                                         </span>
                                       </div>
@@ -1658,7 +1623,7 @@ export default function CategoryPage(): JSX.Element {
                                               <p className="label label-text">{dimension.dimensionName}</p>
                                               <span className="mr-2 flex flex-row gap-1">
                                                 <button
-                                                  className="btn btn-primary btn-sm tooltip tooltip-left px-1"
+                                                  className="btn btn-secondary btn-sm tooltip tooltip-left px-1"
                                                   data-tip="Edit Dimension"
                                                   onClick={() => {
                                                     setIds({
@@ -1671,10 +1636,10 @@ export default function CategoryPage(): JSX.Element {
                                                     openModal('editDimension');
                                                   }}
                                                 >
-                                                  <CustomImage src={svg001} alt="Edit Dimension" />
+                                                  <PencilSquareIcon className="h-6 w-6 text-secondary-content" />
                                                 </button>
                                                 <button
-                                                  className="btn btn-secondary btn-sm tooltip tooltip-left px-1"
+                                                  className="btn btn-error btn-sm tooltip tooltip-left px-1"
                                                   data-tip="Delete Dimension"
                                                   onClick={DelDimension(
                                                     cat._id.toString(),
@@ -1682,7 +1647,7 @@ export default function CategoryPage(): JSX.Element {
                                                     dimension._id.toString(),
                                                   )}
                                                 >
-                                                  <CustomImage src={svg002} alt="Delete Dimension" />
+                                                  <TrashIcon className="h-6 w-6 text-error-content" />
                                                 </button>
                                               </span>
                                             </div>

@@ -1,4 +1,7 @@
 'use client';
+import { XCircleIcon } from '@heroicons/react/24/outline';
+import { Bars3Icon } from '@heroicons/react/24/solid';
+
 import LogoutPage from '@/app/components/logout/page';
 import Sidebar from '@/app/components/sidebar/page';
 import { useUser } from '@/app/context/userContext';
@@ -106,27 +109,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           // aria-label="toggleSidebar"
           onClick={toggleSidebar}
         >
-          {/* hamburger icon */}
-          <svg
-            className={`swap-off fill-current ${isSidebarOpen ? 'hidden' : ''}`}
-            xmlns="http://www.w3.org/2000/svg"
-            width="32"
-            height="32"
-            viewBox="0 0 512 512"
-          >
-            <path d="M64,384H448V341.33H64Zm0-106.67H448V234.67H64ZM64,128v42.67H448V128Z" />
-          </svg>
-
-          {/* close icon */}
-          <svg
-            className={`swap-on fill-current ${isSidebarOpen ? '' : 'hidden'}`}
-            xmlns="http://www.w3.org/2000/svg"
-            width="32"
-            height="32"
-            viewBox="0 0 512 512"
-          >
-            <polygon points="400 145.49 366.51 112 256 222.51 145.49 112 112 145.49 222.51 256 112 366.51 145.49 400 256 289.49 366.51 400 400 366.51 289.49 256 400 145.49" />
-          </svg>
+          <Bars3Icon className={`swap-off h-8 w-8 fill-current ${isSidebarOpen ? 'hidden' : ''}`} />
+          <XCircleIcon className={`swap-on h-8 w-8 ${isSidebarOpen ? '' : 'hidden'}`} />
         </span>
 
         <div className={`mx-2 flex-1 select-none px-2`}>
