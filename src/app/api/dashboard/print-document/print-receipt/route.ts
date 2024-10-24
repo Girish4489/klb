@@ -38,6 +38,6 @@ export async function GET(request: NextRequest) {
     }
     return NextResponse.json({ message: 'Receipt not found', success: false });
   } catch (error) {
-    handleError.api(error, false);
+    return handleError.api(error, false);
   }
 }

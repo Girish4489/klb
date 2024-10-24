@@ -46,6 +46,6 @@ export async function GET(request: NextRequest) {
     ]);
     return NextResponse.json({ message: 'Bill data', success: true, bill: bills, totalBills: totalBillsCount });
   } catch (error) {
-    handleError.api(error, false);
+    return handleError.api(error, false);
   }
 }
