@@ -136,33 +136,37 @@ export default function BillDetails() {
     <div className="flex grow flex-col">
       <h1 className="text-center font-semibold">Bill Details</h1>
       <span className="backdrop-blur-sm-lg flex flex-wrap items-center gap-2 rounded-box bg-base-300 p-2 shadow">
-        <div className="flex items-center gap-1">
-          <label htmlFor="fromDate" className="label-text">
-            From Date:
-          </label>
+        <label
+          className="input input-sm label-text input-bordered input-primary flex grow items-center gap-2"
+          htmlFor="fromDate"
+        >
+          From Date:
           <input
             type="date"
             id="fromDate"
-            className="input input-sm input-primary"
+            className="grow"
             value={fromDate ? new Date(fromDate).toISOString().split('T')[0] : ''}
             onChange={(e) => setFromDate(new Date(e.target.value))}
           />
-        </div>
-        <div className="flex items-center gap-1">
-          <label htmlFor="toDate" className="label-text">
-            To Date:
-          </label>
+        </label>
+        <label
+          className="input input-sm label-text input-bordered input-primary flex grow items-center gap-2"
+          htmlFor="toDate"
+        >
+          To Date:
           <input
             type="date"
             id="toDate"
-            className="input input-sm input-primary"
+            className="grow"
             value={toDate ? new Date(toDate).toISOString().split('T')[0] : ''}
             onChange={(e) => setToDate(new Date(e.target.value))}
           />
-        </div>
-        <button onClick={handleFilter} className="btn btn-primary btn-sm">
-          Filter
-        </button>
+        </label>
+        <span className="grow">
+          <button onClick={handleFilter} className="btn btn-primary btn-sm">
+            Filter
+          </button>
+        </span>
       </span>
 
       {/* Render bills */}

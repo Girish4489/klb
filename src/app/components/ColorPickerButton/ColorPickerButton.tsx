@@ -1,3 +1,4 @@
+'use client';
 import { IColor } from '@/models/klm';
 import React, { useEffect, useState } from 'react';
 import colors from '../../../../data/colors';

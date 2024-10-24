@@ -423,7 +423,7 @@ export default function CustomerDetails() {
               {pagination.hasMore && (
                 <tr>
                   <td colSpan={13} className="md:text-center">
-                    <button className="btn btn-primary" onClick={loadMoreCustomers}>
+                    <button className="btn btn-primary btn-sm" onClick={loadMoreCustomers}>
                       Load More
                     </button>
                   </td>

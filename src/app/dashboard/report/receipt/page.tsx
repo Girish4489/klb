@@ -125,29 +125,25 @@ export default function Receipt() {
 
   return (
     <div className="p-4">
-      <h1 className="text-3xl font-bold">Receipts</h1>
+      <h1 className="text-center text-3xl font-bold">Receipts</h1>
       <div className="mt-4 flex flex-col gap-1">
         <div className="flex gap-4">
-          <div>
-            <label htmlFor="fromDate">From</label>
-            <input
-              type="date"
-              id="fromDate"
-              className="input input-bordered"
-              onChange={(e) => setFromDate(new Date(e.target.value))}
-            />
-          </div>
-          <div>
-            <label htmlFor="toDate">To</label>
-            <input
-              type="date"
-              id="toDate"
-              className="input input-bordered"
-              onChange={(e) => setToDate(new Date(e.target.value))}
-            />
-          </div>
-          <div>
-            <button className="btn btn-primary" onClick={handleFilter}>
+          <label
+            className="input input-sm label-text input-bordered input-primary flex grow items-center gap-2"
+            htmlFor="fromDate"
+          >
+            From:
+            <input type="date" id="fromDate" className="grow" onChange={(e) => setFromDate(new Date(e.target.value))} />
+          </label>
+          <label
+            className="input input-sm label-text input-bordered input-primary flex grow items-center gap-2"
+            htmlFor="toDate"
+          >
+            To:
+            <input type="date" id="toDate" className="grow" onChange={(e) => setToDate(new Date(e.target.value))} />
+          </label>
+          <div className="grow">
+            <button className="btn btn-primary btn-sm" onClick={handleFilter}>
               Filter
             </button>
           </div>
