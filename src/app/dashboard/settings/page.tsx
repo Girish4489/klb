@@ -65,16 +65,11 @@ export default function SettingsPage() {
       const res = await axios.post('/api/dashboard/settings', formData);
       if (res.data.success === true) {
         updateUser({
-          profileImage: {
-            data: res.data.profileImage?.data,
-            __filename: res.data.profileImage?.__filename,
-            contentType: res.data.profileImage?.contentType,
-            uploadAt: res.data.profileImage?.uploadAt,
-          },
+          profileImage: res.data.profileImage,
         });
-        return res.data.message; // Resolve with success message
+        return res.data.message;
       } else {
-        throw new Error(res.data.message); // Reject with error message
+        throw new Error(res.data.message);
       }
     };
     try {
@@ -98,7 +93,7 @@ export default function SettingsPage() {
       if (res.data.success === true) {
         updateUser({
           profileImage: {
-            data: Buffer.from([]),
+            data: Buffer.from([]).toString(),
             __filename: 'USER_PROFILE_404_ERROR',
             contentType: '',
             uploadAt: new Date(),
@@ -150,8 +145,8 @@ export default function SettingsPage() {
                 <div className="h-24 w-24 rounded-full ring ring-primary hover:scale-105 hover:ring-offset-2  hover:ring-offset-accent">
                   <Image
                     src={
-                      user.profileImage.__filename !== 'USER_PROFILE_404_ERROR'
-                        ? `data:${user.profileImage.contentType};base64,${Buffer.from(new Uint8Array(user.profileImage?.data || [])).toString('base64')}`
+                      user.profileImage.__filename !== 'USER_PROFILE_404_ERROR' && user.profileImage.data
+                        ? `data:${user.profileImage.contentType};base64,${user.profileImage?.data}`
                         : '/klm.webp'
                     }
                     alt="Landscape picture"
@@ -171,8 +166,8 @@ export default function SettingsPage() {
                       <div className="mask w-48 rounded-badge ring ring-primary ring-offset-1 ring-offset-base-100 transition-transform duration-300 ease-in-out hover:scale-105">
                         <Image
                           src={
-                            user.profileImage.__filename !== 'USER_PROFILE_404_ERROR'
-                              ? `data:${user.profileImage.contentType};base64,${Buffer.from(new Uint8Array(user.profileImage?.data || [])).toString('base64')}`
+                            user.profileImage.__filename !== 'USER_PROFILE_404_ERROR' && user.profileImage.data
+                              ? `data:${user.profileImage.contentType};base64,${user.profileImage?.data}`
                               : '/klm.webp'
                           }
                           alt="Landscape picture"

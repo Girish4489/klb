@@ -12,7 +12,7 @@ interface IUser extends Document {
   theme: string;
   profileImage: {
     __filename: string;
-    data: Buffer;
+    data: string;
     contentType: string;
     uploadAt: Date;
   };
@@ -53,7 +53,7 @@ const userSchema: Schema<IUser> = new mongoose.Schema({
   },
   profileImage: {
     __filename: { type: String, default: 'USER_PROFILE_404_ERROR' },
-    data: Buffer,
+    data: String,
     contentType: { type: String, default: 'multipart/form-data' },
     uploadAt: Date,
   },
