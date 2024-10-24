@@ -574,123 +574,141 @@ export default function BillPage() {
             <div className="flex w-full flex-none justify-between gap-1 rounded-box border border-base-300 p-1 max-sm:max-h-48 max-sm:flex-col max-sm:overflow-auto">
               <div className="flex flex-row flex-wrap items-center gap-1">
                 <div className="flex flex-row flex-wrap items-center max-sm:w-full max-sm:justify-between">
-                  <label className="label label-text" htmlFor="billNo">
-                    Bill No
+                  <label
+                    className="input input-sm label-text input-bordered input-primary flex grow items-center gap-2"
+                    htmlFor="billNo"
+                  >
+                    Bill No:
+                    <input
+                      name="billNo"
+                      placeholder="Bill No"
+                      id="billNo"
+                      type="number"
+                      value={bill?.billNumber ?? ''}
+                      readOnly
+                      onChange={(e) => {
+                        const limitedValue = e.target.value.slice(0, 7);
+                        const parsedValue = limitedValue === '' ? '' : parseInt(limitedValue);
+                        setBill({ ...bill, billNumber: parsedValue } as IBill);
+                      }}
+                      className="grow"
+                    />
                   </label>
-                  <input
-                    name="billNo"
-                    placeholder="Bill No"
-                    id="billNo"
-                    type="number"
-                    value={bill?.billNumber ?? ''}
-                    readOnly
-                    onChange={(e) => {
-                      const limitedValue = e.target.value.slice(0, 7);
-                      const parsedValue = limitedValue === '' ? '' : parseInt(limitedValue);
-                      setBill({ ...bill, billNumber: parsedValue } as IBill);
-                    }}
-                    className="input input-sm input-bordered input-primary w-32"
-                  />
                 </div>
                 <div className="flex flex-row flex-wrap items-center max-sm:w-full max-sm:justify-between">
-                  <label className="label label-text" htmlFor="date">
-                    Date
+                  <label
+                    className="input input-sm label-text input-bordered input-primary flex grow items-center gap-2"
+                    htmlFor="date"
+                  >
+                    Date:
+                    <input
+                      name="date"
+                      id="date"
+                      type="date"
+                      value={bill?.date ? new Date(bill.date).toISOString().split('T')[0] : ''}
+                      onChange={(e) => setBill({ ...bill, date: new Date(e.target.value) } as IBill)}
+                      className="grow"
+                    />
                   </label>
-                  <input
-                    name="date"
-                    id="date"
-                    type="date"
-                    value={bill?.date ? new Date(bill.date).toISOString().split('T')[0] : ''}
-                    onChange={(e) => setBill({ ...bill, date: new Date(e.target.value) } as IBill)}
-                    className="input input-sm input-bordered input-primary"
-                  />
                 </div>
                 <div className="flex flex-row flex-wrap items-center max-sm:w-full max-sm:justify-between">
-                  <label className="label label-text" htmlFor="dueDate">
-                    Due Date
+                  <label
+                    className="input input-sm label-text input-bordered input-primary flex grow items-center gap-2"
+                    htmlFor="dueDate"
+                  >
+                    Due Date:
+                    <input
+                      name="dueDate"
+                      id="dueDate"
+                      type="date"
+                      value={bill.dueDate ? new Date(bill.dueDate).toISOString().split('T')[0] : ''}
+                      onChange={(e) => setBill({ ...bill, dueDate: new Date(e.target.value) } as IBill)}
+                      className="grow"
+                    />
                   </label>
-                  <input
-                    name="dueDate"
-                    id="dueDate"
-                    type="date"
-                    value={bill.dueDate ? new Date(bill.dueDate).toISOString().split('T')[0] : ''}
-                    onChange={(e) => setBill({ ...bill, dueDate: new Date(e.target.value) } as IBill)}
-                    className="input input-sm input-bordered input-primary"
-                  />
                 </div>
                 <div className="flex flex-row flex-wrap items-center max-sm:w-full max-sm:justify-between">
-                  <label className="label label-text" htmlFor="urgent">
-                    Urgent
+                  <label className="btn btn-neutral btn-sm flex h-full grow items-center gap-2" htmlFor="urgent">
+                    Urgent:
+                    <input
+                      name="urgent"
+                      id="urgent"
+                      type="checkbox"
+                      className="checkbox-primary checkbox"
+                      checked={bill?.urgent || false}
+                      onChange={(e) => setBill({ ...bill, urgent: e.target.checked } as IBill)}
+                    />
                   </label>
-                  <input
-                    name="urgent"
-                    id="urgent"
-                    type="checkbox"
-                    className="checkbox-primary checkbox"
-                    checked={bill?.urgent || false}
-                    onChange={(e) => setBill({ ...bill, urgent: e.target.checked } as IBill)}
-                  />
                 </div>
                 <div className="flex flex-row flex-wrap items-center max-sm:w-full max-sm:justify-between">
-                  <label className="label label-text" htmlFor="trail">
-                    Trail
+                  <label className="btn btn-neutral btn-sm flex h-full grow items-center gap-2" htmlFor="trail">
+                    Trail:
+                    <input
+                      name="trail"
+                      id="trail"
+                      type="checkbox"
+                      className="checkbox-primary checkbox"
+                      checked={bill?.trail || false}
+                      onChange={(e) => setBill({ ...bill, trail: e.target.checked } as IBill)}
+                    />
                   </label>
-                  <input
-                    name="trail"
-                    id="trail"
-                    type="checkbox"
-                    className="checkbox-primary checkbox"
-                    checked={bill?.trail || false}
-                    onChange={(e) => setBill({ ...bill, trail: e.target.checked } as IBill)}
-                  />
                 </div>
                 <div className="flex flex-row flex-wrap items-center max-sm:w-full max-sm:justify-between">
-                  <label className="label label-text" htmlFor="mobile">
-                    Mobile
+                  <label
+                    className="input input-sm label-text input-bordered input-primary flex grow items-center gap-2"
+                    htmlFor="mobile"
+                  >
+                    Mobile:
+                    <input
+                      name="mobile"
+                      placeholder="Mobile No"
+                      id="mobile"
+                      type="tel"
+                      className="grow"
+                      value={bill?.mobile ?? ''}
+                      onChange={(e) => {
+                        const limitedValue = e.target.value.slice(0, 10);
+                        const parsedValue = limitedValue === '' ? '' : parseInt(limitedValue);
+                        setBill({ ...bill, mobile: parsedValue } as IBill);
+                      }}
+                    />
                   </label>
-                  <input
-                    name="mobile"
-                    placeholder="Mobile No"
-                    id="mobile"
-                    type="tel"
-                    className="input input-bordered input-primary max-sm:input-sm"
-                    value={bill?.mobile ?? ''}
-                    onChange={(e) => {
-                      const limitedValue = e.target.value.slice(0, 10);
-                      const parsedValue = limitedValue === '' ? '' : parseInt(limitedValue);
-                      setBill({ ...bill, mobile: parsedValue } as IBill);
-                    }}
-                  />
                 </div>
                 <div className="flex flex-row flex-wrap items-center max-sm:w-full max-sm:justify-between">
-                  <label className="label label-text" htmlFor="name">
-                    Name
+                  <label
+                    className="input input-sm label-text input-bordered input-primary flex grow items-center gap-2"
+                    htmlFor="name"
+                  >
+                    Name:
+                    <input
+                      type="text"
+                      name="name"
+                      placeholder="Customer Name"
+                      id="name"
+                      autoComplete="name"
+                      className="grow"
+                      value={bill?.name ?? ''}
+                      onChange={(e) => setBill({ ...bill, name: e.target.value } as IBill)}
+                    />
                   </label>
-                  <input
-                    type="text"
-                    name="name"
-                    placeholder="Customer Name"
-                    id="name"
-                    autoComplete="name"
-                    className="input input-bordered input-primary max-sm:input-sm"
-                    value={bill?.name ?? ''}
-                    onChange={(e) => setBill({ ...bill, name: e.target.value } as IBill)}
-                  />
                 </div>
                 <div className="flex flex-row flex-wrap items-center max-sm:w-full max-sm:justify-between">
-                  <label className="label label-text" htmlFor="email">
-                    Email
+                  <label
+                    className="input input-sm label-text input-bordered input-primary flex grow items-center gap-2"
+                    htmlFor="email"
+                  >
+                    Email:
+                    <input
+                      type="email"
+                      name="email"
+                      placeholder="Customer Email"
+                      id="email"
+                      autoComplete="email"
+                      className="grow"
+                      value={bill?.email ?? ''}
+                      onChange={(e) => setBill({ ...bill, email: e.target.value } as IBill)}
+                    />
                   </label>
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="Customer Email"
-                    id="email"
-                    autoComplete="email"
-                    className="input input-bordered input-primary max-sm:input-sm"
-                    value={bill?.email ?? ''}
-                    onChange={(e) => setBill({ ...bill, email: e.target.value } as IBill)}
-                  />
                 </div>
               </div>
             </div>
@@ -721,18 +739,21 @@ export default function BillPage() {
                         <div className="flex w-full flex-row items-center justify-between gap-1 max-sm:flex-col-reverse">
                           <div className="flex w-full flex-row flex-wrap justify-start gap-1">
                             <div className="flex flex-row items-center justify-between gap-1 max-sm:w-full">
-                              <label htmlFor={`slNo_${orderIndex}`} className="label label-text">
-                                Sl No
+                              <label
+                                htmlFor={`slNo_${orderIndex}`}
+                                className="input input-sm label-text input-bordered input-primary flex grow items-center gap-2"
+                              >
+                                Sl No:
+                                <input
+                                  type="text"
+                                  name={`slNo_${orderIndex}`}
+                                  id={`slNo_${orderIndex}`}
+                                  placeholder="Sl No"
+                                  className="w-10 grow select-none text-center"
+                                  value={orderIndex + 1}
+                                  readOnly
+                                />
                               </label>
-                              <input
-                                type="text"
-                                name={`slNo_${orderIndex}`}
-                                id={`slNo_${orderIndex}`}
-                                placeholder="Sl No"
-                                className="input input-sm input-bordered input-primary w-16 select-none"
-                                value={orderIndex + 1}
-                                readOnly
-                              />
                             </div>
                             <div className="flex flex-row items-center justify-between gap-1 max-sm:w-full">
                               <label htmlFor={`category_${orderIndex}`} className="label label-text">
@@ -789,44 +810,50 @@ export default function BillPage() {
                               </select>
                             </div>
                             <div className="flex flex-row items-center justify-between gap-1 max-sm:w-full">
-                              <label htmlFor={`work_${orderIndex}`} className="label label-text">
-                                Work
+                              <label
+                                htmlFor={`work_${orderIndex}`}
+                                className="btn btn-neutral btn-sm flex h-full grow items-center gap-2"
+                              >
+                                Work:
+                                <input
+                                  type="checkbox"
+                                  name={`work_${orderIndex}`}
+                                  id={`work_${orderIndex}`}
+                                  className="checkbox-primary checkbox checkbox-sm"
+                                  checked={order.work}
+                                  onChange={(e) =>
+                                    setBill({
+                                      ...bill,
+                                      order: bill.order?.map((o, i) =>
+                                        i === orderIndex ? { ...o, work: e.target.checked } : o,
+                                      ),
+                                    } as IBill)
+                                  }
+                                />
                               </label>
-                              <input
-                                type="checkbox"
-                                name={`work_${orderIndex}`}
-                                id={`work_${orderIndex}`}
-                                className="checkbox-primary checkbox checkbox-sm"
-                                checked={order.work}
-                                onChange={(e) =>
-                                  setBill({
-                                    ...bill,
-                                    order: bill.order?.map((o, i) =>
-                                      i === orderIndex ? { ...o, work: e.target.checked } : o,
-                                    ),
-                                  } as IBill)
-                                }
-                              />
                             </div>
                             <div className="flex flex-row items-center justify-between gap-1 max-sm:w-full">
-                              <label htmlFor={`barcode_${orderIndex}`} className="label label-text">
-                                Barcode
+                              <label
+                                htmlFor={`barcode_${orderIndex}`}
+                                className="btn btn-neutral btn-sm flex h-full grow items-center gap-2"
+                              >
+                                Barcode:
+                                <input
+                                  type="checkbox"
+                                  name={`barcode_${orderIndex}`}
+                                  id={`barcode_${orderIndex}`}
+                                  className="checkbox-primary checkbox checkbox-sm"
+                                  checked={order.barcode}
+                                  onChange={(e) =>
+                                    setBill({
+                                      ...bill,
+                                      order: bill.order?.map((o, i) =>
+                                        i === orderIndex ? { ...o, barcode: e.target.checked } : o,
+                                      ),
+                                    } as IBill)
+                                  }
+                                />
                               </label>
-                              <input
-                                type="checkbox"
-                                name={`barcode_${orderIndex}`}
-                                id={`barcode_${orderIndex}`}
-                                className="checkbox-primary checkbox checkbox-sm"
-                                checked={order.barcode}
-                                onChange={(e) =>
-                                  setBill({
-                                    ...bill,
-                                    order: bill.order?.map((o, i) =>
-                                      i === orderIndex ? { ...o, barcode: e.target.checked } : o,
-                                    ),
-                                  } as IBill)
-                                }
-                              />
                             </div>
                           </div>
                           {/* remove secific order */}
@@ -1084,7 +1111,7 @@ export default function BillPage() {
                       </caption>
                       {/* head */}
                       <thead>
-                        <tr>
+                        <tr className="text-center">
                           <th>Sn</th>
                           <th>Amt</th>
                           <th>Tax</th>
@@ -1097,7 +1124,7 @@ export default function BillPage() {
                         {bill?.order?.map((order, orderIndex) => {
                           let runningTotal: number = 0;
                           return (
-                            <tr key={orderIndex}>
+                            <tr key={orderIndex} className="text-center">
                               <th>{orderIndex + 1}</th>
                               <td>{order.amount}</td>
                               <td>0</td>
@@ -1117,39 +1144,45 @@ export default function BillPage() {
                   </div>
                 </div>
                 <div className="flex flex-col gap-1 overflow-auto rounded-box border-4 border-base-300 bg-base-200 p-2">
-                  <div className="flex flex-row items-center justify-between gap-1">
-                    <label className="label-text" htmlFor="totalNet">
-                      Total Net
+                  <div className="flex flex-row items-center justify-between">
+                    <label
+                      className="input input-sm label-text input-bordered input-primary flex grow items-center gap-2"
+                      htmlFor="totalNet"
+                    >
+                      Sub Total:
+                      <input
+                        name="totalNet"
+                        placeholder="Total Net"
+                        id="totalNet"
+                        type="number"
+                        className="grow"
+                        value={bill?.totalAmount || ''}
+                        readOnly
+                        aria-readonly
+                      />
                     </label>
-                    <input
-                      name="totalNet"
-                      placeholder="Total Net"
-                      id="totalNet"
-                      type="number"
-                      className="input input-sm input-bordered w-32"
-                      value={bill?.totalAmount || ''}
-                      readOnly
-                      aria-readonly
-                    />
                   </div>
-                  <div className="flex flex-row items-center justify-between gap-1">
-                    <label className="label-text" htmlFor="discount">
-                      Discount
+                  <div className="flex flex-row items-center justify-between">
+                    <label
+                      className="input input-sm label-text input-bordered input-primary flex grow items-center gap-2"
+                      htmlFor="discount"
+                    >
+                      Discount:
+                      <input
+                        name="discount"
+                        placeholder="Enter Discount Here"
+                        id="discount"
+                        type="number"
+                        className={'grow'}
+                        value={bill?.discount || ''}
+                        onChange={(e) =>
+                          setBill({
+                            ...bill,
+                            discount: parseInt(e.target.value) || '',
+                          } as IBill)
+                        }
+                      />
                     </label>
-                    <input
-                      name="discount"
-                      placeholder="Discount"
-                      id="discount"
-                      type="number"
-                      className={`input input-sm input-bordered w-32`}
-                      value={bill?.discount || ''}
-                      onChange={(e) =>
-                        setBill({
-                          ...bill,
-                          discount: parseInt(e.target.value) || '',
-                        } as IBill)
-                      }
-                    />
                   </div>
                   <dialog id="tax_modal" className="modal">
                     <div className="modal-box">
@@ -1157,7 +1190,7 @@ export default function BillPage() {
                       <div className="tax-table">
                         <table className="table table-zebra">
                           <thead>
-                            <tr>
+                            <tr className="text-center">
                               <th>Sn</th>
                               <th>Checkbox</th>
                               <th>Tax Name</th>
@@ -1168,12 +1201,12 @@ export default function BillPage() {
                             {tax.map((tax, taxIndex) => (
                               <tr
                                 key={tax._id.toString()}
-                                className="hover"
+                                className="hover text-center"
                                 onClick={() => handleRowClick(tax._id.toString())}
                               >
                                 <td>{taxIndex + 1}</td>
                                 <td>
-                                  <label htmlFor={tax.taxName}>
+                                  <label htmlFor={tax.taxName} className="flex items-center justify-center">
                                     <input
                                       type="checkbox"
                                       className="checkbox-primary checkbox checkbox-sm"
@@ -1216,20 +1249,23 @@ export default function BillPage() {
                       Add
                     </button>
                   </div>
-                  <div className="flex flex-row items-center justify-between gap-1">
-                    <label className="label-text" htmlFor="grandTotal">
-                      Grand Total
+                  <div className="flex flex-row items-center justify-between">
+                    <label
+                      className="input input-sm label-text input-bordered input-primary flex items-center gap-2"
+                      htmlFor="grandTotal"
+                    >
+                      Grand Total:
+                      <input
+                        name="grandTotal"
+                        placeholder="Grand Total"
+                        id="grandTotal"
+                        type="number"
+                        className="grow"
+                        value={bill?.grandTotal || ''}
+                        readOnly
+                        aria-readonly
+                      />
                     </label>
-                    <input
-                      name="grandTotal"
-                      placeholder="Grand Total"
-                      id="grandTotal"
-                      type="number"
-                      className="input input-sm input-bordered w-32"
-                      value={bill?.grandTotal || ''}
-                      readOnly
-                      aria-readonly
-                    />
                   </div>
                 </div>
               </div>

@@ -3,21 +3,78 @@ import { userConfirmation } from '@/app/util/confirmation/confirmationUtil';
 import handleError from '@/app/util/error/handleError';
 import { ApiDelete, ApiGet, ApiPost, ApiPut } from '@/app/util/makeApiRequest/makeApiRequest';
 import { ITax } from '@/models/klm';
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
-export default function TaxPage() {
-  const [taxes, setTaxes] = React.useState<ITax[]>([]);
+interface InputFieldProps {
+  label: string;
+  id: string;
+  type?: string;
+  value: string;
+  placeholder?: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
 
-  React.useEffect(() => {
+const InputField: React.FC<InputFieldProps> = ({ label, id, type = 'text', value, placeholder, onChange }) => (
+  <div className="flex grow flex-wrap items-center gap-1 max-sm:justify-between">
+    <label htmlFor={id} className="input input-sm input-primary flex grow items-center gap-2 max-sm:text-nowrap">
+      {label}:
+      <input
+        type={type}
+        id={id}
+        name={id}
+        value={value}
+        placeholder={placeholder}
+        onChange={onChange}
+        className="grow"
+        autoComplete="off"
+      />
+    </label>
+  </div>
+);
+
+interface SelectFieldProps {
+  label: string;
+  id: string;
+  options: string[];
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+}
+
+const SelectField: React.FC<SelectFieldProps> = ({ label, id, options, value, onChange }) => (
+  <div className="flex grow flex-wrap items-center gap-1 max-sm:justify-between max-sm:text-nowrap">
+    <label htmlFor={id} className="max-sm:text-nowrap">
+      {label}
+    </label>
+    <select
+      id={id}
+      name={id}
+      value={value}
+      onChange={onChange}
+      className="select select-bordered select-primary select-sm grow"
+    >
+      {options.map((option) => (
+        <option key={option} value={option}>
+          {option}
+        </option>
+      ))}
+    </select>
+  </div>
+);
+
+export default function TaxPage() {
+  const [taxes, setTaxes] = useState<ITax[]>([]);
+  const [formData, setFormData] = useState({ taxName: '', taxType: 'Percentage', taxPercentage: '' });
+  const [editFormData, setEditFormData] = useState({ taxName: '', taxType: 'Percentage', taxPercentage: '', id: '' });
+
+  useEffect(() => {
     (async () => {
       const taxes = await ApiGet.Tax();
       setTaxes(taxes);
     })();
   }, []);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const configureToastPromise = async (promise: Promise<any>, loadingMessage: string) => {
+  const configureToastPromise = useCallback(async (promise: Promise<string>, loadingMessage: string) => {
     try {
       await toast.promise(promise, {
         loading: loadingMessage,
@@ -27,31 +84,34 @@ export default function TaxPage() {
     } catch (error) {
       handleError.toastAndLog(error);
     }
+  }, []);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setEditFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const saveTax = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const taxName = (e.currentTarget.querySelector('#taxName') as HTMLInputElement).value;
-    const taxType = (e.currentTarget.querySelector('#taxType') as HTMLSelectElement).value;
-    const taxPercentage = parseFloat((e.currentTarget.querySelector('#taxPercentage') as HTMLInputElement).value);
+    const { taxName, taxType, taxPercentage } = formData;
 
-    const save = async (name: string, type: string, percentage: number) => {
+    const save = async () => {
       try {
         const tax = await ApiPost.Tax({
-          taxName: name,
-          taxType: type,
-          taxPercentage: percentage,
+          taxName,
+          taxType,
+          taxPercentage: parseFloat(taxPercentage),
           createdAt: new Date(),
           updatedAt: new Date(),
         } as ITax);
-        if (tax.success === true) {
+        if (tax.success) {
           setTaxes([...taxes, tax.data]);
-
-          // Clear the input fields
-          (document.getElementById('taxName') as HTMLInputElement).value = '';
-          (document.getElementById('taxType') as HTMLSelectElement).value = 'Percentage';
-          (document.getElementById('taxPercentage') as HTMLInputElement).value = '';
-
+          setFormData({ taxName: '', taxType: 'Percentage', taxPercentage: '' });
           return tax.message;
         } else {
           throw new Error(tax.message);
@@ -61,20 +121,21 @@ export default function TaxPage() {
       }
     };
 
-    await configureToastPromise(save(taxName, taxType, taxPercentage), 'Saving tax...');
+    await configureToastPromise(save(), 'Saving tax...');
   };
 
-  function handleDelete(_id: string): React.MouseEventHandler<HTMLButtonElement> | undefined {
-    return async () => {
-      const Confirmed = await userConfirmation({
+  const handleDelete = useCallback(
+    (_id: string) => async () => {
+      const confirmed = await userConfirmation({
         header: 'Confirm Deletion',
         message: 'Are you sure you want to delete this tax?',
       });
-      if (!Confirmed) return;
+      if (!confirmed) return;
+
       const deleteTax = async () => {
         try {
           const res = await ApiDelete.Tax(_id);
-          if (res.success === true) {
+          if (res.success) {
             setTaxes(taxes.filter((tax) => tax._id.toString() !== _id));
             return res.message;
           } else {
@@ -84,58 +145,43 @@ export default function TaxPage() {
           handleError.toastAndLog(error);
         }
       };
+
       await configureToastPromise(deleteTax(), 'Deleting tax...');
-    };
-  }
+    },
+    [taxes, configureToastPromise],
+  );
 
-  function openEditDialog(tax: ITax, id: string) {
-    const taxNameInput = document.getElementById('taxEditName') as HTMLInputElement;
-    const taxTypeSelect = document.getElementById('taxEditType') as HTMLSelectElement;
-    const taxPercentageInput = document.getElementById('taxEditPercentage') as HTMLInputElement;
-
-    if (taxNameInput && taxTypeSelect && taxPercentageInput) {
-      taxNameInput.value = tax.taxName;
-      taxTypeSelect.value = tax.taxType;
-      taxPercentageInput.value = tax.taxPercentage.toString();
-    }
+  const openEditDialog = (tax: ITax, id: string) => {
+    setEditFormData({
+      taxName: tax.taxName,
+      taxType: tax.taxType,
+      taxPercentage: tax.taxPercentage.toString(),
+      id,
+    });
 
     const editModal = document.getElementById('taxEdit_modal') as HTMLDialogElement;
     if (editModal) {
-      editModal.dataset.taxId = id;
       editModal.showModal();
     }
-  }
+  };
 
-  function handleEdit(event: React.FormEvent<HTMLFormElement>): void {
-    event.preventDefault();
-    const taxName = event.currentTarget.taxEditName.value;
-    const taxType = event.currentTarget.taxEditType.value;
-    const taxPercentage = event.currentTarget.taxEditPercentage.value;
-    const id = (event.currentTarget.closest('#taxEdit_modal') as HTMLElement).dataset.taxId || '';
+  const handleEdit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const { taxName, taxType, taxPercentage, id } = editFormData;
 
     const editTax = async () => {
       try {
         const res = await ApiPut.Tax(id, {
           taxName,
           taxType,
-          taxPercentage,
+          taxPercentage: parseFloat(taxPercentage),
           updatedAt: new Date(),
         });
 
-        if (res.success === true) {
-          setTaxes(
-            taxes.map((tax) => {
-              if (tax._id.toString() === id) {
-                return {
-                  ...res.data,
-                } as ITax;
-              }
-              return tax;
-            }),
-          );
+        if (res.success) {
+          setTaxes(taxes.map((tax) => (tax._id.toString() === id ? { ...res.data } : tax)));
           const editModal = document.getElementById('taxEdit_modal') as HTMLDialogElement;
           if (editModal) {
-            editModal.dataset.taxId = id;
             editModal.close();
           }
           return res.message;
@@ -146,83 +192,71 @@ export default function TaxPage() {
         handleError.throw(error);
       }
     };
-    configureToastPromise(editTax(), 'Updating tax...');
-  }
+
+    await configureToastPromise(editTax(), 'Updating tax...');
+  };
+
   return (
     <div className="flex flex-col gap-2">
       <h1 className="text-center font-bold">Tax</h1>
-      {/* adding tax */}
       <div className="flex flex-col flex-wrap gap-1 rounded-box bg-base-200 p-2">
         <h3 className="text-center font-medium">Add Tax</h3>
         <form onSubmit={saveTax} className="flex flex-wrap gap-2">
-          <div className="flex flex-wrap items-center gap-1 pr-3 max-sm:w-full max-sm:justify-between">
-            <label htmlFor="taxName">Tax Name</label>
-            <input
-              type="text"
-              id="taxName"
-              name="taxName"
-              placeholder="Tax Name"
-              className="input input-sm input-bordered input-primary"
-            />
-          </div>
-          <div className="flex flex-wrap items-center gap-1 pr-3 max-sm:w-full max-sm:justify-between">
-            <label htmlFor="taxType">Tax Type</label>
-            <select id="taxType" name="taxType" className="select select-bordered select-primary select-sm">
-              <option value={'Percentage'}>Percentage</option>
-              <option value={'Fixed'}>Fixed</option>
-            </select>
-          </div>
-          <div className="flex flex-wrap items-center gap-1 pr-3 max-sm:w-full max-sm:justify-between">
-            <label htmlFor="taxPercentage">Tax Percentage</label>
-            <input
-              type="number"
-              id="taxPercentage"
-              name="taxPercentage"
-              placeholder="Tax Value"
-              className="input input-sm input-bordered input-primary"
-              step="0.01"
-            />
-          </div>
-          <div className="flex flex-wrap items-center gap-1 pr-3 max-sm:w-full max-sm:justify-end">
-            <button className="btn btn-primary btn-sm">Add</button>
+          <InputField
+            label="Tax Name"
+            id="taxName"
+            value={formData.taxName}
+            placeholder="Enter tax name"
+            onChange={handleInputChange}
+          />
+          <SelectField
+            label="Tax Type"
+            id="taxType"
+            options={['Percentage', 'Fixed']}
+            value={formData.taxType}
+            onChange={handleInputChange}
+          />
+          <InputField
+            label={formData.taxType === 'Percentage' ? 'Tax Percentage' : 'Tax Fixed'}
+            id="taxPercentage"
+            type="number"
+            value={formData.taxPercentage}
+            placeholder={formData.taxType === 'Percentage' ? 'Enter tax percentage' : 'Enter tax fixed amount'}
+            onChange={handleInputChange}
+          />
+          <div className="flex grow flex-wrap items-center gap-1 pr-3 max-sm:justify-end">
+            <button className="btn btn-primary btn-sm grow">Add</button>
           </div>
         </form>
       </div>
-      {/* show taxes details */}
       <dialog id="taxEdit_modal" className="modal">
         <div className="modal-box">
           <h3 className="text-center text-lg font-bold">Edit Tax</h3>
           <form onSubmit={handleEdit} className="form-control m-2 flex-wrap gap-2 p-2">
-            <div className="flex w-full flex-wrap items-center justify-between gap-1 pr-3">
-              <label htmlFor="taxEditName">Tax Name</label>
-              <input
-                type="text"
-                id="taxEditName"
-                name="taxEditName"
-                placeholder="Tax Name"
-                className="input input-sm input-bordered input-primary"
-              />
-            </div>
-            <div className="flex w-full flex-wrap items-center justify-between gap-1 pr-3">
-              <label htmlFor="taxEditType">Tax Type</label>
-              <select id="taxEditType" name="taxEditType" className="select select-bordered select-primary select-sm">
-                <option value={'Percentage'}>Percentage</option>
-                <option value={'Fixed'}>Fixed</option>
-              </select>
-            </div>
-            <div className="flex w-full flex-wrap items-center justify-between gap-1 pr-3">
-              <label htmlFor="taxEditPercentage">Tax Percentage</label>
-              <input
-                type="number"
-                id="taxEditPercentage"
-                name="taxEditPercentage"
-                placeholder="Tax Value"
-                className="input input-sm input-bordered input-primary"
-                step="0.01"
-              />
-            </div>
-            <div className="flex w-full flex-wrap items-center justify-center gap-1 pr-3">
-              <button type="submit" className="btn btn-primary btn-sm">
+            <InputField
+              label="Tax Name"
+              id="taxName"
+              value={editFormData.taxName}
+              placeholder="Enter tax name"
+              onChange={handleEditInputChange}
+            />
+            <SelectField
+              label="Tax Type"
+              id="taxType"
+              options={['Percentage', 'Fixed']}
+              value={editFormData.taxType}
+              onChange={handleEditInputChange}
+            />
+            <InputField
+              label={editFormData.taxType === 'Percentage' ? 'Tax Percentage' : 'Tax Fixed'}
+              id="taxPercentage"
+              type="number"
+              value={editFormData.taxPercentage}
+              placeholder={editFormData.taxType === 'Percentage' ? 'Enter tax percentage' : 'Enter tax fixed amount'}
+              onChange={handleEditInputChange}
+            />
+            <div className="flex w-full flex-wrap items-center justify-center gap-1">
+              <button type="submit" className="btn btn-primary btn-sm grow">
                 Update
               </button>
             </div>
