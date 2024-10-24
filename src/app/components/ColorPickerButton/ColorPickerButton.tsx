@@ -55,7 +55,7 @@ function ColorPickerButton({
       <button className="max-w-32" onClick={handleButtonClick}>
         <span className="label label-text flex flex-wrap font-medium">
           {selectedColor?.type === 'Custom' ? 'Custom' : 'Selected'} Color:{' '}
-          {selectedColor?.type === 'Selected'
+          {selectedColor?.type === 'Selected' && selectedColor?.name
             ? selectedColor?.name
                 .split(/(?=[A-Z])/)
                 .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
