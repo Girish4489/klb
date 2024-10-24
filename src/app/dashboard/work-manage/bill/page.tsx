@@ -1,6 +1,7 @@
 'use client';
 import BillHeader from '@/app/components/BillHeader/page';
 import ColorPickerButton from '@/app/components/ColorPickerButton/page';
+import SearchBillForm from '@/app/components/SearchBillForm/page';
 import { userConfirmation } from '@/app/util/confirmation/confirmationUtil';
 import handleError from '@/app/util/error/handleError';
 import { formatD } from '@/app/util/format/dateUtils';
@@ -481,91 +482,7 @@ export default function BillPage() {
           <button className="btn btn-primary btn-sm" onClick={createNewBill}>
             New
           </button>
-          <form onSubmit={billSearch} className="join flex flex-wrap items-center justify-between max-sm:flex-col">
-            <label htmlFor="billSearch" className="join-item label-text">
-              <input
-                name="billSearch"
-                id="billSearch"
-                onFocus={(e) => e.target.select()}
-                className="input input-sm join-item input-bordered input-primary w-40 bg-accent/5"
-                placeholder="Search"
-                required
-              />
-            </label>
-            <select
-              name="selectBill"
-              aria-label="Search-bill"
-              className="join-item select select-bordered select-primary select-sm"
-            >
-              <option value={'bill'}>Bill No</option>
-              <option value={'mobile'}>Mobile</option>
-            </select>
-            <span className="dropdown dropdown-end dropdown-bottom w-fit">
-              <button tabIndex={0} role="button" className="btn btn-primary btn-sm rounded-l-none">
-                Search
-              </button>
-              {searchBill && (
-                <div tabIndex={0} className="card dropdown-content card-compact z-[50] w-auto bg-base-300 shadow">
-                  <div
-                    className={`card-body max-h-96 w-full overflow-x-auto rounded-box border-2 border-base-300 bg-base-100 ${searchBill.length === 0 && 'min-h-24 min-w-24 max-w-24'}`}
-                  >
-                    <table className="table table-zebra table-pin-rows">
-                      <caption className="px-1 py-2 font-bold">Bills</caption>
-                      {searchBill.length === 0 && (
-                        <tbody>
-                          <tr>
-                            <td colSpan={5} className="text-warning">
-                              No bills
-                            </td>
-                          </tr>
-                        </tbody>
-                      )}
-                      {searchBill.length > 0 && (
-                        <thead>
-                          <tr className="text-center">
-                            <th>Slno</th>
-                            <th>BillNumber</th>
-                            <th>Mobile</th>
-                            <th>Date</th>
-                            <th>Due Date</th>
-                            <th>U|T</th>
-                            <th>Total</th>
-                            <th>Grand</th>
-                            <th>Bill by</th>
-                          </tr>
-                        </thead>
-                      )}
-                      <tbody>
-                        {searchBill.length > 0 && (
-                          <>
-                            {searchBill.map((bill: IBill, index: number) => (
-                              <React.Fragment key={index}>
-                                <tr className="hover text-center" onClick={searchRowClicked(bill._id.toString())}>
-                                  <td>{index + 1}</td>
-                                  <td>{bill?.billNumber}</td>
-                                  <td>{bill?.mobile}</td>
-                                  <td>{bill?.date ? formatD(bill?.date) : ''}</td>
-                                  <td>{bill?.dueDate ? formatD(bill?.dueDate) : ''}</td>
-                                  <td className="w-fit items-center font-bold">
-                                    {bill?.urgent && <span className={'text-error'}>U</span>}
-                                    {bill?.urgent && bill.trail && <span>|</span>}
-                                    {bill?.trail && <span className={'text-success'}>T</span>}
-                                  </td>
-                                  <td>{bill?.totalAmount}</td>
-                                  <td>{bill?.grandTotal}</td>
-                                  <td>{bill?.billBy?.name}</td>
-                                </tr>
-                              </React.Fragment>
-                            ))}
-                          </>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
-            </span>
-          </form>
+          <SearchBillForm onSearch={billSearch} searchResults={searchBill} onRowClick={searchRowClicked} />
         </span>
 
         {/* new bill */}
