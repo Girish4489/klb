@@ -1,5 +1,5 @@
 'use client';
-import SearchForm from '@/app/components/SearchBillForm/page';
+import SearchForm from '@/app/components/SearchBillForm/SearchBillForm';
 import handleError from '@/app/util/error/handleError';
 import { formatD } from '@/app/util/format/dateUtils';
 import { ApiGet, ApiPost } from '@/app/util/makeApiRequest/makeApiRequest';
