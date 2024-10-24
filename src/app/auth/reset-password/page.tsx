@@ -3,10 +3,10 @@ import handleError from '@/app/util/error/handleError';
 import axios from 'axios';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const [token, setToken] = useState('');
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -43,8 +43,6 @@ export default function ResetPasswordPage() {
       }, 1000);
     } catch (error) {
       console.error(error);
-      // console.error(error.response.data.error);
-      // toast.error(error.response.data.error);
       handleError.log(error);
     }
   };
@@ -105,5 +103,13 @@ export default function ResetPasswordPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResetPasswordContent />
+    </Suspense>
   );
 }

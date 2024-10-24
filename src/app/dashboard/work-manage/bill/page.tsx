@@ -1,7 +1,7 @@
 'use client';
-import BillHeader from '@/app/components/BillHeader/page';
-import ColorPickerButton from '@/app/components/ColorPickerButton/page';
-import SearchBillForm from '@/app/components/SearchBillForm/page';
+import BillHeader from '@/app/components/BillHeader/BillHeader';
+import ColorPickerButton from '@/app/components/ColorPickerButton/ColorPickerButton';
+import SearchBillForm from '@/app/components/SearchBillForm/SearchBillForm';
 import { userConfirmation } from '@/app/util/confirmation/confirmationUtil';
 import handleError from '@/app/util/error/handleError';
 import { formatD } from '@/app/util/format/dateUtils';

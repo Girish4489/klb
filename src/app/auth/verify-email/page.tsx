@@ -3,10 +3,10 @@ import handleError from '@/app/util/error/handleError';
 import axios from 'axios';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 
-export default function VerifyEmailPage() {
+function VerifyEmailPageWrapper() {
   const [token, setToken] = React.useState('');
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -78,5 +78,13 @@ export default function VerifyEmailPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <VerifyEmailPageWrapper />
+    </Suspense>
   );
 }
