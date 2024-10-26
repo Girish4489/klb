@@ -32,6 +32,7 @@ export async function fetchUserData() {
             weight: userData.preferences?.fonts?.weight || 400,
           },
         },
+        lastLogin: userData.lastLogin ? new Date(userData.lastLogin) : new Date(),
         isVerified: userData.isVerified,
         isAdmin: userData.isAdmin,
         createdAt: userData.createdAt ? new Date(userData.createdAt) : new Date(),

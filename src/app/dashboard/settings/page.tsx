@@ -2,7 +2,10 @@
 import Logout from '@/app/components/logout/page';
 import ThemerPage from '@/app/components/themer/page';
 import { useUser } from '@/app/context/userContext';
+import { userConfirmation } from '@/app/util/confirmation/confirmationUtil';
 import handleError from '@/app/util/error/handleError';
+import { formatD, formatDNT } from '@/app/util/format/dateUtils';
+import { InformationCircleIcon, TrashIcon } from '@heroicons/react/24/solid';
 import axios from 'axios';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
@@ -35,15 +38,6 @@ export default function SettingsPage() {
     document.body.style.fontFamily = user.preferences?.fonts?.name ?? 'Roboto';
     document.body.style.fontWeight = user.preferences?.fonts?.weight.toString() ?? '400';
   }, [user.preferences?.fonts]);
-
-  const formatDate = (date: Date | undefined) =>
-    date
-      ? new Date(date).toLocaleDateString('en-IN', {
-          day: '2-digit',
-          month: 'short',
-          year: 'numeric',
-        })
-      : '';
 
   const updateFontPreferences = async (updatedFonts: Fonts) => {
     await toast
@@ -144,6 +138,11 @@ export default function SettingsPage() {
       }
     };
     try {
+      const confirm = await userConfirmation({
+        header: 'Remove Profile Photo',
+        message: 'Are you sure you want to remove your profile photo? This action cannot be undone.',
+      });
+      if (!confirm) return;
       await toast.promise(removeImage(), {
         loading: 'Removing...',
         success: (message) => <b>{message}</b>,
@@ -174,7 +173,6 @@ export default function SettingsPage() {
     <div className=" max-sm:m-2 md:m-5">
       <div className="join join-vertical w-full bg-base-200">
         <div className="collapse join-item collapse-arrow border border-base-300">
-          {/* <input type="radio" name="my-accordion-4" /> */}
           <input type="checkbox" name="collapse" defaultChecked />
           <div className="collapse-title text-xl font-medium">User Profile</div>
           <div className="collapse-content">
@@ -215,12 +213,10 @@ export default function SettingsPage() {
                           height="192"
                         />
                       </div>
-                      {user.profileImage.__filename !== 'USER_PROFILE_404_ERROR' && (
-                        <span
-                          className="btn btn-warning btn-sm w-40 select-none transition-transform duration-300 ease-in-out hover:btn-error hover:scale-105 hover:font-bold"
-                          onClick={removeProfilePhoto}
-                        >
-                          Remove
+                      {user.profileImage.__filename !== 'USER_PROFILE_404_ERROR' && user.profileImage.data && (
+                        <span className="btn btn-warning btn-sm" onClick={removeProfilePhoto}>
+                          <TrashIcon className="h-5 w-5 text-warning-content" />
+                          Remove Profile Image
                         </span>
                       )}
                     </div>
@@ -248,7 +244,7 @@ export default function SettingsPage() {
                           </div>
                         </label>
                         <button className="btn btn-primary w-full" type="submit">
-                          Add | Update
+                          {user.profileImage.__filename !== 'USER_PROFILE_404_ERROR' ? 'Update' : 'Add'} Profile Image
                         </button>
                       </form>
                     </div>
@@ -275,8 +271,9 @@ export default function SettingsPage() {
                   content={user.isAdmin}
                   badgeClass={user.isAdmin ? 'badge-success' : 'badge-error'}
                 />
-                <BadgeItem label="Created" content={formatDate(user.createdAt)} />
-                <BadgeItem label="Updated" content={formatDate(user.updatedAt)} />
+                <BadgeItem label="Created" content={formatDNT(user.createdAt)} />
+                <BadgeItem label="Updated" content={formatDNT(user.updatedAt)} />
+                <BadgeItem label="Last Login" content={formatD(user.lastLogin)} />
                 <span className="badge w-full select-none justify-between gap-2 p-5">
                   <h1 className="font-bold">Logout:</h1>
                   <span className="badge badge-warning p-4 outline outline-2 outline-offset-1 outline-error hover:badge-error hover:cursor-pointer hover:font-semibold hover:outline-warning">
@@ -340,7 +337,15 @@ export default function SettingsPage() {
               </div>
               <button
                 className="btn btn-warning btn-sm"
-                onClick={() => updateFontPreferences({ name: 'Roboto', weight: 400 })}
+                onClick={() => {
+                  if (fonts.name !== 'Roboto' || fonts.weight !== 400) {
+                    updateFontPreferences({ name: 'Roboto', weight: 400 });
+                  } else {
+                    toast('Already in default mode', {
+                      icon: <InformationCircleIcon className="h-5 w-5 text-info" />,
+                    });
+                  }
+                }}
               >
                 Reset to Default
               </button>
@@ -348,7 +353,6 @@ export default function SettingsPage() {
           </div>
         </div>
         <div className="collapse join-item collapse-arrow border border-base-300">
-          {/* <input type="radio" name="my-accordion-4" /> */}
           <input type="checkbox" name="collapse" defaultChecked />
           <div className="collapse-title text-xl font-medium">Notification</div>
           <div className="collapse-content">
@@ -356,7 +360,6 @@ export default function SettingsPage() {
           </div>
         </div>
         <div className="collapse join-item collapse-arrow border border-base-300">
-          {/* <input type="radio" name="my-accordion-4" /> */}
           <input type="checkbox" name="collapse" defaultChecked />
           <div className="collapse-title text-xl font-medium">Preferences</div>
           <div className="collapse-content">
