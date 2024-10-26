@@ -26,7 +26,7 @@ export async function fetchUserData() {
           uploadAt: userData.profileImage?.uploadAt ? new Date(userData.profileImage.uploadAt) : new Date(),
         },
         preferences: {
-          theme: userData.theme || theme || 'default',
+          theme: userData.preferences.theme || theme || 'default',
           fonts: {
             name: userData.preferences?.fonts?.name || 'Roboto',
             weight: userData.preferences?.fonts?.weight || 400,

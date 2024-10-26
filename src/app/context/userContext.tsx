@@ -22,7 +22,6 @@ export const UserProvider: React.FC<UserContextProps> = ({ children }) => {
   const [user, setUser] = React.useState<UserState>({
     username: '',
     email: '',
-    theme: 'default',
     profileImage: {
       data: new Uint8Array(),
       __filename: '',
@@ -30,6 +29,7 @@ export const UserProvider: React.FC<UserContextProps> = ({ children }) => {
       uploadAt: new Date(),
     },
     preferences: {
+      theme: 'default',
       fonts: {
         name: 'Roboto',
         weight: 400,
@@ -53,7 +53,7 @@ export const UserProvider: React.FC<UserContextProps> = ({ children }) => {
         })();
       setUser(userData);
 
-      document.documentElement.setAttribute('data-theme', userData.theme);
+      document.documentElement.setAttribute('data-theme', userData.preferences.theme);
       if (userData.preferences.fonts) {
         document.body.style.fontFamily = userData.preferences?.fonts?.name ?? 'Roboto';
         document.body.style.fontWeight = userData.preferences?.fonts?.weight.toString() ?? '400';

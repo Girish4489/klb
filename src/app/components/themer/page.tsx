@@ -16,7 +16,7 @@ export default function ThemerPage() {
 
     try {
       const saveThemeRequest = async () => {
-        if (user.preferences.theme === selectedTheme) {
+        if (user.preferences?.theme === selectedTheme) {
           throw new Error('Theme already applied.\n Please select a different theme');
         }
         if (!selectedTheme) {
@@ -73,12 +73,12 @@ export default function ThemerPage() {
                 <div className="grid grid-cols-4 grid-rows-4 rounded-box">
                   <div className="indicator col-span-4 col-start-1 row-span-1 row-start-1 w-full rounded-box shadow-xl">
                     <span className="flex w-full flex-row items-center justify-around rounded-b bg-primary/40">
-                      {user.preferences.theme === themeOption && (
+                      {user.preferences?.theme === themeOption && (
                         <span className="badge indicator-item badge-success indicator-center indicator-middle">
                           Applied
                         </span>
                       )}
-                      {user.preferences.theme !== themeOption &&
+                      {user.preferences?.theme !== themeOption &&
                         themeOption === currentTheme &&
                         currentTheme === selectedTheme && (
                           <span className="badge indicator-item badge-info indicator-center indicator-middle">

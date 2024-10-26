@@ -13,14 +13,20 @@ export async function POST(request: NextRequest) {
 
     const updateResult = await User.updateOne({ _id: userId }, { $set: { 'preferences.theme': reqBody.theme } });
 
-    if (updateResult.modifiedCount === 0 && updateResult.acknowledged) {
-      throw new Error('User not found or theme not updated');
+    if (updateResult.modifiedCount === 0 && updateResult.matchedCount > 0) {
+      throw new Error('Theme not updated');
+    } else if (updateResult.matchedCount === 0) {
+      throw new Error('User not found');
     }
 
-    return NextResponse.json({
-      message: 'Theme changed successfully!',
-      success: true,
-    });
+    if (updateResult.modifiedCount > 0) {
+      return NextResponse.json({
+        message: 'Theme updated successfully',
+        success: true,
+      });
+    } else {
+      throw new Error('Theme not updated');
+    }
   } catch (error) {
     return handleError.api(error);
   }

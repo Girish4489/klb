@@ -12,26 +12,36 @@ export default function LogoutPage() {
   const { setUser } = useUser();
   const logout = async () => {
     try {
-      await axios.get('/api/auth/logout');
-      toast.success('Logout successful');
-      setUser({
-        username: 'User',
-        email: 'sample@example.com',
-        theme: 'default',
-        profileImage: {
-          data: new Uint8Array(),
-          __filename: '',
-          contentType: '',
-          uploadAt: new Date(),
-        },
-        isVerified: false,
-        isAdmin: false,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      } as unknown as IUser);
-      setTimeout(() => {
-        router.push('/auth/login');
-      }, 1000);
+      const res = await axios.get('/api/auth/logout');
+      if (res.data.success) {
+        setUser({
+          username: 'User',
+          email: 'sample@example.com',
+          profileImage: {
+            data: new Uint8Array(),
+            __filename: '',
+            contentType: '',
+            uploadAt: new Date(),
+          },
+          preferences: {
+            theme: 'default',
+            fonts: {
+              name: 'Roboto',
+              weight: 400,
+            },
+          },
+          isVerified: false,
+          isAdmin: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        } as unknown as IUser);
+        toast.success(res.data.message ?? 'Logout successful');
+        setTimeout(() => {
+          router.push('/auth/login');
+        }, 1000);
+      } else {
+        throw new Error(res.data.message ?? 'Failed to logout');
+      }
     } catch (error) {
       // toast.error(error.message);
       handleError.toastAndLog(error);
