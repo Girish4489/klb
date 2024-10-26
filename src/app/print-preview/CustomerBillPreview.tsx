@@ -31,7 +31,9 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, isDataL
                   </span>
                   <hr className="divider-horizontal w-0.5 rounded bg-black" />
                   <span className="flex grow flex-col items-center justify-center">
-                    <h2 id="header">Kalamandir Ladies boutique</h2>
+                    <h2 id="header" className="text-2xl font-bold">
+                      Kalamandir Ladies boutique
+                    </h2>
                     <address>1st Floor, Muddurandappa Complex Opp/BH Road, Gowribidanur - 561208</address>
                   </span>
                 </div>
@@ -58,7 +60,7 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, isDataL
                     <h2>Bill No:</h2>
                     <h3>{bill?.billNumber}</h3>
                   </span>
-                  <span className="field">
+                  <span className="flex gap-4 text-sm font-extrabold">
                     <h2>Bill Date:</h2>
                     <h3>{bill?.date ? formatDS(bill?.date) : ''}</h3>
                   </span>
@@ -66,7 +68,7 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, isDataL
                     <h2>Name:</h2>
                     <h3>{bill?.name}</h3>
                   </span>
-                  <span className="field">
+                  <span className="flex gap-4 text-sm font-extrabold">
                     <h2>Due Date:</h2>
                     <h3>{bill?.dueDate ? formatDS(bill?.dueDate) : ''}</h3>
                   </span>
@@ -89,89 +91,111 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, isDataL
                 </div>
               </div>
             </div>
-            <span className="orders flex flex-col gap-px">
+            <span className="py-1" />
+            <span className="orders flex flex-col gap-4">
               {bill?.order.map((order, orderIndex) => (
-                <div
-                  key={orderIndex}
-                  className="table m-auto flex w-[96%] break-inside-avoid break-after-auto flex-col gap-1 rounded border border-black p-1 text-center"
-                >
-                  <span className="flex flex-row items-center justify-between gap-8">
+                <>
+                  <div
+                    key={orderIndex}
+                    className="table m-auto flex w-[96%] break-inside-avoid break-after-auto flex-col gap-1 rounded border border-black p-1 text-center"
+                  >
+                    <span className="flex flex-row items-center justify-between gap-8">
+                      <span className="flex flex-row items-center gap-8">
+                        <h1>{orderIndex + 1}.</h1>
+                        <span className="flex flex-row items-center gap-4">
+                          <h1>Category:</h1>
+                          <p>{order.category?.categoryName}</p>
+                        </span>
+                      </span>
+                      <span className="flex flex-row items-center justify-center gap-8">
+                        <h1>Work:</h1>
+                        <p>{order.work ? 'Yes' : 'No'}</p>
+                      </span>
+                      <span className="flex flex-row items-center justify-center gap-8">
+                        <h1>Qr Code:</h1>
+                        <p>{order.barcode ? 'Yes' : 'No'}</p>
+                      </span>
+                      <span className="flex flex-row items-center justify-center gap-1">
+                        <h1>Color:</h1>
+                        <p>
+                          {order.color?.name
+                            ? order.color.name
+                                .split(/(?=[A-Z])/)
+                                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                                .join(' ')
+                            : 'NA'}
+                        </p>
+                        <b>|</b>
+                        <p>{order.color?.hex ? order.color.hex : 'NA'}</p>
+                      </span>
+                      <span className="flex flex-row items-center justify-center gap-8">
+                        <h1>Amount:</h1>
+                        <h2>{order.amount}</h2>
+                      </span>
+                    </span>
+                    <hr style={{ margin: 0, padding: 0 }} />
                     <span className="flex flex-row items-center gap-8">
-                      <h1>{orderIndex + 1}.</h1>
-                      <span className="flex flex-row items-center gap-4">
-                        <h1>Category:</h1>
-                        <h2>{order.category?.categoryName}</h2>
-                      </span>
-                    </span>
-                    <span className="flex flex-row items-center justify-center gap-8">
-                      <h1>Work:</h1>
-                      <h2>{order.work ? 'Yes' : 'No'}</h2>
-                    </span>
-                    <span className="flex flex-row items-center justify-center gap-8">
-                      <h1>Qr Code:</h1>
-                      <h2>{order.barcode ? 'Yes' : 'No'}</h2>
-                    </span>
-                    <span className="flex flex-row items-center justify-center gap-1">
-                      <h1>Color:</h1>
-                      <h2>
-                        {`${
-                          order.color?.name &&
-                          order.color.name
-                            .split(/(?=[A-Z])/)
-                            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                            .join(' ')
-                        }|${order.color?.hex && order.color.hex}`}{' '}
-                      </h2>
-                    </span>
-                    <span className="flex flex-row items-center justify-center gap-8">
-                      <h1>Amount:</h1>
-                      <h2>{order.amount}</h2>
-                    </span>
-                  </span>
-                  <hr style={{ margin: 0, padding: 0 }} />
-                  <span className="flex flex-row items-center gap-8">
-                    <h1>Styles:</h1>
-                    {order.styleProcess.map((style, styleIndex) => (
-                      <span key={styleIndex} className="item-center process-box grow-1 flex flex-col justify-start">
-                        <span className="flex flex-row items-center justify-around gap-8">
-                          <h1>
-                            {styleIndex + 1}). {style.styleProcessName}
-                          </h1>
-                          <hr />
-                          <h2>{style.styleName}</h2>
+                      <h1>Styles:</h1>
+                      {order.styleProcess.map((style, styleIndex) => (
+                        <span
+                          key={styleIndex}
+                          // className="item-center process-box grow-1 flex flex-col justify-start"
+                          className="item-center flex w-fit flex-col justify-start rounded-box border border-black px-2 py-1 font-normal"
+                        >
+                          <span className="flex w-fit flex-row items-center justify-around gap-8">
+                            <h1>
+                              {styleIndex + 1}). {style.styleProcessName}:{' '}
+                            </h1>
+                            <hr />
+                            <p>{style.styleName}</p>
+                          </span>
                         </span>
-                      </span>
-                    ))}
-                  </span>
-                  <hr style={{ margin: 0, padding: 0 }} />
-                  <span className="flex flex-row items-center gap-8">
-                    <h1>Measurement:</h1>
-                    <h2>{order.measurement}</h2>
-                  </span>
-                  <hr style={{ margin: 0, padding: 0 }} />
-                  <span className="flex flex-row items-center gap-8">
-                    <h1>Dimensions:</h1>
-                    {order.dimension.map((dimension, dimensionIndex) => (
-                      <span key={dimensionIndex} className="item-center process-box grow-1 flex flex-col justify-start">
-                        <span className="flex flex-row items-center justify-around gap-8">
-                          <h1>
-                            {dimensionIndex + 1}). {dimension.dimensionTypeName}
-                          </h1>
-                          <hr />
-                          <h2>{dimension.dimensionName}</h2>
-                        </span>
-                        <hr style={{ width: '100%', margin: 0, padding: 0 }} />
-                        <span className="flex flex-row items-center justify-center gap-8">
-                          <h1>{dimension.note}</h1>
-                        </span>
-                      </span>
-                    ))}
-                  </span>
-                </div>
+                      ))}
+                    </span>
+                    <hr style={{ margin: 0, padding: 0 }} />
+                    <span className="flex flex-row items-center gap-8">
+                      <h1>Measurement:</h1>
+                      <p>
+                        {(order.measurement ?? '').split('\n').map((line, index) => (
+                          <React.Fragment key={index}>
+                            {line}
+                            <br />
+                          </React.Fragment>
+                        ))}
+                      </p>
+                    </span>
+                    <span className="flex flex-row items-center gap-8">
+                      {/* <h1>Dimensions:</h1> */}
+                      {order.dimension.map((dimension, dimensionIndex) => (
+                        <>
+                          <hr style={{ margin: 0, padding: 0 }} />
+                          <span
+                            key={dimensionIndex}
+                            // className="item-center process-box grow-1 flex flex-col justify-start"
+                            className="item-center flex w-fit flex-col justify-start rounded-box border border-black px-2 py-1"
+                          >
+                            <span className="flex flex-row items-center justify-around gap-8">
+                              <h1>
+                                {dimensionIndex + 1}). {dimension.dimensionTypeName}:{' '}
+                              </h1>
+                              <hr />
+                              <p>{dimension.dimensionName}</p>
+                            </span>
+                            <hr style={{ width: '100%', margin: 0, padding: 0, background: 'black' }} />
+                            <span className="flex flex-row items-center justify-center gap-8">
+                              <p>{dimension.note}</p>
+                            </span>
+                          </span>
+                        </>
+                      ))}
+                    </span>
+                  </div>
+                  <span className="py-[1]" />
+                </>
               ))}
             </span>
           </span>
-          <span className="fixed bottom-0 m-auto w-full grow gap-2 bg-white text-center">
+          <span className={`fixed bottom-0 m-auto w-full grow gap-2 bg-white text-center`}>
             <hr className="m-auto w-[95%] border border-solid" />
             <span className="m-auto flex flex-row items-stretch justify-between gap-2" style={{ width: '95%' }}>
               <span className="process-box">
@@ -200,7 +224,7 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, isDataL
                 </span>
               </span>
             </span>
-            <span className="m-auto flex w-[95%] flex-row items-center justify-between">
+            <span className="m-auto mb-1 flex w-[95%] flex-row items-center justify-between">
               <span className="flex w-full grow flex-row items-center gap-2">
                 <h1>Bill By:</h1>
                 <h2 className="pl-2">{bill?.billBy?.name}</h2>

@@ -47,88 +47,108 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, isDataLoade
                     <h2>Bill By:</h2>
                     <h3>{bill?.billBy?.name}</h3>
                   </span>
-                  <span className="field">
+                  <span className="flex gap-4 text-sm font-extrabold">
                     <h2>Due Date:</h2>
                     <h3>{bill?.dueDate ? formatDS(bill?.dueDate) : ''}</h3>
                   </span>
                 </div>
               </div>
             </div>
-            <span className="orders flex flex-col gap-px">
+            <span className="py-1" />
+            <span className="orders flex flex-col gap-4">
               {bill?.order.map((order, orderIndex) => (
-                <div
-                  key={orderIndex}
-                  className="table m-auto flex w-[96%] break-inside-avoid break-after-auto flex-col gap-1 rounded border border-black p-1 text-center"
-                >
-                  <span className="flex flex-row items-center justify-between gap-8">
+                <>
+                  <div
+                    key={orderIndex}
+                    className="table m-auto flex w-[96%] break-inside-avoid break-after-auto flex-col gap-1 rounded border border-black p-1 text-center"
+                  >
+                    <span className="flex flex-row items-center justify-between gap-8">
+                      <span className="flex flex-row items-center gap-8">
+                        <h1>{orderIndex + 1}.</h1>
+                        <span className="flex flex-row items-center gap-4">
+                          <h1>Category:</h1>
+                          <p>{order.category?.categoryName}</p>
+                        </span>
+                      </span>
+                      <span className="flex flex-row items-center justify-center gap-8">
+                        <h1>Work:</h1>
+                        <p>{order.work ? 'Yes' : 'No'}</p>
+                      </span>
+                      <span className="flex flex-row items-center justify-center gap-8">
+                        <h1>Qr Code:</h1>
+                        <p>{order.barcode ? 'Yes' : 'No'}</p>
+                      </span>
+                      <span className="flex flex-row items-center justify-center gap-1">
+                        <h1>Color:</h1>
+                        <p>
+                          {order.color?.name
+                            ? order.color.name
+                                .split(/(?=[A-Z])/)
+                                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                                .join(' ')
+                            : 'NA'}
+                        </p>
+                        <b>|</b>
+                        <p>{order.color?.hex ? order.color.hex : 'NA'}</p>
+                      </span>
+                    </span>
+                    <hr style={{ margin: 0, padding: 0 }} />
                     <span className="flex flex-row items-center gap-8">
-                      <h1>{orderIndex + 1}.</h1>
-                      <span className="flex flex-row items-center gap-4">
-                        <h1>Category:</h1>
-                        <h2>{order.category?.categoryName}</h2>
-                      </span>
-                    </span>
-                    <span className="flex flex-row items-center justify-center gap-8">
-                      <h1>Work:</h1>
-                      <h2>{order.work ? 'Yes' : 'No'}</h2>
-                    </span>
-                    <span className="flex flex-row items-center justify-center gap-8">
-                      <h1>Qr Code:</h1>
-                      <h2>{order.barcode ? 'Yes' : 'No'}</h2>
-                    </span>
-                    <span className="flex flex-row items-center justify-center gap-1">
-                      <h1>Color:</h1>
-                      <h2>
-                        {`${
-                          order.color?.name &&
-                          order.color.name
-                            .split(/(?=[A-Z])/)
-                            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                            .join(' ')
-                        } | ${order.color?.hex && order.color.hex}`}{' '}
-                      </h2>
-                    </span>
-                  </span>
-                  <hr style={{ margin: 0, padding: 0 }} />
-                  <span className="flex flex-row items-center gap-8">
-                    <h1>Styles:</h1>
-                    {order.styleProcess.map((style, styleIndex) => (
-                      <span key={styleIndex} className="item-center process-box grow-1 flex flex-col justify-start">
-                        <span className="flex flex-row items-center justify-around gap-8">
-                          <h1>
-                            {styleIndex + 1}). {style.styleProcessName}
-                          </h1>
-                          <hr />
-                          <h2>{style.styleName}</h2>
+                      <h1>Styles:</h1>
+                      {order.styleProcess.map((style, styleIndex) => (
+                        <span
+                          key={styleIndex}
+                          // className="item-center process-box grow-1 flex flex-col justify-start"
+                          className="item-center flex w-fit flex-col justify-start rounded-box border border-black px-2 py-1"
+                        >
+                          <span className="flex w-fit flex-row items-center justify-around gap-8">
+                            <h1>
+                              {styleIndex + 1}). {style.styleProcessName}:{' '}
+                            </h1>
+                            <hr />
+                            <p>{style.styleName}</p>
+                          </span>
                         </span>
-                      </span>
-                    ))}
-                  </span>
-                  <hr style={{ margin: 0, padding: 0 }} />
-                  <span className="flex flex-row items-center gap-8">
-                    <h1>Measurement:</h1>
-                    <h2>{order.measurement}</h2>
-                  </span>
-                  <hr style={{ margin: 0, padding: 0 }} />
-                  <span className="flex flex-row items-center gap-8">
-                    <h1>Dimensions:</h1>
-                    {order.dimension.map((dimension, dimensionIndex) => (
-                      <span key={dimensionIndex} className="item-center process-box grow-1 flex flex-col justify-start">
-                        <span className="flex flex-row items-center justify-around gap-8">
-                          <h1>
-                            {dimensionIndex + 1}). {dimension.dimensionTypeName}
-                          </h1>
-                          <hr />
-                          <h2>{dimension.dimensionName}</h2>
+                      ))}
+                    </span>
+                    <hr style={{ margin: 0, padding: 0 }} />
+                    <span className="flex flex-row items-center gap-8">
+                      <h1>Measurement:</h1>
+                      <p>
+                        {(order.measurement ?? '').split('\n').map((line, index) => (
+                          <React.Fragment key={index}>
+                            {line}
+                            <br />
+                          </React.Fragment>
+                        ))}
+                      </p>
+                    </span>
+                    <hr style={{ margin: 0, padding: 0 }} />
+                    <span className="flex flex-row items-center gap-8">
+                      {/* <h1>Dimensions:</h1> */}
+                      {order.dimension.map((dimension, dimensionIndex) => (
+                        <span
+                          key={dimensionIndex}
+                          // className="item-center process-box grow-1 flex flex-col justify-start"
+                          className="item-center flex w-fit flex-col justify-start rounded-box border border-black px-2 py-1"
+                        >
+                          <span className="flex flex-row items-center justify-around gap-8">
+                            <h1>
+                              {dimensionIndex + 1}). {dimension.dimensionTypeName}:{' '}
+                            </h1>
+                            <hr />
+                            <p>{dimension.dimensionName}</p>
+                          </span>
+                          <hr style={{ width: '100%', margin: 0, padding: 0 }} />
+                          <span className="flex flex-row items-center justify-center gap-8">
+                            <p>{dimension.note}</p>
+                          </span>
                         </span>
-                        <hr style={{ width: '100%', margin: 0, padding: 0 }} />
-                        <span className="flex flex-row items-center justify-center gap-8">
-                          <h1>{dimension.note}</h1>
-                        </span>
-                      </span>
-                    ))}
-                  </span>
-                </div>
+                      ))}
+                    </span>
+                  </div>
+                  <span className="py-[1]" />
+                </>
               ))}
             </span>
           </span>

@@ -844,9 +844,9 @@ export default function BillPage() {
                         value={printType}
                         onChange={(e) => setPrintType(e.target.value)}
                       >
-                        <option tabIndex={0} value="Both">
+                        {/* <option tabIndex={0} value="Both">
                           Both
-                        </option>
+                        </option> */}
                         <option tabIndex={1} value="Customer Bill">
                           Customer Bill
                         </option>
