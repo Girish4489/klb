@@ -14,27 +14,32 @@ export default function ThemerPage() {
   const handleThemeChange = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const saveThemeRequest = async () => {
-      if (user.theme === selectedTheme) {
-        throw new Error('Theme already applied.\n Please select a different theme');
-      }
-      if (!selectedTheme) {
-        throw new Error('Please select a theme');
-      }
-
-      const response = await axios.post('/api/auth/theme-save', {
-        theme: selectedTheme,
-      });
-
-      if (response.data.success === true) {
-        setTheme(selectedTheme as Theme);
-        setUser({ ...user, theme: selectedTheme });
-        return { message: response.data.message, theme: response.data.user.theme };
-      } else {
-        throw new Error(response.data.message);
-      }
-    };
     try {
+      const saveThemeRequest = async () => {
+        if (user.preferences.theme === selectedTheme) {
+          throw new Error('Theme already applied.\n Please select a different theme');
+        }
+        if (!selectedTheme) {
+          throw new Error('Please select a theme');
+        }
+
+        const response = await axios.post('/api/auth/theme-save', {
+          theme: selectedTheme,
+        });
+        if (response.data.success) {
+          setTheme(selectedTheme as Theme);
+          setUser({
+            ...user,
+            preferences: {
+              theme: selectedTheme ?? 'default',
+              fonts: user.preferences?.fonts,
+            },
+          });
+          return { message: response.data.message, theme: selectedTheme };
+        } else {
+          throw new Error(response.data.message);
+        }
+      };
       await toast.promise(saveThemeRequest(), {
         loading: 'Applying the selected theme...',
         success: (message) => (
@@ -68,16 +73,18 @@ export default function ThemerPage() {
                 <div className="grid grid-cols-4 grid-rows-4 rounded-box">
                   <div className="indicator col-span-4 col-start-1 row-span-1 row-start-1 w-full rounded-box shadow-xl">
                     <span className="flex w-full flex-row items-center justify-around rounded-b bg-primary/40">
-                      {user.theme === themeOption && (
+                      {user.preferences.theme === themeOption && (
                         <span className="badge indicator-item badge-success indicator-center indicator-middle">
                           Applied
                         </span>
                       )}
-                      {user.theme !== themeOption && themeOption === currentTheme && currentTheme === selectedTheme && (
-                        <span className="badge indicator-item badge-info indicator-center indicator-middle">
-                          Selected (unsaved!)
-                        </span>
-                      )}
+                      {user.preferences.theme !== themeOption &&
+                        themeOption === currentTheme &&
+                        currentTheme === selectedTheme && (
+                          <span className="badge indicator-item badge-info indicator-center indicator-middle">
+                            Selected (unsaved!)
+                          </span>
+                        )}
                     </span>
                   </div>
 

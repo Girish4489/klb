@@ -63,7 +63,7 @@ const ProfilePage = ({ user }: { user: Omit<IUser, 'password'> }) => {
             className="tooltip tooltip-top flex flex-row gap-2 rounded-box bg-primary pl-2 pr-1 font-medium text-primary-content"
             data-tip="edit theme"
           >
-            {user.theme.charAt(0).toUpperCase() + user.theme.slice(1)}
+            {user.preferences?.theme?.charAt(0).toUpperCase() + user.preferences?.theme?.slice(1) || 'Default'}
             <span className="badge badge-secondary">
               <PencilSquareIcon className="h-5 w-5" />
             </span>

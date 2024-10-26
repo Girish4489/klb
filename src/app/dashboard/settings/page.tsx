@@ -5,35 +5,74 @@ import { useUser } from '@/app/context/userContext';
 import handleError from '@/app/util/error/handleError';
 import axios from 'axios';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+
+interface Fonts {
+  name: string;
+  weight: number;
+}
+
+const BadgeItem: React.FC<{ label: string; content: string | boolean; badgeClass?: string }> = ({
+  label,
+  content,
+  badgeClass = 'badge-primary',
+}) => (
+  <span className="badge w-full justify-between gap-2 p-5">
+    <h1 className="font-bold">{label}:</h1>
+    <span className={`badge py-3 ${badgeClass}`}>
+      {typeof content === 'boolean' ? (content ? 'Yes' : 'No') : content}
+    </span>
+  </span>
+);
 
 export default function SettingsPage() {
   const { user, updateUser } = useUser();
-  let createdAt = '';
-
-  if (user.createdAt) {
-    const createdAtDate = new Date(user.createdAt);
-    createdAt = createdAtDate.toLocaleDateString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    });
-  }
-
-  let updatedAt = '';
-
-  if (user.updatedAt) {
-    const updatedAtDate = new Date(user.updatedAt);
-    updatedAt = updatedAtDate.toLocaleDateString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    });
-  }
-
-  // Create a state for the file input
   const [profileImage, setProfileImage] = useState<File | null>(null);
+  const [fonts, setFonts] = useState<Fonts>(user.preferences?.fonts ?? { name: 'Roboto', weight: 400 });
+
+  useEffect(() => {
+    document.body.style.fontFamily = user.preferences?.fonts?.name ?? 'Roboto';
+    document.body.style.fontWeight = user.preferences?.fonts?.weight.toString() ?? '400';
+  }, [user.preferences?.fonts]);
+
+  const formatDate = (date: Date | undefined) =>
+    date
+      ? new Date(date).toLocaleDateString('en-IN', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+        })
+      : '';
+
+  const updateFontPreferences = async (updatedFonts: Fonts) => {
+    await toast
+      .promise(
+        (async () => {
+          const res = await axios.post('/api/auth/fonts', { fonts: updatedFonts });
+          if (res.data.success && res.data.fonts) {
+            setFonts(res.data.fonts);
+            updateUser({
+              preferences: {
+                fonts: res.data.fonts,
+                theme: user.preferences.theme,
+              },
+            });
+            document.body.style.fontFamily = res.data.fonts.name;
+            document.body.style.fontWeight = res.data.fonts.weight.toString();
+            return res.data.message;
+          } else {
+            throw new Error(res.data.message);
+          }
+        })(),
+        {
+          loading: 'Updating font preferences...',
+          success: (message) => <b>{message}</b>,
+          error: (error) => <b>{error.message}</b>,
+        },
+      )
+      .catch(handleError.toastAndLog);
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const target = e.target as HTMLInputElement & { files: FileList };
@@ -43,36 +82,36 @@ export default function SettingsPage() {
   async function uploadProfilePhoto(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    const uploadImage = async () => {
-      if (!profileImage || !profileImage.type.startsWith('image/')) {
-        throw new Error('Please select a valid image');
-      }
-
-      // check the file size
-      if (profileImage.size > 2 * 1024 * 1024) {
-        throw new Error('Please select an image less than 2MB');
-      }
-
-      const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-      const fileExtension = profileImage?.name.split('.').pop()?.toLowerCase();
-      if (!allowedExtensions.includes(fileExtension as string)) {
-        throw new Error('Please select a valid image file');
-      }
-
-      const formData = new FormData();
-      formData.append('profileImage', profileImage);
-
-      const res = await axios.post('/api/dashboard/settings', formData);
-      if (res.data.success === true) {
-        updateUser({
-          profileImage: res.data.profileImage,
-        });
-        return res.data.message;
-      } else {
-        throw new Error(res.data.message);
-      }
-    };
     try {
+      const uploadImage = async () => {
+        if (!profileImage || !profileImage.type.startsWith('image/')) {
+          throw new Error('Please select a valid image');
+        }
+
+        // check the file size
+        if (profileImage.size > 2 * 1024 * 1024) {
+          throw new Error('Please select an image less than 2MB');
+        }
+
+        const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        const fileExtension = profileImage?.name.split('.').pop()?.toLowerCase();
+        if (!allowedExtensions.includes(fileExtension as string)) {
+          throw new Error('Please select a valid image file');
+        }
+
+        const formData = new FormData();
+        formData.append('profileImage', profileImage);
+
+        const res = await axios.post('/api/dashboard/settings', formData);
+        if (res.data.success === true) {
+          updateUser({
+            profileImage: res.data.profileImage,
+          });
+          return res.data.message;
+        } else {
+          throw new Error(res.data.message);
+        }
+      };
       await toast.promise(uploadImage(), {
         loading: 'Uploading...',
         success: (message) => <b>{message}</b>,
@@ -83,7 +122,7 @@ export default function SettingsPage() {
     } catch (error) {
       // toast.error('Error uploading profile photo: ' + error);
       // console.error(error);
-      handleError.log(error);
+      handleError.toastAndLog(error);
     }
   }
 
@@ -224,34 +263,20 @@ export default function SettingsPage() {
                 </div>
               </dialog>
               <div className="card-body my-4 rounded-box border border-base-100 p-4 shadow-2xl">
-                <span className="badge w-full justify-between gap-2 p-5">
-                  <h1 className="font-bold">UserName:</h1>
-                  <span className="badge badge-primary py-3">{user.username}</span>
-                </span>
-                <span className="badge w-full justify-between gap-2 p-5">
-                  <h1 className="font-bold">Email:</h1>
-                  <span className="badge badge-primary py-3">{user.email}</span>
-                </span>
-                <span className="badge w-full justify-between gap-2 p-5">
-                  <h1 className="font-bold">Verified:</h1>
-                  <span className={`badge py-3 ${user.isVerified ? 'badge-success' : 'badge-error'}`}>
-                    {user.isVerified ? 'Yes' : 'No'}
-                  </span>
-                </span>
-                <span className="badge w-full justify-between gap-2 p-5">
-                  <h1 className="font-bold">Admin:</h1>
-                  <span className={`badge py-3 ${user.isAdmin ? 'badge-success' : 'badge-error'}`}>
-                    {user.isAdmin ? 'Yes' : 'No'}
-                  </span>
-                </span>
-                <span className="badge w-full justify-between gap-2 p-5">
-                  <h1 className="font-bold">Created:</h1>
-                  <span className="badge badge-primary py-3">{createdAt}</span>
-                </span>
-                <span className="badge w-full justify-between gap-2 p-5">
-                  <h1 className="font-bold">Updated:</h1>
-                  <span className="badge badge-primary py-3">{updatedAt}</span>
-                </span>
+                <BadgeItem label="Username" content={user.username} />
+                <BadgeItem label="Email" content={user.email} />
+                <BadgeItem
+                  label="Verified"
+                  content={user.isVerified}
+                  badgeClass={user.isVerified ? 'badge-success' : 'badge-error'}
+                />
+                <BadgeItem
+                  label="Admin"
+                  content={user.isAdmin}
+                  badgeClass={user.isAdmin ? 'badge-success' : 'badge-error'}
+                />
+                <BadgeItem label="Created" content={formatDate(user.createdAt)} />
+                <BadgeItem label="Updated" content={formatDate(user.updatedAt)} />
                 <span className="badge w-full select-none justify-between gap-2 p-5">
                   <h1 className="font-bold">Logout:</h1>
                   <span className="badge badge-warning p-4 outline outline-2 outline-offset-1 outline-error hover:badge-error hover:cursor-pointer hover:font-semibold hover:outline-warning">
@@ -262,8 +287,9 @@ export default function SettingsPage() {
             </div>
           </div>
         </div>
+
+        {/* Theme Settings */}
         <div className="collapse join-item collapse-arrow border border-base-300">
-          {/* <input type="radio" name="my-accordion-4" /> */}
           <input type="checkbox" name="collapse" defaultChecked />
           <div id="themeBlock" className="collapse-title text-xl font-medium">
             Theme
@@ -272,10 +298,67 @@ export default function SettingsPage() {
             <ThemerPage />
           </div>
         </div>
+
+        {/* Font Settings */}
+        <div id="font" className="collapse join-item collapse-arrow border border-base-300">
+          <input type="checkbox" name="collapse" defaultChecked />
+          <div className="collapse-title text-xl font-medium">Font Settings</div>
+          <div className="collapse-content m-2">
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-wrap items-center justify-between">
+                <label htmlFor="fontNameSelect" className="label grow">
+                  Select Font
+                </label>
+                <select
+                  id="fontNameSelect"
+                  name="fontNameSelect"
+                  value={fonts?.name ?? 'Roboto'}
+                  onChange={(e) => updateFontPreferences({ name: e.target.value, weight: fonts.weight })}
+                  className="select select-bordered select-primary select-sm min-w-40"
+                >
+                  <option value="Roboto">Roboto</option>
+                  {/* Add other font options here */}
+                </select>
+              </div>
+              <div className="flex flex-wrap items-center justify-between">
+                <label htmlFor="fontWeightSelect" className="label grow">
+                  Select Weight
+                </label>
+                <select
+                  id="fontWeightSelect"
+                  name="fontWeightSelect"
+                  value={fonts?.weight ?? 400}
+                  onChange={(e) => updateFontPreferences({ name: fonts.name, weight: parseInt(e.target.value) })}
+                  className="select select-bordered select-primary select-sm min-w-40"
+                >
+                  {[100, 300, 400, 500, 700, 900].map((weight) => (
+                    <option key={weight} value={weight}>
+                      {weight}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <button
+                className="btn btn-warning btn-sm"
+                onClick={() => updateFontPreferences({ name: 'Roboto', weight: 400 })}
+              >
+                Reset to Default
+              </button>
+            </div>
+          </div>
+        </div>
         <div className="collapse join-item collapse-arrow border border-base-300">
           {/* <input type="radio" name="my-accordion-4" /> */}
           <input type="checkbox" name="collapse" defaultChecked />
           <div className="collapse-title text-xl font-medium">Notification</div>
+          <div className="collapse-content">
+            <p>hello</p>
+          </div>
+        </div>
+        <div className="collapse join-item collapse-arrow border border-base-300">
+          {/* <input type="radio" name="my-accordion-4" /> */}
+          <input type="checkbox" name="collapse" defaultChecked />
+          <div className="collapse-title text-xl font-medium">Preferences</div>
           <div className="collapse-content">
             <p>hello</p>
           </div>

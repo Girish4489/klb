@@ -26,6 +26,9 @@ export async function POST(request: NextRequest) {
     const validPassword = await bcryptUtil.verify(password, user.password);
     if (!validPassword) throw new Error('Invalid password');
 
+    // update last login
+    user.lastLogin = new Date();
+
     // create token data
     const tokenData = {
       id: user._id.toString(),

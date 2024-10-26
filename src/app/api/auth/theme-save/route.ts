@@ -9,18 +9,17 @@ connect();
 export async function POST(request: NextRequest) {
   try {
     const userId = await getDataFromToken(request);
-    const user = await User.findOne({ _id: userId }).select(
-      '-password -__v -isAdmin -isVerified -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry -profileImage -email',
-    );
-    if (!user) throw new Error('User not found');
-
     const reqBody = await request.json();
-    user.theme = reqBody.theme;
-    await user.save();
+
+    const updateResult = await User.updateOne({ _id: userId }, { $set: { 'preferences.theme': reqBody.theme } });
+
+    if (updateResult.modifiedCount === 0 && updateResult.acknowledged) {
+      throw new Error('User not found or theme not updated');
+    }
+
     return NextResponse.json({
       message: 'Theme changed successfully!',
       success: true,
-      user,
     });
   } catch (error) {
     return handleError.api(error);

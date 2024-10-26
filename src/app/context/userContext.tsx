@@ -29,6 +29,12 @@ export const UserProvider: React.FC<UserContextProps> = ({ children }) => {
       contentType: '',
       uploadAt: new Date(),
     },
+    preferences: {
+      fonts: {
+        name: 'Roboto',
+        weight: 400,
+      },
+    },
     isVerified: false,
     isAdmin: false,
     createdAt: new Date(),
@@ -48,6 +54,10 @@ export const UserProvider: React.FC<UserContextProps> = ({ children }) => {
       setUser(userData);
 
       document.documentElement.setAttribute('data-theme', userData.theme);
+      if (userData.preferences.fonts) {
+        document.body.style.fontFamily = userData.preferences?.fonts?.name ?? 'Roboto';
+        document.body.style.fontWeight = userData.preferences?.fonts?.weight.toString() ?? '400';
+      }
     } catch (error) {
       handleError.toast(error);
     }

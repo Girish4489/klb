@@ -19,12 +19,18 @@ export async function fetchUserData() {
       return {
         username: userData.username,
         email: userData.email,
-        theme: userData.theme || theme || 'default',
         profileImage: {
           __filename: userData.profileImage?.__filename || 'USER_PROFILE_404_ERROR',
           data: userData.profileImage?.data,
           contentType: userData.profileImage?.contentType || 'image/webp',
           uploadAt: userData.profileImage?.uploadAt ? new Date(userData.profileImage.uploadAt) : new Date(),
+        },
+        preferences: {
+          theme: userData.theme || theme || 'default',
+          fonts: {
+            name: userData.preferences?.fonts?.name || 'Roboto',
+            weight: userData.preferences?.fonts?.weight || 400,
+          },
         },
         isVerified: userData.isVerified,
         isAdmin: userData.isAdmin,

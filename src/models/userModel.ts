@@ -9,7 +9,6 @@ interface IUser extends Document {
   password: string;
   isVerified: boolean;
   isAdmin: boolean;
-  theme: string;
   profileImage: {
     __filename: string;
     data: string;
@@ -22,6 +21,21 @@ interface IUser extends Document {
   verifyTokenExpiry: Date;
   createdAt: Date;
   updatedAt: Date;
+  lastLogin: Date;
+  preferences: {
+    theme: string;
+    fonts: {
+      name: string;
+      weight: number;
+    };
+  };
+  notifications: {
+    name: string;
+    message: string;
+    timeOfArrival: Date;
+    timeOfRead: Date;
+    isRead: boolean;
+  }[];
 }
 
 const userSchema: Schema<IUser> = new mongoose.Schema({
@@ -47,10 +61,7 @@ const userSchema: Schema<IUser> = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  theme: {
-    type: String,
-    default: 'dark',
-  },
+
   profileImage: {
     __filename: { type: String, default: 'USER_PROFILE_404_ERROR' },
     data: String,
@@ -69,6 +80,26 @@ const userSchema: Schema<IUser> = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  lastLogin: Date,
+  preferences: {
+    fonts: {
+      name: { type: String, required: true },
+      weight: { type: Number, required: true },
+    },
+    theme: {
+      type: String,
+      default: 'dark',
+    },
+  },
+  notifications: [
+    {
+      name: { type: String, required: true },
+      message: { type: String, required: true },
+      timeOfArrival: { type: Date, required: true },
+      timeOfRead: Date,
+      isRead: { type: Boolean, default: false },
+    },
+  ],
 });
 
 // model from the schema
