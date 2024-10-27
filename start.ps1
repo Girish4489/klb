@@ -37,21 +37,21 @@ else {
 
 # Start the server
 function Start-Server {
-  function Start-NpmProcess($command) {
-    Start-Process -NoNewWindow -FilePath "npm.cmd" -ArgumentList $command
+  function Start-PnpmProcess($command) {
+    Start-Process -NoNewWindow -FilePath "pnpm.cmd" -ArgumentList $command
     Write-Host "$command process started."
   }
 
   function Invoke-ProjectBuild {
     Write-Host "Building project..."
-    $buildProcess = Start-Process -NoNewWindow -FilePath "npm.cmd" -ArgumentList "run build" -PassThru -Wait
+    $buildProcess = Start-Process -NoNewWindow -FilePath "pnpm.cmd" -ArgumentList "build" -PassThru -Wait
     if ($buildProcess.ExitCode -eq 0) {
       Write-Host "Build complete. Starting server..."
-      Start-NpmProcess "start"
+      Start-PnpmProcess "start"
     }
     else {
       Write-Host "Build failed. Starting development server..."
-      Start-NpmProcess "run dev"
+      Start-PnpmProcess "dev"
     }
   }
 
