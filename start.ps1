@@ -28,17 +28,25 @@ else {
 
 # Start the server
 function Start-Server {
-  if (Test-Path ".next") {
-    Write-Host "Build folder found. Starting server..."
-    Start-Process -NoNewWindow -FilePath "npm.cmd" -ArgumentList "run dev"
-    Write-Host "Server started."
+  function Start-NpmProcess($command) {
+    Start-Process -NoNewWindow -FilePath "npm.cmd" -ArgumentList $command
+    Write-Host "$command process started."
   }
-  else {
-    Write-Host "Build folder not found. Building project..."
-    npm run build
-    Write-Host "Build complete. Starting server..."
-    Start-Server
+
+  function Invoke-ProjectBuild {
+    Write-Host "Building project..."
+    $buildProcess = Start-Process -NoNewWindow -FilePath "npm.cmd" -ArgumentList "run build" -PassThru -Wait
+    if ($buildProcess.ExitCode -eq 0) {
+      Write-Host "Build complete. Starting server..."
+      Start-NpmProcess "start"
+    }
+    else {
+      Write-Host "Build failed. Starting development server..."
+      Start-NpmProcess "run dev"
+    }
   }
+
+  Invoke-ProjectBuild
 }
 
 Start-Server
