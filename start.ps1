@@ -11,15 +11,24 @@ if ($LASTEXITCODE -ne 0) {
   Write-Host "Git pull failed. Please check your connection or repository access."
   exit 1
 }
-
 # Check if port 3000 is in use
 $portInUse = Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue
 if ($portInUse) {
   # Port 3000 is in use, kill the process
   Write-Host "Port 3000 is in use. Killing the process..."
-  $processId = ($portInUse | Select-Object -ExpandProperty OwningProcess)
-  Stop-Process -Id $processId -Force
-  Write-Host "Process running on port 3000 killed."
+  $processId = ($portInUse | Where-Object { $_.OwningProcess -ne 0 } | Select-Object -ExpandProperty OwningProcess)
+  if ($processId) {
+    try {
+      Stop-Process -Id $processId -Force
+      Write-Host "Process running on port 3000 killed."
+    }
+    catch {
+      Write-Host "Failed to kill process with ID $processId. Error: $_"
+    }
+  }
+  else {
+    Write-Host "No valid process found running on port 3000."
+  }
 }
 else {
   # Port 3000 is not in use
