@@ -2,6 +2,7 @@ import { IBill } from '@/models/klm';
 import React from 'react';
 
 import Image from 'next/image';
+import { QrGeneratorPage } from '../components/Barcode/BarcodePage/BarcodePage';
 import { formatDS } from '../util/format/dateUtils';
 
 interface CustomerBillPreviewProps {
@@ -25,8 +26,8 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, isDataL
             <h4 className="billType">Customer Bill</h4>
             <div className="header-box">
               <div className="flex flex-row items-center justify-between">
-                <div className="item-center flex grow flex-row gap-4">
-                  <span className="profile w-24">
+                <div className="flex grow flex-row items-center gap-4">
+                  <span className="profile">
                     <Image src={klm.src} width={90} height={80} alt="Profile" className="w-24" priority />
                   </span>
                   <hr className="divider-horizontal w-0.5 rounded bg-black" />
@@ -86,8 +87,11 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, isDataL
                   </span>
                 </div>
                 <hr className="divider-horizontal w-0.5 rounded bg-black" />
-                <div className="header-col w-50per flex flex-col justify-start text-center">
-                  <h2 id="text-center">Barcode</h2>
+                <div className="header-col flex flex-col justify-start text-center">
+                  <h2 id="text-center">QR Code</h2>
+                  {bill.billNumber && bill.billNumber.toString().length > 0 && (
+                    <QrGeneratorPage content={`billNumber=${bill?.billNumber.toString()}` || ''} size={90} />
+                  )}
                 </div>
               </div>
             </div>
@@ -167,12 +171,11 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, isDataL
                     <span className="flex flex-row items-center gap-8">
                       {/* <h1>Dimensions:</h1> */}
                       {order.dimension.map((dimension, dimensionIndex) => (
-                        <>
+                        <span key={dimensionIndex}>
                           <hr style={{ margin: 0, padding: 0 }} />
                           <span
-                            key={dimensionIndex}
                             // className="item-center process-box grow-1 flex flex-col justify-start"
-                            className="item-center flex w-fit flex-col justify-start rounded-box border border-black px-2 py-1"
+                            className="item-center flex w-fit flex-col items-center justify-start rounded-box border border-black px-2 py-1"
                           >
                             <span className="flex flex-row items-center justify-around gap-8">
                               <h1>
@@ -186,7 +189,7 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, isDataL
                               <p>{dimension.note}</p>
                             </span>
                           </span>
-                        </>
+                        </span>
                       ))}
                     </span>
                   </div>
@@ -195,42 +198,45 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, isDataL
               ))}
             </span>
           </span>
-          <span className={`fixed bottom-0 m-auto w-full grow gap-2 bg-white text-center`}>
-            <hr className="m-auto w-[95%] border border-solid" />
-            <span className="m-auto flex flex-row items-stretch justify-between gap-2" style={{ width: '95%' }}>
-              <span className="process-box">
-                <span className="field">
-                  <h2>Total:</h2>
-                  <h3>{bill?.totalAmount}</h3>
-                </span>
-                <span className="field">
-                  <h2>Discount:</h2>
-                  <h3>{bill?.discount}</h3>
-                </span>
-                <span className="field">
-                  <h2>Tax:</h2>
-                  <h3>000</h3>
-                </span>
-              </span>
-              <span className="process-box grow-1">
-                <div className="header-col flex flex-col justify-start text-center">
-                  <h2 id="text-center">Barcode</h2>
+          <span className={`fixed bottom-0 m-auto flex w-full shrink flex-col gap-2 bg-white text-center`}>
+            <div className="m-auto w-[95%]">
+              <hr className="m-auto my-1 rounded-box border-2 border-black" />
+              <span className="flex gap-4">
+                <div className="header-col process-box flex flex-col justify-start text-center">
+                  {bill.billNumber && bill.billNumber.toString().length > 0 && (
+                    <QrGeneratorPage content={`billNumber=${bill?.billNumber.toString()}` || ''} size={60} />
+                  )}
+                </div>
+                <div className="process-box my-auto flex h-full w-full grow flex-row items-stretch justify-between gap-4 px-4">
+                  <span className="h-full grow">
+                    <span className="field">
+                      <h2 className="text-nowrap">Sub Total:</h2>
+                      <h3>{bill?.totalAmount}</h3>
+                    </span>
+                    <span className="field">
+                      <h2>Discount:</h2>
+                      <h3>{bill?.discount}</h3>
+                    </span>
+                    <span className="field">
+                      <h2>Tax:</h2>
+                      <h3>000</h3>
+                    </span>
+                  </span>
+
+                  <span className="field grow justify-center">
+                    <h2>Grand:</h2>
+                    <h3>{bill?.grandTotal}</h3>
+                  </span>
+                  <span className="flex grow flex-row items-center justify-around gap-4 ">
+                    <span className="flex flex-row items-center gap-2">
+                      <h1>Bill By:</h1>
+                      <h2 className="pl-2">{bill?.billBy?.name}</h2>
+                    </span>
+                    <h2>Signature</h2>
+                  </span>
                 </div>
               </span>
-              <span className="process-box flex">
-                <span className="field">
-                  <h2>Grand:</h2>
-                  <h3>{bill?.grandTotal}</h3>
-                </span>
-              </span>
-            </span>
-            <span className="m-auto mb-1 flex w-[95%] flex-row items-center justify-between">
-              <span className="flex w-full grow flex-row items-center gap-2">
-                <h1>Bill By:</h1>
-                <h2 className="pl-2">{bill?.billBy?.name}</h2>
-              </span>
-              <h2>Signature</h2>
-            </span>
+            </div>
           </span>
         </div>
       )}
