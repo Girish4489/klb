@@ -1,4 +1,5 @@
 'use client';
+import { BarcodeScannerPage } from '@/app/components/Barcode/BarcodePage/BarcodePage';
 import BillHeader from '@/app/components/BillHeader/BillHeader';
 import ColorPickerButton from '@/app/components/ColorPickerButton/ColorPickerButton';
 import SearchBillForm from '@/app/components/SearchBillForm/SearchBillForm';
@@ -20,6 +21,7 @@ export default function BillPage() {
   const [thisWeekBill, setThisWeekBill] = React.useState<IBill[]>([]);
   const [searchBill, setSearchBill] = React.useState<IBill[] | undefined>(undefined);
   const [newBill, setNewBill] = React.useState<boolean>(true);
+  const [barcode, setBarcode] = React.useState<string>('');
 
   const [printType, setPrintType] = React.useState<string>('Customer Bill');
   React.useEffect(() => {
@@ -455,6 +457,29 @@ export default function BillPage() {
     }
   }, []);
 
+  React.useEffect(() => {
+    if (barcode) {
+      const billNumberMatch = barcode.match(/billNumber=(\d+)/);
+      if (billNumberMatch) {
+        const billNumber = billNumberMatch[1];
+        (async () => {
+          try {
+            const res = await ApiGet.Bill.BillSearch(parseInt(billNumber), 'bill');
+            if (res.success === true && res.bill.length > 0) {
+              toast.success('Bill found');
+              setNewBill(false);
+              setBill(res.bill[0]);
+            } else {
+              throw new Error(res.message);
+            }
+          } catch (error) {
+            handleError.toastAndLog(error);
+          }
+        })();
+      }
+    }
+  }, [barcode]);
+
   const handleColorSelect = async (color: IColor, orderIndex: number) => {
     await setBill((prevBill) => {
       if (!prevBill) return prevBill;
@@ -482,6 +507,7 @@ export default function BillPage() {
           <button className="btn btn-primary btn-sm" onClick={createNewBill}>
             New
           </button>
+          <BarcodeScannerPage onScanComplete={setBarcode} />
           <SearchBillForm onSearch={billSearch} searchResults={searchBill} onRowClick={searchRowClicked} />
         </span>
 
@@ -491,7 +517,7 @@ export default function BillPage() {
             {/* Bill header */}
             <BillHeader bill={bill} setBill={setBill} />
             {/* increase or decrease */}
-            <div className="z-0 mx-2 flex h-fit flex-row gap-2 rounded-box bg-accent/15 px-2 py-1 backdrop-blur-xl">
+            <div className="mx-2 flex h-fit flex-row gap-2 rounded-box bg-accent/15 px-2 py-1">
               <span className="btn btn-primary btn-xs select-none font-extrabold" onClick={handleNewOrder}>
                 Add
               </span>

@@ -4,6 +4,7 @@ import { IBill } from '@/models/klm';
 import React from 'react';
 
 import Image from 'next/image';
+import { QrGeneratorPage } from '../components/Barcode/BarcodePage/BarcodePage';
 import { formatDS, formatDSNT } from '../util/format/dateUtils';
 
 interface WorkerBillPreviewProps {
@@ -28,13 +29,16 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, isDataLoade
             <h4 className="billType">Worker Bill</h4>
             <div className="header-box">
               <div className="flex flex-row items-center justify-between">
-                <div className="item-center flex grow flex-row gap-4">
-                  <span className="profile w-24">
-                    <Image src={klm.src} width={90} height={80} alt="Profile" className="w-24" priority />
+                <div className="flex grow flex-row items-center gap-4">
+                  <span className="profile flex h-24 w-24">
+                    <Image src={klm.src} width={96} height={90} alt="Profile" className="w-24" priority />
                   </span>
-                  <hr className="divider-horizontal w-0.5 rounded bg-black" />
+                  <hr className="divider divider-horizontal m-0 w-0.5 rounded-box bg-black" />
                   <div className="header-col flex grow flex-col justify-start text-center">
                     <h2 id="text-center">Barcode</h2>
+                    {bill.billNumber && bill.billNumber.toString().length > 0 && (
+                      <QrGeneratorPage content={`billNumber=${bill?.billNumber.toString()}` || ''} size={90} />
+                    )}
                   </div>
                 </div>
                 <hr className="divider-horizontal w-0.5 rounded bg-black" />
@@ -155,6 +159,7 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, isDataLoade
           <span
             className={`fixed bottom-0 m-auto w-full grow gap-2 bg-white text-center ${type === 'Both' ? 'hidden' : ''}`}
           >
+            <hr className="m-auto my-1 w-[96%] rounded-box border-2 border-black" />
             <span className="padding-4 border-1 rounded-20 m-auto flex w-[96%] flex-row items-center justify-between gap-4 border-solid bg-white">
               <span className="field">
                 <h2>Bill By:</h2>
