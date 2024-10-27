@@ -103,7 +103,7 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, isDataL
                       <span className="flex flex-row items-center gap-8">
                         <h1>{orderIndex + 1}.</h1>
                         <span className="flex flex-row items-center gap-4">
-                          <h1>Category:</h1>
+                          {/* <h1>Category:</h1> */}
                           <p>{order.category?.categoryName}</p>
                         </span>
                       </span>
@@ -135,7 +135,7 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, isDataL
                     </span>
                     <hr style={{ margin: 0, padding: 0 }} />
                     <span className="flex flex-row items-center gap-8">
-                      <h1>Styles:</h1>
+                      {/* <h1>Styles:</h1> */}
                       {order.styleProcess.map((style, styleIndex) => (
                         <span
                           key={styleIndex}
