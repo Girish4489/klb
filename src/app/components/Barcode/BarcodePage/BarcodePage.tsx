@@ -21,7 +21,7 @@ const BarcodeScannerPage: React.FC<{ onScanComplete: (scannedContent: string) =>
   return (
     <section className="flex flex-col-reverse items-center gap-1">
       <div className="dropdown">
-        <div tabIndex={0} role="button" className="btn btn-secondary btn-sm m-1">
+        <div tabIndex={0} role="button" className="btn btn-secondary btn-sm">
           Scan Qr Code
         </div>
         <div

@@ -52,17 +52,19 @@ function ColorPickerButton({
 
   return (
     <React.Fragment>
-      <button className="max-w-32" onClick={handleButtonClick}>
-        <span className="label label-text flex flex-wrap font-medium">
-          {selectedColor?.type === 'Custom' ? 'Custom' : 'Selected'} Color:{' '}
-          {selectedColor?.type === 'Selected' && selectedColor?.name
-            ? selectedColor?.name
-                .split(/(?=[A-Z])/)
-                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                .join(' ')
-            : ''}
+      <button className="flex w-full grow flex-col" onClick={handleButtonClick}>
+        <span className="label label-text flex w-full flex-row items-center justify-around gap-2 font-medium">
+          <span className="text-nowrap">{selectedColor?.type === 'Custom' ? 'Custom' : 'Selected'} Color: </span>
+          <span className="text-nowrap">
+            {selectedColor?.type === 'Selected' && selectedColor?.name
+              ? selectedColor?.name
+                  .split(/(?=[A-Z])/)
+                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                  .join(' ')
+              : ''}
+          </span>
         </span>
-        <div className="badge badge-lg h-10 w-full border-info" style={{ backgroundColor: selectedColor?.hex }} />
+        <div className="badge badge-lg h-8 w-full border-info" style={{ backgroundColor: selectedColor?.hex }}></div>
       </button>
 
       <dialog id={modalId} className="modal w-full border border-base-100">

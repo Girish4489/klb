@@ -36,11 +36,6 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onScanSuccess, scanStat
     const fetchVideoInputDevices = async () => {
       try {
         const devices = await BrowserMultiFormatReader.listVideoInputDevices();
-        const dummyDevices: MediaDeviceInfo[] = [
-          { deviceId: 'dummy1', label: 'Dummy Camera 1', groupId: '', kind: 'videoinput', toJSON: () => ({}) },
-          { deviceId: 'dummy2', label: 'Dummy Camera 2', groupId: '', kind: 'videoinput', toJSON: () => ({}) },
-        ];
-        devices.push(...dummyDevices);
         setVideoInputDevices(devices);
         if (devices.length > 0) {
           setSelectedDeviceId(devices[0].deviceId);
@@ -65,13 +60,20 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onScanSuccess, scanStat
         const controls = await codeReader.decodeFromVideoDevice(
           selectedDeviceId,
           videoRef.current as HTMLVideoElement,
-          (result, error) => {
+          async (result, error) => {
             if (result) {
               onScanSuccess(result.getText());
               setTimeout(() => controls?.stop(), 1000);
             }
             if (error) {
               // console.error(error);
+            }
+            if (videoRef.current) {
+              try {
+                await videoRef.current.play();
+              } catch (playError) {
+                console.error('Error attempting to play video:', playError);
+              }
             }
           },
         );
