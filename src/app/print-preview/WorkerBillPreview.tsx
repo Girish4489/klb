@@ -28,21 +28,14 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, isDataLoade
           <span className="flex shrink flex-col gap-2">
             <h4 className="billType">Worker Bill</h4>
             <div className="header-box">
-              <div className="flex flex-row items-center justify-between">
-                <div className="flex grow flex-row items-center gap-4">
+              <div className="flex flex-row items-center justify-between gap-4">
+                <div className="flex flex-row items-center gap-4">
                   <span className="profile flex h-24 w-24">
-                    <Image src={klm.src} width={96} height={90} alt="Profile" className="w-24" priority />
+                    <Image src={klm.src} width={96} height={90} alt="Profile" className="m-auto w-24" priority />
                   </span>
                   <hr className="divider divider-horizontal m-0 w-0.5 rounded-box bg-black" />
-                  <div className="header-col flex grow flex-col justify-start text-center">
-                    <h2 id="text-center">Barcode</h2>
-                    {bill.billNumber && bill.billNumber.toString().length > 0 && (
-                      <QrGeneratorPage content={`billNumber=${bill?.billNumber.toString()}` || ''} size={90} />
-                    )}
-                  </div>
                 </div>
-                <hr className="divider-horizontal w-0.5 rounded bg-black" />
-                <div className="item-center flex flex-col justify-between">
+                <div className="item-center flex grow flex-col justify-between">
                   <span className="field">
                     <h2>Bill No:</h2>
                     <h3>{bill?.billNumber}</h3>
@@ -55,10 +48,18 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, isDataLoade
                     <h2>Due Date:</h2>
                     <h3>{bill?.dueDate ? formatDS(bill?.dueDate) : ''}</h3>
                   </span>
+                  <hr className="divider divider-horizontal m-0 w-0.5 rounded-box bg-black" />
+                </div>
+                <div className="header-col flex flex-col justify-start text-center">
+                  <h2 id="text-center">Barcode</h2>
+                  {bill.billNumber && bill.billNumber.toString().length > 0 && (
+                    <QrGeneratorPage content={`billNumber=${bill?.billNumber.toString()}` || ''} size={90} />
+                  )}
                 </div>
               </div>
             </div>
-            <span className="py-1" />
+            <hr className="m-auto my-1.5 w-[95%] rounded-box border-2 border-black" />
+            {/* <span className="py-1" /> */}
             <span className="orders flex flex-col gap-4">
               {bill?.order.map((order, orderIndex) => (
                 <>
@@ -92,63 +93,75 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, isDataLoade
                                 .join(' ')
                             : 'NA'}
                         </p>
-                        <b>|</b>
-                        <p>{order.color?.hex ? order.color.hex : 'NA'}</p>
+                        {/* <b>|</b>
+                        <p>{order.color?.hex ? order.color.hex : 'NA'}</p> */}
                       </span>
                     </span>
                     <hr style={{ margin: 0, padding: 0 }} />
-                    <span className="flex flex-row items-center gap-8">
+                    <span className="flex w-full flex-col items-center gap-1">
                       {/* <h1>Styles:</h1> */}
-                      {order.styleProcess.map((style, styleIndex) => (
-                        <span
-                          key={styleIndex}
-                          // className="item-center process-box grow-1 flex flex-col justify-start"
-                          className="item-center flex w-fit flex-col justify-start rounded-box border border-black px-2 py-1"
-                        >
-                          <span className="flex w-fit flex-row items-center justify-around gap-8">
-                            <h1>
-                              {styleIndex + 1}). {style.styleProcessName}:{' '}
-                            </h1>
-                            <hr />
-                            <p>{style.styleName}</p>
+                      <span className="flex w-full items-center gap-8">
+                        {order.styleProcess.map((style, styleIndex) => (
+                          <span
+                            key={styleIndex}
+                            // className="item-center process-box grow-1 flex flex-col justify-start"
+                            className="item-center flex w-fit flex-col justify-start rounded-box border border-black px-2 py-1 font-normal"
+                          >
+                            <span className="flex w-fit flex-row items-center justify-around gap-8">
+                              <h1>
+                                {styleIndex + 1}). {style.styleProcessName}:{' '}
+                              </h1>
+                              <hr />
+                              <p>{style.styleName}</p>
+                            </span>
                           </span>
-                        </span>
-                      ))}
-                    </span>
-                    <hr style={{ margin: 0, padding: 0 }} />
-                    <span className="flex flex-row items-center gap-8">
-                      <h1>Measurement:</h1>
-                      <p>
-                        {(order.measurement ?? '').split('\n').map((line, index) => (
-                          <React.Fragment key={index}>
-                            {line}
-                            <br />
-                          </React.Fragment>
                         ))}
-                      </p>
+                      </span>
+                      {order.styleProcess.length > 0 && <hr className={`w-full`} />}
                     </span>
-                    <hr style={{ margin: 0, padding: 0 }} />
-                    <span className="flex flex-row items-center gap-8">
+                    <span className="flex w-full flex-row items-center gap-8">
+                      <span className="flex items-center gap-2">
+                        <h1>Note:</h1>
+                        {order.orderNotes && <p className="process-box">{(order.orderNotes ?? '').split('\n')}</p>}
+                      </span>
+                      <span className="flex grow items-center gap-2">
+                        <h1>Measurement:</h1>
+                        {order.measurement && (
+                          <p className="process-box">
+                            {(order.measurement ?? '').split('\n').map((line, index) => (
+                              <React.Fragment key={index}>
+                                {line}
+                                <br />
+                              </React.Fragment>
+                            ))}
+                          </p>
+                        )}
+                      </span>
+                    </span>
+                    <span className="flex w-full flex-col items-center gap-1">
                       {/* <h1>Dimensions:</h1> */}
-                      {order.dimension.map((dimension, dimensionIndex) => (
-                        <span
-                          key={dimensionIndex}
-                          // className="item-center process-box grow-1 flex flex-col justify-start"
-                          className="item-center flex w-fit flex-col justify-start rounded-box border border-black px-2 py-1"
-                        >
-                          <span className="flex flex-row items-center justify-around gap-8">
-                            <h1>
-                              {dimensionIndex + 1}). {dimension.dimensionTypeName}:{' '}
-                            </h1>
-                            <hr />
-                            <p>{dimension.dimensionName}</p>
+                      {order.styleProcess.length > 0 && <hr className={`w-full`} />}
+                      <span className="flex w-full items-start gap-8">
+                        {order.dimension.map((dimension, dimensionIndex) => (
+                          <span
+                            key={dimensionIndex}
+                            // className="item-center process-box grow-1 flex flex-col justify-start"
+                            className="item-center flex w-fit flex-col items-center justify-start rounded-box border border-black px-2 py-1"
+                          >
+                            <span className="flex flex-row items-center justify-around gap-8">
+                              <h1>
+                                {dimensionIndex + 1}). {dimension.dimensionTypeName}:{' '}
+                              </h1>
+                              <hr />
+                              <p>{dimension.dimensionName}</p>
+                            </span>
+                            <hr className="m-0 w-full border bg-black p-0" />
+                            <span className="flex flex-row items-center justify-center gap-8">
+                              <p>{dimension.note}</p>
+                            </span>
                           </span>
-                          <hr style={{ width: '100%', margin: 0, padding: 0 }} />
-                          <span className="flex flex-row items-center justify-center gap-8">
-                            <p>{dimension.note}</p>
-                          </span>
-                        </span>
-                      ))}
+                        ))}
+                      </span>
                     </span>
                   </div>
                   <span className="py-[1]" />
