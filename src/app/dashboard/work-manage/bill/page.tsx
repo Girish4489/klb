@@ -8,6 +8,14 @@ import handleError from '@/app/util/error/handleError';
 import { formatD } from '@/app/util/format/dateUtils';
 import { ApiGet, ApiPost, ApiPut } from '@/app/util/makeApiRequest/makeApiRequest';
 import { IBill, ICategory, IColor, IDimensionTypes, IDimensions, IStyle, IStyleProcess, ITax } from '@/models/klm';
+import { MinusCircleIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
+import {
+  BriefcaseIcon,
+  CurrencyRupeeIcon,
+  InformationCircleIcon,
+  QrCodeIcon,
+  TagIcon,
+} from '@heroicons/react/24/solid';
 import { Types } from 'mongoose';
 import Link from 'next/link';
 import React, { useMemo } from 'react';
@@ -98,6 +106,8 @@ export default function BillPage() {
       work: false,
       barcode: false,
       measurement: '',
+      orderNotes: '',
+      color: { _id: new Types.ObjectId(), name: '', code: '' },
       amount: 0,
       status: 'Pending',
     };
@@ -426,6 +436,7 @@ export default function BillPage() {
       if (selectedBill) {
         setNewBill(false);
         setBill(selectedBill);
+        updateUrlWithBillNumber(selectedBill.billNumber.toString());
         setSearchBill(undefined);
       } else {
         toast.error('Bill not found');
@@ -457,27 +468,48 @@ export default function BillPage() {
     }
   }, []);
 
+  const updateUrlWithBillNumber = (billNumber: string) => {
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set('billNumber', billNumber);
+    const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+    window.history.replaceState(null, '', newUrl);
+  };
+
   React.useEffect(() => {
-    if (barcode) {
-      const billNumberMatch = barcode.match(/billNumber=(\d+)/);
-      if (billNumberMatch) {
-        const billNumber = billNumberMatch[1];
-        (async () => {
-          try {
-            const res = await ApiGet.Bill.BillSearch(parseInt(billNumber), 'bill');
-            if (res.success === true && res.bill.length > 0) {
-              toast.success('Bill found');
-              setNewBill(false);
-              setBill(res.bill[0]);
-            } else {
-              throw new Error(res.message);
-            }
-          } catch (error) {
-            handleError.toastAndLog(error);
-          }
-        })();
-      }
+    if (!barcode) return;
+
+    const billNumberMatch = barcode.match(/billNumber=(\d+)/);
+    if (!billNumberMatch) return;
+
+    const billNumber = billNumberMatch[1];
+    if (!billNumber) {
+      handleError.toastAndLog(new Error('No bill number found in barcode'));
+      return;
     }
+
+    const fetchBill = async () => {
+      try {
+        if (billNumber === bill?.billNumber?.toString()) {
+          toast.success('Bill already loaded');
+        } else {
+          const res = await ApiGet.Bill.BillSearch(parseInt(billNumber), 'bill');
+          if (res.success && res.bill.length > 0) {
+            toast.success('Bill found');
+            setNewBill(false);
+            setBill(res.bill[0]);
+          } else {
+            throw new Error(res.message);
+          }
+        }
+
+        updateUrlWithBillNumber(billNumber);
+        setBarcode('');
+      } catch (error) {
+        handleError.toastAndLog(error);
+      }
+    };
+
+    fetchBill();
   }, [barcode]);
 
   const handleColorSelect = async (color: IColor, orderIndex: number) => {
@@ -519,19 +551,21 @@ export default function BillPage() {
             {/* increase or decrease */}
             <div className="mx-2 flex h-fit flex-row gap-2 rounded-box bg-accent/15 px-2 py-1">
               <span className="btn btn-primary btn-xs select-none font-extrabold" onClick={handleNewOrder}>
+                <PlusCircleIcon className="h-5 w-5 text-primary-content" />
                 Add
               </span>
               <span
                 className="btn btn-secondary btn-xs select-none font-extrabold"
                 onClick={handleRemoveOrder((bill?.order?.length ?? 0) - 1)}
               >
+                <MinusCircleIcon className="h-5 w-5 text-secondary-content" />
                 Remove
               </span>
             </div>
             {/* items and track in row */}
             <div className="flex h-full w-full flex-row items-start gap-1 rounded-box bg-base-300 p-1 max-sm:flex-col max-sm:items-center">
               <div className="flex min-h-full grow flex-col justify-between rounded-box border border-base-300">
-                <div className="flex max-h-[40rem] min-h-full w-full grow flex-col gap-1 overflow-auto rounded-box bg-base-200">
+                <div className="flex max-h-[50rem] min-h-full w-full grow flex-col gap-1 overflow-auto rounded-box bg-base-200">
                   {/* orders */}
                   {bill?.order?.map((order, orderIndex) => (
                     <div
@@ -559,14 +593,15 @@ export default function BillPage() {
                                 />
                               </label>
                             </div>
-                            <div className="flex flex-row items-center justify-between gap-1 max-sm:w-full">
+                            <div className="flex flex-row items-center justify-between gap-1 rounded-box bg-neutral p-1 max-sm:w-full">
+                              <TagIcon className="h-5 w-5 text-info" />
                               <label htmlFor={`category_${orderIndex}`} className="label label-text">
                                 Category
                               </label>
                               <select
                                 name={`category_${orderIndex}`}
                                 id={`category_${orderIndex}`}
-                                className="select select-primary select-sm"
+                                className="select select-primary select-sm w-32 max-w-sm"
                                 onChange={(e) => {
                                   const selectedCategoryId = e.target.selectedOptions[0]?.getAttribute('itemID');
                                   if (selectedCategoryId) {
@@ -618,6 +653,7 @@ export default function BillPage() {
                                 htmlFor={`work_${orderIndex}`}
                                 className="btn btn-neutral btn-sm flex h-full grow items-center gap-2"
                               >
+                                <BriefcaseIcon className="h-5 w-5 text-info" />
                                 Work:
                                 <input
                                   type="checkbox"
@@ -641,6 +677,7 @@ export default function BillPage() {
                                 htmlFor={`barcode_${orderIndex}`}
                                 className="btn btn-neutral btn-sm flex h-full grow items-center gap-2"
                               >
+                                <QrCodeIcon className="h-5 w-5 text-info" />
                                 Barcode:
                                 <input
                                   type="checkbox"
@@ -663,10 +700,12 @@ export default function BillPage() {
                           {/* remove secific order */}
                           <div className="flex items-center justify-end max-sm:w-full">
                             <span
-                              className="btn btn-secondary btn-xs select-none font-bold"
+                              className="btn btn-secondary btn-xs tooltip tooltip-left tooltip-warning flex select-none font-bold"
                               onClick={handleRemoveOrder(orderIndex)}
+                              data-tip="Remove this order"
                             >
-                              Remove
+                              <MinusCircleIcon className="h-5 w-5 text-secondary-content" />
+                              <span>Remove</span>
                             </span>
                           </div>
                         </div>
@@ -738,16 +777,45 @@ export default function BillPage() {
                         <div className="flex flex-row justify-between">
                           {/* 3rd row */}
                           <div className="flex grow flex-row flex-wrap items-center gap-1 max-sm:flex-col">
-                            <span className="flex flex-row justify-between rounded-box bg-base-100 p-2 max-sm:w-full">
-                              <ColorPickerButton
-                                onColorSelect={(color) => {
-                                  handleColorSelect(color, orderIndex);
-                                }}
-                                modalId={`colorPickerBillModal_${orderIndex}`}
-                                selectedColor={order.color}
-                                labelHtmlFor={`colorPickerLabel_${orderIndex}`}
-                                inputId={`colorPickerLabel_${orderIndex}`}
-                              />
+                            <span className="flex flex-col items-center gap-2">
+                              <span className="flex w-full flex-row items-center justify-around rounded-box border border-base-content/50 bg-base-100 p-2 max-sm:w-full">
+                                <ColorPickerButton
+                                  onColorSelect={(color) => {
+                                    handleColorSelect(color, orderIndex);
+                                  }}
+                                  modalId={`colorPickerBillModal_${orderIndex}`}
+                                  selectedColor={order.color}
+                                  labelHtmlFor={`colorPickerLabel_${orderIndex}`}
+                                  inputId={`colorPickerLabel_${orderIndex}`}
+                                />
+                              </span>
+                              <span className="flex flex-row flex-wrap justify-between max-sm:w-full">
+                                <label
+                                  htmlFor={`orderNotes_${orderIndex}`}
+                                  className="input input-sm label-text input-bordered input-primary tooltip tooltip-top tooltip-info flex items-center gap-2"
+                                  data-tip="Order Notes"
+                                >
+                                  <span className="flex items-center gap-1">
+                                    <InformationCircleIcon className="h-5 w-5 text-info" />
+                                    <p>Order:</p>
+                                  </span>
+                                  <input
+                                    name={`orderNotes_${orderIndex}`}
+                                    id={`orderNotes_${orderIndex}`}
+                                    placeholder="Enter Order Notes"
+                                    className="grow"
+                                    value={order.orderNotes || ''}
+                                    onChange={(e) =>
+                                      setBill({
+                                        ...bill,
+                                        order: bill.order?.map((o, i) =>
+                                          i === orderIndex ? { ...o, orderNotes: e.target.value } : o,
+                                        ),
+                                      } as IBill)
+                                    }
+                                  />
+                                </label>
+                              </span>
                             </span>
                             <span className="flex grow flex-row justify-between max-sm:w-full">
                               <label htmlFor={`measure_${orderIndex}`} className="label label-text">
@@ -758,7 +826,7 @@ export default function BillPage() {
                                 id={`measure_${orderIndex}`}
                                 placeholder="Measure"
                                 className="textarea textarea-bordered textarea-primary textarea-sm grow"
-                                value={order.measurement}
+                                value={order.measurement || ''}
                                 onChange={(e) =>
                                   setBill({
                                     ...bill,
@@ -770,36 +838,41 @@ export default function BillPage() {
                               />
                             </span>
                             <span className="flex flex-col justify-between max-sm:w-full">
-                              <label htmlFor={`amount_${orderIndex}`} className="label label-text">
-                                Amount
-                              </label>
-                              <input
-                                name={`amount_${orderIndex}`}
-                                id={`amount_${orderIndex}`}
-                                placeholder="Amount"
-                                type="number"
-                                className="input input-sm input-bordered input-primary max-w-32"
-                                value={order.amount || ''}
-                                onChange={(e) => {
-                                  const amount = parseFloat(e.currentTarget.value) || 0;
-                                  const updatedOrder = bill.order.map((o, i) =>
-                                    i === orderIndex ? { ...o, amount: amount } : o,
-                                  );
-                                  const newTotalAmount = updatedOrder.reduce(
-                                    (total, item) => total + (item.amount || 0),
-                                    0,
-                                  );
+                              <label
+                                htmlFor={`amount_${orderIndex}`}
+                                className="input input-sm label-text input-bordered input-primary tooltip tooltip-top tooltip-info flex items-center gap-2"
+                                data-tip="Amount"
+                              >
+                                <CurrencyRupeeIcon className="h-5 w-5 text-info" />
+                                Amount:
+                                <input
+                                  name={`amount_${orderIndex}`}
+                                  id={`amount_${orderIndex}`}
+                                  placeholder="Amount"
+                                  type="number"
+                                  className="max-w-32"
+                                  value={order.amount || ''}
+                                  onChange={(e) => {
+                                    const amount = parseFloat(e.currentTarget.value) || 0;
+                                    const updatedOrder = bill.order.map((o, i) =>
+                                      i === orderIndex ? { ...o, amount: amount } : o,
+                                    );
+                                    const newTotalAmount = updatedOrder.reduce(
+                                      (total, item) => total + (item.amount || 0),
+                                      0,
+                                    );
 
-                                  setBill(
-                                    (prevBill) =>
-                                      ({
-                                        ...prevBill,
-                                        order: updatedOrder,
-                                        totalAmount: newTotalAmount,
-                                      }) as IBill,
-                                  );
-                                }}
-                              />
+                                    setBill(
+                                      (prevBill) =>
+                                        ({
+                                          ...prevBill,
+                                          order: updatedOrder,
+                                          totalAmount: newTotalAmount,
+                                        }) as IBill,
+                                    );
+                                  }}
+                                />
+                              </label>
                             </span>
                           </div>
                         </div>
@@ -909,7 +982,7 @@ export default function BillPage() {
               <div className="flex h-full flex-col justify-between gap-1 overflow-hidden rounded-box border-2 border-base-100 bg-base-200 max-sm:w-[90%]">
                 <div className="grow overflow-auto rounded-box border-4 border-base-300 bg-base-100">
                   <div className="m-0 flex h-full max-h-96 w-full flex-col p-0">
-                    <table className="table table-zebra table-pin-rows table-pin-cols">
+                    <table className="z-5 table table-zebra table-pin-rows table-pin-cols">
                       <caption className="w-full caption-top text-center">
                         <h2 className="underline underline-offset-4">Items Track</h2>
                       </caption>

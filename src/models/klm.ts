@@ -92,6 +92,7 @@ interface IBill extends Document {
     work?: boolean;
     barcode?: boolean;
     measurement?: string;
+    orderNotes?: string;
     amount?: number;
     color?: IColor;
     status?: 'Pending' | 'In Progress' | 'Completed' | 'Cancelled';
@@ -219,6 +220,57 @@ const categorySchema: Schema<ICategory> = new Schema<ICategory>(
 );
 
 // Schema for Bill
+/**
+ * Schema definition for the Bill model.
+ *
+ * @typedef {Object} IBill
+ * @property {number} billNumber - Unique identifier for the bill. Required.
+ * @property {Date} date - Date when the bill was created. Defaults to current date.
+ * @property {Date} dueDate - Due date for the bill. Defaults to current date.
+ * @property {boolean} urgent - Indicates if the bill is urgent. Defaults to false.
+ * @property {boolean} trail - Indicates if the bill is a trail. Defaults to false.
+ * @property {number} mobile - Mobile number associated with the bill.
+ * @property {string} name - Name associated with the bill.
+ * @property {string} email - Email associated with the bill.
+ * @property {Array<Object>} order - List of order items.
+ * @property {Object} order.category - Category details of the order item.
+ * @property {ObjectId} order.category.catId - Reference to the Category model.
+ * @property {string} order.category.categoryName - Name of the category. Defaults to empty string.
+ * @property {Array<Object>} order.dimension - List of dimensions for the order item.
+ * @property {string} order.dimension.dimensionTypeName - Type name of the dimension. Defaults to empty string.
+ * @property {string} order.dimension.dimensionName - Name of the dimension. Defaults to empty string.
+ * @property {string} order.dimension.note - Note for the dimension. Defaults to empty string.
+ * @property {Array<Object>} order.styleProcess - List of style processes for the order item.
+ * @property {string} order.styleProcess.styleProcessName - Name of the style process. Defaults to empty string.
+ * @property {string} order.styleProcess.styleName - Name of the style. Defaults to empty string.
+ * @property {boolean} order.work - Indicates if work is required for the order item.
+ * @property {boolean} order.barcode - Indicates if barcode is required for the order item.
+ * @property {string} order.measurement - Measurement details for the order item.
+ * @property {string} order.orderNotes - Notes for the order item.
+ * @property {number} order.amount - Amount for the order item.
+ * @property {Object} order.color - Color details for the order item.
+ * @property {string} order.color.type - Type of color. Can be 'Custom' or 'Selected'. Defaults to 'Selected'.
+ * @property {string} order.color.name - Name of the color. Required.
+ * @property {string} order.color.hex - Hex code of the color. Required.
+ * @property {string} order.status - Status of the order item. Can be 'Pending', 'In Progress', 'Completed', or 'Cancelled'. Defaults to 'Pending'.
+ * @property {number} totalAmount - Total amount for the bill.
+ * @property {number} discount - Discount applied to the bill. Defaults to 0.
+ * @property {Array<Object>} tax - List of taxes applied to the bill.
+ * @property {ObjectId} tax._id - Reference to the Tax model.
+ * @property {string} tax.taxName - Name of the tax.
+ * @property {string} tax.taxType - Type of the tax.
+ * @property {number} tax.taxPercentage - Percentage of the tax.
+ * @property {number} grandTotal - Grand total amount for the bill. Defaults to 0.
+ * @property {number} paidAmount - Amount paid for the bill. Defaults to 0.
+ * @property {number} dueAmount - Amount due for the bill. Calculated as totalAmount - paidAmount.
+ * @property {string} paymentStatus - Payment status of the bill. Can be 'Paid', 'Unpaid', or 'Partially Paid'. Defaults to 'Unpaid'.
+ * @property {Object} billBy - Details of the user who created the bill.
+ * @property {ObjectId} billBy._id - Reference to the User model.
+ * @property {string} billBy.name - Name of the user who created the bill.
+ *
+ * @typedef {Object} Schema
+ * @property {Object} timestamps - Timestamps for the schema.
+ */
 const billSchema: Schema<IBill> = new Schema<IBill>(
   {
     billNumber: {
@@ -269,7 +321,8 @@ const billSchema: Schema<IBill> = new Schema<IBill>(
         work: Boolean,
         barcode: Boolean,
         measurement: String,
-        amount: Number,
+        orderNotes: String,
+        amount: { type: Number, required: [true, 'Amount is required.'] },
         color: {
           type: {
             type: String,
