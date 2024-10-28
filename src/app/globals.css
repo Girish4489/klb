@@ -136,3 +136,98 @@ body {
   background-color: var(--fallback-s, oklch(var(--s) / var(--tw-bg-opacity)));
   cursor: pointer;
 }
+
+/* HTML: <div class="grid-lines"></div> */
+.grid-lines-dashed {
+  --s: 80px; /* control the size of the grid */
+  --n: 4; /* control the granularity */
+  --t: 2px; /* the thickness */
+  --g: 10px; /* the gap between dashes */
+
+  --c: #556270 25%, #0000 0;
+  background:
+    conic-gradient(at var(--g) var(--t), var(--c)) calc((var(--s) / var(--n) - var(--g) + var(--t)) / 2) 0 /
+      calc(var(--s) / var(--n)) var(--s),
+    conic-gradient(from 180deg at var(--t) var(--g), var(--c)) 0 calc((var(--s) / var(--n) - var(--g) + var(--t)) / 2) /
+      var(--s) calc(var(--s) / var(--n));
+  /* you probably don't need to set any size in your case */
+  width: calc(round(down, 100%, var(--s)) + var(--t));
+  height: calc(4 * var(--s) + var(--t));
+}
+@supports not (opacity: round(1, 1)) {
+  .grid-lines {
+    width: 100%;
+  }
+}
+
+/* HTML: <div class="grid-lines"></div> */
+.grid-lines-solid {
+  --s: 80px; /* control the size of the grid */
+  --t: 2px; /* the thickness */
+
+  background: conic-gradient(from 90deg at var(--t) var(--t), #0000 25%, #556270 0) 0 0 / var(--s) var(--s);
+  /* you probably don't need to set any size in your case */
+  width: calc(round(down, 100%, var(--s)) + var(--t));
+  height: calc(4 * var(--s) + var(--t));
+}
+@supports not (opacity: round(1, 1)) {
+  .grid-lines {
+    width: 100%;
+  }
+}
+
+/* HTML: <div class="rounded-dashes"></div> */
+.rounded-dashes-horizontal {
+  --s: 2px; /* control the size */
+  --c: #774f38; /* the color */
+
+  height: var(--s);
+  width: 100%;
+  --_g: var(--s) top 50%, var(--c) calc(100% - 1px), #0000;
+  background: 0 / calc(4 * var(--s)) space no-repeat;
+  background-image: radial-gradient(circle closest-side at left var(--_g)),
+    radial-gradient(circle closest-side at right var(--_g)), linear-gradient(90deg, #0000 25%, var(--c) 0 75%, #0000 0);
+}
+
+/* HTML: <div class="rounded-dashes"></div> */
+.rounded-dashes-vertical {
+  --s: 15px; /* control the size */
+  --c: #774f38; /* the color */
+
+  width: var(--s);
+  min-height: 300px;
+  --_g: var(--s) left 50%, var(--c) calc(100% - 1px), #0000;
+  background: 0/100% calc(4 * var(--s)) no-repeat space;
+  background-image: radial-gradient(circle closest-side at top var(--_g)),
+    radial-gradient(circle closest-side at bottom var(--_g)), linear-gradient(#0000 25%, var(--c) 0 75%, #0000 0);
+}
+
+/* HTML: <div class="zig-zag-line"></div> */
+.zig-zag-line-vertical {
+  --a: 90deg; /* control the angle */
+  --s: 100px; /* size of the zig-zag */
+  --b: 35px; /* control the thickness */
+
+  background: #bf4d28;
+  width: calc(var(--b) + var(--s) / (2 * tan(var(--a) / 2)));
+  min-height: 250px;
+  --_g: 100% var(--s) repeat-y
+    conic-gradient(from calc(90deg - var(--a) / 2) at left, #0000, #000 1deg calc(var(--a) - 1deg), #0000 var(--a));
+  mask:
+    var(--b) 50% / var(--_g) exclude,
+    0 50% / var(--_g);
+}
+
+.zig-zag-line-horizontal {
+  --a: 118deg; /* control the angle */
+  --s: 12px; /* size of the zig-zag */
+  --b: 2px; /* control the thickness */
+
+  height: calc(var(--b) + var(--s) / (2 * tan(var(--a) / 2)));
+  width: 100%;
+  --_g: var(--s) repeat-x
+    conic-gradient(from calc(var(--a) / -2) at bottom, #0000, #000 1deg calc(var(--a) - 1deg), #0000 var(--a));
+  mask:
+    50% calc(-1 * var(--b)) / var(--_g) exclude,
+    50% / var(--_g);
+}

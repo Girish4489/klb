@@ -1,8 +1,10 @@
 import { IReceipt } from '@/models/klm';
 import React from 'react';
 
+import { EnvelopeIcon, FaceSmileIcon, PhoneIcon, WalletIcon } from '@heroicons/react/24/solid';
 import Image from 'next/image';
-import { formatDSNT } from '../util/format/dateUtils';
+import { QrGeneratorPage } from '../components/Barcode/BarcodePage/BarcodePage';
+import { formatDS } from '../util/format/dateUtils';
 
 interface ReceiptPreviewProps {
   receipt: IReceipt | undefined;
@@ -27,75 +29,98 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ receipt, cal, isDataLoa
     <span>
       {receipt && (
         <>
-          <div className="receipt m-1">
+          <div className="m-1 mx-auto my-[50px] w-[300px] border border-solid border-gray-300 p-2 text-center">
             <style>{style}</style>
             <h2 className="m-px">Receipt</h2>
             <div className="flex flex-col items-center gap-2">
-              <div className="card card-side shadow-sm">
+              <div className="card card-side border border-dashed border-black/50 shadow-md">
                 <figure>
                   <Image src={klm.src} width={180} height={180} alt="Profile" />
                 </figure>
-                <div className="card-body bg-transparent p-2 text-slate-500">
-                  <h2 id="header">Kalamandir Ladies boutique</h2>
-                  <address>1st Floor, Muddurandappa Complex Opp/BH Road, Gowribidanur - 561208</address>
+                <div className="card-body grow bg-transparent px-1 py-2 text-slate-500">
+                  <span className="flex grow flex-col gap-2">
+                    <h2 id="header" className="grow text-lg">
+                      Kalamandir Ladies boutique
+                    </h2>
+                    <address>1st Floor, Muddurandappa Complex Opp/BH Road, Gowribidanur - 561208</address>
+                  </span>
                 </div>
               </div>
-
-              <hr className="w-[90%] border" style={{ width: '90%', borderWidth: '1px' }} />
-              <div className="item-center flex w-full flex-col justify-between">
-                <span className="field">
-                  <h2>Phone:</h2>
-                  <h3>9845371322</h3>
+              <hr className="my-1 w-[90%] border border-dashed border-black/60" />
+              <div className="item-center flex w-full flex-col justify-between px-2 text-black">
+                <span className="flex justify-between text-black">
+                  <span className="flex items-center gap-1">
+                    <PhoneIcon className="h-auto w-2 text-gray-800" />
+                    <h2 className="text-gray-800">Phone:</h2>
+                  </span>
+                  <h3 className="text-gray-800">9845371322</h3>
                 </span>
-                <span className="field">
-                  <h2>Email:</h2>
-                  <h3>kalamandir2106@gmail.com</h3>
+                <span className="flex justify-between">
+                  <span className="flex items-center gap-1">
+                    <PhoneIcon className="h-auto w-2 text-gray-800" />
+                    <h2 className="text-gray-800">Phone:</h2>
+                  </span>
+                  <h3 className="text-gray-800">93532 71763</h3>
                 </span>
-                <span className="field">
-                  <h2>GST No:</h2>
-                  <h3></h3>
+                <span className="flex justify-between">
+                  <span className="flex items-center gap-1">
+                    <EnvelopeIcon className="h-auto w-2 text-gray-800" />
+                    <h2 className="text-gray-800">Email:</h2>
+                  </span>
+                  <h3 className="text-gray-800">kalamandir2106@gmail.com</h3>
+                </span>
+                <span className="flex justify-between">
+                  <span className="flex items-center gap-1">
+                    <WalletIcon className="h-auto w-2 text-gray-800" />
+                    <h2 className="text-gray-800">GST No:</h2>
+                  </span>
+                  <h3 className="text-gray-800"></h3>
                 </span>
               </div>
-              <hr className="w-[90%] border" style={{ width: '90%', borderWidth: '1px' }} />
+              <hr className="my-1 w-[90%] border border-dashed border-black/60" />
             </div>
-            <table className="w-full border-collapse text-slate-600">
-              <tbody>
-                <tr>
-                  <th>Bill No:</th>
-                  <td>{receipt?.bill?.billNumber ?? ''}</td>
+            <table className="w-full rounded-box text-slate-600">
+              <tbody className="rounded-box p-1">
+                <tr className="bg-gray-100 text-left">
+                  <th className="p-1 text-left">Bill No:</th>
+                  <td className="p-1">{receipt?.bill?.billNumber ?? ''}</td>
                 </tr>
-                <tr>
-                  <th>Receipt No:</th>
-                  <td>{receipt?.receiptNumber ?? ''}</td>
+                <tr className="text-left">
+                  <th className="p-1 text-left">Receipt No:</th>
+                  <td className="p-1">{receipt?.receiptNumber ?? ''}</td>
                 </tr>
-                <tr>
-                  <th>Receipt Date:</th>
-                  <td>{receipt?.paymentDate ? formatDSNT(receipt?.paymentDate) : ''}</td>
+                <tr className="bg-gray-100 text-left">
+                  <th className="p-1 text-left">Receipt Date:</th>
+                  <td className="p-1">{receipt?.paymentDate ? formatDS(receipt?.paymentDate) : ''}</td>
                 </tr>
-                <tr>
-                  <th>Customer Name:</th>
-                  <td>{receipt?.bill?.name ?? ''}</td>
+                <tr className="text-left">
+                  <th className="p-1 text-left">Customer Name:</th>
+                  <td className="p-1">{receipt?.bill?.name ?? ''}</td>
                 </tr>
-                <tr>
-                  <th>Mobile:</th>
-                  <td>{receipt?.bill?.mobile ?? ''}</td>
+                <tr className="bg-gray-100 text-left">
+                  <th className="p-1 text-left">Mobile:</th>
+                  <td className="p-1">{receipt?.bill?.mobile ?? ''}</td>
                 </tr>
-                <tr>
-                  <th>Pay Method:</th>
-                  <td>{receipt?.paymentMethod ?? ''}</td>
+                <tr className="text-left">
+                  <th className="p-1 text-left">Pay Method:</th>
+                  <td className="p-1">{receipt?.paymentMethod ?? ''}</td>
+                </tr>
+                <tr className="bg-gray-100 text-left">
+                  <th className="p-1 text-left">Receipt By:</th>
+                  <td className="p-1">{receipt?.receiptBy?.name ?? ''}</td>
                 </tr>
               </tbody>
             </table>
-            <hr />
+            <hr className="mx-auto my-1 w-[90%] border border-dashed border-black/60" />
             <table className="w-full border-collapse border-black text-slate-600">
               <thead>
-                <tr>
+                <tr className="rounded-box bg-gray-200 p-1 text-gray-700">
                   <th>SI No</th>
                   <th>Bill No</th>
                   <th>Paid</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="rounded-box p-1">
                 <tr>
                   <td>1</td>
                   <td>{receipt?.bill?.billNumber ?? ''}</td>
@@ -103,37 +128,69 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ receipt, cal, isDataLoa
                 </tr>
               </tbody>
             </table>
-            <hr />
-            <table className="w-full border-collapse text-slate-600">
-              <tbody>
-                <tr className="flex w-full flex-row items-center justify-between">
-                  <th>Total Amount:</th>
-                  <td>{cal.totalAmount}</td>
+            <hr className="mx-auto my-1 w-[90%] border border-dashed border-black/60" />
+            <table className="w-full text-slate-600">
+              <tbody className="flex flex-col p-1">
+                {/* Sub Total: Amount before discount */}
+                <tr className="flex w-full flex-row items-center justify-between bg-gray-100">
+                  <th className="p-1">Sub Total:</th>
+                  <td className="p-1">{cal.totalAmount}</td>
                 </tr>
-                <tr className="flex w-full flex-row items-center justify-between">
-                  <th>Discount:</th>
-                  <td>{cal.discount}</td>
+                {/* Discount: Shown if applied */}
+                {cal.discount > 0 && (
+                  <tr className="flex w-full flex-row items-center justify-between">
+                    <th className="p-1">Discount:</th>
+                    <td className="p-1">-{cal.discount}</td>
+                  </tr>
+                )}
+                {/* Net Total: Amount after discount */}
+                <tr className="flex w-full flex-row items-center justify-between bg-gray-100 font-semibold">
+                  <th className="p-1">Net Total:</th>
+                  <td className="p-1">{cal.grandTotal}</td>
                 </tr>
+                {/* Advance Payment: Paid previously in advance */}
+                {cal.paidAmount - receipt.amount > 0 && (
+                  <tr className="flex w-full flex-row items-center justify-between">
+                    <th className="p-1">Advance Payment:</th>
+                    <td className="p-1">{cal.paidAmount - receipt.amount}</td>
+                  </tr>
+                )}
+                {/* Current Payment: Payment for this receipt */}
                 <tr className="flex w-full flex-row items-center justify-between">
-                  <th>Grand Net:</th>
-                  <td>{cal.grandTotal}</td>
+                  <th className="p-1">Current Payment:</th>
+                  <td className="p-1">{receipt.amount}</td>
                 </tr>
+                {/* Total Paid: Sum of all payments */}
                 <tr className="flex w-full flex-row items-center justify-between">
-                  <th>Amount Paid:</th>
-                  <td>{cal.paidAmount}</td>
+                  <th className="p-1">Total Paid:</th>
+                  <td className="p-1">{cal.paidAmount}</td>
                 </tr>
-                <tr className="flex w-full flex-row items-center justify-between">
-                  <th>Balance:</th>
-                  <td>{cal.dueAmount}</td>
+                {/* Balance Due: Remaining amount */}
+                <tr className="flex w-full flex-row items-center justify-between bg-gray-100 font-semibold">
+                  <th className="p-1">Balance Due:</th>
+                  <td className="p-1">{cal.dueAmount}</td>
                 </tr>
               </tbody>
             </table>
-            <hr />
-            <span className="flex flex-col gap-2 text-slate-800">
-              <span>Thank You</span>
-              {cal.discount > 0 ? <span>{`Hurray You saved ${cal.discount}₹ !`}</span> : ''}
-              <span>Visit Again</span>
+            <span className="mb-1 flex items-center justify-around rounded-box border border-dashed border-black/50 px-2 py-1 shadow-md">
+              <div className="flex">
+                <QrGeneratorPage
+                  content={`billNumber=${receipt.bill?.billNumber ?? ''}&receiptNumber=${receipt.receiptNumber ?? ''}`}
+                  size={60}
+                />
+              </div>
+              <span className="flex grow flex-col items-center justify-around gap-2 text-slate-800">
+                <span>
+                  Thank You <span className="text-black">{`\u{1F64F}`}</span>
+                </span>
+                {cal.discount > 0 ? <span>{`Hurray! You saved ${cal.discount}₹`}</span> : ''}
+                <span className="flex items-center gap-2">
+                  Visit Again
+                  <FaceSmileIcon className="h-5 w-auto text-gray-600" />
+                </span>
+              </span>
             </span>
+            <div className="zig-zag-line-horizontal my-0.5 h-6 w-full bg-gray-600"></div>
           </div>
         </>
       )}

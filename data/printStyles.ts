@@ -239,22 +239,6 @@ export const receiptStyles = `
   @page {
     ${thermalPrintOptions}
   }
-  .receipt {
-    width: 300px;
-    margin: 50px auto;
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: center;
-  }
-  .receipt th, td {
-    border: 1px solid #ddd;
-  }
-  .receipt tr:nth-child(even) {
-    background-color: #f2f2f2;
-  }
-  .receipt tr {
-    text-align: left;
-  }
 `;
 
 export const getStyle = (type: string) => {
