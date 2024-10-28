@@ -1,8 +1,10 @@
 'use client';
+import { BarcodeScannerPage } from '@/app/components/Barcode/BarcodePage/BarcodePage';
 import SearchForm from '@/app/components/SearchBillForm/SearchBillForm';
 import handleError from '@/app/util/error/handleError';
 import { formatD } from '@/app/util/format/dateUtils';
 import { ApiGet, ApiPost } from '@/app/util/makeApiRequest/makeApiRequest';
+import { getParamsFromQueryString, updateSearchParams } from '@/app/util/url/urlUtils';
 import { IBill, IReceipt } from '@/models/klm';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -57,6 +59,7 @@ export default function ReceiptPage() {
   const [receipt, setReceipt] = useState<IReceipt>();
   const [recentReceipt, setRecentReceipt] = useState<IReceipt[] | undefined>(undefined);
   const [searchReceipt, setSearchReceipt] = useState<IReceipt[] | undefined>(undefined);
+  const [headerBarcode, setHeaderBarcode] = React.useState<string | null>('');
   const router = useRouter();
   const [amtTrack, setAmtTrack] = useState<AmtTrack>({
     total: 0,
@@ -202,7 +205,13 @@ export default function ReceiptPage() {
         const res = await ApiGet.Receipt.ReceiptSearch(receiptNumber, 'receipt');
         if (res.success && res.receipt.length > 0) {
           const fetchedReceipt = res.receipt[0];
-          setReceipt(fetchedReceipt);
+          const lastReceipt = await ApiGet.Receipt.LastReceipt();
+          setReceipt({
+            ...fetchedReceipt,
+            amount: '',
+            paymentMethod: '',
+            receiptNumber: (lastReceipt?.lastReceipt?.receiptNumber ?? 0) + 1,
+          });
           const billNumber = fetchedReceipt?.bill?.billNumber;
           if (billNumber) {
             const billRes = await ApiGet.Bill.BillSearch(billNumber, 'bill');
@@ -226,12 +235,119 @@ export default function ReceiptPage() {
       }
     };
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const receiptNumber = urlParams.get('receiptNumber');
+    const urlParams = getParamsFromQueryString(window.location.search);
+    const receiptNumber = urlParams.receiptNumber;
     if (receiptNumber) {
       fetchReceipt(parseInt(receiptNumber));
     }
-  }, []);
+  }, [router]);
+
+  useEffect(() => {
+    if (headerBarcode) {
+      const fetchBillAndReceipt = async () => {
+        try {
+          const { billNumber, receiptNumber } = getParamsFromQueryString(headerBarcode);
+          if (billNumber || receiptNumber) {
+            updateSearchParams({
+              billNumber: billNumber || null,
+              receiptNumber: receiptNumber || null,
+            });
+          }
+
+          const fetchBill = async (billNumber: string) => {
+            const billRes = await ApiGet.Bill.BillSearch(parseInt(billNumber), 'bill');
+            if (billRes.success && billRes.bill.length > 0) {
+              const bill = billRes.bill[0];
+              if (bill.dueAmount <= 0) {
+                toast.error('No due amount for this bill');
+                return null;
+              }
+              setAmtTrack({
+                total: bill.totalAmount,
+                grand: bill.grandTotal,
+                paid: bill.paidAmount,
+                due: bill.dueAmount,
+              });
+              return bill;
+            } else {
+              throw new Error('Bill not found');
+            }
+          };
+
+          const fetchReceipt = async (receiptNumber: string) => {
+            const receiptRes = await ApiGet.Receipt.ReceiptSearch(parseInt(receiptNumber), 'receipt');
+            if (receiptRes.success && receiptRes.receipt.length > 0) {
+              return receiptRes.receipt[0];
+            } else {
+              throw new Error('Receipt not found');
+            }
+          };
+
+          const lastReceipt = await ApiGet.Receipt.LastReceipt();
+          const newReceiptNumber = (lastReceipt?.lastReceipt?.receiptNumber ?? 0) + 1;
+
+          if (billNumber && receiptNumber) {
+            const [bill, fetchedReceipt] = await Promise.all([fetchBill(billNumber), fetchReceipt(receiptNumber)]);
+            if (bill && fetchedReceipt) {
+              setReceipt({
+                ...fetchedReceipt,
+                receiptNumber: newReceiptNumber,
+                amount: '',
+                bill: {
+                  ...fetchedReceipt.bill,
+                  _id: bill._id,
+                  billNumber: bill.billNumber,
+                  name: bill.name,
+                  mobile: bill.mobile,
+                },
+                paymentDate: new Date(),
+                paymentMethod: '',
+                updatedAt: new Date(),
+              });
+            }
+          } else if (billNumber) {
+            const bill = await fetchBill(billNumber);
+            if (bill) {
+              setReceipt({
+                ...receipt,
+                receiptNumber: newReceiptNumber,
+                bill: {
+                  ...receipt?.bill,
+                  _id: bill._id,
+                  billNumber: bill.billNumber,
+                  name: bill.name,
+                  mobile: bill.mobile,
+                },
+                paymentDate: new Date(),
+                paymentMethod: '',
+                updatedAt: new Date(),
+              } as IReceipt);
+            }
+          } else if (receiptNumber) {
+            const fetchedReceipt = await fetchReceipt(receiptNumber);
+            if (fetchedReceipt) {
+              const billNumber = fetchedReceipt?.bill?.billNumber;
+              if (billNumber) {
+                await fetchBill(billNumber);
+              }
+              setReceipt({
+                ...fetchedReceipt,
+                receiptNumber: newReceiptNumber,
+                amount: '',
+                paymentDate: new Date(),
+                paymentMethod: '',
+                updatedAt: new Date(),
+              });
+            }
+          }
+        } catch (error) {
+          handleError.toastAndLog(error);
+        }
+      };
+      fetchBillAndReceipt();
+      setHeaderBarcode(null);
+    }
+  }, [headerBarcode]);
 
   const recentReceiptTable = (receipts: IReceipt[], caption: string) => (
     <table className="table table-zebra table-pin-rows">
@@ -283,9 +399,12 @@ export default function ReceiptPage() {
   return (
     <div className="flex grow flex-col gap-1">
       <span className="flex min-w-fit flex-row flex-wrap items-center justify-between gap-2 rounded-box bg-accent/10 px-3 py-1.5 backdrop-blur-xl max-sm:flex-col">
-        <button className="btn btn-primary btn-sm" disabled onClick={createNewReceipt}>
-          New Receipt
-        </button>
+        <span className="select-disabled rounded-box">
+          <button className="btn btn-primary btn-sm" disabled onClick={createNewReceipt}>
+            New Receipt
+          </button>
+        </span>
+        <BarcodeScannerPage onScanComplete={setHeaderBarcode} />
         <SearchForm onSearch={billSearch} searchResults={searchBill} onRowClick={searchRowClicked} />
       </span>
       <div className="flex grow flex-col gap-1 rounded p-1">
@@ -373,7 +492,7 @@ export default function ReceiptPage() {
                 }}
                 className="select select-bordered select-primary select-sm grow"
               >
-                <option value="" disabled selected>
+                <option value="" disabled>
                   Select
                 </option>
                 <option value="Cash">Cash</option>

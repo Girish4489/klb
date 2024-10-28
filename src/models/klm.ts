@@ -393,6 +393,10 @@ const receiptSchema: Schema<IReceipt> = new Schema<IReceipt>(
       name: String,
       mobile: Number,
     },
+    receiptBy: {
+      _id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      name: String,
+    },
     amount: { type: Number, required: [true, 'Amount is required.'] },
     paymentDate: Date,
     paymentMethod: { type: String, enum: ['Cash', 'Online', 'UPI', 'Card'], default: 'Cash' },

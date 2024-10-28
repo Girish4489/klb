@@ -63,7 +63,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onScanSuccess, scanStat
           async (result, error) => {
             if (result) {
               onScanSuccess(result.getText());
-              setTimeout(() => controls?.stop(), 1000);
+              setTimeout(() => controls?.stop(), 500);
             }
             if (error) {
               // console.error(error);
@@ -93,7 +93,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onScanSuccess, scanStat
   }, [onScanSuccess, scanStatus, selectedDeviceId, selectedReaderType]);
 
   return (
-    <div className="flex w-fit flex-col gap-2 rounded-box border border-base-content/50 bg-base-200 px-2 py-4">
+    <div className="flex w-full grow flex-col gap-2 rounded-box border border-base-content/50 bg-base-200 px-2 py-4">
       <select
         id="readerTypeSelect"
         name="readerType"
@@ -122,13 +122,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onScanSuccess, scanStat
           ))}
         </select>
       )}
-      {scanStatus && (
-        <video
-          ref={videoRef}
-          style={{ height: 'auto' }}
-          className="rounded-box sm:max-w-sm md:min-w-72 md:max-w-md lg:min-w-96 lg:max-w-lg xl:min-w-[32rem] xl:max-w-xl"
-        />
-      )}
+      {scanStatus && <video ref={videoRef} style={{ height: 'auto' }} className="z-10 w-full grow rounded-box" />}
     </div>
   );
 };
