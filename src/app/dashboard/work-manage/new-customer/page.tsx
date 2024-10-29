@@ -2,6 +2,7 @@
 import handleError from '@/app/util/error/handleError';
 import { ICustomer } from '@/models/klm';
 import {
+  CloudArrowUpIcon,
   DocumentTextIcon,
   EnvelopeIcon,
   FlagIcon,
@@ -35,7 +36,7 @@ const InputField: React.FC<InputFieldProps> = ({
   autoComplete,
 }) => (
   <div className="flex flex-col max-sm:w-full max-sm:flex-row max-sm:justify-between">
-    <label htmlFor={name} className="input input-primary flex max-w-xs items-center gap-2">
+    <label htmlFor={name} className="input input-sm input-primary flex max-w-xs items-center gap-2">
       <Icon className="h-6 w-6 text-primary" />
       <input
         type={type}
@@ -233,7 +234,10 @@ export default function NewCustomerPage() {
             placeholder="Notes"
             autoComplete="off"
           />
-          <button className="btn btn-primary mt-2 max-sm:w-full">Submit</button>
+          <button className="btn btn-primary btn-sm mt-2 max-sm:w-full">
+            <CloudArrowUpIcon className="h-5 w-5" />
+            Save
+          </button>
         </div>
       </form>
     </div>

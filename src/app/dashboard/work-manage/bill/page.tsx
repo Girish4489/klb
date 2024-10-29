@@ -12,8 +12,10 @@ import { IBill, ICategory, IColor, IDimensionTypes, IDimensions, IStyle, IStyleP
 import { MinusCircleIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
 import {
   BriefcaseIcon,
+  CloudArrowUpIcon,
   CurrencyRupeeIcon,
   InformationCircleIcon,
+  PrinterIcon,
   QrCodeIcon,
   TagIcon,
 } from '@heroicons/react/24/solid';
@@ -465,6 +467,7 @@ export default function BillPage() {
       <div className="flex h-full w-full flex-col shadow max-sm:table-cell">
         <span className="flex min-w-fit flex-row flex-wrap items-center justify-between gap-2 rounded-box bg-accent/10 px-3 py-1.5 backdrop-blur-xl max-sm:flex-col">
           <button className="btn btn-primary btn-sm" onClick={createNewBill}>
+            <PlusCircleIcon className="h-5 w-5" />
             New
           </button>
           <BarcodeScannerPage
@@ -879,10 +882,12 @@ export default function BillPage() {
                   <span className="flex gap-2 pl-2">
                     {newBill ? (
                       <button className="btn btn-primary btn-sm" onClick={handleSaveBill}>
+                        <CloudArrowUpIcon className="h-5 w-5" />
                         Save
                       </button>
                     ) : (
                       <button className="btn btn-primary btn-sm" onClick={handleUpdateBill}>
+                        <CloudArrowUpIcon className="h-5 w-5" />
                         Update
                       </button>
                     )}
@@ -909,6 +914,7 @@ export default function BillPage() {
                         href={`/print-preview?billNumber=${bill.billNumber}&type=${printType}`}
                         prefetch={false}
                       >
+                        <PrinterIcon className="h-5 w-5" />
                         Print
                       </Link>
                     </span>
@@ -1074,6 +1080,7 @@ export default function BillPage() {
                       id="taxOptions"
                       onClick={() => (document.getElementById('tax_modal') as HTMLDialogElement)?.showModal()}
                     >
+                      <PlusCircleIcon className="h-5 w-5 text-primary-content" />
                       Add
                     </button>
                   </div>

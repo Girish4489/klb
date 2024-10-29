@@ -3,6 +3,8 @@ import { userConfirmation } from '@/app/util/confirmation/confirmationUtil';
 import handleError from '@/app/util/error/handleError';
 import { ApiDelete, ApiGet, ApiPost, ApiPut } from '@/app/util/makeApiRequest/makeApiRequest';
 import { ITax } from '@/models/klm';
+import { PlusCircleIcon } from '@heroicons/react/24/outline';
+import { CloudArrowUpIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/solid';
 import React, { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -225,7 +227,10 @@ export default function TaxPage() {
             onChange={handleInputChange}
           />
           <div className="flex grow flex-wrap items-center gap-1 pr-3 max-sm:justify-end">
-            <button className="btn btn-primary btn-sm grow">Add</button>
+            <button className="btn btn-primary btn-sm grow">
+              <PlusCircleIcon className="h-5 w-5" />
+              Add
+            </button>
           </div>
         </form>
       </div>
@@ -257,6 +262,7 @@ export default function TaxPage() {
             />
             <div className="flex w-full flex-wrap items-center justify-center gap-1">
               <button type="submit" className="btn btn-primary btn-sm grow">
+                <CloudArrowUpIcon className="h-5 w-5" />
                 Update
               </button>
             </div>
@@ -304,9 +310,11 @@ export default function TaxPage() {
                           className="btn btn-warning btn-sm"
                           onClick={() => openEditDialog(tax, tax._id.toString())}
                         >
+                          <PencilSquareIcon className="h-4 w-4" />
                           Edit
                         </button>
                         <button className="btn btn-error btn-sm" onClick={handleDelete(tax._id.toString())}>
+                          <TrashIcon className="h-4 w-4" />
                           Delete
                         </button>
                       </td>

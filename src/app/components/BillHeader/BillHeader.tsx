@@ -119,7 +119,7 @@ const BillHeader: React.FC<BillHeaderProps> = ({ bill, setBill }) => {
               name="urgent"
               id="urgent"
               type="checkbox"
-              className="checkbox-primary checkbox"
+              className="checkbox-primary checkbox checkbox-sm"
               checked={bill?.urgent || false}
               onChange={(e) => setBill({ ...bill, urgent: e.target.checked } as IBill)}
             />
@@ -132,7 +132,7 @@ const BillHeader: React.FC<BillHeaderProps> = ({ bill, setBill }) => {
               name="trail"
               id="trail"
               type="checkbox"
-              className="checkbox-primary checkbox"
+              className="checkbox-primary checkbox checkbox-sm"
               checked={bill?.trail || false}
               onChange={(e) => setBill({ ...bill, trail: e.target.checked } as IBill)}
             />

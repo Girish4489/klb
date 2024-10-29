@@ -1,5 +1,6 @@
 import { formatD } from '@/app/util/format/dateUtils';
 import { IBill } from '@/models/klm';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import React from 'react';
 
 interface SearchFormProps {
@@ -63,12 +64,16 @@ const SearchBillForm: React.FC<SearchFormProps> = ({ onSearch, searchResults, on
 
   return (
     <form onSubmit={onSearch} className="join flex flex-wrap items-center justify-between max-sm:flex-col">
-      <label htmlFor="billSearch" className="join-item label-text">
+      <label
+        htmlFor="billSearch"
+        className="input input-sm join-item label-text input-bordered input-primary flex items-center gap-2 bg-accent/5"
+      >
+        <MagnifyingGlassIcon className="join-item h-5 w-5 text-info" />
         <input
           name="billSearch"
           id="billSearch"
           onFocus={(e) => e.target.select()}
-          className="input input-sm join-item input-bordered input-primary w-40 bg-accent/5"
+          className="join-item w-40"
           placeholder="Search"
           required
         />
@@ -83,7 +88,7 @@ const SearchBillForm: React.FC<SearchFormProps> = ({ onSearch, searchResults, on
       </select>
       <span className="dropdown dropdown-end dropdown-bottom w-fit">
         <button tabIndex={0} role="button" className="btn btn-primary btn-sm rounded-l-none">
-          Search
+          <MagnifyingGlassIcon className="join-item h-5 w-5" />
         </button>
         {searchResults && (
           <div tabIndex={0} className="card dropdown-content card-compact z-[50] w-auto bg-base-300 shadow">

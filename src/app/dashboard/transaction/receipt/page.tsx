@@ -6,6 +6,8 @@ import handleError from '@/app/util/error/handleError';
 import { ApiGet, ApiPost } from '@/app/util/makeApiRequest/makeApiRequest';
 import { getParamsFromQueryString, updateSearchParams } from '@/app/util/url/urlUtils';
 import { IBill, IReceipt } from '@/models/klm';
+import { PlusCircleIcon } from '@heroicons/react/24/outline';
+import { CloudArrowUpIcon, MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -401,6 +403,7 @@ export default function ReceiptPage() {
       <span className="flex min-w-fit flex-row flex-wrap items-center justify-between gap-2 rounded-box bg-accent/10 px-3 py-1.5 backdrop-blur-xl max-sm:flex-col">
         <span className="select-disabled rounded-box">
           <button className="btn btn-primary btn-sm" disabled onClick={createNewReceipt}>
+            <PlusCircleIcon className="h-5 w-5" />
             New Receipt
           </button>
         </span>
@@ -524,6 +527,7 @@ export default function ReceiptPage() {
             </div>
           </div>
           <button className="btn btn-primary btn-sm mx-2" onClick={saveReceipt}>
+            <CloudArrowUpIcon className="h-5 w-5" />
             Save
           </button>
         </div>
@@ -533,12 +537,16 @@ export default function ReceiptPage() {
               onSubmit={handleReceiptSearch}
               className="join flex flex-wrap items-center justify-between max-sm:flex-col"
             >
-              <label htmlFor="receiptSearch" className="join-item label-text">
+              <label
+                htmlFor="receiptSearch"
+                className="input input-sm join-item label-text input-bordered input-primary flex items-center gap-2 bg-accent/5"
+              >
+                <MagnifyingGlassIcon className="join-item h-5 w-5 text-info" />
                 <input
                   name="receiptSearch"
                   id="receiptSearch"
                   onFocus={(e) => e.target.select()}
-                  className="input input-sm join-item input-bordered input-primary w-40 bg-accent/5"
+                  className="join-item w-40 grow"
                   placeholder="Search"
                   required
                 />
@@ -554,7 +562,7 @@ export default function ReceiptPage() {
               </select>
               <span className="dropdown dropdown-end dropdown-bottom w-fit">
                 <button tabIndex={0} role="button" className="btn btn-primary btn-sm rounded-l-none">
-                  Search
+                  <MagnifyingGlassIcon className="join-item h-5 w-5" />
                 </button>
               </span>
             </form>

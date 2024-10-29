@@ -1,6 +1,6 @@
 import { formatD } from '@/app/util/format/dateUtils';
 import { IReceipt } from '@/models/klm';
-import { UserIcon } from '@heroicons/react/24/solid';
+import { PrinterIcon, UserIcon } from '@heroicons/react/24/solid';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 
@@ -58,6 +58,7 @@ const ReceiptTable: React.FC<ReceiptTableProps> = ({ receipts, caption }) => {
                   className="btn btn-secondary btn-xs"
                   onClick={() => router.push(`/print-preview?billNumber=${receipt.receiptNumber}&type=Receipt`)}
                 >
+                  <PrinterIcon className="h-4 w-4" />
                   Print
                 </button>
               </td>

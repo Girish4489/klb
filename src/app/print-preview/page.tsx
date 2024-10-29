@@ -3,6 +3,7 @@ import { getStyle } from '@/../data/printStyles';
 import handleError from '@/app/util/error/handleError';
 import { ApiGet } from '@/app/util/makeApiRequest/makeApiRequest';
 import { IBill, IReceipt } from '@/models/klm';
+import { ArrowLeftCircleIcon, PrinterIcon } from '@heroicons/react/24/solid';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -159,9 +160,11 @@ const PrintPreviewContent: React.FC<PrintPreviewContentProps> = ({
             className="btn btn-primary btn-sm m-2 text-center"
             onClick={() => router.push(type === 'Receipt' ? receiptPathWithParam : billPathWithParam)}
           >
+            <ArrowLeftCircleIcon className="h-6 w-6" />
             Back
           </button>
           <button className="btn btn-primary btn-sm m-2 text-center" onClick={handlePrint}>
+            <PrinterIcon className="h-6 w-6" />
             Print
           </button>
         </span>

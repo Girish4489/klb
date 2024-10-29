@@ -3,6 +3,7 @@
 import { userConfirmation } from '@/app/util/confirmation/confirmationUtil';
 import { formatD } from '@/app/util/format/dateUtils';
 import { ICustomer } from '@/models/klm';
+import { CloudArrowUpIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/solid';
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -195,7 +196,7 @@ export default function CustomerDetails() {
                         type="text"
                         name="customerName"
                         id="customerName"
-                        className="input input-primary max-w-xs"
+                        className="input input-sm input-primary max-w-xs"
                         placeholder="Name"
                         value={editCustomer?.name || ''}
                         onChange={(e) => setEditCustomer({ ...editCustomer, name: e.target.value } as ICustomer)}
@@ -210,7 +211,7 @@ export default function CustomerDetails() {
                         name="email"
                         autoComplete="email"
                         id="email"
-                        className="input input-primary max-w-xs"
+                        className="input input-sm input-primary max-w-xs"
                         placeholder="Email"
                         value={editCustomer?.email || ''}
                         onChange={(e) => setEditCustomer({ ...editCustomer, email: e.target.value } as ICustomer)}
@@ -225,7 +226,7 @@ export default function CustomerDetails() {
                         name="phone"
                         id="phone"
                         autoComplete="mobile"
-                        className="input input-primary max-w-xs"
+                        className="input input-sm input-primary max-w-xs"
                         placeholder="Phone"
                         value={editCustomer?.phone || ''}
                         onChange={(e) =>
@@ -254,7 +255,7 @@ export default function CustomerDetails() {
                         name="country"
                         autoComplete="country"
                         id="country"
-                        className="input input-primary max-w-xs"
+                        className="input input-sm input-primary max-w-xs"
                         placeholder="Country"
                         value={editCustomer?.country || ''}
                         onChange={(e) => setEditCustomer({ ...editCustomer, country: e.target.value } as ICustomer)}
@@ -268,7 +269,7 @@ export default function CustomerDetails() {
                         type="text"
                         name="state"
                         id="state"
-                        className="input input-primary max-w-xs"
+                        className="input input-sm input-primary max-w-xs"
                         placeholder="State"
                         value={editCustomer?.state || ''}
                         onChange={(e) => setEditCustomer({ ...editCustomer, state: e.target.value } as ICustomer)}
@@ -282,7 +283,7 @@ export default function CustomerDetails() {
                         type="text"
                         name="city"
                         id="city"
-                        className="input input-primary max-w-xs"
+                        className="input input-sm input-primary max-w-xs"
                         placeholder="City"
                         value={editCustomer?.city || ''}
                         onChange={(e) => setEditCustomer({ ...editCustomer, city: e.target.value } as ICustomer)}
@@ -296,7 +297,7 @@ export default function CustomerDetails() {
                         type="text"
                         name="pin"
                         id="pin"
-                        className="input input-primary max-w-xs"
+                        className="input input-sm input-primary max-w-xs"
                         placeholder="Pin Code"
                         value={editCustomer?.pin || ''}
                         onChange={(e) =>
@@ -344,7 +345,8 @@ export default function CustomerDetails() {
                       onChange={(e) => setEditCustomer({ ...editCustomer, notes: e.target.value } as ICustomer)}
                     />
                   </div>
-                  <button type="submit" className="btn btn-primary mt-2 max-sm:w-full">
+                  <button type="submit" className="btn btn-primary btn-sm mt-2 max-sm:w-full">
+                    <CloudArrowUpIcon className="h-5 w-5" />
                     Update
                   </button>
                 </div>
@@ -387,17 +389,19 @@ export default function CustomerDetails() {
                   <tr key={customerItem._id.toString()}>
                     <th>{index + 1}</th>
                     <td className="text-center">
-                      <span className="flex h-full w-full flex-col items-center justify-center gap-1 max-sm:flex-row">
+                      <span className="flex h-full w-full flex-col items-center justify-center gap-1 max-sm:w-full max-sm:flex-row">
                         <button
-                          className="btn btn-secondary btn-sm md:w-full"
+                          className="btn btn-secondary btn-sm w-full max-sm:w-full"
                           onClick={() => handleEditModal(customerItem._id.toString())}
                         >
+                          <PencilSquareIcon className="h-5 w-5" />
                           Edit
                         </button>
                         <button
-                          className="btn btn-warning btn-sm"
+                          className="btn btn-warning btn-sm w-full max-sm:w-full"
                           onClick={() => handleDelete(customerItem._id.toString())}
                         >
+                          <TrashIcon className="h-5 w-5" />
                           Delete
                         </button>
                       </span>

@@ -1,4 +1,5 @@
 import { XMarkIcon } from '@heroicons/react/24/outline';
+import { QrCodeIcon } from '@heroicons/react/24/solid';
 import {
   BrowserAztecCodeReader,
   BrowserCodeReader,
@@ -156,7 +157,8 @@ const BarcodeScannerPage: React.FC<{
         className="btn btn-secondary btn-sm"
         onClick={() => (document?.getElementById(scanModalId) as HTMLDialogElement)?.showModal()}
       >
-        Scan Qr Code
+        Scan
+        <QrCodeIcon className="h-5 w-5" />
       </button>
       <dialog id={scanModalId} className="modal">
         <div className="modal-box w-4/6 max-w-5xl">

@@ -26,7 +26,7 @@ const SidebarLink = ({
 );
 
 const SidebarItem = ({ nav, currentPathname }: { nav: NavItem; currentPathname: string }) => (
-  <li className={`${nav.enable ? '' : 'disabled cursor-not-allowed'}`}>
+  <li className={`${nav.enable ? '' : 'disabled hidden disabled:cursor-not-allowed'}`}>
     <details>
       <summary>
         {nav.icon && <nav.icon className={nav.iconClass} />}
@@ -34,7 +34,7 @@ const SidebarItem = ({ nav, currentPathname }: { nav: NavItem; currentPathname: 
       </summary>
       <ul>
         {nav.subNav.map((subNav: SubNavItem, index) => (
-          <li key={index} className={`${subNav.enable ? '' : 'disabled disabled:cursor-not-allowed'}`}>
+          <li key={index} className={`${subNav.enable ? '' : 'disabled hidden disabled:cursor-not-allowed'}`}>
             {subNav.enable && nav.enable ? (
               <SidebarLink
                 href={subNav.href ?? '#'}

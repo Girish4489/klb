@@ -3,6 +3,7 @@ import handleError from '@/app/util/error/handleError';
 import { formatD } from '@/app/util/format/dateUtils';
 import { ApiGet } from '@/app/util/makeApiRequest/makeApiRequest';
 import { IReceipt } from '@/models/klm';
+import { FunnelIcon } from '@heroicons/react/24/solid';
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -144,6 +145,7 @@ export default function Receipt() {
           </label>
           <div className="grow">
             <button className="btn btn-primary btn-sm" onClick={handleFilter}>
+              <FunnelIcon className="h-6 w-6" />
               Filter
             </button>
           </div>
