@@ -1,7 +1,5 @@
 import {
   ChartBarIcon,
-  UserPlusIcon,
-  TagIcon,
   ClipboardDocumentListIcon,
   ClockIcon,
   CogIcon,
@@ -11,7 +9,9 @@ import {
   LockClosedIcon,
   ServerStackIcon,
   SquaresPlusIcon,
+  TagIcon,
   UserGroupIcon,
+  UserPlusIcon,
 } from '@heroicons/react/24/solid';
 
 export interface SubNavItem {
