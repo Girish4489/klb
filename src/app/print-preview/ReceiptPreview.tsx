@@ -1,9 +1,9 @@
 import { IReceipt } from '@/models/klm';
 import React from 'react';
 
+import QrGenerator from '@/app/components/Barcode/BarcodeGenerator';
 import { EnvelopeIcon, FaceSmileIcon, PhoneIcon, WalletIcon } from '@heroicons/react/24/solid';
 import Image from 'next/image';
-import { QrGeneratorPage } from '../components/Barcode/BarcodePage/BarcodePage';
 import { formatDS } from '../util/format/dateUtils';
 
 interface ReceiptPreviewProps {
@@ -174,7 +174,7 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ receipt, cal, isDataLoa
             </table>
             <span className="mb-1 flex items-center justify-around rounded-box border border-dashed border-black/50 px-2 py-1 shadow-md">
               <div className="flex">
-                <QrGeneratorPage
+                <QrGenerator
                   content={`billNumber=${receipt.bill?.billNumber ?? ''}&receiptNumber=${receipt.receiptNumber ?? ''}`}
                   size={60}
                 />

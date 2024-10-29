@@ -118,7 +118,7 @@ const PrintPreviewContent: React.FC<PrintPreviewContentProps> = ({
           } else {
             setBill(response.bill);
           }
-          toast.success(response.message);
+          toast.success(<b>{response.message} fetched successfully</b>);
           setIsDataLoaded(true);
         } else {
           toast.error(response?.message || 'Failed to fetch data');

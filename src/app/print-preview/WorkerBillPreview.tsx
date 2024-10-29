@@ -3,8 +3,8 @@
 import { IBill } from '@/models/klm';
 import React from 'react';
 
+import QrGenerator from '@/app/components/Barcode/BarcodeGenerator';
 import Image from 'next/image';
-import { QrGeneratorPage } from '../components/Barcode/BarcodePage/BarcodePage';
 import { formatDS, formatDSNT } from '../util/format/dateUtils';
 
 interface WorkerBillPreviewProps {
@@ -53,7 +53,7 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, isDataLoade
                 <div className="header-col flex flex-col justify-start text-center">
                   <h2 id="text-center">Barcode</h2>
                   {bill.billNumber && bill.billNumber.toString().length > 0 && (
-                    <QrGeneratorPage content={`billNumber=${bill?.billNumber.toString()}` || ''} size={90} />
+                    <QrGenerator content={`billNumber=${bill?.billNumber.toString()}` || ''} size={90} />
                   )}
                 </div>
               </div>

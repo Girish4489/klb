@@ -1,8 +1,8 @@
 'use client';
-import { BarcodeScannerPage } from '@/app/components/Barcode/BarcodePage/BarcodePage';
+import { BarcodeScannerPage } from '@/app/components/Barcode/BarcodeScanner';
 import SearchForm from '@/app/components/SearchBillForm/SearchBillForm';
+import ReceiptTable from '@/app/components/tables/transaction/receipt/ReceiptTable';
 import handleError from '@/app/util/error/handleError';
-import { formatD } from '@/app/util/format/dateUtils';
 import { ApiGet, ApiPost } from '@/app/util/makeApiRequest/makeApiRequest';
 import { getParamsFromQueryString, updateSearchParams } from '@/app/util/url/urlUtils';
 import { IBill, IReceipt } from '@/models/klm';
@@ -59,7 +59,8 @@ export default function ReceiptPage() {
   const [receipt, setReceipt] = useState<IReceipt>();
   const [recentReceipt, setRecentReceipt] = useState<IReceipt[] | undefined>(undefined);
   const [searchReceipt, setSearchReceipt] = useState<IReceipt[] | undefined>(undefined);
-  const [headerBarcode, setHeaderBarcode] = React.useState<string | null>('');
+  const [headerBarcode, setHeaderBarcode] = useState<string | null>('');
+  const [tableBarcode, setTableBarcode] = useState<string | null>('');
   const router = useRouter();
   const [amtTrack, setAmtTrack] = useState<AmtTrack>({
     total: 0,
@@ -68,21 +69,54 @@ export default function ReceiptPage() {
     due: 0,
   });
 
-  useEffect(() => {
-    const fetchLastReceipt = async () => {
-      try {
-        const res = await ApiGet.Receipt.RecentReceipt();
-        if (res.success) {
-          setRecentReceipt(res.recentReceipt);
-        } else {
-          throw new Error(res.message);
+  // helper function to set amount tracking
+  const setAmountTrack = (bill: IBill) => {
+    setAmtTrack({
+      total: bill.totalAmount,
+      grand: bill.grandTotal,
+      paid: bill.paidAmount,
+      due: bill.dueAmount,
+    });
+  };
+
+  // Helper function to reset amount tracking
+  const resetAmtTrack = () => {
+    setAmtTrack({ total: 0, grand: 0, paid: 0, due: 0 });
+  };
+
+  const fetchBill = async (billNumber: string): Promise<IBill | null> => {
+    try {
+      const billRes = await ApiGet.Bill.BillSearch(parseInt(billNumber), 'bill');
+      if (billRes.success && billRes.bill.length > 0) {
+        const bill = billRes.bill[0];
+        if (bill.dueAmount <= 0) {
+          toast.error('No due amount for this bill');
+          return null;
         }
-      } catch (error) {
-        handleError.toastAndLog(error);
+        setAmountTrack(bill);
+        return bill;
+      } else {
+        throw new Error('Bill not found');
       }
-    };
-    fetchLastReceipt();
-  }, []);
+    } catch (error) {
+      handleError.toastAndLog(error);
+      return null;
+    }
+  };
+
+  const fetchReceipt = async (receiptNumber: string): Promise<IReceipt | null> => {
+    try {
+      const receiptRes = await ApiGet.Receipt.ReceiptSearch(parseInt(receiptNumber), 'receipt');
+      if (receiptRes.success && receiptRes.receipt.length > 0) {
+        return receiptRes.receipt[0];
+      } else {
+        throw new Error('Receipt not found');
+      }
+    } catch (error) {
+      handleError.toastAndLog(error);
+      return null;
+    }
+  };
 
   const billSearch = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -103,12 +137,8 @@ export default function ReceiptPage() {
     }
   };
 
-  const receiptSearch = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const receiptSearch = async (inputValue: number, typeReceiptOrBillOrMobile: string) => {
     try {
-      const inputValue = parseInt((event.target as HTMLFormElement).receiptSearch.value);
-      const typeReceiptOrBillOrMobile = (event.target as HTMLFormElement).selectReceipt.value;
-
       const res = await ApiGet.Receipt.ReceiptSearch(inputValue, typeReceiptOrBillOrMobile);
 
       if (res.success) {
@@ -122,24 +152,36 @@ export default function ReceiptPage() {
     }
   };
 
+  const handleReceiptSearch = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    try {
+      const inputValue = parseInt((event.target as HTMLFormElement).receiptSearch.value);
+      const typeReceiptOrBillOrMobile = (event.target as HTMLFormElement).selectReceipt.value;
+      await receiptSearch(inputValue, typeReceiptOrBillOrMobile);
+    } catch (error) {
+      handleError.toastAndLog(error);
+    }
+  };
+
   const saveReceipt = async () => {
     try {
       if (!receipt) throw new Error('Receipt is undefined');
+
       const { amount, bill, paymentMethod, paymentDate } = receipt;
-      if (!amount) throw new Error('Amount cannot be zero');
-      if (!bill?.billNumber) throw new Error('Bill number cannot be zero');
-      if (!paymentMethod) throw new Error('Payment method cannot be empty');
-      if (!paymentDate) throw new Error('Payment date cannot be empty');
-      if (!bill?.name) throw new Error('Name cannot be empty');
+      if (!amount || amount <= 0) throw new Error('Invalid amount');
+      if (!bill?.billNumber) throw new Error('Bill number is required');
+      if (!paymentMethod) throw new Error('Payment method is required');
+      if (!paymentDate) throw new Error('Payment date is required');
+      if (!bill?.name) throw new Error('Name is required');
       if (amtTrack.paid >= amtTrack.grand || amtTrack.due <= 0) throw new Error('Bill already paid');
-      if (amount > amtTrack.due) throw new Error('Amount cannot be greater than bill amount');
+      if (amount > amtTrack.due) throw new Error('Amount exceeds due amount');
 
       const res = await ApiPost.Receipt.SaveReceipt(receipt);
       if (res.success) {
         toast.success('Receipt saved');
         setReceipt(undefined);
         setRecentReceipt([res.receipt, ...(recentReceipt ?? [])]);
-        setAmtTrack({ total: 0, grand: 0, paid: 0, due: 0 });
+        resetAmtTrack();
       } else {
         throw new Error(res.message);
       }
@@ -184,12 +226,7 @@ export default function ReceiptPage() {
           paymentMethod: '',
           updatedAt: new Date(),
         } as IReceipt);
-        setAmtTrack({
-          total: selectedBill.totalAmount,
-          grand: selectedBill.grandTotal,
-          paid: selectedBill.paidAmount,
-          due: selectedBill.dueAmount,
-        });
+        setAmountTrack(selectedBill);
         setSearchBill(undefined);
       } else {
         toast.error('Bill not found');
@@ -200,6 +237,22 @@ export default function ReceiptPage() {
   };
 
   useEffect(() => {
+    const fetchLastReceipt = async () => {
+      try {
+        const res = await ApiGet.Receipt.RecentReceipt();
+        if (res.success) {
+          setRecentReceipt(res.recentReceipt);
+        } else {
+          throw new Error(res.message);
+        }
+      } catch (error) {
+        handleError.toastAndLog(error);
+      }
+    };
+    fetchLastReceipt();
+  }, []);
+
+  useEffect(() => {
     const fetchReceipt = async (receiptNumber: number) => {
       try {
         const res = await ApiGet.Receipt.ReceiptSearch(receiptNumber, 'receipt');
@@ -208,7 +261,7 @@ export default function ReceiptPage() {
           const lastReceipt = await ApiGet.Receipt.LastReceipt();
           setReceipt({
             ...fetchedReceipt,
-            amount: '',
+            amount: 0,
             paymentMethod: '',
             receiptNumber: (lastReceipt?.lastReceipt?.receiptNumber ?? 0) + 1,
           });
@@ -217,12 +270,7 @@ export default function ReceiptPage() {
             const billRes = await ApiGet.Bill.BillSearch(billNumber, 'bill');
             if (billRes.success && billRes.bill.length > 0) {
               const bill = billRes.bill[0];
-              setAmtTrack({
-                total: bill.totalAmount,
-                grand: bill.grandTotal,
-                paid: bill.paidAmount,
-                due: bill.dueAmount,
-              });
+              setAmountTrack(bill);
             } else {
               throw new Error('Bill not found');
             }
@@ -254,35 +302,6 @@ export default function ReceiptPage() {
             });
           }
 
-          const fetchBill = async (billNumber: string) => {
-            const billRes = await ApiGet.Bill.BillSearch(parseInt(billNumber), 'bill');
-            if (billRes.success && billRes.bill.length > 0) {
-              const bill = billRes.bill[0];
-              if (bill.dueAmount <= 0) {
-                toast.error('No due amount for this bill');
-                return null;
-              }
-              setAmtTrack({
-                total: bill.totalAmount,
-                grand: bill.grandTotal,
-                paid: bill.paidAmount,
-                due: bill.dueAmount,
-              });
-              return bill;
-            } else {
-              throw new Error('Bill not found');
-            }
-          };
-
-          const fetchReceipt = async (receiptNumber: string) => {
-            const receiptRes = await ApiGet.Receipt.ReceiptSearch(parseInt(receiptNumber), 'receipt');
-            if (receiptRes.success && receiptRes.receipt.length > 0) {
-              return receiptRes.receipt[0];
-            } else {
-              throw new Error('Receipt not found');
-            }
-          };
-
           const lastReceipt = await ApiGet.Receipt.LastReceipt();
           const newReceiptNumber = (lastReceipt?.lastReceipt?.receiptNumber ?? 0) + 1;
 
@@ -292,7 +311,7 @@ export default function ReceiptPage() {
               setReceipt({
                 ...fetchedReceipt,
                 receiptNumber: newReceiptNumber,
-                amount: '',
+                amount: 0,
                 bill: {
                   ...fetchedReceipt.bill,
                   _id: bill._id,
@@ -303,7 +322,7 @@ export default function ReceiptPage() {
                 paymentDate: new Date(),
                 paymentMethod: '',
                 updatedAt: new Date(),
-              });
+              } as IReceipt);
             }
           } else if (billNumber) {
             const bill = await fetchBill(billNumber);
@@ -328,16 +347,16 @@ export default function ReceiptPage() {
             if (fetchedReceipt) {
               const billNumber = fetchedReceipt?.bill?.billNumber;
               if (billNumber) {
-                await fetchBill(billNumber);
+                await fetchBill(billNumber.toString());
               }
               setReceipt({
                 ...fetchedReceipt,
                 receiptNumber: newReceiptNumber,
-                amount: '',
+                amount: 0,
                 paymentDate: new Date(),
                 paymentMethod: '',
                 updatedAt: new Date(),
-              });
+              } as IReceipt);
             }
           }
         } catch (error) {
@@ -349,52 +368,33 @@ export default function ReceiptPage() {
     }
   }, [headerBarcode]);
 
-  const recentReceiptTable = (receipts: IReceipt[], caption: string) => (
-    <table className="table table-zebra table-pin-rows">
-      <caption className="px-1 py-2 font-bold">{caption}</caption>
-      <thead>
-        <tr className="text-center">
-          <th>Slno</th>
-          <th>Receipt Number</th>
-          <th>Bill Number</th>
-          <th>Mobile</th>
-          <th>Date</th>
-          <th>Amount</th>
-          <th>Payment Method</th>
-          <th>Print</th>
-        </tr>
-      </thead>
-      <tbody>
-        {receipts.length === 0 ? (
-          <tr>
-            <td colSpan={8} className="text-warning">
-              No receipts
-            </td>
-          </tr>
-        ) : (
-          receipts.map((receipt, index) => (
-            <tr key={index} className="hover text-center">
-              <td>{index + 1}</td>
-              <td>{receipt.receiptNumber}</td>
-              <td>{receipt.bill?.billNumber}</td>
-              <td>{receipt.bill?.mobile}</td>
-              <td>{receipt.paymentDate ? formatD(receipt.paymentDate) : ''}</td>
-              <td>{receipt.amount}</td>
-              <td>{receipt.paymentMethod}</td>
-              <td>
-                <button
-                  className="btn btn-secondary btn-xs"
-                  onClick={() => router.push(`/print-preview?billNumber=${receipt.receiptNumber}&type=Receipt`)}
-                >
-                  Print
-                </button>
-              </td>
-            </tr>
-          ))
-        )}
-      </tbody>
-    </table>
-  );
+  useEffect(() => {
+    if (tableBarcode) {
+      const fetchBillAndReceipt = async () => {
+        try {
+          const { billNumber, receiptNumber } = getParamsFromQueryString(tableBarcode);
+          if (billNumber || receiptNumber) {
+            updateSearchParams({
+              billNumber: billNumber || null,
+              receiptNumber: receiptNumber || null,
+            });
+          }
+
+          if (billNumber) {
+            await receiptSearch(parseInt(billNumber), 'bill');
+          } else if (receiptNumber) {
+            await receiptSearch(parseInt(receiptNumber), 'receipt');
+          } else {
+            setSearchReceipt([]);
+          }
+        } catch (error) {
+          handleError.toastAndLog(error);
+        }
+      };
+      fetchBillAndReceipt();
+      setTableBarcode(null);
+    }
+  }, [tableBarcode]);
 
   return (
     <div className="flex grow flex-col gap-1">
@@ -404,7 +404,11 @@ export default function ReceiptPage() {
             New Receipt
           </button>
         </span>
-        <BarcodeScannerPage onScanComplete={setHeaderBarcode} />
+        <BarcodeScannerPage
+          onScanComplete={setHeaderBarcode}
+          scannerId={'receiptHeaderScanner'}
+          scanModalId="receiptHeaderScanner_modal"
+        />
         <SearchForm onSearch={billSearch} searchResults={searchBill} onRowClick={searchRowClicked} />
       </span>
       <div className="flex grow flex-col gap-1 rounded p-1">
@@ -509,7 +513,7 @@ export default function ReceiptPage() {
                   key={key}
                   className="flex flex-row flex-wrap items-center gap-1 max-sm:w-full max-sm:justify-between"
                 >
-                  <h3 className="label-text font-bold">{key.charAt(0).toUpperCase() + key.slice(1)}: </h3>
+                  <h3 className="label-text font-bold">{key.charAt(0).toUpperCase() + key.slice(1)}:</h3>
                   <h3
                     className={`label-text ${key === 'due' && amtTrack.due <= 0 ? 'text-warning' : ''} ${key === 'paid' && amtTrack.paid === amtTrack.grand ? 'text-success' : ''}`}
                   >
@@ -524,8 +528,11 @@ export default function ReceiptPage() {
           </button>
         </div>
         <div className="receiptTrack flex grow flex-col rounded-box bg-base-300/80 p-2">
-          <div className="searchReceipt flex">
-            <form onSubmit={receiptSearch} className="join flex flex-wrap items-center justify-between max-sm:flex-col">
+          <div className="searchReceipt flex gap-2">
+            <form
+              onSubmit={handleReceiptSearch}
+              className="join flex flex-wrap items-center justify-between max-sm:flex-col"
+            >
               <label htmlFor="receiptSearch" className="join-item label-text">
                 <input
                   name="receiptSearch"
@@ -551,9 +558,14 @@ export default function ReceiptPage() {
                 </button>
               </span>
             </form>
+            <BarcodeScannerPage
+              onScanComplete={setTableBarcode}
+              scannerId="receiptSearchScanner"
+              scanModalId="receiptSearchScanner_modal"
+            />
           </div>
-          {searchReceipt && <span>{recentReceiptTable(searchReceipt, 'Searched Receipts')}</span>}
-          {recentReceipt && <span>{recentReceiptTable(recentReceipt, 'Recent Receipts')}</span>}
+          {searchReceipt && <ReceiptTable receipts={searchReceipt} caption="Searched Receipts" />}
+          {recentReceipt && <ReceiptTable receipts={recentReceipt} caption="Recent Receipts" />}
         </div>
       </div>
     </div>

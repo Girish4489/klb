@@ -1,8 +1,8 @@
 import { IBill } from '@/models/klm';
 import React from 'react';
 
+import QrGenerator from '@/app/components/Barcode/BarcodeGenerator';
 import Image from 'next/image';
-import { QrGeneratorPage } from '../components/Barcode/BarcodePage/BarcodePage';
 import { formatDS } from '../util/format/dateUtils';
 
 interface CustomerBillPreviewProps {
@@ -98,7 +98,7 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, isDataL
                 <div className="header-col flex flex-col justify-start text-center">
                   <h2 id="text-center">QR Code</h2>
                   {bill.billNumber && bill.billNumber.toString().length > 0 && (
-                    <QrGeneratorPage content={`billNumber=${bill?.billNumber.toString()}` || ''} size={90} />
+                    <QrGenerator content={`billNumber=${bill?.billNumber.toString()}` || ''} size={90} />
                   )}
                 </div>
               </div>
@@ -221,7 +221,7 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, isDataL
               <span className="flex gap-4">
                 <div className="header-col process-box flex flex-col justify-start text-center">
                   {bill.billNumber && bill.billNumber.toString().length > 0 && (
-                    <QrGeneratorPage content={`billNumber=${bill?.billNumber.toString()}` || ''} size={60} />
+                    <QrGenerator content={`billNumber=${bill?.billNumber.toString()}` || ''} size={60} />
                   )}
                 </div>
                 <div className="process-box my-auto flex h-full w-full grow flex-row items-stretch justify-between gap-4 px-4">

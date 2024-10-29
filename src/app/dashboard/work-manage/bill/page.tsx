@@ -1,12 +1,13 @@
 'use client';
-import { BarcodeScannerPage } from '@/app/components/Barcode/BarcodePage/BarcodePage';
+import { BarcodeScannerPage } from '@/app/components/Barcode/BarcodeScanner';
 import BillHeader from '@/app/components/BillHeader/BillHeader';
 import ColorPickerButton from '@/app/components/ColorPickerButton/ColorPickerButton';
 import SearchBillForm from '@/app/components/SearchBillForm/SearchBillForm';
+import BillTable from '@/app/components/tables/work-manage/bill/BillTable';
 import { userConfirmation } from '@/app/util/confirmation/confirmationUtil';
 import handleError from '@/app/util/error/handleError';
-import { formatD } from '@/app/util/format/dateUtils';
 import { ApiGet, ApiPost, ApiPut } from '@/app/util/makeApiRequest/makeApiRequest';
+import { getSearchParam, setSearchParam } from '@/app/util/url/urlUtils';
 import { IBill, ICategory, IColor, IDimensionTypes, IDimensions, IStyle, IStyleProcess, ITax } from '@/models/klm';
 import { MinusCircleIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
 import {
@@ -339,75 +340,8 @@ export default function BillPage() {
     }
   }
 
-  const BillTable = ({ caption, bills }: { caption: string; bills: IBill[] }) => {
-    return (
-      <div
-        className={`max-h-96 overflow-x-auto rounded-box border-2 border-base-300 bg-base-100 ${bills.length === 0 && 'min-h-24'}`}
-      >
-        <table className="table table-zebra table-pin-rows">
-          <caption className="px-1 py-2 font-bold">{caption}</caption>
-          {bills.length === 0 ? (
-            <tbody>
-              <tr>
-                <td colSpan={5} className="text-warning">
-                  No bills for {caption}
-                </td>
-              </tr>
-            </tbody>
-          ) : (
-            <>
-              <thead>
-                <tr className="text-center">
-                  <th>Slno</th>
-                  <th>BillNumber</th>
-                  <th>Mobile</th>
-                  <th>Date</th>
-                  <th>Due Date</th>
-                  <th>U/T</th>
-                  <th>Bill by</th>
-                </tr>
-              </thead>
-              <tbody>
-                {bills.map((bill: IBill, index) => (
-                  <tr key={index} className="text-center">
-                    <td>{index + 1}</td>
-                    <td>{bill.billNumber}</td>
-                    <td>{bill.mobile}</td>
-                    <td>{bill?.date ? formatD(bill?.date) : ''}</td>
-                    <td>{bill?.dueDate ? formatD(bill?.dueDate) : ''}</td>
-                    <td className="font-bold">
-                      {bill?.urgent && <span className={'text-error'}>U</span>}
-                      {bill?.urgent && bill.trail && <span> | </span>}
-                      {bill?.trail && <span className={'text-success'}>T</span>}
-                    </td>
-                    <td>{bill?.billBy?.name}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </>
-          )}
-        </table>
-      </div>
-    );
-  };
-  const formattedTodayBill = useMemo(
-    () =>
-      (todayBill || []).map((bill) => ({
-        ...bill,
-        date: formatD(bill?.date as Date),
-        dueDate: formatD(bill?.dueDate as Date),
-      })),
-    [todayBill],
-  );
-  const formattedThisWeekBill = useMemo(
-    () =>
-      (thisWeekBill || []).map((bill) => ({
-        ...bill,
-        date: formatD(bill?.date as Date),
-        dueDate: formatD(bill?.dueDate as Date),
-      })),
-    [thisWeekBill],
-  );
+  const formattedTodayBill = useMemo(() => todayBill, [todayBill]);
+  const formattedThisWeekBill = useMemo(() => thisWeekBill, [thisWeekBill]);
 
   const billSearch = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -448,14 +382,13 @@ export default function BillPage() {
   };
 
   React.useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const billNumber = urlParams.get('billNumber');
+    const billNumber = getSearchParam('billNumber');
 
     if (billNumber) {
       (async () => {
         try {
           const res = await ApiGet.Bill.BillSearch(parseInt(billNumber), 'bill');
-          if (res.success === true && res.bill.length > 0) {
+          if (res.success && res.bill.length > 0) {
             setNewBill(false);
             setBill(res.bill[0]);
           } else {
@@ -467,13 +400,6 @@ export default function BillPage() {
       })();
     }
   }, []);
-
-  const updateUrlWithBillNumber = (billNumber: string) => {
-    const urlParams = new URLSearchParams(window.location.search);
-    urlParams.set('billNumber', billNumber);
-    const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
-    window.history.replaceState(null, '', newUrl);
-  };
 
   React.useEffect(() => {
     if (!barcode) return;
@@ -487,7 +413,7 @@ export default function BillPage() {
       return;
     }
 
-    const fetchBill = async () => {
+    (async () => {
       try {
         if (billNumber === bill?.billNumber?.toString()) {
           toast.success('Bill already loaded');
@@ -507,10 +433,12 @@ export default function BillPage() {
       } catch (error) {
         handleError.toastAndLog(error);
       }
-    };
-
-    fetchBill();
+    })();
   }, [barcode]);
+
+  const updateUrlWithBillNumber = (billNumber: string) => {
+    setSearchParam('billNumber', billNumber);
+  };
 
   const handleColorSelect = async (color: IColor, orderIndex: number) => {
     await setBill((prevBill) => {
@@ -539,7 +467,11 @@ export default function BillPage() {
           <button className="btn btn-primary btn-sm" onClick={createNewBill}>
             New
           </button>
-          <BarcodeScannerPage onScanComplete={setBarcode} />
+          <BarcodeScannerPage
+            onScanComplete={setBarcode}
+            scannerId="billHeaderScanner"
+            scanModalId="billHeaderScanner_modal"
+          />
           <SearchBillForm onSearch={billSearch} searchResults={searchBill} onRowClick={searchRowClicked} />
         </span>
 
@@ -565,7 +497,7 @@ export default function BillPage() {
             {/* items and track in row */}
             <div className="flex h-full w-full flex-row items-start gap-1 rounded-box bg-base-300 p-1 max-sm:flex-col max-sm:items-center">
               <div className="flex min-h-full grow flex-col justify-between rounded-box border border-base-300">
-                <div className="flex max-h-[50rem] min-h-full w-full grow flex-col gap-1 overflow-auto rounded-box bg-base-200">
+                <div className="flex max-h-[45rem] min-h-full w-full grow flex-col gap-1 overflow-auto rounded-box bg-base-200">
                   {/* orders */}
                   {bill?.order?.map((order, orderIndex) => (
                     <div
@@ -602,6 +534,7 @@ export default function BillPage() {
                                 name={`category_${orderIndex}`}
                                 id={`category_${orderIndex}`}
                                 className="select select-primary select-sm w-32 max-w-sm"
+                                value={order.category?.categoryName || ''}
                                 onChange={(e) => {
                                   const selectedCategoryId = e.target.selectedOptions[0]?.getAttribute('itemID');
                                   if (selectedCategoryId) {
@@ -634,8 +567,8 @@ export default function BillPage() {
                                   }
                                 }}
                               >
-                                <option value={`${order.category?.categoryName ?? 'none'}`}>
-                                  {order.category?.categoryName ?? 'Select category'}
+                                <option value="" disabled>
+                                  Select category
                                 </option>
                                 {category?.map((category, categoryIndex) => (
                                   <option
@@ -719,14 +652,22 @@ export default function BillPage() {
                                   key={typIndex}
                                   className="flex w-full flex-row flex-wrap items-center gap-1 max-sm:justify-between"
                                 >
-                                  <label htmlFor={typ.dimensionTypeName} className="label label-text">
+                                  <label
+                                    htmlFor={`${typ.dimensionTypeName}_${orderIndex}_${typIndex}`}
+                                    className="label label-text"
+                                  >
                                     {typ.dimensionTypeName}
                                   </label>
                                   <div className="flex- col  flex flex-wrap gap-1">
                                     <select
-                                      name={typ.dimensionTypeName}
-                                      id={typ.dimensionTypeName}
+                                      name={`${typ.dimensionTypeName}_${orderIndex}_${typIndex}`}
+                                      id={`${typ.dimensionTypeName}_${orderIndex}_${typIndex}`}
                                       className="select select-primary select-sm max-w-sm"
+                                      value={
+                                        typ.dimensions?.find(
+                                          (dim) => dim.dimensionName === order.dimension?.[typIndex]?.dimensionName,
+                                        )?.dimensionName ?? ''
+                                      }
                                       onChange={(e) => {
                                         const selectedDimensionTypeName = typ.dimensionTypeName;
                                         handleDimensionChange(
@@ -739,8 +680,8 @@ export default function BillPage() {
                                         );
                                       }}
                                     >
-                                      <option value={`${order.dimension?.[typIndex]?.dimensionName ?? 'none'}`}>
-                                        {order.dimension?.[typIndex]?.dimensionName ?? 'Select dimension'}
+                                      <option value="" disabled>
+                                        Select dimension
                                       </option>
                                       {typ.dimensions &&
                                         typ.dimensions.map((dim: IDimensions, dimIndex: number) => (
@@ -751,10 +692,11 @@ export default function BillPage() {
                                     </select>
                                     <input
                                       type="text"
-                                      name={typ.dimensionTypeName}
+                                      name={`${typ.dimensionTypeName}_note_${orderIndex}_${typIndex}`}
+                                      id={`${typ.dimensionTypeName}_note_${orderIndex}_${typIndex}`}
                                       placeholder={`${typ.dimensionTypeName} Note`}
                                       className="input input-sm input-primary"
-                                      value={order.dimension?.[typIndex]?.note}
+                                      value={order.dimension?.[typIndex]?.note || ''}
                                       onChange={(e) => {
                                         const selectedDimensionTypeName = typ.dimensionTypeName;
                                         handleDimensionChange(
@@ -888,12 +830,15 @@ export default function BillPage() {
                                   key={styleProcessIndex}
                                   className="flex w-full flex-row flex-wrap items-center gap-1 rounded-box bg-base-300 p-2 max-sm:justify-between"
                                 >
-                                  <label className="label label-text pb-0.5" htmlFor={styleProcess.styleProcessName}>
+                                  <label
+                                    className="label label-text pb-0.5"
+                                    htmlFor={`${styleProcess.styleProcessName}_${orderIndex}_${styleProcessIndex}`}
+                                  >
                                     {styleProcess.styleProcessName}
                                   </label>
                                   <select
-                                    name={styleProcess.styleProcessName}
-                                    id={styleProcess.styleProcessName}
+                                    name={`${styleProcess.styleProcessName}_${orderIndex}_${styleProcessIndex}`}
+                                    id={`${styleProcess.styleProcessName}_${orderIndex}_${styleProcessIndex}`}
                                     className="select select-primary select-sm"
                                     onChange={(e) => {
                                       handleStyleProcessChange(
@@ -904,9 +849,15 @@ export default function BillPage() {
                                         cat.styleProcess?.length ?? 0,
                                       );
                                     }}
-                                    value={order.styleProcess?.[styleProcessIndex]?.styleName || 'none'}
+                                    value={
+                                      styleProcess.styles?.find(
+                                        (sty) => sty.styleName === order.styleProcess?.[styleProcessIndex]?.styleName,
+                                      )?.styleName ?? ''
+                                    }
                                   >
-                                    <option value="none">Select style</option>
+                                    <option value="" disabled>
+                                      Select style
+                                    </option>
                                     {styleProcess.styles?.map((styles: IStyle, stylesIndex: number) => (
                                       <option key={stylesIndex} value={styles.styleName}>
                                         {styles.styleName}
@@ -924,7 +875,7 @@ export default function BillPage() {
                   ))}
                 </div>
                 {/* save, update, print */}
-                <div className="mx-1 flex items-center justify-between gap-1 rounded-box border-t-2 border-base-300 bg-base-200 p-2">
+                <div className="z-10 mx-1 flex items-center justify-between gap-1 rounded-box border-t-2 border-base-300 bg-base-200 p-2">
                   <span className="flex gap-2 pl-2">
                     {newBill ? (
                       <button className="btn btn-primary btn-sm" onClick={handleSaveBill}>
@@ -1151,14 +1102,8 @@ export default function BillPage() {
         )}
       </div>
       <div className="my-0.5 flex w-full flex-col rounded-box bg-base-300 p-2">
-        {todayBill?.length || thisWeekBill?.length ? (
-          <>
-            <BillTable caption="Today" bills={formattedTodayBill as unknown as IBill[]} />
-            <BillTable caption="This Week (excluding today)" bills={formattedThisWeekBill as unknown as IBill[]} />
-          </>
-        ) : (
-          <div className="text-warning">No bills for today or this week</div>
-        )}
+        <BillTable caption="Today" bills={formattedTodayBill as unknown as IBill[]} />
+        <BillTable caption="This Week (excluding today)" bills={formattedThisWeekBill as unknown as IBill[]} />
       </div>
     </span>
   );
