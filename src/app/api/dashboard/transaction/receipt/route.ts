@@ -1,4 +1,5 @@
 import handleError from '@/app/util/error/handleError';
+import { getParamsFromRequest } from '@/app/util/url/urlUtils';
 import { connect } from '@/dbConfig/dbConfig';
 import { getDataFromToken } from '@/helpers/getDataFromToken';
 import { Bill, IReceipt, Receipt } from '@/models/klm';
@@ -11,11 +12,7 @@ connect();
 export async function GET(request: NextRequest) {
   try {
     const userId = await getDataFromToken(request);
-    const urlSearchParams = new URLSearchParams(request.nextUrl.search);
-    const receiptBillOrMobileNumber = urlSearchParams.get('searchValue');
-    const searchType = urlSearchParams.get('searchType');
-    const last = urlSearchParams.get('last');
-    const recent = urlSearchParams.get('recent');
+    const { searchValue: receiptBillOrMobileNumber, searchType, last, recent } = getParamsFromRequest(request);
 
     const user = await User.findOne({ _id: userId }).select(
       '-password -__v -email -isVerified -createdAt -updatedAt -isAdmin -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry -theme -profileImage',

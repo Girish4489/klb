@@ -1,4 +1,5 @@
 import handleError from '@/app/util/error/handleError';
+import { getParamsFromRequest } from '@/app/util/url/urlUtils';
 import { connect } from '@/dbConfig/dbConfig';
 import { getDataFromToken } from '@/helpers/getDataFromToken';
 import { Receipt } from '@/models/klm';
@@ -10,10 +11,7 @@ connect();
 export async function GET(request: NextRequest) {
   try {
     const userId = await getDataFromToken(request);
-    const urlSearchParams = new URLSearchParams(request.nextUrl.search);
-    const fromDate = urlSearchParams.get('fromDate');
-    const toDate = urlSearchParams.get('toDate');
-    const page = urlSearchParams.get('page');
+    const { fromDate, toDate, page } = getParamsFromRequest(request);
     const user = await User.findOne({ _id: userId }).select(
       '-password -__v -email -isVerified -createdAt -updatedAt -isAdmin -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry -theme -profileImage',
     );

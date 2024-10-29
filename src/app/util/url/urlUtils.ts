@@ -1,5 +1,7 @@
 // src/utils/url/urlUtils.ts
 
+import { NextRequest } from 'next/server';
+
 /**
  * Gets the value of a search parameter from the URL.
  * @param {string} key - The key of the search parameter.
@@ -54,6 +56,20 @@ export const updateSearchParams = (params: Record<string, string | null>): void 
  */
 export const getParamsFromQueryString = (queryString: string): Record<string, string | null> => {
   const params = new URLSearchParams(queryString);
+  const result: Record<string, string | null> = {};
+  params.forEach((value, key) => {
+    result[key] = value;
+  });
+  return result;
+};
+
+/**
+ * Extracts parameters from a NextRequest object.
+ * @param {NextRequest} request - The NextRequest object to extract parameters from.
+ * @returns {Record<string, string | null>} - An object containing the extracted parameters.
+ */
+export const getParamsFromRequest = (request: NextRequest): Record<string, string | null> => {
+  const params = new URLSearchParams(request.nextUrl.search);
   const result: Record<string, string | null> = {};
   params.forEach((value, key) => {
     result[key] = value;

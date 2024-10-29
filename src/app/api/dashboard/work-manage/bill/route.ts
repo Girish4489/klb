@@ -1,4 +1,5 @@
 import handleError from '@/app/util/error/handleError';
+import { getParamsFromRequest } from '@/app/util/url/urlUtils';
 import { connect } from '@/dbConfig/dbConfig';
 import { getDataFromToken } from '@/helpers/getDataFromToken';
 import { Bill, IBill } from '@/models/klm';
@@ -10,12 +11,7 @@ connect();
 export async function GET(request: NextRequest) {
   try {
     const userId = await getDataFromToken(request);
-    const urlSearchParams = new URLSearchParams(request.nextUrl.search);
-    const billOrMobileNumber = urlSearchParams.get('searchValue');
-    const billType = urlSearchParams.get('type');
-    const today = urlSearchParams.get('today');
-    const week = urlSearchParams.get('week');
-    const last = urlSearchParams.get('last');
+    const { searchValue: billOrMobileNumber, type: billType, today, week, last } = getParamsFromRequest(request); // key: variable name, value: query parameter name
     const user = await User.findOne({ _id: userId }).select(
       '-password -__v -email -isVerified -createdAt -updatedAt -isAdmin -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry -theme -profileImage',
     );
