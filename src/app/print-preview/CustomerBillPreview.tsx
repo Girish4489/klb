@@ -105,13 +105,10 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, isDataL
             </div>
             <hr className="m-auto my-1.5 w-[95%] rounded-box border-2 border-black" />
             {/* <span className="py-1" /> */}
-            <span className="orders flex flex-col gap-4">
+            <span>
               {bill?.order.map((order, orderIndex) => (
-                <>
-                  <div
-                    key={orderIndex}
-                    className="table m-auto flex w-[96%] break-inside-avoid break-after-auto flex-col gap-1 rounded border border-black p-1 text-center"
-                  >
+                <span className="orders flex flex-col gap-4" key={orderIndex}>
+                  <div className="table m-auto flex w-[96%] break-inside-avoid break-after-auto flex-col gap-1 rounded border border-black p-1 text-center">
                     <span className="flex flex-row items-center justify-between gap-8">
                       <span className="flex flex-row items-center gap-8">
                         <h1>{orderIndex + 1}.</h1>
@@ -214,7 +211,7 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, isDataL
                     </span>
                   </div>
                   <span className="py-[1]" />
-                </>
+                </span>
               ))}
             </span>
           </span>
