@@ -2,8 +2,8 @@
   "version": "0.2",
   "compounds": [
     {
-      "name": "Dev: Edge",
-      "configurations": ["Dev Server", "Launch in Edge"],
+      "name": "Dev",
+      "configurations": ["Dev Server"],
       "stopAll": true,
       "presentation": {
         "hidden": false,
@@ -19,6 +19,16 @@
         "hidden": false,
         "group": "Dev",
         "order": 2
+      }
+    },
+    {
+      "name": "Dev: Edge",
+      "configurations": ["Dev Server", "Launch in Edge"],
+      "stopAll": true,
+      "presentation": {
+        "hidden": false,
+        "group": "Dev",
+        "order": 3
       }
     },
     {
