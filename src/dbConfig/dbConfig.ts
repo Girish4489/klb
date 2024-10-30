@@ -8,15 +8,7 @@ loadEnvConfig(projectDir);
 export async function connect() {
   try {
     // Check if required environment variables are present
-    const requiredVariables = [
-      'DBTYPE',
-      'DBNAME',
-      'MONGO_DOCKER_URI',
-      'MONGO_URI',
-      'MONGO_ONLINE_URI',
-      'DOMAIN',
-      'DOCKER',
-    ];
+    const requiredVariables = ['DBTYPE', 'DBNAME', 'MONGO_URI', 'MONGO_ONLINE_URI', 'DOMAIN'];
     const missingVariables = requiredVariables.filter((variable) => !process.env[variable]);
 
     if (missingVariables.length > 0) {
@@ -27,11 +19,7 @@ export async function connect() {
 
     switch (process.env.DBTYPE) {
       case 'offline':
-        if (process.env.DOCKER === 'true') {
-          mongoURI = `${process.env.MONGO_DOCKER_URI!}${process.env.DBNAME!}`;
-        } else {
-          mongoURI = `${process.env.MONGO_URI!}${process.env.DBNAME!}`;
-        }
+        mongoURI = `${process.env.MONGO_URI!}${process.env.DBNAME!}`;
         break;
       case 'online':
         mongoURI = `${process.env.MONGO_ONLINE_URI!}${process.env.DBNAME!}`;
