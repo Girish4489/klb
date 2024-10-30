@@ -2,8 +2,8 @@ import { IBill } from '@/models/klm';
 import React from 'react';
 
 import QrGenerator from '@/app/components/Barcode/BarcodeGenerator';
+import { formatDS } from '@/app/util/format/dateUtils';
 import Image from 'next/image';
-import { formatDS } from '../util/format/dateUtils';
 
 interface CustomerBillPreviewProps {
   bill: IBill | undefined;
@@ -144,71 +144,80 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, isDataL
                       </span>
                     </span>
                     <hr style={{ margin: 0, padding: 0 }} />
-                    <span className="flex w-full flex-col items-center gap-1">
-                      {/* <h1>Styles:</h1> */}
-                      <span className="flex w-full items-center gap-8">
-                        {order.styleProcess.map((style, styleIndex) => (
-                          <span
-                            key={styleIndex}
-                            // className="item-center process-box grow-1 flex flex-col justify-start"
-                            className="item-center flex w-fit flex-col justify-start rounded-box border border-black px-2 py-1 font-normal"
-                          >
-                            <span className="flex w-fit flex-row items-center justify-around gap-8">
-                              <h1>
-                                {styleIndex + 1}). {style.styleProcessName}:{' '}
-                              </h1>
-                              <hr />
-                              <p>{style.styleName}</p>
+                    {order.styleProcess.length > 0 && (
+                      <span className="flex w-full flex-col items-center gap-1">
+                        {/* <h1>Styles:</h1> */}
+                        <span className="flex w-full items-center gap-8">
+                          {order.styleProcess.map((style, styleIndex) => (
+                            <span
+                              key={styleIndex}
+                              // className="item-center process-box grow-1 flex flex-col justify-start"
+                              className="item-center flex w-fit flex-col justify-start rounded-box border border-black px-2 py-1 font-normal"
+                            >
+                              <span className="flex w-fit flex-row items-center justify-around gap-8">
+                                <h1>
+                                  {styleIndex + 1}). {style.styleProcessName}:{' '}
+                                </h1>
+                                <hr />
+                                <p>{style.styleName}</p>
+                              </span>
                             </span>
-                          </span>
-                        ))}
+                          ))}
+                        </span>
+                        {order.styleProcess.length > 0 && <hr className={`w-full`} />}
                       </span>
-                      {order.styleProcess.length > 0 && <hr className={`w-full`} />}
-                    </span>
-                    <span className="flex w-full flex-row items-center gap-8">
-                      <span className="flex items-center gap-2">
-                        <h1>Note:</h1>
-                        {order.orderNotes && <p className="process-box">{(order.orderNotes ?? '').split('\n')}</p>}
-                      </span>
-                      <span className="flex grow items-center gap-2">
-                        <h1>Measurement:</h1>
-                        {order.measurement && (
-                          <p className="process-box">
-                            {(order.measurement ?? '').split('\n').map((line, index) => (
-                              <React.Fragment key={index}>
-                                {line}
-                                <br />
-                              </React.Fragment>
-                            ))}
-                          </p>
-                        )}
-                      </span>
-                    </span>
-                    <span className="flex w-full flex-col items-center gap-1">
-                      {/* <h1>Dimensions:</h1> */}
-                      {order.styleProcess.length > 0 && <hr className={`w-full`} />}
-                      <span className="flex w-full items-start gap-8">
-                        {order.dimension.map((dimension, dimensionIndex) => (
-                          <span
-                            key={dimensionIndex}
-                            // className="item-center process-box grow-1 flex flex-col justify-start"
-                            className="item-center flex w-fit flex-col items-center justify-start rounded-box border border-black px-2 py-1"
-                          >
-                            <span className="flex flex-row items-center justify-around gap-8">
-                              <h1>
-                                {dimensionIndex + 1}). {dimension.dimensionTypeName}:{' '}
-                              </h1>
-                              <hr />
-                              <p>{dimension.dimensionName}</p>
+                    )}
+                    {order.orderNotes ||
+                      (order.measurement && (
+                        <span className="flex w-full flex-row items-center gap-8">
+                          {order.orderNotes && (
+                            <span className="flex items-center gap-2">
+                              <h1>Note:</h1>
+                              <p className="process-box">{(order.orderNotes ?? '').split('\n')}</p>
                             </span>
-                            <hr className="m-0 w-full border bg-black p-0" />
-                            <span className="flex flex-row items-center justify-center gap-8">
-                              <p>{dimension.note}</p>
+                          )}
+                          {order.measurement && (
+                            <span className="flex grow items-center gap-2">
+                              <h1>Measurement:</h1>
+                              <p className="process-box">
+                                {(order.measurement ?? '').split('\n').map((line, index) => (
+                                  <React.Fragment key={index}>
+                                    {line}
+                                    <br />
+                                  </React.Fragment>
+                                ))}
+                              </p>
                             </span>
-                          </span>
-                        ))}
+                          )}
+                        </span>
+                      ))}
+                    {order.dimension.length > 0 && (
+                      <span className="flex w-full flex-col items-center gap-1">
+                        {/* <h1>Dimensions:</h1> */}
+                        {order.dimension.length > 0 && <hr className={`w-full`} />}
+                        <span className="flex w-full items-start gap-8">
+                          {order.dimension.map((dimension, dimensionIndex) => (
+                            <span
+                              key={dimensionIndex}
+                              // className="item-center process-box grow-1 flex flex-col justify-start"
+                              className="item-center flex w-fit flex-col items-center justify-start rounded-box border border-black px-2 py-1"
+                            >
+                              <span className="flex flex-row items-center justify-around gap-8">
+                                <h1>
+                                  {dimensionIndex + 1}). {dimension.dimensionTypeName}:{' '}
+                                </h1>
+                                <hr />
+                                <p>{dimension.dimensionName}</p>
+                              </span>
+                              <hr className="m-0 w-full border bg-black p-0" />
+                              <span className="flex flex-row items-center justify-center gap-8">
+                                <p>{dimension.note}</p>
+                              </span>
+                            </span>
+                          ))}
+                        </span>
                       </span>
-                    </span>
+                    )}
                   </div>
                   <span className="py-[1]" />
                 </span>

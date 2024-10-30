@@ -56,7 +56,7 @@ const ReceiptTable: React.FC<ReceiptTableProps> = ({ receipts, caption }) => {
               <td>
                 <button
                   className="btn btn-secondary btn-xs"
-                  onClick={() => router.push(`/print-preview?billNumber=${receipt.receiptNumber}&type=Receipt`)}
+                  onClick={() => router.push(`/print-preview/receipt?receiptNumber=${receipt.receiptNumber}`)}
                 >
                   <PrinterIcon className="h-4 w-4" />
                   Print

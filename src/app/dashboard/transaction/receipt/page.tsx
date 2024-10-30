@@ -285,8 +285,7 @@ export default function ReceiptPage() {
       }
     };
 
-    const urlParams = getParamsFromQueryString(window.location.search);
-    const receiptNumber = urlParams.receiptNumber;
+    const { receiptNumber } = getParamsFromQueryString(window.location.search);
     if (receiptNumber) {
       fetchReceipt(parseInt(receiptNumber));
     }

@@ -138,9 +138,7 @@ export const ApiGet = {
   printDocument: {
     PrintBill: async (printType: string, billNumber: number) => {
       try {
-        const res = await axios.get(
-          `/api/dashboard/print-document/print-bill?printType=${printType}&billNumber=${billNumber}`,
-        );
+        const res = await axios.get(`/api/print-document/print-bill?printType=${printType}&billNumber=${billNumber}`);
         return res.data;
       } catch (error) {
         handleError.throw(error);
@@ -149,7 +147,7 @@ export const ApiGet = {
     PrintReceipt: async (printType: string, receiptNumber: number) => {
       try {
         const res = await axios.get(
-          `/api/dashboard/print-document/print-receipt?printType=${printType}&receiptNumber=${receiptNumber}`,
+          `/api/print-document/print-receipt?printType=${printType}&receiptNumber=${receiptNumber}`,
         );
         return res.data;
       } catch (error) {

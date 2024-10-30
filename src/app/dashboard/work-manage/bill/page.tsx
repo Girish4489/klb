@@ -34,7 +34,7 @@ export default function BillPage() {
   const [newBill, setNewBill] = React.useState<boolean>(true);
   const [barcode, setBarcode] = React.useState<string>('');
 
-  const [printType, setPrintType] = React.useState<string>('Customer Bill');
+  const [printType, setPrintType] = React.useState<string>('customer');
   React.useEffect(() => {
     (async () => {
       try {
@@ -899,19 +899,19 @@ export default function BillPage() {
                         value={printType}
                         onChange={(e) => setPrintType(e.target.value)}
                       >
-                        {/* <option tabIndex={0} value="Both">
+                        {/* <option tabIndex={0} value="both">
                           Both
                         </option> */}
-                        <option tabIndex={1} value="Customer Bill">
+                        <option tabIndex={1} value="customer">
                           Customer Bill
                         </option>
-                        <option tabIndex={2} value="Worker Bill">
+                        <option tabIndex={2} value="worker">
                           Worker Bill
                         </option>
                       </select>
                       <Link
                         className="btn btn-accent join-item btn-sm"
-                        href={`/print-preview?billNumber=${bill.billNumber}&type=${printType}`}
+                        href={`/print-preview/bill/${printType}?billNumber=${bill.billNumber}`}
                         prefetch={false}
                       >
                         <PrinterIcon className="h-5 w-5" />

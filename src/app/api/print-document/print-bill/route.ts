@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
       if (!bill) {
         throw new Error(`${printType} not found`);
       }
-      return NextResponse.json({ message: `${printType} data`, success: true, bill: bill });
+      return NextResponse.json({ message: `${printType} Data`, success: true, bill: bill });
     }
 
     return NextResponse.json({ message: 'Print type not found', success: false });

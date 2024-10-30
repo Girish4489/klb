@@ -2,9 +2,9 @@ import { IReceipt } from '@/models/klm';
 import React from 'react';
 
 import QrGenerator from '@/app/components/Barcode/BarcodeGenerator';
+import { formatDS } from '@/app/util/format/dateUtils';
 import { EnvelopeIcon, FaceSmileIcon, PhoneIcon, WalletIcon } from '@heroicons/react/24/solid';
 import Image from 'next/image';
-import { formatDS } from '../util/format/dateUtils';
 
 interface ReceiptPreviewProps {
   receipt: IReceipt | undefined;
