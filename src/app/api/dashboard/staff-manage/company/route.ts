@@ -13,12 +13,13 @@ export async function GET(req: NextRequest) {
     const user = await User.findById({ _id: userId }).select(
       '-password -username -email -isVerified -isAdmin -theme -profileImage -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry',
     );
-    if (!user) throw new Error("Invalid user operation")
-    if (!user.companyId && user.role !== 'owner') throw new Error("You account not linked with your company\nPlease contact Admin/Hr for linking")
-    if (!user.companyId && user.role === 'owner') throw new Error("Company not yet created\nPlease register company")
+    if (!user) throw new Error('Invalid user operation');
+    if (!user.companyId && user.role !== 'owner')
+      throw new Error('You account not linked with your company\nPlease contact Admin/Hr for linking');
+    if (!user.companyId && user.role === 'owner') throw new Error('Company not yet created\nPlease register company');
     const company = await Company.findOne({ _id: user.companyId });
     if (!company) throw new Error('Company not found');
-    return NextResponse.json({ success: true, data: company, message: "Company details fetched successfuly" });
+    return NextResponse.json({ success: true, data: company, message: 'Company details fetched successfuly' });
   } catch (error) {
     return handleError.api(error, false);
   }
@@ -37,12 +38,12 @@ export async function PUT(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const userId = await getDataFromToken(req)
+    const userId = await getDataFromToken(req);
     const user = await User.findOne({ _id: userId }).select(
       '-password -username -email -isVerified -isAdmin -theme -profileImage -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry',
     );
-    if (!user) throw new Error("invalid user operation")
-    if (user.role !== 'owner') throw new Error("Company setup only done by the owner");
+    if (!user) throw new Error('invalid user operation');
+    if (user.role !== 'owner') throw new Error('Company setup only done by the owner');
 
     const reqBody = await req.json();
     const newCompany = new Company(reqBody);
@@ -51,7 +52,7 @@ export async function POST(req: NextRequest) {
     await user.save();
 
     await newCompany.save();
-    return NextResponse.json({ success: true, messate: "Company setup created", data: newCompany });
+    return NextResponse.json({ success: true, messate: 'Company setup created', data: newCompany });
   } catch (error) {
     return handleError.api(error, false);
   }

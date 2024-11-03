@@ -66,7 +66,9 @@ export default function SettingsPage() {
         <div className="collapse join-item collapse-arrow border border-base-300">
           <input type="checkbox" name="collapse" defaultChecked />
           <div className="collapse-title text-xl font-medium">User Profile</div>
-          <div className="collapse-content"><SettingsProfile user={user} updateUser={updateUser} /></div>
+          <div className="collapse-content">
+            <SettingsProfile user={user} updateUser={updateUser} />
+          </div>
         </div>
 
         {/* Theme Settings */}

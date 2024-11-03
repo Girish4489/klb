@@ -188,7 +188,7 @@ const masterRecordNav: NavItem = {
       enable: true,
       icon: DocumentIcon,
       iconClass: subIconClass,
-      accessLevels: ['owner','admin'],
+      accessLevels: ['owner', 'admin'],
     },
   ],
 };

@@ -101,7 +101,7 @@ export const UserProvider: React.FC<UserContextProps> = ({ children }) => {
 
   useEffect(() => {
     if (!isClient) return;
-    
+
     if (pathname.startsWith('/auth')) {
       setUser(initialUserState);
       return;

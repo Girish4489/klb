@@ -1,4 +1,3 @@
-
 const formatDate = (dateString: Date) => {
   const options: Intl.DateTimeFormatOptions = {
     day: 'numeric',

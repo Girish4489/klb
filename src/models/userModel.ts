@@ -38,16 +38,16 @@ interface IUser extends Document {
   }[];
   companyId: ObjectId;
   role:
-  | 'owner'
-  | 'admin'
-  | 'hr'
-  | 'manager'
-  | 'stockManager'
-  | 'cashier'
-  | 'salesAssociate'
-  | 'employee'
-  | 'intern'
-  | 'guest';
+    | 'owner'
+    | 'admin'
+    | 'hr'
+    | 'manager'
+    | 'stockManager'
+    | 'cashier'
+    | 'salesAssociate'
+    | 'employee'
+    | 'intern'
+    | 'guest';
   accessLevels: string[];
 }
 
