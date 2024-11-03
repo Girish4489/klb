@@ -30,8 +30,8 @@ export default function SignupPage() {
       };
       await toast.promise(signup(), {
         loading: 'Signing up...',
-        success: (message) => <b>{message}</b>,
-        error: (error) => <b>{error.message}</b>,
+        success: (message: string) => <b>{message}</b>,
+        error: (error: Error) => <b>{error.message}</b>,
       });
       setTimeout(() => {
         router.push('/auth/login');
@@ -57,8 +57,8 @@ export default function SignupPage() {
       };
       await toast.promise(resendVerification(), {
         loading: 'Sending verification email',
-        success: (message) => <b>{message}</b>,
-        error: (error) => <b>{error.message}</b>,
+        success: (message: string) => <b>{message}</b>,
+        error: (error: Error) => <b>{error.message}</b>,
       });
       setTimeout(() => {
         router.push('/auth/login');

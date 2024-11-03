@@ -30,10 +30,11 @@ export default function LoginPage() {
           throw new Error(response.data.message ?? response.data.error);
         }
       };
-      await toast.promise(login(), {
+
+      await toast.promise<string>(login(), {
         loading: 'Logging in...',
-        success: (message) => <b>{message}</b>,
-        error: (error) => <b>{error.message}</b>,
+        success: (message: string) => <b>{message}</b>,
+        error: (error: Error) => <b>{error.message}</b>,
       });
       setTimeout(() => {
         router.push('/');
@@ -59,10 +60,10 @@ export default function LoginPage() {
           throw new Error(response.data.message ?? response.data.error);
         }
       };
-      await toast.promise(forgotPassword(), {
+      await toast.promise<string>(forgotPassword(), {
         loading: 'Sending reset link...',
-        success: (message) => <b>{message}</b>,
-        error: (error) => <b>{error.message}</b>,
+        success: (message: string) => <b>{message}</b>,
+        error: (error: Error) => <b>{error.message}</b>,
       });
     } catch (error) {
       // console.error(error);

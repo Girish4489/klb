@@ -1,5 +1,5 @@
 'use client';
-import React, { ChangeEvent, FormEvent, useState } from 'react';
+import React, { ChangeEvent, FormEvent, useState, type JSX } from 'react';
 
 /**
  * Represents a form field with various properties.

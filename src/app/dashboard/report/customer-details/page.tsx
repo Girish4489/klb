@@ -47,8 +47,8 @@ export default function CustomerDetails() {
         try {
           toast.promise(fetch(), {
             loading: 'Loading...',
-            success: (message) => <b>{message}</b>,
-            error: (error) => <b>{error.message}</b>,
+            success: (message: string) => <b>{message}</b>,
+            error: (error: Error) => <b>{error.message}</b>,
           });
         } catch (error) {
           // Handle error
@@ -124,8 +124,8 @@ export default function CustomerDetails() {
     try {
       toast.promise(updateCustomer(), {
         loading: 'Updating...',
-        success: (message) => <b>{message}</b>,
-        error: (error) => <b>{error.message}</b>,
+        success: (message: string) => <b>{message}</b>,
+        error: (error: Error) => <b>{error.message}</b>,
       });
     } catch (error) {
       // Handle error
@@ -161,8 +161,8 @@ export default function CustomerDetails() {
       try {
         toast.promise(deleteCustomer(), {
           loading: 'Deleting...',
-          success: (message) => <b>{message}</b>,
-          error: (error) => <b>{error.message}</b>,
+          success: (message: string) => <b>{message}</b>,
+          error: (error: Error) => <b>{error.message}</b>,
         });
       } catch (error) {
         // Handle error

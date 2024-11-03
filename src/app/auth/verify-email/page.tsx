@@ -29,8 +29,8 @@ function VerifyEmailPageWrapper() {
         };
         await toast.promise(verifyUser(), {
           loading: 'Verifying email...',
-          success: (message) => <b>{message}</b>,
-          error: (error) => <b>{error.message}</b>,
+          success: (message: string) => <b>{message}</b>,
+          error: (error: Error) => <b>{error.message}</b>,
         });
         setTimeout(() => {
           router.push('/auth/login');

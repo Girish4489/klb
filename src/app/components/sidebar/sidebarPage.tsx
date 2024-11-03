@@ -1,5 +1,5 @@
 'use client';
-import navigationData, { NavItem, SubNavItem } from '@/../../data/navigationData';
+import navigationData, { NavItem, SubNavItem } from '@data/navigationData';
 import { ChartBarIcon, Cog6ToothIcon, HomeIcon } from '@heroicons/react/24/solid';
 
 import Link from 'next/link';
@@ -25,8 +25,18 @@ const SidebarLink = ({
   </Link>
 );
 
-const SidebarItem = ({ nav, currentPathname }: { nav: NavItem; currentPathname: string }) => (
-  <li className={`${nav.enable ? '' : 'disabled hidden disabled:cursor-not-allowed'}`}>
+const SidebarItem = ({
+  nav,
+  currentPathname,
+  accessLevels,
+}: {
+  nav: NavItem;
+  currentPathname: string;
+  accessLevels: string[];
+}) => (
+  <li
+    className={`${nav.enable && nav.accessLevels.some((level) => accessLevels.includes(level)) ? '' : 'disabled hidden disabled:cursor-not-allowed'}`}
+  >
     <details>
       <summary>
         {nav.icon && <nav.icon className={nav.iconClass} />}
@@ -34,7 +44,10 @@ const SidebarItem = ({ nav, currentPathname }: { nav: NavItem; currentPathname: 
       </summary>
       <ul>
         {nav.subNav.map((subNav: SubNavItem, index) => (
-          <li key={index} className={`${subNav.enable ? '' : 'disabled hidden disabled:cursor-not-allowed'}`}>
+          <li
+            key={index}
+            className={`${subNav.enable && subNav.accessLevels.some((level) => accessLevels.includes(level)) ? '' : 'disabled hidden disabled:cursor-not-allowed'}`}
+          >
             {subNav.enable && nav.enable ? (
               <SidebarLink
                 href={subNav.href ?? '#'}
@@ -56,8 +69,9 @@ const SidebarItem = ({ nav, currentPathname }: { nav: NavItem; currentPathname: 
   </li>
 );
 
-export default function SidebarPage() {
+export default function SidebarPage({ accessLevels }: { accessLevels: Array<string> }) {
   const currentPathname = usePathname();
+
   return (
     <React.Fragment>
       <div className="flex h-full w-full flex-col justify-around overflow-hidden transition-all duration-300 ease-in-out max-sm:fixed max-sm:bottom-0 max-sm:left-0 max-sm:right-0 max-sm:top-0 max-sm:z-50">
@@ -71,7 +85,7 @@ export default function SidebarPage() {
               </Link>
             </li>
             {navigationData.map((nav: NavItem, index) => (
-              <SidebarItem key={index} nav={nav} currentPathname={currentPathname} />
+              <SidebarItem key={index} nav={nav} currentPathname={currentPathname} accessLevels={accessLevels} />
             ))}
           </ul>
         </div>

@@ -2,6 +2,7 @@ import bcryptUtil from '@/app/util/bcrypt/bcrypt';
 import handleError from '@/app/util/error/handleError';
 import { cookie, token } from '@/app/util/token/token';
 import { connect } from '@/dbConfig/dbConfig';
+import Company from '@/models/companyModel';
 import User from '@/models/userModel';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -26,6 +27,26 @@ export async function POST(request: NextRequest) {
     const validPassword = await bcryptUtil.verify(password, user.password);
     if (!validPassword) throw new Error('Invalid password');
 
+    // Fetch company details if user is not an owner
+    let companyUser;
+    if (user.role !== 'owner') {
+      const company = await Company.findById(user.companyId);
+      if (!company) throw new Error('Company does not exist');
+
+      // Fetch user details from company users field
+      companyUser = company.users.find((u) => u.userId.toString() === user._id.toString());
+      if (!companyUser) throw new Error('User does not belong to this company');
+
+      // Check if company user has login access
+      if (!companyUser.access.login) throw new Error('User does not have login access in this company');
+
+      // Update user's role if it has changed
+      if (user.role !== companyUser.role) {
+        user.role = companyUser.role;
+        await user.save();
+      }
+    }
+
     // update last login
     user.lastLogin = new Date();
 
@@ -34,6 +55,8 @@ export async function POST(request: NextRequest) {
       id: user._id.toString(),
       username: user.username,
       email: user.email,
+      companyId: user.companyId ? user.companyId.toString() : undefined,
+      loginAccess: user.role === 'owner' ? true : (companyUser?.access.login ?? false),
     };
 
     // create token

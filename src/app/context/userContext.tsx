@@ -1,80 +1,126 @@
 // src/app/context/UserContext.tsx
 'use client';
 import handleError from '@/app/util/error/handleError';
-import { fetchUserData, UserState } from '@/app/util/user/userFetchUtil/userUtils';
+import { LocalIndexer } from '@/app/util/indexing/indexingUtil';
+import { fetchUserData } from '@/app/util/user/userFetchUtil/userUtils';
+import { IUser } from '@/models/userModel';
+import mongoose from 'mongoose';
 import { usePathname } from 'next/navigation';
-import React, { createContext, ReactNode, useCallback, useContext, useEffect } from 'react';
+import React, { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 interface UserContextProps {
   children: ReactNode;
 }
 
 interface UserContextType {
-  user: UserState;
-  setUser: React.Dispatch<React.SetStateAction<UserState>>;
-  updateUser: (partialUpdate: Partial<UserState>) => void;
+  user: IUser;
+  setUser: React.Dispatch<React.SetStateAction<IUser>>;
+  updateUser: (partialUpdate: Partial<IUser>) => void;
   fetchAndSetUser: () => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
+const userIndexer = new LocalIndexer<IUser>((user) => user.username);
+
+const initialUserState: IUser = {
+  _id: new mongoose.Types.ObjectId(),
+  username: '',
+  email: '',
+  password: '',
+  profileImage: {
+    data: '',
+    __filename: '',
+    contentType: '',
+    uploadAt: new Date(),
+  },
+  preferences: {
+    theme: 'default',
+    fonts: {
+      name: 'Roboto',
+      weight: 400,
+    },
+  },
+  isVerified: false,
+  isAdmin: false,
+  companyId: new mongoose.Types.ObjectId(),
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  forgotPasswordToken: '',
+  forgotPasswordTokenExpiry: new Date(),
+  verifyToken: '',
+  verifyTokenExpiry: new Date(),
+  lastLogin: new Date(),
+  notifications: [],
+  role: 'guest',
+  accessLevels: [],
+} as unknown as IUser;
 
 export const UserProvider: React.FC<UserContextProps> = ({ children }) => {
-  const [user, setUser] = React.useState<UserState>({
-    username: '',
-    email: '',
-    profileImage: {
-      data: new Uint8Array(),
-      __filename: '',
-      contentType: '',
-      uploadAt: new Date(),
-    },
-    preferences: {
-      theme: 'default',
-      fonts: {
-        name: 'Roboto',
-        weight: 400,
-      },
-    },
-    isVerified: false,
-    isAdmin: false,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  } as unknown as UserState);
-
+  const [user, setUser] = React.useState<IUser>(initialUserState);
+  const [isClient, setIsClient] = useState(false);
   const pathname = usePathname();
 
-  // Function to fetch and set user data
+  useEffect(() => {
+    setIsClient(true);
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
   const fetchAndSetUser = useCallback(async () => {
     try {
-      const userData: UserState =
-        (await fetchUserData()) ??
-        (() => {
-          throw new Error('Failed to fetch user data');
-        })();
-      setUser(userData);
-
-      document.documentElement.setAttribute('data-theme', userData.preferences.theme);
-      if (userData.preferences.fonts) {
-        document.body.style.fontFamily = userData.preferences?.fonts?.name ?? 'Roboto';
-        document.body.style.fontWeight = userData.preferences?.fonts?.weight.toString() ?? '400';
+      const userData = await fetchUserData();
+      if (!userData) {
+        throw new Error('User data is undefined');
       }
+      setUser(userData);
+      userIndexer.add(userData);
+
+      if (userData.preferences) {
+        document.documentElement.setAttribute('data-theme', userData.preferences.theme);
+        if (userData.preferences.fonts) {
+          document.body.style.fontFamily = userData.preferences.fonts.name ?? 'Roboto';
+          document.body.style.fontWeight = userData.preferences.fonts.weight.toString() ?? '400';
+        }
+      }
+
+      localStorage.setItem('user', JSON.stringify(userData));
     } catch (error) {
       handleError.toast(error);
     }
   }, []);
 
-  const updateUser = useCallback((partialUpdate: Partial<UserState>) => {
-    setUser((prevUser) => ({ ...prevUser, ...partialUpdate }));
+  const updateUser = useCallback((partialUpdate: Partial<IUser>) => {
+    setUser((prevUser: IUser) => {
+      const updatedUser = { ...prevUser, ...partialUpdate } as IUser;
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      return updatedUser;
+    });
   }, []);
 
-  // Fetch and set user data on initial mount, except for /auth/* routes
   useEffect(() => {
-    if (!pathname.startsWith('/auth')) {
+    if (!isClient) return;
+    
+    if (pathname.startsWith('/auth')) {
+      setUser(initialUserState);
+      return;
+    }
+
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    } else {
       fetchAndSetUser();
     }
-  }, [fetchAndSetUser, pathname]);
+  }, [fetchAndSetUser, pathname, isClient]);
 
-  return <UserContext.Provider value={{ user, setUser, updateUser, fetchAndSetUser }}>{children}</UserContext.Provider>;
+  const contextValue = useMemo(
+    () => ({ user, setUser, updateUser, fetchAndSetUser }),
+    [user, updateUser, fetchAndSetUser],
+  );
+
+  return <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>;
 };
 
 export const useUser = (): UserContextType => {

@@ -43,8 +43,8 @@ export default function BillDetails() {
     try {
       toast.promise(filter(), {
         loading: 'Filtering bills...',
-        success: (message) => <b>{message}</b>,
-        error: (error) => <b>{error.message}</b>,
+        success: (message: string) => <b>{message}</b>,
+        error: (error: Error) => <b>{error.message}</b>,
       });
     } catch (error) {
       handleError.log(error);

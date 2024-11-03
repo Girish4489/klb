@@ -1,7 +1,8 @@
+import { token as tokenUtil } from '@/app/util/token/token';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
   const isPublicPath =
@@ -12,13 +13,21 @@ export function middleware(request: NextRequest) {
     path === '/auth/resetpassword/[token]' ||
     path === '/auth/verifyemail/[token]';
 
-  const token = request.cookies.get('token')?.value || '';
+  const authToken = request.cookies.get('authToken')?.value || '';
+  const tokenData = await tokenUtil.verify(authToken);
 
-  if (isPublicPath && token) {
+  if (tokenData) {
+    const { loginAccess } = tokenData;
+    if (!loginAccess) {
+      return NextResponse.redirect(new URL('/auth/login', request.nextUrl));
+    }
+  }
+
+  if (isPublicPath && authToken) {
     return NextResponse.redirect(new URL('/', request.nextUrl));
   }
 
-  if (!isPublicPath && !token) {
+  if (!isPublicPath && !authToken) {
     return NextResponse.redirect(new URL('/auth/login', request.nextUrl));
   }
 }

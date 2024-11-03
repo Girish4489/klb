@@ -1,4 +1,5 @@
 // /src/app/util/makeApiRequest/makeApiRequest.ts
+import { ICompany } from '@/models/companyModel';
 import { IBill, IReceipt, ITax } from '@/models/klm';
 import axios from 'axios';
 import handleError from '../error/handleError';
@@ -23,6 +24,14 @@ export const ApiPost = {
   Bill: async (data: IBill) => {
     try {
       const res = await axios.post('/api/dashboard/work-manage/bill', data);
+      return res.data;
+    } catch (error) {
+      handleError.throw(error);
+    }
+  },
+  Company: async (data: ICompany) => {
+    try {
+      const res = await axios.post('/api/dashboard/staff-manage/company', data);
       return res.data;
     } catch (error) {
       handleError.throw(error);
@@ -177,6 +186,14 @@ export const ApiPut = {
   Bill: async (id: string, data: IBill) => {
     try {
       const res = await axios.put(`/api/dashboard/work-manage/bill?updateBillId=${id}`, data);
+      return res.data;
+    } catch (error) {
+      handleError.throw(error);
+    }
+  },
+  Company: async (id: string, data: ICompany) => {
+    try {
+      const res = await axios.put(`/api/dashboard/staff-manage/company?updateCompanyId=${id}`, data);
       return res.data;
     } catch (error) {
       handleError.throw(error);

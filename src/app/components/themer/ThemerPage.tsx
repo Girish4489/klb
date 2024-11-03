@@ -1,14 +1,19 @@
 'use client';
 import { Theme, useTheme } from '@/app/context/ThemeContext';
-import { useUser } from '@/app/context/userContext';
 import handleError from '@/app/util/error/handleError';
+import { IUser } from '@/models/userModel';
 import axios from 'axios';
 import React from 'react';
 import toast from 'react-hot-toast';
 
-export default function ThemerPage() {
+export default function ThemerPage({
+  user,
+  setUser,
+}: {
+  user: IUser;
+  setUser: React.Dispatch<React.SetStateAction<IUser>>;
+}) {
   const { themes, currentTheme, setTheme } = useTheme();
-  const { user, setUser } = useUser();
   const [selectedTheme, setSelectedTheme] = React.useState<string | null>(null);
 
   const handleThemeChange = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -28,30 +33,38 @@ export default function ThemerPage() {
         });
         if (response.data.success) {
           setTheme(selectedTheme as Theme);
-          setUser({
-            ...user,
-            preferences: {
-              theme: selectedTheme ?? 'default',
-              fonts: user.preferences?.fonts,
-            },
-          });
+          setUser(
+            (prevUser: IUser) =>
+              ({
+                ...prevUser,
+                preferences: {
+                  ...prevUser.preferences,
+                  theme: selectedTheme ?? 'default',
+                  fonts: prevUser.preferences?.fonts ?? { name: 'Roboto', weight: 400 },
+                },
+              }) as IUser,
+          );
           return { message: response.data.message, theme: selectedTheme };
         } else {
           throw new Error(response.data.message);
         }
       };
-      await toast.promise(saveThemeRequest(), {
+      interface ThemeResponse {
+        theme: string;
+        message: string;
+      }
+
+      await toast.promise<ThemeResponse>(saveThemeRequest(), {
         loading: 'Applying the selected theme...',
-        success: (message) => (
+        success: (message: ThemeResponse) => (
           <div>
             <h3>Theme: {message.theme}</h3>
             <b>{message.message}</b>
           </div>
         ),
-        error: (error) => <b>{error.message}</b>,
+        error: (error: Error) => <b>{error.message}</b>,
       });
     } catch (error) {
-      // toast.error(error.response.data.message);
       handleError.toastAndLog(error);
     }
   };

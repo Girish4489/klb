@@ -5,7 +5,7 @@ import { ApiGet, ApiPost } from '@/app/util/makeApiRequest/makeApiRequest';
 import { FormModal, closeModal, openModal } from '@/app/util/modal/modals';
 import { ICategory, IDimensionTypes, IDimensions, IStyle, IStyleProcess } from '@/models/klm';
 import { PencilSquareIcon, PlusCircleIcon, TrashIcon } from '@heroicons/react/24/outline';
-import React from 'react';
+import React, { type JSX } from 'react';
 import toast from 'react-hot-toast';
 
 /**
@@ -77,8 +77,8 @@ export default function CategoryPage(): JSX.Element {
     try {
       await toast.promise(promise, {
         loading: loadingMessage,
-        success: (message) => <b>{message}</b>,
-        error: (error) => <b>{error.message}</b>,
+        success: (message: string) => <b>{message}</b>,
+        error: (error: Error) => <b>{error.message}</b>,
       });
     } catch (error) {
       handleError.log(error);

@@ -1,5 +1,4 @@
 'use client';
-import { getStyle } from '@/../data/printStyles';
 import LoadingSpinner from '@/app/print-preview/components/LoadingSpinner';
 import PrintHeader from '@/app/print-preview/components/PrintHeader';
 import WorkerBillPreview from '@/app/print-preview/components/WorkerBillPreview';
@@ -7,6 +6,7 @@ import handleError from '@/app/util/error/handleError';
 import { ApiGet } from '@/app/util/makeApiRequest/makeApiRequest';
 import { getSearchParam } from '@/app/util/url/urlUtils';
 import { IBill } from '@/models/klm';
+import { getStyle } from '@data/printStyles';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import klm from '/public/klm.png';
