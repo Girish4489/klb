@@ -28,9 +28,14 @@ export async function GET(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   try {
     const reqBody = await req.json();
-    const updatedCompany = await Company.findOneAndUpdate({}, { ...reqBody, updatedAt: new Date() }, { new: true });
+    const { _id, ...updateData } = reqBody;
+    const updatedCompany = await Company.findByIdAndUpdate(
+      _id,
+      { ...updateData, updatedAt: new Date() },
+      { new: true },
+    );
     if (!updatedCompany) throw new Error('Failed to update company details');
-    return NextResponse.json({ success: true, updatedCompany });
+    return NextResponse.json({ success: true, message: 'Company details updated successfuly', data: updatedCompany });
   } catch (error) {
     return handleError.api(error, false);
   }
@@ -52,7 +57,7 @@ export async function POST(req: NextRequest) {
     await user.save();
 
     await newCompany.save();
-    return NextResponse.json({ success: true, messate: 'Company setup created', data: newCompany });
+    return NextResponse.json({ success: true, message: 'Company setup created', data: newCompany });
   } catch (error) {
     return handleError.api(error, false);
   }
