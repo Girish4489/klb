@@ -7,9 +7,9 @@ import { ApiGet } from '@/app/util/makeApiRequest/makeApiRequest';
 import { getSearchParam } from '@/app/util/url/urlUtils';
 import { IBill } from '@/models/klm';
 import { getStyle } from '@data/printStyles';
+import klm from '@public/klm.png';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import klm from '/public/klm.png';
 
 const CustomerBillPage: React.FC = () => {
   const [bill, setBill] = useState<IBill>();
