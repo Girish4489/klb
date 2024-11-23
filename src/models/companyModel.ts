@@ -18,16 +18,7 @@ interface ICompany extends Document {
   };
   users: {
     userId: ObjectId;
-    companyId: ObjectId;
-    role: 'owner' | 'admin' | 'hr' | 'manager' | 'stockManager' | 'cashier' | 'salesAssociate' | 'employee' | 'intern';
     email: string;
-    mobile: string;
-    access: {
-      login: boolean;
-      canEdit: boolean;
-      canDelete: boolean;
-      canView: boolean;
-    };
   }[];
   createdAt: Date;
   updatedAt: Date;
@@ -49,20 +40,7 @@ const companySchema: Schema<ICompany> = new mongoose.Schema({
   users: [
     {
       userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-      companyId: { type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true },
-      role: {
-        type: String,
-        enum: ['owner', 'admin', 'hr', 'manager', 'stockManager', 'cashier', 'salesAssociate', 'employee', 'intern'],
-        default: 'employee',
-      },
       email: { type: String, required: true },
-      mobile: { type: String, required: true },
-      access: {
-        login: { type: Boolean, default: true },
-        canEdit: { type: Boolean, default: false },
-        canDelete: { type: Boolean, default: false },
-        canView: { type: Boolean, default: true },
-      },
     },
   ],
   createdAt: { type: Date, default: Date.now },

@@ -1,6 +1,6 @@
 import handleError from '@/app/util/error/handleError';
 import { connect } from '@/dbConfig/dbConfig';
-import { getDataFromToken } from '@/helpers/getDataFromToken';
+import { TokenData } from '@/helpers/getDataFromToken';
 import User from '@/models/userModel';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -8,7 +8,8 @@ connect();
 
 export async function POST(request: NextRequest) {
   try {
-    const userId = await getDataFromToken(request);
+    const tokenData = await TokenData.create(request);
+    const userId = tokenData.getId();
     const reqBody = await request.json();
 
     const updateResult = await User.updateOne({ _id: userId }, { $set: { 'preferences.theme': reqBody.theme } });
@@ -34,7 +35,8 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const userId = await getDataFromToken(request);
+    const tokenData = await TokenData.create(request);
+    const userId = tokenData.getId();
     const user = await User.findOne({ _id: userId }).select(
       '-password -__v -isAdmin -isVerified -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry -profileImage -email',
     );

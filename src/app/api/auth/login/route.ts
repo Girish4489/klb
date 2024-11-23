@@ -29,8 +29,8 @@ export async function POST(request: NextRequest) {
 
     // Fetch company details if user is not an owner
     let companyUser;
-    if (user.role !== 'owner') {
-      const company = await Company.findById(user.companyId);
+    if (user.companyAccess.role !== 'owner') {
+      const company = await Company.findById(user.companyAccess.companyId);
       if (!company) throw new Error('Company does not exist');
 
       // Fetch user details from company users field
@@ -38,12 +38,8 @@ export async function POST(request: NextRequest) {
       if (!companyUser) throw new Error('User does not belong to this company');
 
       // Check if company user has login access
-      if (!companyUser.access.login) throw new Error('User does not have login access in this company');
-
-      // Update user's role if it has changed
-      if (user.role !== companyUser.role) {
-        user.role = companyUser.role;
-        await user.save();
+      if (!user.companyAccess.access.login) {
+        throw new Error('User does not have login access in this company');
       }
     }
 
@@ -55,8 +51,7 @@ export async function POST(request: NextRequest) {
       id: user._id.toString(),
       username: user.username,
       email: user.email,
-      companyId: user.companyId ? user.companyId.toString() : undefined,
-      loginAccess: user.role === 'owner' ? true : (companyUser?.access.login ?? false),
+      companyAccess: user.companyAccess,
     };
 
     // create token

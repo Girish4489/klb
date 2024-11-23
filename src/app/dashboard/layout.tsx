@@ -84,7 +84,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div
           className={`py-1.5 transition-transform duration-700 ease-in-out max-sm:py-1.5 ${isSidebarOpen ? 'xl:w-1/7 h-full w-screen translate-x-0 rounded-e-2xl border-r border-neutral shadow-2xl max-sm:w-3/5 sm:w-2/4 md:w-1/3 lg:w-1/4 2xl:w-1/5' : 'w-0 -translate-x-full'}`}
         >
-          <Sidebar accessLevels={user.accessLevels || []} />
+          <Sidebar accessLevels={user?.companyAccess?.accessLevels || []} />
         </div>
         <div
           className={`flex w-full flex-col flex-wrap transition-all duration-700 ease-in-out ${isSidebarOpen ? ' max-sm:w-2/5 max-sm:bg-base-200 max-sm:bg-transparent' : 'w-full'}`}

@@ -1,3 +1,4 @@
+import { IUser } from '@/models/userModel';
 import jwt from 'jsonwebtoken';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -5,9 +6,7 @@ interface TokenData {
   id: string;
   username?: string;
   email?: string;
-  companyId?: string;
-  loginAccess?: boolean;
-  accessLevels?: string[];
+  companyAccess?: IUser['companyAccess'];
   [key: string]: unknown;
 }
 

@@ -7,7 +7,7 @@ import { ApiPut } from '@/app/util/makeApiRequest/makeApiRequest';
 import { ICompany } from '@/models/companyModel';
 import mongoose from 'mongoose';
 import { usePathname } from 'next/navigation';
-import React, { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
+import React, { ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 
 interface CompanyContextProps {
@@ -20,6 +20,7 @@ interface CompanyContextType {
   updateCompany: (partialUpdate: Partial<ICompany>) => void;
   fetchAndSetCompany: (userId: string, role: string) => void;
   saveCompany: (company: ICompany) => Promise<void>;
+  addUserToCompany: (userId: string, email: string) => void;
 }
 
 const CompanyContext = createContext<CompanyContextType | undefined>(undefined);
@@ -51,6 +52,8 @@ export const CompanyProvider: React.FC<CompanyContextProps> = ({ children }) => 
 
   const fetchAndSetCompany = useCallback(async (userId: string, role: string) => {
     try {
+      // if the role is guest then no need to fetch company data
+      if (role === 'guest') return null;
       const companyData: ICompany = await fetchCompanyData(userId, role);
       setCompany(companyData);
 
@@ -83,7 +86,7 @@ export const CompanyProvider: React.FC<CompanyContextProps> = ({ children }) => 
             ...partialUpdate.contactDetails,
           };
         }
-        const response = await ApiPut.Company(updatedCompany._id.toString(), updatedCompany);
+        const response = await ApiPut.company.updateCompany(updatedCompany._id.toString(), updatedCompany);
         if (!response.success) throw new Error(response.message ?? 'Failed to update company details');
         setCompany(response.data);
         localStorage.setItem('company', JSON.stringify(response.data));
@@ -104,7 +107,7 @@ export const CompanyProvider: React.FC<CompanyContextProps> = ({ children }) => 
     if (!confirmed) return;
 
     try {
-      const updatedCompany = await ApiPut.Company(company._id.toString(), company);
+      const updatedCompany = await ApiPut.company.updateCompany(company._id.toString(), company);
       setCompany(updatedCompany);
       localStorage.setItem('company', JSON.stringify(updatedCompany));
       handleError.toast('Company details updated successfully');
@@ -112,6 +115,24 @@ export const CompanyProvider: React.FC<CompanyContextProps> = ({ children }) => 
       handleError.toastAndLog(error);
     }
   }, []);
+
+  const addUserToCompany = useCallback(
+    async (userId: string, email: string) => {
+      try {
+        const updatedUsers = [
+          ...(company?.users || []),
+          {
+            userId: new mongoose.Types.ObjectId(userId),
+            email,
+          },
+        ];
+        await updateCompany({ users: updatedUsers });
+      } catch (error) {
+        handleError.toastAndLog(error);
+      }
+    },
+    [company, updateCompany],
+  );
 
   useEffect(() => {
     if (pathname.startsWith('/auth')) {
@@ -124,16 +145,24 @@ export const CompanyProvider: React.FC<CompanyContextProps> = ({ children }) => 
     const storedCompany = localStorage.getItem('company');
     if (storedCompany) {
       setCompany(JSON.parse(storedCompany) as ICompany);
-    } else if (user && user._id && user.role) {
-      fetchAndSetCompany(user._id.toString(), user.role);
+    } else if (user && user._id && user.companyAccess.role) {
+      fetchAndSetCompany(user._id.toString(), user.companyAccess.role);
     }
   }, [fetchAndSetCompany, pathname, user]);
 
-  return (
-    <CompanyContext.Provider value={{ company, setCompany, updateCompany, fetchAndSetCompany, saveCompany }}>
-      {children}
-    </CompanyContext.Provider>
+  const contextValue = useMemo(
+    () => ({
+      company,
+      setCompany,
+      updateCompany,
+      fetchAndSetCompany,
+      saveCompany,
+      addUserToCompany,
+    }),
+    [company, updateCompany, fetchAndSetCompany, saveCompany, addUserToCompany],
   );
+
+  return <CompanyContext.Provider value={contextValue}>{children}</CompanyContext.Provider>;
 };
 
 export const useCompany = (): CompanyContextType => {

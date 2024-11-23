@@ -17,6 +17,13 @@ export async function middleware(request: NextRequest) {
   const tokenData = await tokenUtil.verify(authToken);
 
   if (tokenData) {
+    const { companyAccess } = tokenData;
+    if (!companyAccess?.access.login) {
+      return NextResponse.redirect(new URL('/auth/login', request.nextUrl));
+    }
+  }
+
+  if (tokenData) {
     const { loginAccess } = tokenData;
     if (!loginAccess) {
       return NextResponse.redirect(new URL('/auth/login', request.nextUrl));

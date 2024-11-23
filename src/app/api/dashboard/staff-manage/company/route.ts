@@ -1,6 +1,6 @@
 import handleError from '@/app/util/error/handleError';
 import { connect } from '@/dbConfig/dbConfig';
-import { getDataFromToken } from '@/helpers/getDataFromToken';
+import { TokenData } from '@/helpers/getDataFromToken';
 import Company from '@/models/companyModel';
 import User from '@/models/userModel';
 import { NextRequest, NextResponse } from 'next/server';
@@ -9,15 +9,17 @@ connect();
 
 export async function GET(req: NextRequest) {
   try {
-    const { userId } = await req.json();
+    const tokenData = await TokenData.create(req);
+    const userId = tokenData.getId();
     const user = await User.findById({ _id: userId }).select(
       '-password -username -email -isVerified -isAdmin -theme -profileImage -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry',
     );
     if (!user) throw new Error('Invalid user operation');
-    if (!user.companyId && user.role !== 'owner')
+    if (!user.companyAccess.companyId && user.companyAccess.role !== 'owner')
       throw new Error('You account not linked with your company\nPlease contact Admin/Hr for linking');
-    if (!user.companyId && user.role === 'owner') throw new Error('Company not yet created\nPlease register company');
-    const company = await Company.findOne({ _id: user.companyId });
+    if (!user.companyAccess.companyId && user.companyAccess.role === 'owner')
+      throw new Error('Company not yet created\nPlease register company');
+    const company = await Company.findOne({ _id: user.companyAccess.companyId });
     if (!company) throw new Error('Company not found');
     return NextResponse.json({ success: true, data: company, message: 'Company details fetched successfuly' });
   } catch (error) {
@@ -35,7 +37,19 @@ export async function PUT(req: NextRequest) {
       { new: true },
     );
     if (!updatedCompany) throw new Error('Failed to update company details');
-    return NextResponse.json({ success: true, message: 'Company details updated successfuly', data: updatedCompany });
+
+    // Update user roles and access levels
+    if (updateData.users) {
+      for (const user of updateData.users) {
+        await User.findByIdAndUpdate(user.userId, {
+          'companyAccess.role': user.role,
+          'companyAccess.access': user.access,
+          'companyAccess.accessLevels': user.accessLevels,
+        });
+      }
+    }
+
+    return NextResponse.json({ success: true, message: 'Company details updated successfully', data: updatedCompany });
   } catch (error) {
     return handleError.api(error, false);
   }
@@ -43,17 +57,18 @@ export async function PUT(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const userId = await getDataFromToken(req);
+    const tokenData = await TokenData.create(req);
+    const userId = tokenData.getId();
     const user = await User.findOne({ _id: userId }).select(
-      '-password -username -email -isVerified -isAdmin -theme -profileImage -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry',
+      '-password -username -email -isVerified -isAdmin -theme -profileImage -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry -preferences',
     );
-    if (!user) throw new Error('invalid user operation');
-    if (user.role !== 'owner') throw new Error('Company setup only done by the owner');
+    if (!user) throw new Error('invalid user operation..');
+    if (user.companyAccess.role !== 'owner') throw new Error('Company setup only done by the owner');
 
     const reqBody = await req.json();
     const newCompany = new Company(reqBody);
 
-    user.companyId = newCompany._id;
+    user.companyAccess.companyId = newCompany._id;
     await user.save();
 
     await newCompany.save();
