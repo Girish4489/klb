@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import toast from 'react-hot-toast';
 
 const handleErrorToast = (error: unknown): void => {
-  if (error instanceof Error) {
+  if (error instanceof Error && error.message) {
     toast.error(error.message);
   } else {
     toast.error('An unknown error occurred');
@@ -10,7 +10,7 @@ const handleErrorToast = (error: unknown): void => {
 };
 
 const handleErrorLog = (error: unknown): void => {
-  if (error instanceof Error) {
+  if (error instanceof Error && error.message) {
     console.error(error.message);
   } else {
     console.error('An unknown error occurred');
@@ -23,7 +23,7 @@ const handleErrorToastAndLog = (error: unknown): void => {
 };
 
 const throwError = (error: unknown): never => {
-  if (error instanceof Error) {
+  if (error instanceof Error && error.message) {
     throw new Error(error.message);
   } else {
     throw new Error('An unknown error occurred');
@@ -38,7 +38,7 @@ const throwError = (error: unknown): never => {
  * @returns A JSON response containing the error message and the success status.
  */
 const handleApiError = (error: unknown, success: boolean = false) => {
-  if (error instanceof Error) {
+  if (error instanceof Error && error.message) {
     return NextResponse.json({ message: error.message, success: success });
   } else {
     return NextResponse.json({ message: 'An unknown error occurred', success: success });
