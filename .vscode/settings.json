@@ -1,3 +1,6 @@
 {
-  "npm.packageManager": "auto"
+  "npm.packageManager": "auto",
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
