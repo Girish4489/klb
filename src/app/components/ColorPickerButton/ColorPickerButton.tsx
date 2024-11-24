@@ -1,6 +1,6 @@
 'use client';
 import { IColor } from '@/models/klm';
-import colors from '@data/colors';
+import colors, { basicColors } from '@data/colors';
 import React, { useEffect, useState } from 'react';
 
 interface ColorPickerButtonProps {
@@ -13,6 +13,12 @@ interface ColorPickerButtonProps {
 
 const predefinedColors: IColor[] = Object.entries(colors).map(([name, hex]) => ({
   type: 'Selected',
+  name,
+  hex,
+}));
+
+const formattedBasicColors: IColor[] = Object.entries(basicColors).map(([name, hex]) => ({
+  type: 'Basic',
   name,
   hex,
 }));
@@ -83,6 +89,26 @@ function ColorPickerButton({
                   value={selectedColor?.hex || '#000000'}
                   onChange={handleColorPickerChange}
                 />
+              </div>
+            </div>
+            <div className="flex flex-col gap-1">
+              <h2 className="label label-text">Basic Colors</h2>
+              <div className="grid grid-cols-4 gap-2">
+                {formattedBasicColors.map((color) => (
+                  <button
+                    key={color.name}
+                    className={`btn btn-sm m-1 h-11 grow flex-wrap justify-between text-wrap max-sm:h-fit ${
+                      selectedColor?.name === color.name ? 'border-2 border-info' : ''
+                    }`}
+                    onClick={() => handleColorSelect(color)}
+                  >
+                    {color.name
+                      .split(/(?=[A-Z])/)
+                      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                      .join(' ')}
+                    <div className="badge badge-lg h-8 w-20" style={{ backgroundColor: color.hex }} />
+                  </button>
+                ))}
               </div>
             </div>
             <div className="flex flex-col gap-1">

@@ -59,7 +59,7 @@ interface IDimensions {
 }
 
 interface IColor {
-  type: 'Custom' | 'Selected';
+  type: 'Custom' | 'Selected' | 'Basic';
   name: string;
   hex: string;
 }
@@ -326,7 +326,7 @@ const billSchema: Schema<IBill> = new Schema<IBill>(
         color: {
           type: {
             type: String,
-            enum: ['Custom', 'Selected'],
+            enum: ['Custom', 'Selected', 'Basic'],
             default: 'Selected',
           },
           name: { type: String, required: true },
