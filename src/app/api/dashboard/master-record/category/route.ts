@@ -2,7 +2,7 @@
 // /src/app/api/dashboard/master-record/category/route.ts
 import handleError from '@/app/util/error/handleError';
 import { connect } from '@/dbConfig/dbConfig';
-import { getDataFromToken } from '@/helpers/getDataFromToken';
+import { TokenData } from '@/helpers/getDataFromToken';
 import { Category, ICategory, IDimensionTypes, IStyleProcess } from '@/models/klm';
 import User from '@/models/userModel';
 import mongoose from 'mongoose';
@@ -12,6 +12,9 @@ connect();
 
 export async function POST(request: NextRequest) {
   try {
+    const tokenData = await TokenData.create(request);
+    const userId = tokenData.getId();
+
     const handleResponse = (message: string, success: boolean, data?: any): NextResponse => {
       return NextResponse.json({
         message,
@@ -329,7 +332,6 @@ export async function POST(request: NextRequest) {
     };
 
     const isAdmin = async () => {
-      const userId = await getDataFromToken(request);
       const user = await User.findOne({ _id: userId }).select(
         '-password -_id -__v -email -isVerified -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry -theme -profileImage',
       );

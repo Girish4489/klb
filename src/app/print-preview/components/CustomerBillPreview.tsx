@@ -167,30 +167,27 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, isDataL
                         {order.styleProcess.length > 0 && <hr className={`w-full`} />}
                       </span>
                     )}
-                    {order.orderNotes ||
-                      (order.measurement && (
-                        <span className="flex w-full flex-row items-center gap-8">
-                          {order.orderNotes && (
-                            <span className="flex items-center gap-2">
-                              <h1>Note:</h1>
-                              <p className="process-box">{(order.orderNotes ?? '').split('\n')}</p>
-                            </span>
-                          )}
-                          {order.measurement && (
-                            <span className="flex grow items-center gap-2">
-                              <h1>Measurement:</h1>
-                              <p className="process-box">
-                                {(order.measurement ?? '').split('\n').map((line, index) => (
-                                  <React.Fragment key={index}>
-                                    {line}
-                                    <br />
-                                  </React.Fragment>
-                                ))}
-                              </p>
-                            </span>
-                          )}
+                    <span className="flex w-full flex-row items-center gap-8">
+                      {order.orderNotes && (
+                        <span className="flex items-center gap-2">
+                          <h1>Note:</h1>
+                          <p className="process-box">{(order.orderNotes ?? '').split('\n')}</p>
                         </span>
-                      ))}
+                      )}
+                      {order.measurement && (
+                        <span className="flex grow items-center gap-2">
+                          <h1>Measurement:</h1>
+                          <p className="process-box">
+                            {(order.measurement ?? '').split('\n').map((line, index) => (
+                              <React.Fragment key={index}>
+                                {line}
+                                <br />
+                              </React.Fragment>
+                            ))}
+                          </p>
+                        </span>
+                      )}
+                    </span>
                     {order.dimension.length > 0 && (
                       <span className="flex w-full flex-col items-center gap-1">
                         {/* <h1>Dimensions:</h1> */}
@@ -249,9 +246,9 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, isDataL
                     </span>
                   </span>
 
-                  <span className="field grow justify-center">
-                    <h2>Grand:</h2>
-                    <h3>{bill?.grandTotal}</h3>
+                  <span className="flex grow items-center justify-around gap-3">
+                    <h2 className="grow text-end text-lg">Grand:</h2>
+                    <h2 className="grow text-start text-lg">{bill?.grandTotal}</h2>
                   </span>
                   <span className="flex grow flex-row items-center justify-around gap-4 ">
                     <span className="flex flex-row items-center gap-2">

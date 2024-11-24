@@ -1,16 +1,18 @@
 # [Kalamandir](https://github.com/Girish4489/kalamandir/)
 
-<center>
+<div align="center">
 
 ![KLM](/src/app/klm.png)
 
-</center>
+</div>
 
 ## Getting Started
 
 > Download npm dependencies
 
 ```bash
+pnpm install
+# or
 npm install
 # or
 yarn install
@@ -35,46 +37,29 @@ DBTYPE=offline # online based on where you want store uncomment MONGO_ONLINE_URI
 
 [Set Gmail password for SMTP](https://support.google.com/mail/answer/185833)
 
-> Docker
-
-```bash
-# add to .env
-MONGO_DOCKER_URI=mongodb://db:27017/
-DOCKER_USERNAME= # optional
-DOCKER_PASSWORD= # optional
-DOCKER=true
-
-# Run
-docker-compose up -d --build # for build and run
-docker-compose up # to run the application
-```
-
 > First, run the development server:
 
 ```bash
+pnpm dev
+# or
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
 # or
 bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Learn More
+## Contributing
 
-To learn more about Next.js, take a look at the following resources:
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [GitHub repository](https://github.com/Girish4489/kalamandir/) - your feedback and contributions are welcome!
-
-## Credits
-
-- [Authentication](https://youtube.com/playlist?list=PLRAV69dS1uWR7KF-zV6YPYtKYEHENETyE&si=fWih85bZai-wrBHY) and verification ideas by [Hitesh Choudhary](https://www.youtube.com/@HiteshChoudharydotcom)
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ## License
 

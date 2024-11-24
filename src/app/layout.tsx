@@ -1,10 +1,11 @@
 import TopbarLoader from '@/app/components/topbarLoader/page';
 import { ThemeProvider } from '@/app/context/ThemeContext';
+import { CompanyProvider } from '@/app/context/companyContext';
 import { UserProvider } from '@/app/context/userContext';
+import '@/app/globals.css';
 import type { Metadata } from 'next';
 import React from 'react';
 import { Toaster } from 'react-hot-toast';
-import './globals.css';
 
 export const metadata: Metadata = {
   title: 'Kalamandir',
@@ -26,11 +27,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
       <ThemeProvider>
         <UserProvider>
-          <body>
-            <TopbarLoader />
-            <Toaster />
-            {children}
-          </body>
+          <CompanyProvider>
+            <body>
+              <TopbarLoader />
+              <Toaster />
+              {children}
+            </body>
+          </CompanyProvider>
         </UserProvider>
       </ThemeProvider>
     </html>

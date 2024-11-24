@@ -334,8 +334,8 @@ export default function BillPage() {
       if (!(bill ?? {})._id) throw new Error('No bill ID found to update');
       await toast.promise(updateBill(), {
         loading: 'Updating bill...',
-        success: (message) => <b>{message}</b>,
-        error: (error) => <b>{error.message}</b>,
+        success: (message: string) => <b>{message}</b>,
+        error: (error: Error) => <b>{error.message}</b>,
       });
     } catch (error) {
       handleError.toastAndLog(error);

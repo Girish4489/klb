@@ -1,4 +1,5 @@
 'use client';
+import { useCompany } from '@/app/context/companyContext';
 import { useUser } from '@/app/context/userContext';
 import handleError from '@/app/util/error/handleError';
 import { IUser } from '@/models/userModel';
@@ -10,6 +11,8 @@ import { toast } from 'react-hot-toast';
 export default function LogoutPage() {
   const router = useRouter();
   const { setUser } = useUser();
+  const { setCompany } = useCompany();
+
   const logout = async () => {
     try {
       const res = await axios.get('/api/auth/logout');
@@ -35,6 +38,11 @@ export default function LogoutPage() {
           createdAt: new Date(),
           updatedAt: new Date(),
         } as unknown as IUser);
+
+        // Remove company details
+        setCompany(undefined);
+        localStorage.removeItem('company');
+
         toast.success(res.data.message ?? 'Logout successful');
         setTimeout(() => {
           router.push('/auth/login');
@@ -43,7 +51,6 @@ export default function LogoutPage() {
         throw new Error(res.data.message ?? 'Failed to logout');
       }
     } catch (error) {
-      // toast.error(error.message);
       handleError.toastAndLog(error);
     }
   };

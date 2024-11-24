@@ -1,5 +1,7 @@
 // /src/app/util/makeApiRequest/makeApiRequest.ts
+import { ICompany } from '@/models/companyModel';
 import { IBill, IReceipt, ITax } from '@/models/klm';
+import { RoleType } from '@/models/userModel';
 import axios from 'axios';
 import handleError from '../error/handleError';
 
@@ -27,6 +29,16 @@ export const ApiPost = {
     } catch (error) {
       handleError.throw(error);
     }
+  },
+  Company: {
+    AddNewCompany: async (data: ICompany) => {
+      try {
+        const res = await axios.post('/api/dashboard/staff-manage/company', data);
+        return res.data;
+      } catch (error) {
+        handleError.throw(error);
+      }
+    },
   },
   Receipt: {
     SaveReceipt: async (data: IReceipt) => {
@@ -135,6 +147,34 @@ export const ApiGet = {
       }
     },
   },
+  User: {},
+  Company: {
+    getCompany: async (id: string) => {
+      try {
+        const res = await axios.get(`/api/dashboard/staff-manage/company?companyId=${id}`);
+        return res.data;
+      } catch (error) {
+        handleError.throw(error);
+      }
+    },
+    getCompanies: async () => {
+      try {
+        const res = await axios.get(`/api/dashboard/staff-manage/company`);
+        return res.data;
+      } catch (error) {
+        handleError.throw(error);
+      }
+    },
+    // returns company access of all users in the company
+    UsersByEmails: async (emails: string[]) => {
+      try {
+        const res = await axios.post('/api/auth/company/user', { emails });
+        return res.data;
+      } catch (error) {
+        handleError.throw(error);
+      }
+    },
+  },
   printDocument: {
     PrintBill: async (printType: string, billNumber: number) => {
       try {
@@ -158,6 +198,59 @@ export const ApiGet = {
 };
 
 export const ApiPut = {
+  User: {
+    updateUserRole: async (email: string, role: RoleType) => {
+      try {
+        const res = await axios.put(`/api/auth/user/email`, { email, data: { companyAccess: { role } } });
+        return res.data;
+      } catch (error) {
+        handleError.throw(error);
+      }
+    },
+    updateUserAccess: async (
+      email: string,
+      access: { login: boolean; canEdit: boolean; canDelete: boolean; canView: boolean },
+    ) => {
+      try {
+        const res = await axios.put(`/api/auth/user/email`, { email, data: { companyAccess: { access } } });
+        return res.data;
+      } catch (error) {
+        handleError.throw(error);
+      }
+    },
+    updateUserAccessLevels: async (email: string, accessLevels: RoleType[]) => {
+      try {
+        const res = await axios.put(`/api/auth/user/email`, { email, data: { companyAccess: { accessLevels } } });
+        return res.data;
+      } catch (error) {
+        handleError.throw(error);
+      }
+    },
+    removeUserAccessLevel: async (email: string, removeAccessLevel: RoleType) => {
+      try {
+        const res = await axios.put(`/api/auth/user/email`, { email, data: { companyAccess: { removeAccessLevel } } });
+        return res.data;
+      } catch (error) {
+        handleError.throw(error);
+      }
+    },
+    updateUserSecondaryEmails: async (email: string, secondaryEmails: string[]) => {
+      try {
+        const res = await axios.put(`/api/auth/user/email`, { email, data: { secondaryEmails } });
+        return res.data;
+      } catch (error) {
+        handleError.throw(error);
+      }
+    },
+    updateUserMobile: async (email: string, mobile: string[]) => {
+      try {
+        const res = await axios.put(`/api/auth/user/email`, { email, data: { mobile } });
+        return res.data;
+      } catch (error) {
+        handleError.throw(error);
+      }
+    },
+  },
   Tax: async (
     id: string,
     data: {
@@ -181,6 +274,16 @@ export const ApiPut = {
     } catch (error) {
       handleError.throw(error);
     }
+  },
+  company: {
+    updateCompany: async (id: string, data: ICompany) => {
+      try {
+        const res = await axios.put(`/api/dashboard/staff-manage/company?updateCompanyId=${id}`, data);
+        return res.data;
+      } catch (error) {
+        handleError.throw(error);
+      }
+    },
   },
 };
 

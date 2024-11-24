@@ -67,7 +67,7 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, isDataLoade
                     <span className="flex flex-row items-center justify-between gap-8">
                       <span className="flex flex-row items-center gap-8">
                         <h1>{orderIndex + 1}.</h1>
-                        <span className="flex flex-row items-center gap-4">
+                        <span className="flex flex-row items-center gap-4 text-base">
                           {/* <h1>Category:</h1> */}
                           <p>{order.category?.categoryName}</p>
                         </span>
@@ -94,11 +94,11 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, isDataLoade
                         <p>{order.color?.hex ? order.color.hex : 'NA'}</p> */}
                       </span>
                     </span>
-                    <hr style={{ margin: 0, padding: 0 }} />
+                    <hr className="m-auto my-0.5 w-[100%] rounded-box border border-dashed border-black" />
                     {order.styleProcess.length > 0 && (
                       <span className="flex w-full flex-col items-center gap-1">
                         {/* <h1>Styles:</h1> */}
-                        <span className="flex w-full items-center gap-8">
+                        <span className="flex w-full items-center gap-8 text-base">
                           {order.styleProcess.map((style, styleIndex) => (
                             <span
                               key={styleIndex}
@@ -115,37 +115,40 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, isDataLoade
                             </span>
                           ))}
                         </span>
-                        {order.styleProcess.length > 0 && <hr className={`w-full`} />}
+                        {order.styleProcess.length > 0 && (
+                          <hr className="m-auto my-0.5 w-[100%] rounded-box border border-black" />
+                        )}
                       </span>
                     )}
-                    {order.orderNotes ||
-                      (order.measurement && (
-                        <span className="flex w-full flex-row items-center gap-8">
-                          {order.orderNotes && (
-                            <span className="flex items-center gap-2">
-                              <h1>Note:</h1>
-                              <p className="process-box">{(order.orderNotes ?? '').split('\n')}</p>
-                            </span>
-                          )}
-                          {order.measurement && (
-                            <span className="flex grow items-center gap-2">
-                              <h1>Measurement:</h1>
-                              <p className="process-box">
-                                {(order.measurement ?? '').split('\n').map((line, index) => (
-                                  <React.Fragment key={index}>
-                                    {line}
-                                    <br />
-                                  </React.Fragment>
-                                ))}
-                              </p>
-                            </span>
-                          )}
+                    <span className="flex w-full flex-row items-center gap-8">
+                      {order.orderNotes && (
+                        <span className="flex items-center gap-2">
+                          <h1>Notes:</h1>
+                          <p className="text-pretty rounded-box border border-black px-2 py-0.5 text-base font-extrabold">
+                            {(order.orderNotes ?? '').split('\n')}
+                          </p>
                         </span>
-                      ))}
+                      )}
+                      {order.measurement && (
+                        <span className="flex grow items-center gap-2">
+                          <h1>Measurement:</h1>
+                          <p className="text-pretty rounded-box border border-black px-2 py-0.5 text-base font-extrabold">
+                            {(order.measurement ?? '').split('\n').map((line, index) => (
+                              <React.Fragment key={index}>
+                                {line}
+                                <br />
+                              </React.Fragment>
+                            ))}
+                          </p>
+                        </span>
+                      )}
+                    </span>
                     {order.dimension.length > 0 && (
                       <span className="flex w-full flex-col items-center gap-1">
                         {/* <h1>Dimensions:</h1> */}
-                        {order.dimension.length > 0 && <hr className={`w-full`} />}
+                        {order.dimension.length > 0 && (
+                          <hr className="m-auto my-0.5 w-[100%] rounded-box border border-black" />
+                        )}
                         <span className="flex w-full items-start gap-8">
                           {order.dimension.map((dimension, dimensionIndex) => (
                             <span
@@ -153,14 +156,13 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, isDataLoade
                               // className="item-center process-box grow-1 flex flex-col justify-start"
                               className="item-center flex w-fit flex-col items-center justify-start rounded-box border border-black px-2 py-1"
                             >
-                              <span className="flex flex-row items-center justify-around gap-8">
+                              <span className="flex flex-row items-center justify-around gap-8 text-base">
                                 <h1>
                                   {dimensionIndex + 1}). {dimension.dimensionTypeName}:{' '}
                                 </h1>
-                                <hr />
                                 <p>{dimension.dimensionName}</p>
                               </span>
-                              <hr className="m-0 w-full border bg-black p-0" />
+                              <hr className="m-auto my-0.5 w-full rounded-box border border-black" />
                               <span className="flex flex-row items-center justify-center gap-8">
                                 <p>{dimension.note}</p>
                               </span>
@@ -170,7 +172,8 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, isDataLoade
                       </span>
                     )}
                   </div>
-                  <span className="py-[1]" />
+                  {/* <span className="py-[1]" /> */}
+                  <hr className="m-auto my-1.5 w-[95%] rounded-box border-2 border-black" />
                 </span>
               ))}
             </span>

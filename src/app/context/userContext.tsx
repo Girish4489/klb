@@ -1,80 +1,259 @@
 // src/app/context/UserContext.tsx
 'use client';
 import handleError from '@/app/util/error/handleError';
-import { fetchUserData, UserState } from '@/app/util/user/userFetchUtil/userUtils';
+import { LocalIndexer } from '@/app/util/indexing/indexingUtil';
+import { ApiPut } from '@/app/util/makeApiRequest/makeApiRequest';
+import { fetchUserData } from '@/app/util/user/userFetchUtil/userUtils';
+import { IUser, RoleType } from '@/models/userModel';
+import mongoose from 'mongoose';
 import { usePathname } from 'next/navigation';
-import React, { createContext, ReactNode, useCallback, useContext, useEffect } from 'react';
+import React, { ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 interface UserContextProps {
   children: ReactNode;
 }
 
 interface UserContextType {
-  user: UserState;
-  setUser: React.Dispatch<React.SetStateAction<UserState>>;
-  updateUser: (partialUpdate: Partial<UserState>) => void;
+  user: IUser;
+  setUser: React.Dispatch<React.SetStateAction<IUser>>;
+  updateUser: (partialUpdate: Partial<IUser>) => void;
   fetchAndSetUser: () => void;
+  updateUserAccess: (email: string, access: IUser['companyAccess']['access']) => Promise<void>;
+  updateUserRole: (email: string, role: RoleType) => Promise<void>;
+  addUserAccessLevel: (email: string, accessLevels: RoleType[]) => Promise<void>;
+  removeUserAccessLevel: (email: string, accessLevel: RoleType) => Promise<void>;
+  updateUserSecondaryEmails: (email: string, secondaryEmails: string[]) => Promise<void>;
+  updateUserMobile: (email: string, mobile: string[]) => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
+const userIndexer = new LocalIndexer<IUser>((user) => user.username);
+
+const initialUserState: IUser = {
+  _id: new mongoose.Types.ObjectId(),
+  username: '',
+  email: '',
+  password: '',
+  mobile: '',
+  profileImage: {
+    data: '',
+    __filename: '',
+    contentType: '',
+    uploadAt: new Date(),
+  },
+  preferences: {
+    theme: 'default',
+    fonts: {
+      name: 'Roboto',
+      weight: 400,
+    },
+  },
+  isVerified: false,
+  isAdmin: false,
+  companyAccess: {
+    companyId: new mongoose.Types.ObjectId(),
+    role: 'guest',
+    access: {
+      login: true,
+      canEdit: false,
+      canDelete: false,
+      canView: true,
+    },
+    accessLevels: ['guest'],
+  },
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  forgotPasswordToken: '',
+  forgotPasswordTokenExpiry: new Date(),
+  verifyToken: '',
+  verifyTokenExpiry: new Date(),
+  lastLogin: new Date(),
+  notifications: [],
+} as unknown as IUser;
 
 export const UserProvider: React.FC<UserContextProps> = ({ children }) => {
-  const [user, setUser] = React.useState<UserState>({
-    username: '',
-    email: '',
-    profileImage: {
-      data: new Uint8Array(),
-      __filename: '',
-      contentType: '',
-      uploadAt: new Date(),
-    },
-    preferences: {
-      theme: 'default',
-      fonts: {
-        name: 'Roboto',
-        weight: 400,
-      },
-    },
-    isVerified: false,
-    isAdmin: false,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  } as unknown as UserState);
-
+  const [user, setUser] = React.useState<IUser>(initialUserState);
+  const [isClient, setIsClient] = useState(false);
   const pathname = usePathname();
 
-  // Function to fetch and set user data
+  useEffect(() => {
+    setIsClient(true);
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
   const fetchAndSetUser = useCallback(async () => {
     try {
-      const userData: UserState =
-        (await fetchUserData()) ??
-        (() => {
-          throw new Error('Failed to fetch user data');
-        })();
-      setUser(userData);
-
-      document.documentElement.setAttribute('data-theme', userData.preferences.theme);
-      if (userData.preferences.fonts) {
-        document.body.style.fontFamily = userData.preferences?.fonts?.name ?? 'Roboto';
-        document.body.style.fontWeight = userData.preferences?.fonts?.weight.toString() ?? '400';
+      const userData = await fetchUserData();
+      if (!userData) {
+        throw new Error('User data is undefined');
       }
+      setUser(userData);
+      userIndexer.add(userData);
+
+      if (userData.preferences) {
+        document.documentElement.setAttribute('data-theme', userData.preferences.theme);
+        if (userData.preferences.fonts) {
+          document.body.style.fontFamily = userData.preferences.fonts.name ?? 'Roboto';
+          document.body.style.fontWeight = userData.preferences.fonts.weight.toString() ?? '400';
+        }
+      }
+
+      localStorage.setItem('user', JSON.stringify(userData));
     } catch (error) {
       handleError.toast(error);
     }
   }, []);
 
-  const updateUser = useCallback((partialUpdate: Partial<UserState>) => {
-    setUser((prevUser) => ({ ...prevUser, ...partialUpdate }));
+  const updateUser = useCallback((partialUpdate: Partial<IUser>) => {
+    setUser((prevUser: IUser) => {
+      const updatedUser: IUser = { ...prevUser, ...partialUpdate } as IUser;
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      return updatedUser;
+    });
   }, []);
 
-  // Fetch and set user data on initial mount, except for /auth/* routes
+  const updateUserAccess = useCallback(async (email: string, access: IUser['companyAccess']['access']) => {
+    try {
+      const response = await ApiPut.User.updateUserAccess(email, access);
+      if (!response.success) throw new Error(response.message ?? 'Failed to update user access');
+      setUser((prevUser: IUser) => {
+        const updatedUser: IUser = { ...prevUser } as IUser;
+        if (updatedUser.companyAccess) {
+          updatedUser.companyAccess.access = { ...updatedUser.companyAccess.access, ...access };
+        }
+        return updatedUser;
+      });
+    } catch (error) {
+      handleError.toastAndLog(error);
+    }
+  }, []);
+
+  const updateUserRole = useCallback(async (email: string, role: RoleType) => {
+    try {
+      const response = await ApiPut.User.updateUserRole(email, role);
+      if (!response.success) throw new Error(response.message ?? 'Failed to update user role');
+      setUser((prevUser: IUser) => {
+        const updatedUser: IUser = { ...prevUser } as IUser;
+        if (updatedUser.companyAccess) {
+          updatedUser.companyAccess.role = role;
+        }
+        return updatedUser;
+      });
+    } catch (error) {
+      handleError.toastAndLog(error);
+    }
+  }, []);
+
+  const addUserAccessLevel = useCallback(async (email: string, accessLevels: RoleType[]) => {
+    try {
+      const response = await ApiPut.User.updateUserAccessLevels(email, accessLevels);
+      if (!response.success) throw new Error(response.message ?? 'Failed to add user access levels');
+      setUser((prevUser: IUser) => {
+        const updatedUser: IUser = { ...prevUser } as IUser;
+        if (updatedUser.companyAccess) {
+          updatedUser.companyAccess.accessLevels = Array.from(
+            new Set([...updatedUser.companyAccess.accessLevels, ...accessLevels]),
+          );
+        }
+        return updatedUser;
+      });
+    } catch (error) {
+      handleError.toastAndLog(error);
+    }
+  }, []);
+
+  const removeUserAccessLevel = useCallback(async (email: string, accessLevel: RoleType) => {
+    try {
+      const response = await ApiPut.User.removeUserAccessLevel(email, accessLevel);
+      if (!response.success) throw new Error(response.message ?? 'Failed to remove user access level');
+      setUser((prevUser: IUser) => {
+        const updatedUser: IUser = { ...prevUser } as IUser;
+        if (updatedUser.companyAccess) {
+          updatedUser.companyAccess.accessLevels = updatedUser.companyAccess.accessLevels.filter(
+            (level) => level !== accessLevel,
+          );
+        }
+        return updatedUser;
+      });
+    } catch (error) {
+      handleError.toastAndLog(error);
+    }
+  }, []);
+
+  const updateUserSecondaryEmails = useCallback(async (email: string, secondaryEmails: string[]) => {
+    try {
+      const response = await ApiPut.User.updateUserSecondaryEmails(email, secondaryEmails);
+      if (!response.success) throw new Error(response.message ?? 'Failed to update secondary emails');
+      setUser((prevUser: IUser) => {
+        const updatedUser: IUser = { ...prevUser } as IUser;
+        updatedUser.secondaryEmails = secondaryEmails;
+        return updatedUser;
+      });
+    } catch (error) {
+      handleError.toastAndLog(error);
+    }
+  }, []);
+
+  const updateUserMobile = useCallback(async (email: string, mobile: string[]) => {
+    try {
+      const response = await ApiPut.User.updateUserMobile(email, mobile);
+      if (!response.success) throw new Error(response.message ?? 'Failed to update user mobile');
+      setUser((prevUser: IUser) => {
+        const updatedUser: IUser = { ...prevUser } as IUser;
+        updatedUser.mobile = mobile;
+        return updatedUser;
+      });
+    } catch (error) {
+      handleError.toastAndLog(error);
+    }
+  }, []);
+
   useEffect(() => {
-    if (!pathname.startsWith('/auth')) {
+    if (!isClient) return;
+
+    if (pathname.startsWith('/auth')) {
+      setUser(initialUserState);
+      return;
+    }
+
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    } else {
       fetchAndSetUser();
     }
-  }, [fetchAndSetUser, pathname]);
+  }, [fetchAndSetUser, pathname, isClient]);
 
-  return <UserContext.Provider value={{ user, setUser, updateUser, fetchAndSetUser }}>{children}</UserContext.Provider>;
+  const contextValue = useMemo(
+    () => ({
+      user,
+      setUser,
+      updateUser,
+      fetchAndSetUser,
+      updateUserAccess,
+      updateUserRole,
+      addUserAccessLevel,
+      removeUserAccessLevel,
+      updateUserSecondaryEmails,
+      updateUserMobile,
+    }),
+    [
+      user,
+      updateUser,
+      fetchAndSetUser,
+      updateUserAccess,
+      updateUserRole,
+      addUserAccessLevel,
+      removeUserAccessLevel,
+      updateUserSecondaryEmails,
+      updateUserMobile,
+    ],
+  );
+
+  return <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>;
 };
 
 export const useUser = (): UserContextType => {

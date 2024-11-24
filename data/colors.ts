@@ -125,4 +125,18 @@ const sortedColorsObject = Object.fromEntries(sortedColors);
 
 export const colors = sortedColorsObject;
 
+export const basicColors = {
+  Red: '#FF0000',
+  Green: '#00FF00',
+  Blue: '#0000FF',
+  Yellow: '#FFFF00',
+  Black: '#000000',
+  White: '#FFFFFF',
+  Pink: '#FFC0CB',
+  Brown: '#A52A2A',
+  Violet: '#EE82EE',
+  NavyBlue: '#000080',
+  SkyBlue: '#87CEEB',
+};
+
 export default colors;
