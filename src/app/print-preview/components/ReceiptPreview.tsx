@@ -29,21 +29,21 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ receipt, cal, isDataLoa
     <span>
       {receipt && (
         <>
-          <div className="m-1 mx-auto my-[50px] w-[300px] border border-solid border-gray-300 p-2 text-center">
+          <div className="m-1 mx-auto my-[50px] w-[300px] border border-solid border-gray-400 p-2 text-center">
             <style>{style}</style>
             <h2 className="m-px">Receipt</h2>
             <div className="flex flex-col items-center gap-2">
-              <div className="card card-side border border-dashed border-black/50 shadow-md">
-                <figure>
-                  <Image src={klm.src} width={180} height={180} alt="Profile" />
-                </figure>
-                <div className="card-body grow bg-transparent px-1 py-2 text-slate-500">
-                  <span className="flex grow flex-col gap-2">
-                    <h2 id="header" className="grow text-lg">
-                      Kalamandir Ladies boutique
-                    </h2>
-                    <address>1st Floor, Muddurandappa Complex Opp/BH Road, Gowribidanur - 561208</address>
-                  </span>
+              <div className="card card-side flex-col border border-dashed border-black/50 shadow-md">
+                <h2 id="header" className="card-title mx-auto grow text-lg">
+                  Kalamandir Ladies Boutique
+                </h2>
+                <div className="card-body grow flex-row gap-0.5 bg-transparent p-1 pb-2 text-slate-500">
+                  <figure className="w-[30%]">
+                    <Image src={klm.src} width={180} height={180} alt="Profile" />
+                  </figure>
+                  <address className="w-[70%] content-center text-sm font-medium">
+                    1st Floor, Muddurandappa Complex Opp/BH Road, Gowribidanur - 561208
+                  </address>
                 </div>
               </div>
               <hr className="my-1 w-[90%] border border-dashed border-black/60" />
@@ -81,7 +81,7 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ receipt, cal, isDataLoa
             </div>
             <table className="w-full rounded-box text-slate-600">
               <tbody className="rounded-box p-1">
-                <tr className="bg-gray-100 text-left">
+                <tr className="bg-gray-200 text-left">
                   <th className="p-1 text-left">Bill No:</th>
                   <td className="p-1">{receipt?.bill?.billNumber ?? ''}</td>
                 </tr>
@@ -89,7 +89,7 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ receipt, cal, isDataLoa
                   <th className="p-1 text-left">Receipt No:</th>
                   <td className="p-1">{receipt?.receiptNumber ?? ''}</td>
                 </tr>
-                <tr className="bg-gray-100 text-left">
+                <tr className="bg-gray-200 text-left">
                   <th className="p-1 text-left">Receipt Date:</th>
                   <td className="p-1">{receipt?.paymentDate ? formatDS(receipt?.paymentDate) : ''}</td>
                 </tr>
@@ -97,7 +97,7 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ receipt, cal, isDataLoa
                   <th className="p-1 text-left">Customer Name:</th>
                   <td className="p-1">{receipt?.bill?.name ?? ''}</td>
                 </tr>
-                <tr className="bg-gray-100 text-left">
+                <tr className="bg-gray-200 text-left">
                   <th className="p-1 text-left">Mobile:</th>
                   <td className="p-1">{receipt?.bill?.mobile ?? ''}</td>
                 </tr>
@@ -105,7 +105,7 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ receipt, cal, isDataLoa
                   <th className="p-1 text-left">Pay Method:</th>
                   <td className="p-1">{receipt?.paymentMethod ?? ''}</td>
                 </tr>
-                <tr className="bg-gray-100 text-left">
+                <tr className="bg-gray-200 text-left">
                   <th className="p-1 text-left">Receipt By:</th>
                   <td className="p-1">{receipt?.receiptBy?.name ?? ''}</td>
                 </tr>
@@ -130,21 +130,21 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ receipt, cal, isDataLoa
             </table>
             <hr className="mx-auto my-1 w-[90%] border border-dashed border-black/60" />
             <table className="w-full text-slate-600">
-              <tbody className="flex flex-col p-1">
+              <tbody className="flex flex-col gap-[1px] p-1">
                 {/* Sub Total: Amount before discount */}
-                <tr className="flex w-full flex-row items-center justify-between bg-gray-100">
+                <tr className="flex w-full flex-row items-center justify-between bg-gray-200 text-xs font-semibold">
                   <th className="p-1">Sub Total:</th>
                   <td className="p-1">{cal.totalAmount}</td>
                 </tr>
                 {/* Discount: Shown if applied */}
                 {cal.discount > 0 && (
-                  <tr className="flex w-full flex-row items-center justify-between">
+                  <tr className="flex w-full flex-row items-center justify-between bg-gray-200 text-xs font-semibold">
                     <th className="p-1">Discount:</th>
                     <td className="p-1">-{cal.discount}</td>
                   </tr>
                 )}
                 {/* Net Total: Amount after discount */}
-                <tr className="flex w-full flex-row items-center justify-between bg-gray-100 font-semibold">
+                <tr className="flex w-full flex-row items-center justify-between bg-gray-200 text-xs font-semibold">
                   <th className="p-1">Net Total:</th>
                   <td className="p-1">{cal.grandTotal}</td>
                 </tr>
@@ -156,7 +156,7 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ receipt, cal, isDataLoa
                   </tr>
                 )}
                 {/* Current Payment: Payment for this receipt */}
-                <tr className="flex w-full flex-row items-center justify-between">
+                <tr className="flex w-full flex-row items-center justify-between text-xs font-semibold">
                   <th className="p-1">Current Payment:</th>
                   <td className="p-1">{receipt.amount}</td>
                 </tr>
@@ -166,7 +166,7 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ receipt, cal, isDataLoa
                   <td className="p-1">{cal.paidAmount}</td>
                 </tr>
                 {/* Balance Due: Remaining amount */}
-                <tr className="flex w-full flex-row items-center justify-between bg-gray-100 font-semibold">
+                <tr className="flex w-full flex-row items-center justify-between bg-gray-200 text-xs font-semibold">
                   <th className="p-1">Balance Due:</th>
                   <td className="p-1">{cal.dueAmount}</td>
                 </tr>

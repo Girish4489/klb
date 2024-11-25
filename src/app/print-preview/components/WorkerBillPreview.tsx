@@ -62,8 +62,8 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, isDataLoade
             {/* <span className="py-1" /> */}
             <span>
               {bill?.order.map((order, orderIndex) => (
-                <span className="orders flex flex-col gap-4" key={orderIndex}>
-                  <div className="table m-auto flex w-[96%] break-inside-avoid break-after-auto flex-col gap-1 rounded border border-black p-1 text-center">
+                <span className="orders flex flex-col" key={orderIndex}>
+                  <div className="table m-auto flex w-[96%] break-inside-avoid break-after-auto flex-col gap-0.5 rounded border border-black p-1 text-center">
                     <span className="flex flex-row items-center justify-between gap-8">
                       <span className="flex flex-row items-center gap-8">
                         <h1>{orderIndex + 1}.</h1>
@@ -103,11 +103,11 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, isDataLoade
                             <span
                               key={styleIndex}
                               // className="item-center process-box grow-1 flex flex-col justify-start"
-                              className="item-center flex w-fit flex-col justify-start rounded-box border border-black px-2 py-1 font-normal"
+                              className="item-center font-base flex w-fit flex-col justify-start rounded-box border border-black px-2 py-0.5"
                             >
                               <span className="flex w-fit flex-row items-center justify-around gap-8">
                                 <h1>
-                                  {styleIndex + 1}). {style.styleProcessName}:{' '}
+                                  {styleIndex + 1}. {style.styleProcessName}:{' '}
                                 </h1>
                                 <hr />
                                 <p>{style.styleName}</p>
@@ -153,17 +153,16 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, isDataLoade
                           {order.dimension.map((dimension, dimensionIndex) => (
                             <span
                               key={dimensionIndex}
-                              // className="item-center process-box grow-1 flex flex-col justify-start"
-                              className="item-center flex w-fit flex-col items-center justify-start rounded-box border border-black px-2 py-1"
+                              className="item-center flex w-fit flex-col items-center justify-start rounded-box border border-black"
                             >
-                              <span className="flex flex-row items-center justify-around gap-8 text-base">
-                                <h1>
-                                  {dimensionIndex + 1}). {dimension.dimensionTypeName}:{' '}
+                              <span className="flex flex-row items-center justify-around gap-0.5 text-base">
+                                <h1 className="px-1 py-0.5 text-base">
+                                  {dimensionIndex + 1}. {dimension.dimensionTypeName}:{' '}
                                 </h1>
-                                <p>{dimension.dimensionName}</p>
+                                <p className="content-center px-2 text-center">{dimension.dimensionName}</p>
                               </span>
-                              <hr className="m-auto my-0.5 w-full rounded-box border border-black" />
-                              <span className="flex flex-row items-center justify-center gap-8">
+                              <hr className="m-auto h-0.5 w-full border border-solid border-black" />
+                              <span className="flex flex-row items-center justify-center gap-8 text-base">
                                 <p>{dimension.note}</p>
                               </span>
                             </span>
@@ -172,8 +171,9 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, isDataLoade
                       </span>
                     )}
                   </div>
-                  {/* <span className="py-[1]" /> */}
-                  <hr className="m-auto my-1.5 w-[95%] rounded-box border-2 border-black" />
+                  {orderIndex < bill.order.length - 1 && (
+                    <hr className="m-auto my-1.5 w-[95%] rounded-box border-2 border-black" />
+                  )}
                 </span>
               ))}
             </span>

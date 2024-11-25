@@ -216,7 +216,7 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, isDataL
                       </span>
                     )}
                   </div>
-                  <span className="py-[1]" />
+                  {orderIndex < bill.order.length - 1 && <span className="py-[1]" />}
                 </span>
               ))}
             </span>
