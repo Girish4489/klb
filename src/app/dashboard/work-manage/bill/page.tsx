@@ -1,9 +1,9 @@
 'use client';
 import { BarcodeScannerPage } from '@/app/components/Barcode/BarcodeScanner';
-import BillHeader from '@/app/components/BillHeader/BillHeader';
 import ColorPickerButton from '@/app/components/ColorPickerButton/ColorPickerButton';
 import SearchBillForm from '@/app/components/SearchBillForm/SearchBillForm';
-import BillTable from '@/app/components/tables/work-manage/bill/BillTable';
+import BillHeader from '@/app/dashboard/work-manage/bill/components/BillHeader';
+import BillTable from '@/app/dashboard/work-manage/bill/components/BillTable';
 import ItemsTrack from '@/app/dashboard/work-manage/bill/components/ItemsTrack';
 import SaveUpdatePrint from '@/app/dashboard/work-manage/bill/components/SaveUpdatePrint';
 import { userConfirmation } from '@/app/util/confirmation/confirmationUtil';
