@@ -4,6 +4,7 @@ import ColorPickerButton from '@/app/components/ColorPickerButton/ColorPickerBut
 import SearchBillForm from '@/app/components/SearchBillForm/SearchBillForm';
 import BillHeader from '@/app/dashboard/work-manage/bill/components/BillHeader';
 import BillTable from '@/app/dashboard/work-manage/bill/components/BillTable';
+import IncreaseDecreaseSection from '@/app/dashboard/work-manage/bill/components/IncreaseDecreaseSection';
 import ItemsTrack from '@/app/dashboard/work-manage/bill/components/ItemsTrack';
 import SaveUpdatePrint from '@/app/dashboard/work-manage/bill/components/SaveUpdatePrint';
 import { userConfirmation } from '@/app/util/confirmation/confirmationUtil';
@@ -483,19 +484,11 @@ export default function BillPage() {
             {/* Bill header */}
             <BillHeader bill={bill} setBill={setBill} />
             {/* increase or decrease */}
-            <div className="mx-2 flex h-fit flex-row gap-2 rounded-box bg-accent/15 px-2 py-1">
-              <span className="btn btn-primary btn-xs select-none font-extrabold" onClick={handleNewOrder}>
-                <PlusCircleIcon className="h-5 w-5 text-primary-content" />
-                Add
-              </span>
-              <span
-                className="btn btn-secondary btn-xs select-none font-extrabold"
-                onClick={handleRemoveOrder((bill?.order?.length ?? 0) - 1)}
-              >
-                <MinusCircleIcon className="h-5 w-5 text-secondary-content" />
-                Remove
-              </span>
-            </div>
+            <IncreaseDecreaseSection
+              bill={bill}
+              handleNewOrder={handleNewOrder}
+              handleRemoveOrder={handleRemoveOrder}
+            />
             {/* items and track in row */}
             <div className="flex h-full w-full flex-row items-start gap-1 rounded-box bg-base-300 p-1 max-sm:flex-col max-sm:items-center">
               <div className="flex min-h-full grow flex-col justify-between rounded-box border border-base-300">
