@@ -15,17 +15,17 @@ const IncreaseDecreaseSection: React.FC<IncreaseDecreaseSectionProps> = ({
 }) => {
   return (
     <div className="mx-2 flex h-fit flex-row gap-2 rounded-box bg-accent/15 px-2 py-1">
-      <span className="btn btn-primary btn-xs select-none font-extrabold" onClick={handleNewOrder}>
+      <button className="btn btn-primary btn-xs select-none font-extrabold" onClick={handleNewOrder}>
         <PlusCircleIcon className="h-5 w-5 text-primary-content" />
         Add
-      </span>
-      <span
+      </button>
+      <button
         className="btn btn-secondary btn-xs select-none font-extrabold"
         onClick={handleRemoveOrder((bill?.order?.length ?? 0) - 1)}
       >
         <MinusCircleIcon className="h-5 w-5 text-secondary-content" />
         Remove
-      </span>
+      </button>
     </div>
   );
 };
