@@ -762,7 +762,7 @@ export default function BillPage() {
                                 name={`measure_${orderIndex}`}
                                 id={`measure_${orderIndex}`}
                                 placeholder="Measure"
-                                className="textarea textarea-bordered textarea-primary textarea-sm grow"
+                                className="field-sizing-content textarea textarea-bordered textarea-primary textarea-sm grow"
                                 value={order.measurement || ''}
                                 onChange={(e) =>
                                   setBill({

@@ -1,5 +1,5 @@
 'use client';
-import LoadingSpinner from '@/app/print-preview/components/LoadingSpinner';
+import LoadingSpinner from '@/app/components/LoadingSpinner';
 import PrintHeader from '@/app/print-preview/components/PrintHeader';
 import WorkerBillPreview from '@/app/print-preview/components/WorkerBillPreview';
 import handleError from '@/app/util/error/handleError';
@@ -48,7 +48,7 @@ const WorkerBillPage: React.FC = () => {
   return (
     <>
       {!isDataLoaded ? (
-        <LoadingSpinner /> // Use the LoadingSpinner component
+        <LoadingSpinner classStyle="h-screen" />
       ) : (
         <>
           <PrintHeader backUrl={backUrl} isLoading={!isDataLoaded} />

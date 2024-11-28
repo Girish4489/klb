@@ -1,6 +1,6 @@
 'use client';
+import LoadingSpinner from '@/app/components/LoadingSpinner';
 import CustomerBillPreview from '@/app/print-preview/components/CustomerBillPreview';
-import LoadingSpinner from '@/app/print-preview/components/LoadingSpinner';
 import PrintHeader from '@/app/print-preview/components/PrintHeader';
 import handleError from '@/app/util/error/handleError';
 import { ApiGet } from '@/app/util/makeApiRequest/makeApiRequest';
@@ -48,7 +48,7 @@ const CustomerBillPage: React.FC = () => {
   return (
     <>
       {!isDataLoaded ? (
-        <LoadingSpinner />
+        <LoadingSpinner classStyle="h-screen" />
       ) : (
         <>
           <PrintHeader backUrl={backUrl} isLoading={!isDataLoaded} />

@@ -1,8 +1,13 @@
+'use client';
 import React from 'react';
 
-const LoadingSpinner: React.FC = () => {
+interface LoadingSpinnerProps {
+  classStyle?: string;
+}
+
+const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ classStyle = 'h-screen' }) => {
   return (
-    <div className="flex h-screen items-center justify-center">
+    <div className={`flex items-center justify-center ${classStyle}`}>
       <div className="text-center">
         <span className="loading loading-bars loading-xs text-primary sm:loading-xs md:loading-sm lg:loading-md xl:loading-lg md:inline-block"></span>
         <span className="flex items-end text-secondary">
