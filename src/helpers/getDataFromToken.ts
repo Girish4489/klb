@@ -2,7 +2,7 @@ import handleError from '@/app/util/error/handleError';
 import { cookie, token } from '@/app/util/token/token';
 import { NextRequest } from 'next/server';
 
-export class TokenData {
+export class UserTokenData {
   private decodedToken?: {
     id: string;
     username: string;
@@ -22,8 +22,8 @@ export class TokenData {
 
   constructor(private request: NextRequest) {}
 
-  static async create(request: NextRequest): Promise<TokenData> {
-    const instance = new TokenData(request);
+  static async create(request: NextRequest): Promise<UserTokenData> {
+    const instance = new UserTokenData(request);
     await instance.init();
     return instance;
   }

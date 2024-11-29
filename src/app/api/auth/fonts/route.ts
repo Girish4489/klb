@@ -1,6 +1,6 @@
 import handleError from '@/app/util/error/handleError';
 import { connect } from '@/dbConfig/dbConfig';
-import { TokenData } from '@/helpers/getDataFromToken';
+import { UserTokenData } from '@/helpers/getDataFromToken';
 import User from '@/models/userModel';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -8,7 +8,7 @@ connect();
 
 export async function POST(request: NextRequest) {
   try {
-    const tokenData = await TokenData.create(request);
+    const tokenData = await UserTokenData.create(request);
     const userId = tokenData.getId();
 
     const formData = await request.json();

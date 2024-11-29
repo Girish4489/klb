@@ -2,7 +2,7 @@
 // /src/app/api/dashboard/master-record/category/route.ts
 import handleError from '@/app/util/error/handleError';
 import { connect } from '@/dbConfig/dbConfig';
-import { TokenData } from '@/helpers/getDataFromToken';
+import { UserTokenData } from '@/helpers/getDataFromToken';
 import { Category, ICategory, IDimensionTypes, IStyleProcess } from '@/models/klm';
 import User from '@/models/userModel';
 import mongoose from 'mongoose';
@@ -12,7 +12,7 @@ connect();
 
 export async function POST(request: NextRequest) {
   try {
-    const tokenData = await TokenData.create(request);
+    const tokenData = await UserTokenData.create(request);
     const userId = tokenData.getId();
 
     const handleResponse = (message: string, success: boolean, data?: any): NextResponse => {

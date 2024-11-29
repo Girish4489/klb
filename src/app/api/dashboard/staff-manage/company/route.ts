@@ -1,6 +1,6 @@
 import handleError from '@/app/util/error/handleError';
 import { connect } from '@/dbConfig/dbConfig';
-import { TokenData } from '@/helpers/getDataFromToken';
+import { UserTokenData } from '@/helpers/getDataFromToken';
 import Company from '@/models/companyModel';
 import User from '@/models/userModel';
 import { NextRequest, NextResponse } from 'next/server';
@@ -9,7 +9,7 @@ connect();
 
 export async function GET(req: NextRequest) {
   try {
-    const tokenData = await TokenData.create(req);
+    const tokenData = await UserTokenData.create(req);
     const userId = tokenData.getId();
     const user = await User.findById({ _id: userId }).select(
       '-password -username -email -isVerified -isAdmin -theme -profileImage -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry',
@@ -57,7 +57,7 @@ export async function PUT(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const tokenData = await TokenData.create(req);
+    const tokenData = await UserTokenData.create(req);
     const userId = tokenData.getId();
     const user = await User.findOne({ _id: userId }).select(
       '-password -username -email -isVerified -isAdmin -theme -profileImage -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry -preferences',
