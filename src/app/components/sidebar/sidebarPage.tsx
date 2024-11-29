@@ -33,41 +33,49 @@ const SidebarItem = ({
   nav: NavItem;
   currentPathname: string;
   accessLevels: string[];
-}) => (
-  <li
-    className={`${nav.enable && nav.accessLevels.some((level) => accessLevels.includes(level)) ? '' : 'disabled hidden disabled:cursor-not-allowed'}`}
-  >
-    <details>
-      <summary>
-        {nav.icon && <nav.icon className={nav.iconClass} />}
-        {nav.title}
-      </summary>
-      <ul>
-        {nav.subNav.map((subNav: SubNavItem, index) => (
-          <li
-            key={index}
-            className={`${subNav.enable && subNav.accessLevels.some((level) => accessLevels.includes(level)) ? '' : 'disabled hidden disabled:cursor-not-allowed'}`}
-          >
-            {subNav.enable && nav.enable ? (
-              <SidebarLink
-                href={subNav.href ?? '#'}
-                title={subNav.title}
-                isActive={currentPathname === subNav.href}
-                icon={subNav.icon}
-                iconClass={subNav.iconClass}
-              />
-            ) : (
-              <span>
-                {subNav.icon && <subNav.icon className={subNav.iconClass} />}
-                <span className="text-left">{subNav.title}</span>
-              </span>
-            )}
-          </li>
-        ))}
-      </ul>
-    </details>
-  </li>
-);
+}) => {
+  const isActive = nav.subNav.some((subNav) => currentPathname === subNav.href && subNav.enable);
+  const NavIcon = isActive ? nav.iconSolid : nav.iconOutline;
+
+  return (
+    <li
+      className={`${nav.enable && nav.accessLevels.some((level) => accessLevels.includes(level)) ? '' : 'disabled hidden disabled:cursor-not-allowed'}`}
+    >
+      <details>
+        <summary>
+          {NavIcon && <NavIcon className={nav.iconClass} />}
+          {nav.title}
+        </summary>
+        <ul>
+          {nav.subNav.map((subNav: SubNavItem, index) => {
+            const SubNavIcon = currentPathname === subNav.href ? subNav.iconSolid : subNav.iconOutline;
+            return (
+              <li
+                key={index}
+                className={`${subNav.enable && subNav.accessLevels.some((level) => accessLevels.includes(level)) ? '' : 'disabled hidden disabled:cursor-not-allowed'}`}
+              >
+                {subNav.enable && nav.enable ? (
+                  <SidebarLink
+                    href={subNav.href ?? '#'}
+                    title={subNav.title}
+                    isActive={currentPathname === subNav.href}
+                    icon={SubNavIcon}
+                    iconClass={subNav.iconClass}
+                  />
+                ) : (
+                  <span>
+                    {SubNavIcon && <SubNavIcon className={subNav.iconClass} />}
+                    <span className="text-left">{subNav.title}</span>
+                  </span>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </details>
+    </li>
+  );
+};
 
 export default function SidebarPage({ accessLevels }: { accessLevels: Array<string> }) {
   const currentPathname = usePathname();
