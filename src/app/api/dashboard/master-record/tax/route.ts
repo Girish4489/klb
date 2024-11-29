@@ -21,10 +21,11 @@ export async function POST(req: NextRequest) {
   }
 }
 
+// returns all taxs from the database
 export async function GET() {
   try {
     const taxes = await Tax.find();
-    return NextResponse.json(taxes);
+    return NextResponse.json({ message: 'Taxes fetched successfully', success: true, taxes: taxes });
   } catch (error) {
     handleError.api(error);
   }
