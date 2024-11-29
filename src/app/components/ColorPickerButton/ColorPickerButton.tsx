@@ -58,7 +58,10 @@ function ColorPickerButton({
 
   return (
     <React.Fragment>
-      <button className="flex w-full grow flex-col" onClick={handleButtonClick}>
+      <button
+        className="flex w-fit grow flex-col rounded-box border border-base-content/50 bg-base-100 p-2 max-sm:w-full"
+        onClick={handleButtonClick}
+      >
         <span className="label label-text flex w-full flex-row items-center justify-around gap-2 font-medium">
           <span className="text-nowrap">{selectedColor?.type === 'Custom' ? 'Custom' : 'Selected'} Color: </span>
           <span className="text-nowrap">

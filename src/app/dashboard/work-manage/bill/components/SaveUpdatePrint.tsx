@@ -12,6 +12,23 @@ interface SaveUpdatePrintProps {
   handleUpdateBill: () => Promise<void>;
 }
 
+const PaymentStatus: React.FC<{ bill: IBill }> = ({ bill }) => (
+  <div className="flex flex-row justify-between gap-1 max-sm:flex-col">
+    <div className="flex flex-row items-center justify-between">
+      <b className="label-text">Paid:</b>
+      <p className="label label-text">{bill.paidAmount}</p>
+    </div>
+    <div className="flex flex-row items-center justify-between">
+      <b className="label-text">Due:</b>
+      <p className="label label-text">{bill.dueAmount}</p>
+    </div>
+    <div className="flex flex-row items-center justify-between">
+      <b className="label-text">Status:</b>
+      <p className="label label-text">{bill.paymentStatus}</p>
+    </div>
+  </div>
+);
+
 const SaveUpdatePrint: React.FC<SaveUpdatePrintProps> = ({
   newBill,
   bill,
@@ -59,20 +76,7 @@ const SaveUpdatePrint: React.FC<SaveUpdatePrintProps> = ({
           </Link>
         </span>
       </span>
-      <div className="flex flex-row justify-between gap-1 max-sm:flex-col">
-        <div className="flex flex-row items-center justify-between">
-          <b className="label-text">Paid:</b>
-          <p className="label label-text">{bill.paidAmount}</p>
-        </div>
-        <div className="flex flex-row items-center justify-between">
-          <b className="label-text">Due:</b>
-          <p className="label label-text">{bill.dueAmount}</p>
-        </div>
-        <div className="flex flex-row items-center justify-between">
-          <b className="label-text">Status:</b>
-          <p className="label label-text">{bill.paymentStatus}</p>
-        </div>
-      </div>
+      <PaymentStatus bill={bill} />
     </div>
   );
 };
