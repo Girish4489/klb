@@ -59,19 +59,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex h-screen w-screen flex-col overflow-hidden max-sm:-mb-16 max-sm:pb-0.5">
-      <div className="navbar flex w-full flex-row content-stretch items-center bg-base-300">
-        <label className="swap swap-rotate" htmlFor="sidebarToggle">
-          <input
-            type="checkbox"
-            id="sidebarToggle"
-            name="sidebarToggle"
-            checked={isSidebarOpen}
-            onChange={toggleSidebar}
-          />
-          <Bars3Icon className="swap-off h-8 w-8 fill-current" />
-          <XMarkIcon className="swap-on h-8 w-8" />
-        </label>
-        <div className="mx-2 flex-1 select-none px-2">
+      <div className="navbar flex w-full flex-row content-stretch items-center gap-x-2 bg-base-300 py-1">
+        <button
+          className={`rounded-box p-2 transition-transform duration-500 ease-in-out focus:outline-none ${isSidebarOpen ? 'translate-x-0 transform' : '-translate-x-full transform'}`}
+          onClick={toggleSidebar}
+        >
+          {isSidebarOpen ? (
+            <XMarkIcon className="h-7 w-7 text-current" />
+          ) : (
+            <Bars3Icon className="h-7 w-7 text-current" />
+          )}
+        </button>
+        <div
+          className={`transition-transform duration-500 ease-in-out ${isSidebarOpen ? 'translate-x-0 transform' : '-translate-x-full transform'}`}
+        >
+          <Bars3Icon className="h-7 w-7 text-current" />
+        </div>
+        <div className="flex-1 select-none px-2">
           <Link href="/dashboard">Kalamandir</Link>
         </div>
         <HeaderProfilePage user={user} isLoading={isLoading} />

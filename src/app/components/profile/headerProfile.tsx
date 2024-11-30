@@ -44,9 +44,9 @@ const HeaderProfilePage = ({ user, isLoading }: { user: IUser | null; isLoading:
   }
 
   return (
-    <div className="dropdown dropdown-end">
+    <div className="dropdown dropdown-end h-10">
       <div tabIndex={0} role="button" className="avatar">
-        <div className="w-12 transform rounded-full ring-2 ring-primary hover:scale-105 hover:ring-offset-2 hover:ring-offset-accent">
+        <div className="w-10 transform rounded-full ring-2 ring-primary hover:scale-105 hover:ring-offset-2 hover:ring-offset-accent">
           <Image
             src={profileImageSrc}
             alt="profile image"
@@ -59,8 +59,20 @@ const HeaderProfilePage = ({ user, isLoading }: { user: IUser | null; isLoading:
       </div>
       <ul
         tabIndex={0}
-        className="menu dropdown-content menu-sm z-50 mt-3 w-auto rounded-box bg-base-200 p-2 shadow ring-1 ring-primary"
+        className="menu dropdown-content menu-sm z-50 w-auto rounded-box bg-base-200 p-2 shadow ring-1 ring-primary"
       >
+        <span className="flex w-full justify-around">
+          <div className="transform rounded-full ring-2 ring-primary hover:scale-105 hover:ring-offset-2 hover:ring-offset-accent">
+            <Image
+              src={profileImageSrc}
+              alt="profile image"
+              className="cursor-pointer rounded-full transition-all duration-500 ease-in-out"
+              width="70"
+              height="64"
+              priority
+            />
+          </div>
+        </span>
         <ProfileItem icon={<UserIcon className="h-5 w-5 text-primary" />} label={user.username} tooltip="Username">
           {user.createdAt && new Date(user.createdAt) > new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) && (
             <span className="badge badge-primary">New</span>
