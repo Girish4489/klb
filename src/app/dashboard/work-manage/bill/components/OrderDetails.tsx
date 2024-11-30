@@ -71,10 +71,13 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
   };
 
   return (
-    <div className="flex w-full justify-between gap-1 rounded-box border border-base-300 bg-base-100 p-1 shadow max-sm:flex-wrap max-sm:justify-around">
+    <div
+      id={`order_${orderIndex}`}
+      className="flex w-full justify-between gap-1 rounded-box border border-base-300 bg-base-100 p-1 shadow max-sm:flex-wrap max-sm:justify-around"
+    >
       <div className="flex grow flex-col gap-1 rounded-box border-2 border-base-300 bg-base-200 p-2 shadow">
         {/* 1st row */}
-        <div className="flex w-full flex-row items-center justify-between gap-x-1 gap-y-2 max-sm:flex-col-reverse">
+        <div className="flex w-full flex-row items-center justify-between gap-x-0.5 gap-y-2 max-sm:flex-col-reverse">
           <div className="flex w-full grow flex-row flex-wrap justify-start gap-x-1.5 gap-y-2">
             <InputField
               label="Sl No"
@@ -145,14 +148,13 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
             />
           </div>
           {/* remove specific order */}
-          <div className="flex items-center justify-end max-sm:w-full">
+          <div className="flex w-fit items-center px-2 max-sm:w-full">
             <button
-              className="btn btn-secondary btn-xs tooltip tooltip-left tooltip-warning flex select-none items-center font-bold"
+              className="btn btn-secondary btn-xs flex select-none items-center font-bold"
               onClick={handleRemoveOrder(orderIndex)}
-              data-tip="Remove this order"
             >
               <MinusCircleIcon className="h-5 w-5 text-secondary-content" />
-              <span>Remove</span>
+              Remove
             </button>
           </div>
         </div>

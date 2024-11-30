@@ -2,18 +2,28 @@
 import { BarcodeScannerPage } from '@/app/components/Barcode/BarcodeScanner';
 import LoadingSpinner from '@/app/components/LoadingSpinner';
 import SearchBillForm from '@/app/components/SearchBillForm/SearchBillForm';
+import BillDetailsDropdownClear from '@/app/dashboard/work-manage/bill/components/BillDetails';
 import BillHeader from '@/app/dashboard/work-manage/bill/components/BillHeader';
 import BillTable from '@/app/dashboard/work-manage/bill/components/BillTable';
 import IncreaseDecreaseSection from '@/app/dashboard/work-manage/bill/components/IncreaseDecreaseSection';
 import ItemsTrack from '@/app/dashboard/work-manage/bill/components/ItemsTrack';
 import OrderDetails from '@/app/dashboard/work-manage/bill/components/OrderDetails';
 import SaveUpdatePrint from '@/app/dashboard/work-manage/bill/components/SaveUpdatePrint';
-import { fetchInitialData, validateBill } from '@/app/dashboard/work-manage/bill/utils/billUtils';
+import {
+  billSearch,
+  checkOrderInUrl,
+  clearBill,
+  fetchInitialData,
+  handleColorSelect,
+  searchRowClicked,
+  updateUrlWithBillNumber,
+  validateBill,
+} from '@/app/dashboard/work-manage/bill/utils/billUtils';
 import { userConfirmation } from '@/app/util/confirmation/confirmationUtil';
 import handleError from '@/app/util/error/handleError';
 import { ApiGet, ApiPost, ApiPut } from '@/app/util/makeApiRequest/makeApiRequest';
-import { getSearchParam, setSearchParam } from '@/app/util/url/urlUtils';
-import { IBill, ICategory, IColor, ITax } from '@/models/klm';
+import { getSearchParam } from '@/app/util/url/urlUtils';
+import { IBill, ICategory, ITax } from '@/models/klm';
 import { PlusCircleIcon } from '@heroicons/react/24/outline';
 import { Types } from 'mongoose';
 import React, { useEffect, useMemo } from 'react';
@@ -72,6 +82,7 @@ export default function BillPage() {
 
   useEffect(() => {
     const billNumber = getSearchParam('billNumber');
+    const orderNumber = getSearchParam('orderNumber');
 
     if (billNumber) {
       (async () => {
@@ -80,6 +91,7 @@ export default function BillPage() {
           if (res.success && res.bill.length > 0) {
             setNewBill(false);
             setBill(res.bill[0]);
+            if (orderNumber) checkOrderInUrl(orderNumber);
           } else {
             throw new Error(res.message);
           }
@@ -98,7 +110,7 @@ export default function BillPage() {
 
     const billNumber = billNumberMatch[1];
     if (!billNumber) {
-      handleError.toastAndLog(new Error('No bill number found in barcode'));
+      handleError.toast(new Error('No bill number found in barcode'));
       return;
     }
 
@@ -352,68 +364,6 @@ export default function BillPage() {
     }
   }
 
-  const billSearch = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    try {
-      setBill(undefined);
-      const inputValue: number = (event.target as HTMLFormElement).billSearch.value;
-      const typeBillOrMobile: string = (event.target as HTMLFormElement).selectBill.value;
-
-      const res = await ApiGet.Bill.BillSearch(inputValue, typeBillOrMobile);
-
-      if (res.success === true) {
-        setSearchBill(res.bill);
-      } else {
-        setSearchBill(undefined);
-        throw new Error(res.message);
-      }
-    } catch (error) {
-      // toast.error(error.message);
-      handleError.toastAndLog(error);
-    }
-  };
-
-  const searchRowClicked = (billId: string) => async () => {
-    try {
-      const selectedBill = (searchBill ?? []).find((bill) => bill._id.toString() === billId);
-      if (selectedBill) {
-        setNewBill(false);
-        setBill(selectedBill);
-        updateUrlWithBillNumber(selectedBill.billNumber.toString());
-        setSearchBill(undefined);
-      } else {
-        toast.error('Bill not found');
-      }
-    } catch (error) {
-      // toast.error(error.message);
-      handleError.toastAndLog(error);
-    }
-  };
-
-  const updateUrlWithBillNumber = (billNumber: string) => {
-    setSearchParam('billNumber', billNumber);
-  };
-
-  const handleColorSelect = async (color: IColor, orderIndex: number) => {
-    await setBill((prevBill) => {
-      if (!prevBill) return prevBill;
-
-      const updatedOrder = [...prevBill.order];
-      const order = updatedOrder[orderIndex];
-      if (!order) return prevBill;
-
-      updatedOrder[orderIndex] = {
-        ...order,
-        color: color,
-      };
-
-      return {
-        ...prevBill,
-        order: updatedOrder,
-      } as IBill | undefined;
-    });
-  };
-
   return (
     <span className="table-column h-full">
       <div className="flex h-full w-full flex-col shadow max-sm:table-cell">
@@ -422,12 +372,29 @@ export default function BillPage() {
             <PlusCircleIcon className="h-5 w-5" />
             New
           </button>
-          <BarcodeScannerPage
-            onScanComplete={setBarcode}
-            scannerId="billHeaderScanner"
-            scanModalId="billHeaderScanner_modal"
-          />
-          <SearchBillForm onSearch={billSearch} searchResults={searchBill} onRowClick={searchRowClicked} />
+          <h1 className="grow text-center">Bill</h1>
+          <span className="flex flex-row flex-wrap-reverse gap-2">
+            <BarcodeScannerPage
+              onScanComplete={setBarcode}
+              scannerId="billHeaderScanner"
+              scanModalId="billHeaderScanner_modal"
+            />
+            {bill && (
+              <BillDetailsDropdownClear
+                bill={bill}
+                clearBill={() => clearBill(setBill)}
+                link={`/dashboard/work-manage/bill?billNumber=${bill.billNumber}`}
+                linkDisabled={false}
+              />
+            )}
+            <SearchBillForm
+              onSearch={(e) => billSearch(e, setBill, setSearchBill)}
+              searchResults={searchBill}
+              onRowClick={(billId) =>
+                searchRowClicked(billId, searchBill, setBill, setSearchBill, updateUrlWithBillNumber)
+              }
+            />
+          </span>
         </span>
 
         {/* new bill */}
@@ -457,7 +424,7 @@ export default function BillPage() {
                       handleRemoveOrder={handleRemoveOrder}
                       handleDimensionChange={handleDimensionChange}
                       handleStyleProcessChange={handleStyleProcessChange}
-                      handleColorSelect={handleColorSelect}
+                      handleColorSelect={(color, orderIndex) => handleColorSelect(color, orderIndex, setBill)}
                     />
                   ))}
                 </div>
