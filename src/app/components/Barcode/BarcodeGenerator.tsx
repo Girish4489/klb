@@ -1,7 +1,7 @@
 import { BrowserQRCodeSvgWriter } from '@zxing/browser'; // For generating QR codes and barcodes
 import React from 'react';
 
-const QrGenerator: React.FC<{ content: string; size: number }> = ({ content, size }) => {
+const QrGenerator: React.FC<{ content: string; size: number; className?: string }> = ({ content, size, className }) => {
   const qrCodeRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -51,7 +51,7 @@ const QrGenerator: React.FC<{ content: string; size: number }> = ({ content, siz
     }
   }, [content, size]);
 
-  return <div ref={qrCodeRef} className="flex w-fit p-1" />;
+  return <div ref={qrCodeRef} className={`flex w-fit p-1 ${className}`} />;
 };
 
 export default QrGenerator;

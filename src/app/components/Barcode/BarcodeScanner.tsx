@@ -154,7 +154,7 @@ const BarcodeScannerPage: React.FC<{
   return (
     <section className="flex flex-col-reverse items-center gap-1">
       <button
-        className="btn btn-secondary btn-sm"
+        className="btn btn-secondary btn-sm text-nowrap"
         onClick={() => (document?.getElementById(scanModalId) as HTMLDialogElement)?.showModal()}
       >
         Scan
