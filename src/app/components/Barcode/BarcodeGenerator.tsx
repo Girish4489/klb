@@ -51,7 +51,7 @@ const QrGenerator: React.FC<{ content: string; size: number; className?: string 
     }
   }, [content, size]);
 
-  return <div ref={qrCodeRef} className={`flex w-fit p-1 ${className}`} />;
+  return <div ref={qrCodeRef} className={`flex w-fit p-0.5 ${className}`} />;
 };
 
 export default QrGenerator;

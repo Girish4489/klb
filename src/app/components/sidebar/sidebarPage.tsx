@@ -41,7 +41,7 @@ const SidebarItem = ({
     <li
       className={`${nav.enable && nav.accessLevels.some((level) => accessLevels.includes(level)) ? '' : 'disabled hidden disabled:cursor-not-allowed'}`}
     >
-      <details>
+      <details open={isActive}>
         <summary>
           {NavIcon && <NavIcon className={nav.iconClass} />}
           {nav.title}

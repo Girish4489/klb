@@ -145,7 +145,7 @@ export const CompanyProvider: React.FC<CompanyContextProps> = ({ children }) => 
     const storedCompany = localStorage.getItem('company');
     if (storedCompany) {
       setCompany(JSON.parse(storedCompany) as ICompany);
-    } else if (user && user._id && user.companyAccess.role) {
+    } else if (user && user._id && user.companyAccess && user.companyAccess.role) {
       fetchAndSetCompany(user._id.toString(), user.companyAccess.role);
     }
   }, [fetchAndSetCompany, pathname, user]);

@@ -1,5 +1,5 @@
 'use client';
-import { BarcodeScannerPage } from '@/app/components/Barcode/BarcodeScanner';
+import BarcodeScannerPage from '@/app/components/Barcode/BarcodeScanner';
 import SearchForm from '@/app/components/SearchBillForm/SearchBillForm';
 import ReceiptTable from '@/app/components/tables/transaction/receipt/ReceiptTable';
 import handleError from '@/app/util/error/handleError';
