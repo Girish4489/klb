@@ -1,5 +1,6 @@
 'use client';
 import LoadingSpinner from '@/app/components/LoadingSpinner';
+import { useCompany } from '@/app/context/companyContext';
 import CustomerBillPreview from '@/app/print-preview/components/CustomerBillPreview';
 import PrintHeader from '@/app/print-preview/components/PrintHeader';
 import WorkerBillPreview from '@/app/print-preview/components/WorkerBillPreview';
@@ -14,6 +15,7 @@ import toast from 'react-hot-toast';
 
 const BothBillPage: React.FC = () => {
   const [bill, setBill] = useState<IBill>();
+  const { company } = useCompany();
   const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false);
   const type = 'Both';
   const [backUrl, setBackUrl] = useState<string>('/dashboard/work-manage/bill');
@@ -53,10 +55,17 @@ const BothBillPage: React.FC = () => {
       ) : (
         <>
           <PrintHeader backUrl={backUrl} isLoading={!isDataLoaded} />
-          <CustomerBillPreview bill={bill} isDataLoaded={isDataLoaded} klm={klm} style={getStyle('Customer Bill')} />
+          <CustomerBillPreview
+            bill={bill}
+            company={company}
+            isDataLoaded={isDataLoaded}
+            klm={klm}
+            style={getStyle('Customer Bill')}
+          />
           <div style={{ pageBreakBefore: 'always' }}></div>
           <WorkerBillPreview
             bill={bill}
+            company={company}
             isDataLoaded={isDataLoaded}
             klm={klm}
             style={getStyle('Worker Bill')}

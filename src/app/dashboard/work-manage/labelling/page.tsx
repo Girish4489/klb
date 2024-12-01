@@ -1,5 +1,5 @@
 'use client';
-import { BarcodeScannerPage } from '@/app/components/Barcode/BarcodeScanner';
+import BarcodeScannerPage from '@/app/components/Barcode/BarcodeScanner';
 import SearchBillForm from '@/app/components/SearchBillForm/SearchBillForm';
 import BillDetailsDropdownClear from '@/app/dashboard/work-manage/bill/components/BillDetails';
 import { handleSearch } from '@/app/dashboard/work-manage/bill/utils/billUtils';

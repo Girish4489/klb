@@ -5,17 +5,19 @@ import React from 'react';
 
 import QrGenerator from '@/app/components/Barcode/BarcodeGenerator';
 import { formatDS, formatDSNT } from '@/app/util/format/dateUtils';
+import { ICompany } from '@/models/companyModel';
 import Image from 'next/image';
 
 interface WorkerBillPreviewProps {
   bill: IBill | undefined;
+  company: ICompany | undefined;
   isDataLoaded: boolean;
   klm: { src: string };
   style: string;
   type: string;
 }
 
-const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, isDataLoaded, klm, style, type }) => {
+const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, company, isDataLoaded, klm, style, type }) => {
   if (!isDataLoaded) {
     return <div>Loading...</div>;
   }
@@ -31,7 +33,14 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, isDataLoade
               <div className="flex flex-row items-center justify-between gap-4">
                 <div className="flex flex-row items-center gap-4">
                   <span className="profile flex h-24 w-24">
-                    <Image src={klm.src} width={96} height={90} alt="Profile" className="m-auto w-24" priority />
+                    <Image
+                      src={company?.logos?.small || klm.src}
+                      width={96}
+                      height={90}
+                      alt="Company Profile"
+                      className="m-auto w-24"
+                      priority
+                    />
                   </span>
                   <hr className="divider divider-horizontal m-0 w-0.5 rounded-box bg-black" />
                 </div>
@@ -53,7 +62,13 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, isDataLoade
                 <div className="header-col flex flex-col justify-start text-center">
                   <h2 id="text-center">Barcode</h2>
                   {bill.billNumber && bill.billNumber.toString().length > 0 && (
-                    <QrGenerator content={`billNumber=${bill?.billNumber.toString()}` || ''} size={90} />
+                    <QrGenerator
+                      content={
+                        `${company?.name && `Company Name=${company.name}\n`}${company?.contactDetails.address && `Address=${company.contactDetails.address}\n`}&billNumber=${bill?.billNumber.toString()}` ||
+                        ''
+                      }
+                      size={90}
+                    />
                   )}
                 </div>
               </div>

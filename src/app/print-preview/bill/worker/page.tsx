@@ -1,5 +1,6 @@
 'use client';
 import LoadingSpinner from '@/app/components/LoadingSpinner';
+import { useCompany } from '@/app/context/companyContext';
 import PrintHeader from '@/app/print-preview/components/PrintHeader';
 import WorkerBillPreview from '@/app/print-preview/components/WorkerBillPreview';
 import handleError from '@/app/util/error/handleError';
@@ -13,6 +14,7 @@ import toast from 'react-hot-toast';
 
 const WorkerBillPage: React.FC = () => {
   const [bill, setBill] = useState<IBill>();
+  const { company } = useCompany();
   const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false);
   const type = 'Worker Bill';
   const [backUrl, setBackUrl] = useState<string>('/dashboard/work-manage/bill');
@@ -52,7 +54,14 @@ const WorkerBillPage: React.FC = () => {
       ) : (
         <>
           <PrintHeader backUrl={backUrl} isLoading={!isDataLoaded} />
-          <WorkerBillPreview bill={bill} isDataLoaded={isDataLoaded} klm={klm} style={getStyle(type)} type={type} />
+          <WorkerBillPreview
+            bill={bill}
+            company={company}
+            isDataLoaded={isDataLoaded}
+            klm={klm}
+            style={getStyle(type)}
+            type={type}
+          />
         </>
       )}
     </>
