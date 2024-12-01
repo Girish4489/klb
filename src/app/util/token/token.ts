@@ -2,7 +2,7 @@ import { IUser } from '@/models/userModel';
 import jwt from 'jsonwebtoken';
 import { NextRequest, NextResponse } from 'next/server';
 
-interface TokenData {
+interface UserTokenPayload {
   id: string;
   username?: string;
   email?: string;
@@ -10,13 +10,13 @@ interface TokenData {
   [key: string]: unknown;
 }
 
-interface DecodedToken extends TokenData {
+interface DecodedToken extends UserTokenPayload {
   exp: number;
 }
 
 const TOKEN_SECRET = process.env.TOKEN_SECRET!;
 
-async function createAuthToken(tokenData: TokenData, expiresIn: string | number = '1d'): Promise<string> {
+async function createAuthToken(tokenData: UserTokenPayload, expiresIn: string | number = '1d'): Promise<string> {
   let sanitizedTokenData = { ...tokenData };
   if (typeof sanitizedTokenData.email === 'string') {
     sanitizedTokenData.email = sanitizedTokenData.email.replace(/\.$/, '');
