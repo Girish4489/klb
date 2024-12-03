@@ -3,6 +3,7 @@ import React from 'react';
 
 import QrGenerator from '@/app/components/Barcode/BarcodeGenerator';
 import { formatDS } from '@/app/util/format/dateUtils';
+import { ICompany } from '@/models/companyModel';
 import { EnvelopeIcon, FaceSmileIcon, PhoneIcon, WalletIcon } from '@heroicons/react/24/solid';
 import Image from 'next/image';
 
@@ -17,10 +18,11 @@ interface ReceiptPreviewProps {
   };
   isDataLoaded: boolean;
   klm: { src: string };
+  company: ICompany | undefined;
   style: string;
 }
 
-const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ receipt, cal, isDataLoaded, klm, style }) => {
+const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ receipt, cal, isDataLoaded, klm, company, style }) => {
   if (!isDataLoaded) {
     return <div>Loading...</div>;
   }
@@ -35,46 +37,76 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ receipt, cal, isDataLoa
             <div className="flex flex-col items-center gap-2">
               <div className="card card-side flex-col border border-dashed border-black/50 shadow-md">
                 <h2 id="header" className="card-title mx-auto grow text-lg">
-                  Kalamandir Ladies Boutique
+                  {company?.name ?? 'Kalamandir Ladies Boutique'}
                 </h2>
                 <div className="card-body grow flex-row gap-0.5 bg-transparent p-1 pb-2 text-slate-500">
                   <figure className="w-[30%]">
                     <Image src={klm.src} width={180} height={180} alt="Profile" />
                   </figure>
                   <address className="w-[70%] content-center text-sm font-medium">
-                    1st Floor, Muddurandappa Complex Opp/BH Road, Gowribidanur - 561208
+                    {company?.contactDetails?.address ??
+                      '1st Floor, Muddurandappa Complex Opp/BH Road, Gowribidanur - 561208'}
                   </address>
                 </div>
               </div>
               <hr className="my-1 w-[90%] border border-dashed border-black/60" />
               <div className="item-center flex w-full flex-col justify-between px-2 text-black">
-                <span className="flex justify-between text-black">
-                  <span className="flex items-center gap-1">
-                    <PhoneIcon className="h-auto w-2 text-gray-800" />
-                    <h2 className="text-gray-800">Phone:</h2>
+                {company?.contactDetails?.phones?.length ? (
+                  company.contactDetails.phones.map((phone, index) => (
+                    <span key={index} className="flex justify-between text-black">
+                      <span className="flex items-center gap-1">
+                        <PhoneIcon className="h-auto w-2 text-gray-800" />
+                        <h2 className="text-gray-800">Phone:</h2>
+                      </span>
+                      <h3 className="text-gray-800">{phone.replace(/(\d{5})(\d{5})/, '$1 $2')}</h3>
+                    </span>
+                  ))
+                ) : (
+                  <>
+                    <span className="flex justify-between text-black">
+                      <span className="flex items-center gap-1">
+                        <PhoneIcon className="h-auto w-2 text-gray-800" />
+                        <h2 className="text-gray-800">Phone:</h2>
+                      </span>
+                      <h3 className="text-gray-800">98453 71322</h3>
+                    </span>
+                    <span className="flex justify-between">
+                      <span className="flex items-center gap-1">
+                        <PhoneIcon className="h-auto w-2 text-gray-800" />
+                        <h2 className="text-gray-800">Phone:</h2>
+                      </span>
+                      <h3 className="text-gray-800">93532 71763</h3>
+                    </span>
+                  </>
+                )}
+                {company?.contactDetails?.emails?.length ? (
+                  company.contactDetails.emails.map((email, index) => (
+                    <span key={index} className="flex justify-between">
+                      <span className="flex items-center gap-1">
+                        <EnvelopeIcon className="h-auto w-2 text-gray-800" />
+                        <h2 className="text-gray-800">Email:</h2>
+                      </span>
+                      <h3 className="text-gray-800">
+                        <a href={`mailto:${email}`}>{email}</a>
+                      </h3>
+                    </span>
+                  ))
+                ) : (
+                  <span className="flex justify-between">
+                    <span className="flex items-center gap-1">
+                      <EnvelopeIcon className="h-auto w-2 text-gray-800" />
+                      <h2 className="text-gray-800">Email:</h2>
+                    </span>
+                    <h3 className="text-gray-800">kalamandir2106@gmail.com</h3>
                   </span>
-                  <h3 className="text-gray-800">9845371322</h3>
-                </span>
-                <span className="flex justify-between">
-                  <span className="flex items-center gap-1">
-                    <PhoneIcon className="h-auto w-2 text-gray-800" />
-                    <h2 className="text-gray-800">Phone:</h2>
-                  </span>
-                  <h3 className="text-gray-800">93532 71763</h3>
-                </span>
-                <span className="flex justify-between">
-                  <span className="flex items-center gap-1">
-                    <EnvelopeIcon className="h-auto w-2 text-gray-800" />
-                    <h2 className="text-gray-800">Email:</h2>
-                  </span>
-                  <h3 className="text-gray-800">kalamandir2106@gmail.com</h3>
-                </span>
+                )}
+
                 <span className="flex justify-between">
                   <span className="flex items-center gap-1">
                     <WalletIcon className="h-auto w-2 text-gray-800" />
                     <h2 className="text-gray-800">GST No:</h2>
                   </span>
-                  <h3 className="text-gray-800"></h3>
+                  <h3 className="text-gray-800">{company?.gstNumber ?? ''}</h3>
                 </span>
               </div>
               <hr className="my-1 w-[90%] border border-dashed border-black/60" />

@@ -110,6 +110,7 @@ interface IBill extends Document {
   dueAmount: number;
   paymentStatus?: 'Unpaid' | 'Partially Paid' | 'Paid';
   billBy?: { _id: ObjectId; name: string };
+  deliveryStatus?: 'Pending' | 'Delivered';
   createdAt: Date;
   updatedAt: Date;
 }
@@ -323,6 +324,11 @@ const billSchema: Schema<IBill> = new Schema<IBill>(
     billBy: {
       _id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
       name: String,
+    },
+    deliveryStatus: {
+      type: String,
+      enum: ['Pending', 'Delivered'],
+      default: 'Pending',
     },
   },
   { timestamps: true },

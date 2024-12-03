@@ -51,6 +51,9 @@ export async function validateBill(bill: IBill | undefined) {
     if ((order.amount ?? 0) <= 0) {
       throw new Error(`Amount should be greater than 0 for order Sl No ${index + 1}`);
     }
+    if (!order.color || order.color.name === '' || order.color.hex === '') {
+      throw new Error(`Color is required for order Sl No ${index + 1}`);
+    }
   }
 }
 
