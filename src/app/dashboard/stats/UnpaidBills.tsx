@@ -1,3 +1,5 @@
+import { formatDSNT } from '@/app/util/format/dateUtils';
+import { ArrowDownCircleIcon, ArrowUpCircleIcon } from '@heroicons/react/24/solid';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 
@@ -41,11 +43,24 @@ const UnpaidBills = ({ refresh }: UnpaidBillsProps) => {
     setSortConfig({ key, direction });
   };
 
+  const getSortIcon = (key: keyof Bill) => {
+    if (!sortConfig) return null;
+    if (sortConfig.key === key) {
+      return sortConfig.direction === 'ascending' ? (
+        <ArrowUpCircleIcon className="h-6 w-6 cursor-pointer text-inherit transition-transform duration-300" />
+      ) : (
+        <ArrowDownCircleIcon className="h-6 w-6 cursor-pointer text-inherit transition-transform duration-300" />
+      );
+    }
+    return null;
+  };
+
   useEffect(() => {
     const fetchUnpaidBills = async () => {
       try {
         const response = await axios.get('/api/dashboard/stats/unpaidBills');
         setUnpaidBills(response.data.unpaidBills);
+        setSortConfig({ key: 'paymentStatus', direction: 'ascending' }); // Default sorting
       } catch (err) {
         setError('Failed to fetch unpaid bills' + err);
       }
@@ -60,22 +75,50 @@ const UnpaidBills = ({ refresh }: UnpaidBillsProps) => {
         <table className="table w-full table-auto">
           <caption>Unpaid Bills</caption>
           <thead>
-            <tr className="text-center">
-              <th onClick={() => requestSort('billNumber')}>Bill Number</th>
-              <th onClick={() => requestSort('date')}>Date</th>
-              <th onClick={() => requestSort('dueDate')}>Due Date</th>
-              <th onClick={() => requestSort('totalAmount')}>Total Amount</th>
-              <th onClick={() => requestSort('paidAmount')}>Paid Amount</th>
-              <th onClick={() => requestSort('dueAmount')}>Due Amount</th>
-              <th onClick={() => requestSort('paymentStatus')}>Status</th>
+            <tr className="cursor-pointer select-none text-center">
+              <th onClick={() => requestSort('billNumber')}>
+                <div className="flex items-center justify-between gap-1">
+                  <span className="grow">Bill Number</span> {getSortIcon('billNumber')}
+                </div>
+              </th>
+              <th onClick={() => requestSort('date')}>
+                <div className="flex items-center justify-between gap-1">
+                  <span className="grow">Date</span> {getSortIcon('date')}
+                </div>
+              </th>
+              <th onClick={() => requestSort('dueDate')}>
+                <div className="flex items-center justify-between gap-1">
+                  <span className="grow">Due Date</span> {getSortIcon('dueDate')}
+                </div>
+              </th>
+              <th onClick={() => requestSort('totalAmount')}>
+                <div className="flex items-center justify-between gap-1">
+                  <span className="grow">Total Amount</span> {getSortIcon('totalAmount')}
+                </div>
+              </th>
+              <th onClick={() => requestSort('paidAmount')}>
+                <div className="flex items-center justify-between gap-1">
+                  <span className="grow">Paid Amount</span> {getSortIcon('paidAmount')}
+                </div>
+              </th>
+              <th onClick={() => requestSort('dueAmount')}>
+                <div className="flex items-center justify-between gap-1">
+                  <span className="grow">Due Amount</span> {getSortIcon('dueAmount')}
+                </div>
+              </th>
+              <th onClick={() => requestSort('paymentStatus')}>
+                <div className="flex items-center justify-between gap-1">
+                  <span className="grow">Status</span> {getSortIcon('paymentStatus')}
+                </div>
+              </th>
             </tr>
           </thead>
           <tbody>
             {sortedBills.map((bill) => (
               <tr key={bill._id} className="text-center">
                 <td>{bill.billNumber}</td>
-                <td>{new Date(bill.date).toLocaleDateString()}</td>
-                <td>{new Date(bill.dueDate).toLocaleDateString()}</td>
+                <td>{formatDSNT(new Date(bill.date))}</td>
+                <td>{formatDSNT(new Date(bill.dueDate))}</td>
                 <td>{bill.totalAmount}</td>
                 <td>{bill.paidAmount}</td>
                 <td>{bill.dueAmount}</td>

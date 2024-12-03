@@ -28,6 +28,9 @@ export default function DashboardPage() {
             <DashboardStats refresh={refresh} />
           </span>
           <span className="rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
+            <DueDateTable refresh={refresh} /> {/* Add the new component */}
+          </span>
+          <span className="rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
             <DueBills refresh={refresh} />
           </span>
           <span className="rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
@@ -38,9 +41,6 @@ export default function DashboardPage() {
           </span>
           <span className="rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
             <UnpaidBills refresh={refresh} />
-          </span>
-          <span className="rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
-            <DueDateTable refresh={refresh} /> {/* Add the new component */}
           </span>
         </span>
       </div>

@@ -1,3 +1,5 @@
+import { formatDSNT } from '@/app/util/format/dateUtils';
+import { ArrowDownCircleIcon, ArrowUpCircleIcon } from '@heroicons/react/24/solid';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 
@@ -10,6 +12,7 @@ interface Order {
   paidAmount: number;
   dueAmount: number;
   paymentStatus: string;
+  deliveryStatus: string; // Add this line
 }
 
 interface CompletedOrdersProps {
@@ -43,11 +46,24 @@ const CompletedOrders = ({ refresh }: CompletedOrdersProps) => {
     setSortConfig({ key, direction });
   };
 
+  const getSortIcon = (key: keyof Order) => {
+    if (!sortConfig) return null;
+    if (sortConfig.key === key) {
+      return sortConfig.direction === 'ascending' ? (
+        <ArrowUpCircleIcon className="h-6 w-6 cursor-pointer text-inherit transition-transform duration-300" />
+      ) : (
+        <ArrowDownCircleIcon className="h-6 w-6 cursor-pointer text-inherit transition-transform duration-300" />
+      );
+    }
+    return null;
+  };
+
   useEffect(() => {
     const fetchCompletedOrders = async () => {
       try {
         const response = await axios.get('/api/dashboard/stats/completedOrders');
         setCompletedOrders(response.data.completedOrders);
+        setSortConfig({ key: 'deliveryStatus', direction: 'ascending' }); // Default sorting
       } catch (err) {
         setError('Failed to fetch completed orders' + err);
       }
@@ -62,26 +78,60 @@ const CompletedOrders = ({ refresh }: CompletedOrdersProps) => {
         <table className="table w-full table-auto">
           <caption>Completed Orders</caption>
           <thead>
-            <tr>
-              <th onClick={() => requestSort('billNumber')}>Bill Number</th>
-              <th onClick={() => requestSort('date')}>Date</th>
-              <th onClick={() => requestSort('dueDate')}>Due Date</th>
-              <th onClick={() => requestSort('totalAmount')}>Total Amount</th>
-              <th onClick={() => requestSort('paidAmount')}>Paid Amount</th>
-              <th onClick={() => requestSort('dueAmount')}>Due Amount</th>
-              <th onClick={() => requestSort('paymentStatus')}>Status</th>
+            <tr className="cursor-pointer select-none text-center">
+              <th onClick={() => requestSort('billNumber')}>
+                <div className="flex items-center justify-between gap-1">
+                  <span className="grow">Bill Number</span> {getSortIcon('billNumber')}
+                </div>
+              </th>
+              <th onClick={() => requestSort('date')}>
+                <div className="flex items-center justify-between gap-1">
+                  <span className="grow">Date</span> {getSortIcon('date')}
+                </div>
+              </th>
+              <th onClick={() => requestSort('dueDate')}>
+                <div className="flex items-center justify-between gap-1">
+                  <span className="grow">Due Date</span> {getSortIcon('dueDate')}
+                </div>
+              </th>
+              <th onClick={() => requestSort('totalAmount')}>
+                <div className="flex items-center justify-between gap-1">
+                  <span className="grow">Total Amount</span> {getSortIcon('totalAmount')}
+                </div>
+              </th>
+              <th onClick={() => requestSort('paidAmount')}>
+                <div className="flex items-center justify-between gap-1">
+                  <span className="grow">Paid Amount</span> {getSortIcon('paidAmount')}
+                </div>
+              </th>
+              <th onClick={() => requestSort('dueAmount')}>
+                <div className="flex items-center justify-between gap-1">
+                  <span className="grow">Due Amount</span> {getSortIcon('dueAmount')}
+                </div>
+              </th>
+              <th onClick={() => requestSort('paymentStatus')}>
+                <div className="flex items-center justify-between gap-1">
+                  <span className="grow">Pay Status</span> {getSortIcon('paymentStatus')}
+                </div>
+              </th>
+              <th onClick={() => requestSort('deliveryStatus')}>
+                <div className="flex items-center justify-between gap-1">
+                  <span className="grow">Delivery Status</span> {getSortIcon('deliveryStatus')}
+                </div>
+              </th>
             </tr>
           </thead>
           <tbody>
             {sortedOrders.map((order) => (
               <tr key={order._id} className="text-center">
                 <td>{order.billNumber}</td>
-                <td>{new Date(order.date).toLocaleDateString()}</td>
-                <td>{new Date(order.dueDate).toLocaleDateString()}</td>
+                <td>{formatDSNT(new Date(order.date))}</td>
+                <td>{formatDSNT(new Date(order.dueDate))}</td>
                 <td>{order.totalAmount}</td>
                 <td>{order.paidAmount}</td>
                 <td>{order.dueAmount}</td>
                 <td>{order.paymentStatus}</td>
+                <th>{order.deliveryStatus}</th>
               </tr>
             ))}
           </tbody>
