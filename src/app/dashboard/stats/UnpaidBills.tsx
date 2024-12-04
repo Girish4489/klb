@@ -22,6 +22,8 @@ const UnpaidBills = ({ refresh }: UnpaidBillsProps) => {
   const [unpaidBills, setUnpaidBills] = useState<Bill[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [sortConfig, setSortConfig] = useState<{ key: keyof Bill; direction: 'ascending' | 'descending' } | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const billsPerPage = 15;
 
   const sortedBills = [...unpaidBills].sort((a, b) => {
     if (sortConfig !== null) {
@@ -34,6 +36,10 @@ const UnpaidBills = ({ refresh }: UnpaidBillsProps) => {
     }
     return 0;
   });
+
+  const indexOfLastBill = currentPage * billsPerPage;
+  const indexOfFirstBill = indexOfLastBill - billsPerPage;
+  const currentBills = sortedBills.slice(indexOfFirstBill, indexOfLastBill);
 
   const requestSort = (key: keyof Bill) => {
     let direction: 'ascending' | 'descending' = 'ascending';
@@ -55,6 +61,8 @@ const UnpaidBills = ({ refresh }: UnpaidBillsProps) => {
     return null;
   };
 
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+
   useEffect(() => {
     const fetchUnpaidBills = async () => {
       try {
@@ -69,7 +77,7 @@ const UnpaidBills = ({ refresh }: UnpaidBillsProps) => {
   }, [refresh]);
 
   return (
-    <div className="w-fit">
+    <div className="w-full">
       {error && <p>{error}</p>}
       <div className="overflow-auto">
         <table className="table w-full table-auto">
@@ -114,7 +122,7 @@ const UnpaidBills = ({ refresh }: UnpaidBillsProps) => {
             </tr>
           </thead>
           <tbody>
-            {sortedBills.map((bill) => (
+            {currentBills.map((bill) => (
               <tr key={bill._id} className="text-center">
                 <td>{bill.billNumber}</td>
                 <td>{formatDSNT(new Date(bill.date))}</td>
@@ -128,6 +136,19 @@ const UnpaidBills = ({ refresh }: UnpaidBillsProps) => {
           </tbody>
         </table>
       </div>
+      <span className="flex w-full justify-center">
+        <div className="join pt-1.5">
+          {Array.from({ length: Math.ceil(sortedBills.length / billsPerPage) }, (_, index) => (
+            <button
+              key={index + 1}
+              className={`btn btn-square join-item btn-sm ${currentPage === index + 1 ? 'btn-primary' : 'btn-ghost'}`}
+              onClick={() => paginate(index + 1)}
+            >
+              {index + 1}
+            </button>
+          ))}
+        </div>
+      </span>
     </div>
   );
 };

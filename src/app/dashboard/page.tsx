@@ -1,11 +1,12 @@
 'use client';
+// import dynamic from 'next/dynamic';
+import AllBills from '@/app/dashboard/stats/AllBills';
+import CompletedOrders from '@/app/dashboard/stats/CompletedOrders';
+import DashboardStats from '@/app/dashboard/stats/DashboardStats';
+import DueBills from '@/app/dashboard/stats/DueBills';
+import DueDateTable from '@/app/dashboard/stats/DueDateTable';
+import UnpaidBills from '@/app/dashboard/stats/UnpaidBills';
 import React, { useState } from 'react';
-import AllBills from './stats/AllBills';
-import CompletedOrders from './stats/CompletedOrders';
-import DashboardStats from './stats/DashboardStats';
-import DueBills from './stats/DueBills';
-import DueDateTable from './stats/DueDateTable';
-import UnpaidBills from './stats/UnpaidBills';
 
 export default function DashboardPage() {
   const [refresh, setRefresh] = useState(false);
@@ -24,22 +25,22 @@ export default function DashboardPage() {
           </button>
         </span>
         <span className="flex flex-wrap gap-2 rounded-box">
-          <span className="rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
+          <span className="grow rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
             <DashboardStats refresh={refresh} />
           </span>
-          <span className="rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
-            <DueDateTable refresh={refresh} /> {/* Add the new component */}
+          <span className="grow rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
+            <DueDateTable refresh={refresh} />
           </span>
-          <span className="rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
-            <DueBills refresh={refresh} />
-          </span>
-          <span className="rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
+          <span className="grow rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
             <AllBills refresh={refresh} />
           </span>
-          <span className="rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
+          <span className="grow rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
+            <DueBills refresh={refresh} />
+          </span>
+          <span className="grow rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
             <CompletedOrders refresh={refresh} />
           </span>
-          <span className="rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
+          <span className="grow rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
             <UnpaidBills refresh={refresh} />
           </span>
         </span>

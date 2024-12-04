@@ -1,10 +1,8 @@
-import { formatDS } from '@/app/util/format/dateUtils';
-import { ArrowDownCircleIcon, ArrowUpCircleIcon } from '@heroicons/react/24/solid';
+import { getComputedStyleValue } from '@/app/util/Styles';
 import axios from 'axios';
 import { ArcElement, BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Tooltip } from 'chart.js';
 import { useEffect, useState } from 'react';
 import { Bar, Pie } from 'react-chartjs-2';
-import { IBill } from '../../../models/klm';
 
 ChartJS.register(ArcElement, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
 
@@ -13,62 +11,35 @@ interface DashboardStatsProps {
 }
 
 interface Stats {
-  unpaidBills: IBill[];
-  dueBills: IBill[];
-  completedOrders: IBill[];
-  allBills: IBill[];
+  unpaidBillsCount: number;
+  partiallyPaidBillsCount: number;
+  paidBillsCount: number;
+  pendingDeliveryBillsCount: number;
+  deliveredBillsCount: number;
+  totalBillsCount: number;
+  grandTotalAmount: number;
+  paidAmount: number;
+  dueAmount: number;
 }
 
 const DashboardStats = ({ refresh }: DashboardStatsProps) => {
   const [stats, setStats] = useState<Stats>({
-    unpaidBills: [],
-    dueBills: [],
-    completedOrders: [],
-    allBills: [],
+    unpaidBillsCount: 0,
+    partiallyPaidBillsCount: 0,
+    paidBillsCount: 0,
+    pendingDeliveryBillsCount: 0,
+    deliveredBillsCount: 0,
+    totalBillsCount: 0,
+    grandTotalAmount: 0,
+    paidAmount: 0,
+    dueAmount: 0,
   });
   const [error, setError] = useState<string | null>(null);
-  const [sortConfig, setSortConfig] = useState<{ key: keyof IBill; direction: 'ascending' | 'descending' } | null>(
-    null,
-  );
-
-  const sortedBills = [...stats.allBills].sort((a, b) => {
-    if (sortConfig !== null) {
-      if (a[sortConfig.key] < b[sortConfig.key]) {
-        return sortConfig.direction === 'ascending' ? -1 : 1;
-      }
-      if (a[sortConfig.key] > b[sortConfig.key]) {
-        return sortConfig.direction === 'ascending' ? 1 : -1;
-      }
-    }
-    return 0;
-  });
-
-  const requestSort = (key: keyof IBill) => {
-    let direction: 'ascending' | 'descending' = 'ascending';
-    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'ascending') {
-      direction = 'descending';
-    }
-    setSortConfig({ key, direction });
-  };
-
-  const getSortIcon = (key: keyof IBill) => {
-    if (!sortConfig) return null;
-    if (sortConfig.key === key) {
-      return sortConfig.direction === 'ascending' ? (
-        <ArrowUpCircleIcon className="h-6 w-6 cursor-pointer text-inherit transition-transform duration-300" />
-      ) : (
-        <ArrowDownCircleIcon className="h-6 w-6 cursor-pointer text-inherit transition-transform duration-300" />
-      );
-    }
-    return null;
-  };
-
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await axios.get('/api/dashboard/stats');
+        const response = await axios.get('/api/dashboard/stats/dashboardStats');
         setStats(response.data);
-        setSortConfig({ key: 'billNumber', direction: 'ascending' }); // Default sorting
       } catch (err) {
         setError('Failed to fetch stats' + err);
       }
@@ -77,87 +48,54 @@ const DashboardStats = ({ refresh }: DashboardStatsProps) => {
   }, [refresh]);
 
   const data = {
-    labels: ['Unpaid Bills', 'Due Bills', 'Completed Orders', 'All Bills'],
+    labels: ['Paid', 'Partially Paid', 'Unpaid Bills', 'Delivered', 'Pending Delivery', 'Total Bills'],
     datasets: [
       {
         label: 'Count',
         data: [
-          stats.unpaidBills?.length || 0,
-          stats.dueBills?.length || 0,
-          stats.completedOrders?.length || 0,
-          stats.allBills?.length || 0,
+          stats.paidBillsCount,
+          stats.partiallyPaidBillsCount,
+          stats.unpaidBillsCount,
+          stats.deliveredBillsCount,
+          stats.pendingDeliveryBillsCount,
+          stats.totalBillsCount,
         ],
-        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
+        backgroundColor: [
+          getComputedStyleValue('bg-success', 'background-color'),
+          getComputedStyleValue('bg-secondary', 'background-color'),
+          getComputedStyleValue('bg-error', 'background-color'),
+          getComputedStyleValue('bg-success', 'background-color'),
+          getComputedStyleValue('bg-warning', 'background-color'),
+          getComputedStyleValue('bg-primary', 'background-color'),
+        ],
+      },
+    ],
+  };
+
+  const amountData = {
+    labels: ['Grand Total', 'Paid Amount', 'Due Amount'],
+    datasets: [
+      {
+        label: 'Amount',
+        data: [stats.grandTotalAmount, stats.paidAmount, stats.dueAmount],
+        backgroundColor: [
+          getComputedStyleValue('bg-primary', 'background-color'),
+          getComputedStyleValue('bg-success', 'background-color'),
+          getComputedStyleValue('bg-warning', 'background-color'),
+        ],
       },
     ],
   };
 
   return (
-    <div className="w-fit">
+    <div className="grow">
       {error && <p>{error}</p>}
-      <div className="overflow-auto">
-        <table className="table w-full table-auto">
-          <caption>Dashboard Stats</caption>
-          <thead>
-            <tr className="cursor-pointer select-none text-center">
-              <th onClick={() => requestSort('billNumber')}>
-                <div className="flex items-center justify-between gap-1">
-                  <span className="grow">Bill No</span> {getSortIcon('billNumber')}
-                </div>
-              </th>
-              <th onClick={() => requestSort('date')}>
-                <div className="flex items-center justify-between gap-1">
-                  <span className="grow">Date</span> {getSortIcon('date')}
-                </div>
-              </th>
-              <th onClick={() => requestSort('dueDate')}>
-                <div className="flex items-center justify-between gap-1">
-                  <span className="grow">Due Date</span> {getSortIcon('dueDate')}
-                </div>
-              </th>
-              <th onClick={() => requestSort('totalAmount')}>
-                <div className="flex items-center justify-between gap-1">
-                  <span className="grow">Total Amount</span> {getSortIcon('totalAmount')}
-                </div>
-              </th>
-              <th onClick={() => requestSort('paidAmount')}>
-                <div className="flex items-center justify-between gap-1">
-                  <span className="grow">Paid Amount</span> {getSortIcon('paidAmount')}
-                </div>
-              </th>
-              <th onClick={() => requestSort('dueAmount')}>
-                <div className="flex items-center justify-between gap-1">
-                  <span className="grow">Due Amount</span> {getSortIcon('dueAmount')}
-                </div>
-              </th>
-              <th onClick={() => requestSort('paymentStatus')}>
-                <div className="flex items-center justify-between gap-1">
-                  <span className="grow">Pay Status</span> {getSortIcon('paymentStatus')}
-                </div>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {sortedBills.map((bill) => (
-              <tr key={bill._id.toString()} className="text-center">
-                <td>{bill.billNumber}</td>
-                <td>{bill.date ? formatDS(bill.date) : 'N/A'}</td>
-                <td>{bill.dueDate ? formatDS(bill.dueDate) : 'N/A'}</td>
-                <td>{bill.totalAmount}</td>
-                <td>{bill.paidAmount}</td>
-                <td>{bill.dueAmount}</td>
-                <td>{bill.paymentStatus}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <div className="mt-4 flex flex-col lg:flex-row lg:space-x-4">
-        <div className="flex-1">
+      <div className="mt-4 flex grow flex-col lg:flex-row lg:space-x-4">
+        <div className="flex flex-grow place-items-center items-center">
           <Bar data={data} options={{ maintainAspectRatio: true }} />
         </div>
-        <div className="flex-1">
-          <Pie data={data} options={{ maintainAspectRatio: true }} />
+        <div className="flex w-3/12 flex-1 place-items-center items-center">
+          <Pie data={amountData} options={{ maintainAspectRatio: true }} />
         </div>
       </div>
     </div>

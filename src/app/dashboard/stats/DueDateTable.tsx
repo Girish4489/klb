@@ -25,8 +25,11 @@ const DueDateTable = ({ refresh }: DueDateTableProps) => {
   const [sortConfig, setSortConfig] = useState<{ key: keyof Bill; direction: 'ascending' | 'descending' } | null>(null);
   const [tolerance, setTolerance] = useState<number>(2);
   const [showToleranceInput, setShowToleranceInput] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const billsPerPage = 15;
 
-  const toggleToleranceInput = () => {
+  const toggleToleranceInput = (event: React.MouseEvent) => {
+    event.stopPropagation();
     setShowToleranceInput(!showToleranceInput);
   };
 
@@ -78,11 +81,18 @@ const DueDateTable = ({ refresh }: DueDateTableProps) => {
     return diffDays <= tolerance;
   });
 
+  const indexOfLastBill = currentPage * billsPerPage;
+  const indexOfFirstBill = indexOfLastBill - billsPerPage;
+  const currentBills = filteredBills.slice(indexOfFirstBill, indexOfLastBill);
+
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+
   useEffect(() => {
     const fetchDueDateBills = async () => {
       try {
         const response = await axios.get('/api/dashboard/stats/dueDateBills');
         setDueDateBills(response.data.dueDateBills);
+        setSortConfig({ key: 'dueDate', direction: 'descending' }); // Default sort by due date
       } catch (err) {
         setError('Failed to fetch due date bills' + err);
       }
@@ -91,7 +101,7 @@ const DueDateTable = ({ refresh }: DueDateTableProps) => {
   }, [refresh]);
 
   return (
-    <div className="w-fit">
+    <div className="w-full">
       {error && <p>{error}</p>}
       <div className="overflow-auto">
         <table className="table w-full table-auto">
@@ -113,18 +123,25 @@ const DueDateTable = ({ refresh }: DueDateTableProps) => {
                   <div className="flex w-full items-center justify-between gap-1">
                     <span className="grow">Due Date</span>
                     {/* Tolerance input */}
-                    <div className="indicator">
-                      <span className="badge indicator-item badge-secondary rounded-full">{tolerance}</span>
-                      {showToleranceInput ? (
-                        <FunnelIcon className={`h-5 w-5 cursor-pointer text-inherit`} onClick={toggleToleranceInput} />
-                      ) : (
-                        <FunnelIconOutline
-                          className={`h-5 w-5 cursor-pointer text-inherit`}
-                          onClick={toggleToleranceInput}
-                        />
-                      )}{' '}
-                    </div>
-                    {getSortIcon('dueDate')}
+                    <span className="flex items-center gap-4">
+                      <div className="indicator">
+                        <span className="badge indicator-item badge-secondary indicator-top rounded-full px-1">
+                          {tolerance}
+                        </span>
+                        {showToleranceInput ? (
+                          <FunnelIcon
+                            className={`h-5 w-5 cursor-pointer text-inherit`}
+                            onClick={toggleToleranceInput}
+                          />
+                        ) : (
+                          <FunnelIconOutline
+                            className={`h-5 w-5 cursor-pointer text-inherit`}
+                            onClick={toggleToleranceInput}
+                          />
+                        )}{' '}
+                      </div>
+                      {getSortIcon('dueDate')}
+                    </span>
                   </div>
                   {showToleranceInput && (
                     <input
@@ -134,6 +151,7 @@ const DueDateTable = ({ refresh }: DueDateTableProps) => {
                       onChange={handleToleranceChange}
                       placeholder="Tolerance in days"
                       autoCorrect="off"
+                      onClick={(event) => event.stopPropagation()}
                     />
                   )}
                 </div>
@@ -161,17 +179,22 @@ const DueDateTable = ({ refresh }: DueDateTableProps) => {
             </tr>
           </thead>
           <tbody>
-            {filteredBills.map((bill) => {
+            {currentBills.map((bill) => {
               const dueDate = new Date(bill.dueDate);
               const today = new Date();
               const diffDays = Math.ceil((dueDate.getTime() - today.getTime()) / (1000 * 3600 * 24));
-              const isDueSoon = diffDays <= 2;
+              const isDueSoon = diffDays >= 0 && diffDays <= (tolerance ?? 2) && bill.paymentStatus !== 'Paid';
               const isOverdue = diffDays < 0;
               return (
-                <tr key={bill._id} className={`text-center ${isDueSoon || isOverdue ? 'bg-red-500' : ''}`}>
+                <tr
+                  key={bill._id}
+                  className={`text-center ${isOverdue ? 'bg-error' : ''} ${isDueSoon ? 'bg-warning' : ''}`}
+                >
                   <td>{bill.billNumber}</td>
-                  <td> className="grow"{formatDSNT(new Date(bill.date))}</td>
-                  <td>{formatDSNT(new Date(bill.dueDate))}</td>
+                  <td className="grow">{formatDSNT(new Date(bill.date))}</td>
+                  <td>
+                    {formatDSNT(new Date(new Date(bill.dueDate).setDate(new Date(bill.dueDate).getDate() - tolerance)))}
+                  </td>
                   <td>{bill.totalAmount}</td>
                   <td>{bill.paidAmount}</td>
                   <td>{bill.dueAmount}</td>
@@ -181,6 +204,19 @@ const DueDateTable = ({ refresh }: DueDateTableProps) => {
             })}
           </tbody>
         </table>
+        <span className="flex w-full justify-center">
+          <div className="join pt-1.5">
+            {Array.from({ length: Math.ceil(filteredBills.length / billsPerPage) }, (_, index) => (
+              <button
+                key={index + 1}
+                className={`btn btn-square join-item btn-sm ${currentPage === index + 1 ? 'btn-primary' : 'btn-ghost'}`}
+                onClick={() => paginate(index + 1)}
+              >
+                {index + 1}
+              </button>
+            ))}
+          </div>
+        </span>
       </div>
     </div>
   );

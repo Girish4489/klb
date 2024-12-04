@@ -1,5 +1,5 @@
 import { IUser } from '@/models/userModel';
-import { SignJWT, jwtVerify } from 'jose';
+import jwt from 'jsonwebtoken';
 import { NextRequest, NextResponse } from 'next/server';
 
 interface UserTokenPayload {
@@ -14,26 +14,19 @@ interface DecodedToken extends UserTokenPayload {
   exp: number;
 }
 
-// const TOKEN_SECRET = process.env.TOKEN_SECRET!;
-const TOKEN_SECRET = new TextEncoder().encode(process.env.TOKEN_SECRET!);
+const TOKEN_SECRET = process.env.TOKEN_SECRET!;
 
 async function createAuthToken(tokenData: UserTokenPayload, expiresIn: string | number = '1d'): Promise<string> {
   let sanitizedTokenData = { ...tokenData };
   if (typeof sanitizedTokenData.email === 'string') {
     sanitizedTokenData.email = sanitizedTokenData.email.replace(/\.$/, '');
   }
-  const jwt = await new SignJWT(sanitizedTokenData)
-    .setProtectedHeader({ alg: 'HS256' })
-    .setIssuedAt()
-    .setExpirationTime(expiresIn)
-    .sign(TOKEN_SECRET);
-  return jwt;
+  return jwt.sign(sanitizedTokenData, TOKEN_SECRET, { expiresIn });
 }
 
 async function verifyAuthToken(token: string): Promise<DecodedToken | null> {
   try {
-    const { payload } = await jwtVerify(token, TOKEN_SECRET);
-    return payload as DecodedToken;
+    return jwt.verify(token, TOKEN_SECRET) as DecodedToken;
   } catch {
     return null;
   }
