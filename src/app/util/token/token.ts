@@ -1,8 +1,8 @@
 import { IUser } from '@/models/userModel';
-import jwt from 'jsonwebtoken';
+import { SignJWT, jwtVerify } from 'jose';
 import { NextRequest, NextResponse } from 'next/server';
 
-interface TokenData {
+interface UserTokenPayload {
   id: string;
   username?: string;
   email?: string;
@@ -10,23 +10,30 @@ interface TokenData {
   [key: string]: unknown;
 }
 
-interface DecodedToken extends TokenData {
+interface DecodedToken extends UserTokenPayload {
   exp: number;
 }
 
-const TOKEN_SECRET = process.env.TOKEN_SECRET!;
+// const TOKEN_SECRET = process.env.TOKEN_SECRET!;
+const TOKEN_SECRET = new TextEncoder().encode(process.env.TOKEN_SECRET!);
 
-async function createAuthToken(tokenData: TokenData, expiresIn: string | number = '1d'): Promise<string> {
+async function createAuthToken(tokenData: UserTokenPayload, expiresIn: string | number = '1d'): Promise<string> {
   let sanitizedTokenData = { ...tokenData };
   if (typeof sanitizedTokenData.email === 'string') {
     sanitizedTokenData.email = sanitizedTokenData.email.replace(/\.$/, '');
   }
-  return jwt.sign(sanitizedTokenData, TOKEN_SECRET, { expiresIn });
+  const jwt = await new SignJWT(sanitizedTokenData)
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime(expiresIn)
+    .sign(TOKEN_SECRET);
+  return jwt;
 }
 
 async function verifyAuthToken(token: string): Promise<DecodedToken | null> {
   try {
-    return jwt.verify(token, TOKEN_SECRET) as DecodedToken;
+    const { payload } = await jwtVerify(token, TOKEN_SECRET);
+    return payload as DecodedToken;
   } catch {
     return null;
   }

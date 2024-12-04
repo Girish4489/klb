@@ -8,6 +8,7 @@ import { NextRequest } from 'next/server';
  * @returns {string | null} - The value of the search parameter, or null if not found.
  */
 export const getSearchParam = (key: string): string | null => {
+  if (typeof window === 'undefined') return null;
   const params = new URLSearchParams(window.location.search);
   return params.get(key);
 };

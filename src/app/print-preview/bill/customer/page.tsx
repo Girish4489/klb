@@ -1,6 +1,7 @@
 'use client';
+import LoadingSpinner from '@/app/components/LoadingSpinner';
+import { useCompany } from '@/app/context/companyContext';
 import CustomerBillPreview from '@/app/print-preview/components/CustomerBillPreview';
-import LoadingSpinner from '@/app/print-preview/components/LoadingSpinner';
 import PrintHeader from '@/app/print-preview/components/PrintHeader';
 import handleError from '@/app/util/error/handleError';
 import { ApiGet } from '@/app/util/makeApiRequest/makeApiRequest';
@@ -13,6 +14,7 @@ import toast from 'react-hot-toast';
 
 const CustomerBillPage: React.FC = () => {
   const [bill, setBill] = useState<IBill>();
+  const { company } = useCompany();
   const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false);
   const type = 'Customer Bill';
   const [backUrl, setBackUrl] = useState<string>('/dashboard/work-manage/bill');
@@ -48,11 +50,17 @@ const CustomerBillPage: React.FC = () => {
   return (
     <>
       {!isDataLoaded ? (
-        <LoadingSpinner />
+        <LoadingSpinner classStyle="h-screen" />
       ) : (
         <>
           <PrintHeader backUrl={backUrl} isLoading={!isDataLoaded} />
-          <CustomerBillPreview bill={bill} isDataLoaded={isDataLoaded} klm={klm} style={getStyle(type)} />
+          <CustomerBillPreview
+            bill={bill}
+            company={company}
+            isDataLoaded={isDataLoaded}
+            klm={klm}
+            style={getStyle(type)}
+          />
         </>
       )}
     </>

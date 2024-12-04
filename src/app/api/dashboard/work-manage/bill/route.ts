@@ -1,7 +1,7 @@
 import handleError from '@/app/util/error/handleError';
 import { getParamsFromRequest } from '@/app/util/url/urlUtils';
 import { connect } from '@/dbConfig/dbConfig';
-import { TokenData } from '@/helpers/getDataFromToken';
+import { UserTokenData } from '@/helpers/getDataFromToken';
 import { Bill, IBill } from '@/models/klm';
 import User from '@/models/userModel';
 import { NextRequest, NextResponse } from 'next/server';
@@ -10,7 +10,7 @@ connect();
 
 export async function GET(request: NextRequest) {
   try {
-    const tokenData = await TokenData.create(request);
+    const tokenData = await UserTokenData.create(request);
     const userId = tokenData.getId();
     const { searchValue: billOrMobileNumber, type: billType, today, week, last } = getParamsFromRequest(request); // key: variable name, value: query parameter name
     const user = await User.findOne({ _id: userId }).select(
@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const tokenData = await TokenData.create(request);
+    const tokenData = await UserTokenData.create(request);
     const userId = tokenData.getId();
     const user = await User.findOne({ _id: userId }).select(
       '-password -__v -email -isVerified -createdAt -updatedAt -isAdmin -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry -theme -profileImage',
@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const tokenData = await TokenData.create(request);
+    const tokenData = await UserTokenData.create(request);
     const userId = tokenData.getId();
     const user = await User.findOne({ _id: userId }).select(
       '-password -__v -email -isVerified -createdAt -updatedAt -isAdmin -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry -theme -profileImage',
@@ -145,7 +145,7 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const tokenData = await TokenData.create(request);
+    const tokenData = await UserTokenData.create(request);
     const userId = tokenData.getId();
     const user = await User.findOne({ _id: userId }).select(
       '-password -__v -email -isVerified -createdAt -updatedAt -isAdmin -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry -theme -profileImage',

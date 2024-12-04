@@ -1,3 +1,4 @@
+import next from '@next/eslint-plugin-next';
 import tseslint from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 import pluginReact from 'eslint-plugin-react';
@@ -14,10 +15,14 @@ export default [
     plugins: {
       '@typescript-eslint': tseslint,
       react: pluginReact,
+      next,
     },
     settings: {
       react: {
         version: 'detect',
+      },
+      next: {
+        rootDir: true,
       },
     },
     rules: {
@@ -28,6 +33,7 @@ export default [
       '@typescript-eslint/no-unused-vars': 'error',
       'react/no-unknown-property': 'error',
       '@typescript-eslint/no-require-imports': 'error',
+      'next/no-html-link-for-pages': 'error',
     },
   },
 ];

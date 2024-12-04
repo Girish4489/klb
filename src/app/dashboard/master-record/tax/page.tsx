@@ -71,8 +71,16 @@ export default function TaxPage() {
 
   useEffect(() => {
     (async () => {
-      const taxes = await ApiGet.Tax();
-      setTaxes(taxes);
+      try {
+        const taxResponse = await ApiGet.Tax();
+        if (taxResponse.success) {
+          setTaxes(taxResponse.taxes);
+        } else {
+          throw new Error(taxResponse.message);
+        }
+      } catch (error) {
+        handleError.toastAndLog(error);
+      }
     })();
   }, []);
 

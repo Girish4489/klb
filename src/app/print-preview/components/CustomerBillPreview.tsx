@@ -3,16 +3,18 @@ import React from 'react';
 
 import QrGenerator from '@/app/components/Barcode/BarcodeGenerator';
 import { formatDS } from '@/app/util/format/dateUtils';
+import { ICompany } from '@/models/companyModel';
 import Image from 'next/image';
 
 interface CustomerBillPreviewProps {
   bill: IBill | undefined;
+  company: ICompany | undefined;
   isDataLoaded: boolean;
   klm: { src: string };
   style: string;
 }
 
-const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, isDataLoaded, klm, style }) => {
+const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, company, isDataLoaded, klm, style }) => {
   if (!isDataLoaded) {
     return <div>Loading...</div>;
   }
@@ -28,37 +30,67 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, isDataL
               <div className="flex flex-row items-center justify-between gap-4">
                 <div className="flex flex-row items-center gap-4">
                   <span className="profile flex h-24 w-24">
-                    <Image src={klm.src} width={96} height={90} alt="Profile" className="m-auto w-24" priority />
+                    <Image
+                      src={company?.logos?.small || klm.src}
+                      width={96}
+                      height={90}
+                      alt="Company Profile"
+                      className="m-auto w-24"
+                      priority
+                    />
                   </span>
                   <hr className="divider divider-horizontal m-0 w-0.5 rounded-box bg-black" />
                 </div>
                 <span className="flex grow flex-col items-center justify-center">
                   <h2 id="header" className="text-xl font-bold">
-                    Kalamandir Ladies boutique
+                    {company?.name ?? 'Kalamandir Ladies boutique'}
                   </h2>
                   <address className="text-lg">
-                    1st Floor, Muddurandappa Complex Opp/BH Road, Gowribidanur - 561208
+                    {company?.contactDetails?.address ??
+                      '1st Floor, Muddurandappa Complex Opp/BH Road, Gowribidanur - 561208'}
                   </address>
                 </span>
                 <hr className="divider-horizontal w-0.5 rounded bg-black" />
                 <div className="item-center flex flex-col justify-between gap-1">
-                  <span className="field text-base">
-                    <h2>Phone:</h2>
-                    <h3>98453 71322</h3>
-                  </span>
-                  <span className="field text-base">
-                    <h2>Phone:</h2>
-                    <h3>93532 71763</h3>
-                  </span>
-                  <span className="field text-base">
-                    <h2>Email:</h2>
-                    <h3>
-                      <a href="mailto:kalamandir2106@gmail.com">kalamandir2106@gmail.com</a>
-                    </h3>
-                  </span>
+                  {company?.contactDetails?.phones?.length ? (
+                    company.contactDetails.phones.map((phone, index) => (
+                      <span key={index} className="field text-base">
+                        <h2>Phone:</h2>
+                        <h3>{phone.replace(/(\d{5})(\d{5})/, '$1 $2')}</h3>
+                      </span>
+                    ))
+                  ) : (
+                    <>
+                      <span className="field text-base">
+                        <h2>Phone:</h2>
+                        <h3>98453 71322</h3>
+                      </span>
+                      <span className="field text-base">
+                        <h2>Phone:</h2>
+                        <h3>93532 71763</h3>
+                      </span>
+                    </>
+                  )}
+                  {company?.contactDetails?.emails?.length ? (
+                    company.contactDetails.emails.map((email, index) => (
+                      <span key={index} className="field text-base">
+                        <h2>Email:</h2>
+                        <h3>
+                          <a href={`mailto:${email}`}>{email}</a>
+                        </h3>
+                      </span>
+                    ))
+                  ) : (
+                    <span className="field text-base">
+                      <h2>Email:</h2>
+                      <h3>
+                        <a href="mailto:kalamandir2106@gmail.com">kalamandir2106@gmail.com</a>
+                      </h3>
+                    </span>
+                  )}
                   <span className="field text-base">
                     <h2>GST No:</h2>
-                    <h3></h3>
+                    <h3>{company?.gstNumber ?? ''}</h3>
                   </span>
                 </div>
               </div>
@@ -98,7 +130,13 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, isDataL
                 <div className="header-col flex flex-col justify-start text-center">
                   <h2 id="text-center">QR Code</h2>
                   {bill.billNumber && bill.billNumber.toString().length > 0 && (
-                    <QrGenerator content={`billNumber=${bill?.billNumber.toString()}` || ''} size={90} />
+                    <QrGenerator
+                      content={
+                        `${company?.name && `Company Name=${company.name}\n`}${company?.contactDetails.address && `Address=${company.contactDetails.address}\n`}&billNumber=${bill?.billNumber.toString()}` ||
+                        ''
+                      }
+                      size={90}
+                    />
                   )}
                 </div>
               </div>
@@ -216,7 +254,7 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, isDataL
                       </span>
                     )}
                   </div>
-                  <span className="py-[1]" />
+                  {orderIndex < bill.order.length - 1 && <span className="py-[1]" />}
                 </span>
               ))}
             </span>
@@ -227,7 +265,13 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, isDataL
               <span className="flex gap-4">
                 <div className="header-col process-box flex flex-col justify-start text-center">
                   {bill.billNumber && bill.billNumber.toString().length > 0 && (
-                    <QrGenerator content={`billNumber=${bill?.billNumber.toString()}` || ''} size={60} />
+                    <QrGenerator
+                      content={
+                        `${company?.name && `Company Name=${company.name}\n`}${company?.contactDetails.address && `Address=${company.contactDetails.address}\n`}&billNumber=${bill?.billNumber.toString()}` ||
+                        ''
+                      }
+                      size={60}
+                    />
                   )}
                 </div>
                 <div className="process-box my-auto flex h-full w-full grow flex-row items-stretch justify-between gap-4 px-4">

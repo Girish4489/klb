@@ -1,3 +1,4 @@
+'use client';
 import { ArrowLeftCircleIcon, PrinterIcon } from '@heroicons/react/24/solid';
 import { useRouter } from 'next/navigation';
 import React from 'react';

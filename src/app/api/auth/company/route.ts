@@ -1,6 +1,6 @@
 import handleError from '@/app/util/error/handleError';
 import { connect } from '@/dbConfig/dbConfig';
-import { TokenData } from '@/helpers/getDataFromToken';
+import { UserTokenData } from '@/helpers/getDataFromToken';
 import Company from '@/models/companyModel';
 import User from '@/models/userModel';
 import { NextRequest, NextResponse } from 'next/server';
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
 
     if (!userId || !role) throw new Error('Missing required parameters');
 
-    const tokenData = await TokenData.create(request);
+    const tokenData = await UserTokenData.create(request);
     if (userId !== tokenData.getId()) throw new Error('Invalid user operation');
 
     const user = await User.findById({ _id: userId }).select(

@@ -1,5 +1,6 @@
 'use client';
-import LoadingSpinner from '@/app/print-preview/components/LoadingSpinner';
+import LoadingSpinner from '@/app/components/LoadingSpinner';
+import { useCompany } from '@/app/context/companyContext';
 import PrintHeader from '@/app/print-preview/components/PrintHeader';
 import ReceiptPreview from '@/app/print-preview/components/ReceiptPreview';
 import handleError from '@/app/util/error/handleError';
@@ -13,6 +14,7 @@ import toast from 'react-hot-toast';
 
 const ReceiptPage: React.FC = () => {
   const [receipt, setReceipt] = useState<IReceipt>();
+  const { company } = useCompany();
   const [cal, setCal] = useState({
     totalAmount: 0,
     discount: 0,
@@ -63,7 +65,7 @@ const ReceiptPage: React.FC = () => {
   return (
     <>
       {!isDataLoaded ? (
-        <LoadingSpinner />
+        <LoadingSpinner classStyle="h-screen" />
       ) : (
         <>
           <PrintHeader backUrl={backUrl} isLoading={!isDataLoaded} />
@@ -72,6 +74,7 @@ const ReceiptPage: React.FC = () => {
             cal={cal}
             isDataLoaded={isDataLoaded}
             klm={klm}
+            company={company}
             style={getStyle('Receipt')}
           />
         </>

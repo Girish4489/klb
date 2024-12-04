@@ -5,17 +5,19 @@ import React from 'react';
 
 import QrGenerator from '@/app/components/Barcode/BarcodeGenerator';
 import { formatDS, formatDSNT } from '@/app/util/format/dateUtils';
+import { ICompany } from '@/models/companyModel';
 import Image from 'next/image';
 
 interface WorkerBillPreviewProps {
   bill: IBill | undefined;
+  company: ICompany | undefined;
   isDataLoaded: boolean;
   klm: { src: string };
   style: string;
   type: string;
 }
 
-const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, isDataLoaded, klm, style, type }) => {
+const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, company, isDataLoaded, klm, style, type }) => {
   if (!isDataLoaded) {
     return <div>Loading...</div>;
   }
@@ -31,7 +33,14 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, isDataLoade
               <div className="flex flex-row items-center justify-between gap-4">
                 <div className="flex flex-row items-center gap-4">
                   <span className="profile flex h-24 w-24">
-                    <Image src={klm.src} width={96} height={90} alt="Profile" className="m-auto w-24" priority />
+                    <Image
+                      src={company?.logos?.small || klm.src}
+                      width={96}
+                      height={90}
+                      alt="Company Profile"
+                      className="m-auto w-24"
+                      priority
+                    />
                   </span>
                   <hr className="divider divider-horizontal m-0 w-0.5 rounded-box bg-black" />
                 </div>
@@ -53,7 +62,13 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, isDataLoade
                 <div className="header-col flex flex-col justify-start text-center">
                   <h2 id="text-center">Barcode</h2>
                   {bill.billNumber && bill.billNumber.toString().length > 0 && (
-                    <QrGenerator content={`billNumber=${bill?.billNumber.toString()}` || ''} size={90} />
+                    <QrGenerator
+                      content={
+                        `${company?.name && `Company Name=${company.name}\n`}${company?.contactDetails.address && `Address=${company.contactDetails.address}\n`}&billNumber=${bill?.billNumber.toString()}` ||
+                        ''
+                      }
+                      size={90}
+                    />
                   )}
                 </div>
               </div>
@@ -62,8 +77,8 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, isDataLoade
             {/* <span className="py-1" /> */}
             <span>
               {bill?.order.map((order, orderIndex) => (
-                <span className="orders flex flex-col gap-4" key={orderIndex}>
-                  <div className="table m-auto flex w-[96%] break-inside-avoid break-after-auto flex-col gap-1 rounded border border-black p-1 text-center">
+                <span className="orders flex flex-col" key={orderIndex}>
+                  <div className="table m-auto flex w-[96%] break-inside-avoid break-after-auto flex-col gap-0.5 rounded border border-black p-1 text-center">
                     <span className="flex flex-row items-center justify-between gap-8">
                       <span className="flex flex-row items-center gap-8">
                         <h1>{orderIndex + 1}.</h1>
@@ -103,11 +118,11 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, isDataLoade
                             <span
                               key={styleIndex}
                               // className="item-center process-box grow-1 flex flex-col justify-start"
-                              className="item-center flex w-fit flex-col justify-start rounded-box border border-black px-2 py-1 font-normal"
+                              className="item-center font-base flex w-fit flex-col justify-start rounded-box border border-black px-2 py-0.5"
                             >
                               <span className="flex w-fit flex-row items-center justify-around gap-8">
                                 <h1>
-                                  {styleIndex + 1}). {style.styleProcessName}:{' '}
+                                  {styleIndex + 1}. {style.styleProcessName}:{' '}
                                 </h1>
                                 <hr />
                                 <p>{style.styleName}</p>
@@ -153,17 +168,16 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, isDataLoade
                           {order.dimension.map((dimension, dimensionIndex) => (
                             <span
                               key={dimensionIndex}
-                              // className="item-center process-box grow-1 flex flex-col justify-start"
-                              className="item-center flex w-fit flex-col items-center justify-start rounded-box border border-black px-2 py-1"
+                              className="item-center flex w-fit flex-col items-center justify-start rounded-box border border-black"
                             >
-                              <span className="flex flex-row items-center justify-around gap-8 text-base">
-                                <h1>
-                                  {dimensionIndex + 1}). {dimension.dimensionTypeName}:{' '}
+                              <span className="flex flex-row items-center justify-around gap-0.5 text-base">
+                                <h1 className="px-1 py-0.5 text-base">
+                                  {dimensionIndex + 1}. {dimension.dimensionTypeName}:{' '}
                                 </h1>
-                                <p>{dimension.dimensionName}</p>
+                                <p className="content-center px-2 text-center">{dimension.dimensionName}</p>
                               </span>
-                              <hr className="m-auto my-0.5 w-full rounded-box border border-black" />
-                              <span className="flex flex-row items-center justify-center gap-8">
+                              <hr className="m-auto h-0.5 w-full border border-solid border-black" />
+                              <span className="flex flex-row items-center justify-center gap-8 text-base">
                                 <p>{dimension.note}</p>
                               </span>
                             </span>
@@ -172,8 +186,9 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, isDataLoade
                       </span>
                     )}
                   </div>
-                  {/* <span className="py-[1]" /> */}
-                  <hr className="m-auto my-1.5 w-[95%] rounded-box border-2 border-black" />
+                  {orderIndex < bill.order.length - 1 && (
+                    <hr className="m-auto my-1.5 w-[95%] rounded-box border-2 border-black" />
+                  )}
                 </span>
               ))}
             </span>
