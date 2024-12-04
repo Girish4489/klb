@@ -25,6 +25,8 @@ const CompletedOrders = ({ refresh }: CompletedOrdersProps) => {
   const [sortConfig, setSortConfig] = useState<{ key: keyof Order; direction: 'ascending' | 'descending' } | null>(
     null,
   );
+  const [currentPage, setCurrentPage] = useState(1);
+  const ordersPerPage = 15;
 
   const sortedOrders = [...completedOrders].sort((a, b) => {
     if (sortConfig !== null) {
@@ -37,6 +39,10 @@ const CompletedOrders = ({ refresh }: CompletedOrdersProps) => {
     }
     return 0;
   });
+
+  const indexOfLastOrder = currentPage * ordersPerPage;
+  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
+  const currentOrders = sortedOrders.slice(indexOfFirstOrder, indexOfLastOrder);
 
   const requestSort = (key: keyof Order) => {
     let direction: 'ascending' | 'descending' = 'ascending';
@@ -58,6 +64,8 @@ const CompletedOrders = ({ refresh }: CompletedOrdersProps) => {
     return null;
   };
 
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+
   useEffect(() => {
     const fetchCompletedOrders = async () => {
       try {
@@ -72,11 +80,11 @@ const CompletedOrders = ({ refresh }: CompletedOrdersProps) => {
   }, [refresh]);
 
   return (
-    <div className="w-fit">
+    <div className="w-full">
       {error && <p>{error}</p>}
       <div className="overflow-auto">
         <table className="table w-full table-auto">
-          <caption>Completed Orders</caption>
+          <caption>Pending Deliveries</caption>
           <thead>
             <tr className="cursor-pointer select-none text-center">
               <th onClick={() => requestSort('billNumber')}>
@@ -122,7 +130,7 @@ const CompletedOrders = ({ refresh }: CompletedOrdersProps) => {
             </tr>
           </thead>
           <tbody>
-            {sortedOrders.map((order) => (
+            {currentOrders.map((order) => (
               <tr key={order._id} className="text-center">
                 <td>{order.billNumber}</td>
                 <td>{formatDSNT(new Date(order.date))}</td>
@@ -137,6 +145,19 @@ const CompletedOrders = ({ refresh }: CompletedOrdersProps) => {
           </tbody>
         </table>
       </div>
+      <span className="flex w-full justify-center">
+        <div className="join pt-1.5">
+          {Array.from({ length: Math.ceil(sortedOrders.length / ordersPerPage) }, (_, index) => (
+            <button
+              key={index + 1}
+              className={`btn btn-square join-item btn-sm ${currentPage === index + 1 ? 'btn-primary' : 'btn-ghost'}`}
+              onClick={() => paginate(index + 1)}
+            >
+              {index + 1}
+            </button>
+          ))}
+        </div>
+      </span>
     </div>
   );
 };
