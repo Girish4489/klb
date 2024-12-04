@@ -55,7 +55,11 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, company, is
                   </span>
                   <span className="flex gap-4 text-sm font-extrabold">
                     <h2>Due Date:</h2>
-                    <h3>{bill?.dueDate ? formatDS(bill?.dueDate) : ''}</h3>
+                    <h3>
+                      {bill?.dueDate
+                        ? formatDS(new Date(new Date(bill.dueDate).setDate(new Date(bill.dueDate).getDate() - 2)))
+                        : ''}
+                    </h3>
                   </span>
                   <hr className="divider divider-horizontal m-0 w-0.5 rounded-box bg-black" />
                 </div>
