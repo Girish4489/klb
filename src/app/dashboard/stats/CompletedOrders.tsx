@@ -1,3 +1,4 @@
+import Pagination from '@/app/dashboard/stats/Pagination';
 import { formatDSNT } from '@/app/util/format/dateUtils';
 import { ArrowDownCircleIcon, ArrowUpCircleIcon } from '@heroicons/react/24/solid';
 import axios from 'axios';
@@ -145,19 +146,12 @@ const CompletedOrders = ({ refresh }: CompletedOrdersProps) => {
           </tbody>
         </table>
       </div>
-      <span className="flex w-full justify-center">
-        <div className="join pt-1.5">
-          {Array.from({ length: Math.ceil(sortedOrders.length / ordersPerPage) }, (_, index) => (
-            <button
-              key={index + 1}
-              className={`btn btn-square join-item btn-sm ${currentPage === index + 1 ? 'btn-primary' : 'btn-ghost'}`}
-              onClick={() => paginate(index + 1)}
-            >
-              {index + 1}
-            </button>
-          ))}
-        </div>
-      </span>
+      <Pagination
+        totalItems={sortedOrders.length}
+        itemsPerPage={ordersPerPage}
+        currentPage={currentPage}
+        paginate={paginate}
+      />
     </div>
   );
 };

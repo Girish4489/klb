@@ -1,3 +1,4 @@
+import Pagination from '@/app/dashboard/stats/Pagination';
 import { formatDSNT } from '@/app/util/format/dateUtils';
 import { ArrowDownCircleIcon, ArrowUpCircleIcon } from '@heroicons/react/24/solid';
 import axios from 'axios';
@@ -136,19 +137,12 @@ const DueBills = ({ refresh }: DueBillsProps) => {
           </tbody>
         </table>
       </div>
-      <span className="flex w-full justify-center">
-        <div className="join pt-1.5">
-          {Array.from({ length: Math.ceil(sortedBills.length / billsPerPage) }, (_, index) => (
-            <button
-              key={index + 1}
-              className={`btn btn-square join-item btn-sm ${currentPage === index + 1 ? 'btn-primary' : 'btn-ghost'}`}
-              onClick={() => paginate(index + 1)}
-            >
-              {index + 1}
-            </button>
-          ))}
-        </div>
-      </span>
+      <Pagination
+        totalItems={sortedBills.length}
+        itemsPerPage={billsPerPage}
+        currentPage={currentPage}
+        paginate={paginate}
+      />
     </div>
   );
 };

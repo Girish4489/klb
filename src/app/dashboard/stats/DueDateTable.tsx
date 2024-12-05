@@ -1,3 +1,4 @@
+import Pagination from '@/app/dashboard/stats/Pagination';
 import { formatDSNT } from '@/app/util/format/dateUtils';
 import { FunnelIcon as FunnelIconOutline } from '@heroicons/react/24/outline';
 import { ArrowDownCircleIcon, ArrowUpCircleIcon, FunnelIcon } from '@heroicons/react/24/solid';
@@ -20,7 +21,7 @@ interface DueDateTableProps {
 }
 
 const DueDateTable = ({ refresh }: DueDateTableProps) => {
-  const [dueDateBills, setDueDateBills] = useState<Bill[]>([]);
+  const [dueDateBills, setDueDateBills] = useState<Bill[]>([]); // Initialize as an empty array
   const [error, setError] = useState<string | null>(null);
   const [sortConfig, setSortConfig] = useState<{ key: keyof Bill; direction: 'ascending' | 'descending' } | null>(null);
   const [tolerance, setTolerance] = useState<number>(2);
@@ -204,19 +205,12 @@ const DueDateTable = ({ refresh }: DueDateTableProps) => {
             })}
           </tbody>
         </table>
-        <span className="flex w-full justify-center">
-          <div className="join pt-1.5">
-            {Array.from({ length: Math.ceil(filteredBills.length / billsPerPage) }, (_, index) => (
-              <button
-                key={index + 1}
-                className={`btn btn-square join-item btn-sm ${currentPage === index + 1 ? 'btn-primary' : 'btn-ghost'}`}
-                onClick={() => paginate(index + 1)}
-              >
-                {index + 1}
-              </button>
-            ))}
-          </div>
-        </span>
+        <Pagination
+          totalItems={filteredBills.length}
+          itemsPerPage={billsPerPage}
+          currentPage={currentPage}
+          paginate={paginate}
+        />
       </div>
     </div>
   );
