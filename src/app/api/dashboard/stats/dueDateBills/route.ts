@@ -1,6 +1,9 @@
 import handleError from '@/app/util/error/handleError';
+import { connect } from '@/dbConfig/dbConfig';
 import { Bill } from '@/models/klm';
 import { NextResponse } from 'next/server';
+
+connect();
 
 export async function GET() {
   try {

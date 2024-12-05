@@ -64,18 +64,19 @@ const DueBills = ({ refresh }: DueBillsProps) => {
     setSortConfig({ key, direction });
   };
 
+  const fetchDueBills = async () => {
+    try {
+      const response = await axios.get(`/api/dashboard/stats/dueBills?page=${currentPage}&limit=${billsPerPage}`);
+      setDueBills(response.data.dueBills);
+      setSortConfig({ key: 'paymentStatus', direction: 'ascending' }); // Default sorting
+    } catch (err) {
+      setError('Failed to fetch due bills' + err);
+    }
+  };
+
   useEffect(() => {
-    const fetchDueBills = async () => {
-      try {
-        const response = await axios.get('/api/dashboard/stats/dueBills');
-        setDueBills(response.data.dueBills);
-        setSortConfig({ key: 'paymentStatus', direction: 'ascending' }); // Default sorting
-      } catch (err) {
-        setError('Failed to fetch due bills' + err);
-      }
-    };
     fetchDueBills();
-  }, [refresh]);
+  }, [refresh, currentPage]);
 
   return (
     <div className="w-full">

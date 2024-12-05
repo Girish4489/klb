@@ -88,18 +88,19 @@ const DueDateTable = ({ refresh }: DueDateTableProps) => {
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
+  const fetchDueDateBills = async () => {
+    try {
+      const response = await axios.get(`/api/dashboard/stats/dueDateBills?page=${currentPage}&limit=${billsPerPage}`);
+      setDueDateBills(response.data.dueDateBills);
+      setSortConfig({ key: 'dueDate', direction: 'descending' }); // Default sort by due date
+    } catch (err) {
+      setError('Failed to fetch due date bills' + err);
+    }
+  };
+
   useEffect(() => {
-    const fetchDueDateBills = async () => {
-      try {
-        const response = await axios.get('/api/dashboard/stats/dueDateBills');
-        setDueDateBills(response.data.dueDateBills);
-        setSortConfig({ key: 'dueDate', direction: 'descending' }); // Default sort by due date
-      } catch (err) {
-        setError('Failed to fetch due date bills' + err);
-      }
-    };
     fetchDueDateBills();
-  }, [refresh]);
+  }, [refresh, currentPage]);
 
   return (
     <div className="w-full">

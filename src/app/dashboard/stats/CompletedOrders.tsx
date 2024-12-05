@@ -67,18 +67,21 @@ const CompletedOrders = ({ refresh }: CompletedOrdersProps) => {
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
+  const fetchCompletedOrders = async () => {
+    try {
+      const response = await axios.get(
+        `/api/dashboard/stats/completedOrders?page=${currentPage}&limit=${ordersPerPage}`,
+      );
+      setCompletedOrders(response.data.completedOrders);
+      setSortConfig({ key: 'deliveryStatus', direction: 'ascending' }); // Default sorting
+    } catch (err) {
+      setError('Failed to fetch completed orders' + err);
+    }
+  };
+
   useEffect(() => {
-    const fetchCompletedOrders = async () => {
-      try {
-        const response = await axios.get('/api/dashboard/stats/completedOrders');
-        setCompletedOrders(response.data.completedOrders);
-        setSortConfig({ key: 'deliveryStatus', direction: 'ascending' }); // Default sorting
-      } catch (err) {
-        setError('Failed to fetch completed orders' + err);
-      }
-    };
     fetchCompletedOrders();
-  }, [refresh]);
+  }, [refresh, currentPage]);
 
   return (
     <div className="w-full">

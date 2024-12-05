@@ -63,17 +63,18 @@ const AllBills = ({ refresh }: AllBillsProps) => {
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
+  const fetchBills = async () => {
+    try {
+      const response = await axios.get(`/api/dashboard/stats/allBills?page=${currentPage}&limit=${billsPerPage}`);
+      setBills(response.data.bills || []); // Ensure bills is an array
+      setTotalBills(response.data.totalBills);
+      setSortConfig({ key: 'billNumber', direction: 'descending' }); // Default sorting
+    } catch (err) {
+      setError('Failed to fetch bills' + err);
+    }
+  };
+
   useEffect(() => {
-    const fetchBills = async () => {
-      try {
-        const response = await axios.get(`/api/dashboard/stats/allBills?page=${currentPage}&limit=${billsPerPage}`);
-        setBills(response.data.bills || []); // Ensure bills is an array
-        setTotalBills(response.data.totalBills);
-        setSortConfig({ key: 'billNumber', direction: 'descending' }); // Default sorting
-      } catch (err) {
-        setError('Failed to fetch bills' + err);
-      }
-    };
     fetchBills();
   }, [refresh, currentPage]);
 
