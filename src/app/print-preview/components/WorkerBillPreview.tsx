@@ -213,7 +213,11 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, company, is
                 </span>
                 <span className="flex flex-row items-center gap-4">
                   <h2 className="my-2">Due Date:</h2>
-                  <h3 className="my-2">{bill?.dueDate ? formatDSNT(bill?.dueDate) : ''}</h3>
+                  <h3 className="my-2">
+                    {bill?.dueDate
+                      ? formatDS(new Date(new Date(bill.dueDate).setDate(new Date(bill.dueDate).getDate() - 2)))
+                      : ''}
+                  </h3>
                 </span>
               </span>
               <span className="field">
