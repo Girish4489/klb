@@ -2,9 +2,9 @@
 import SettingsProfile from '@/app/components/profile/SettingsProfile';
 import ThemerPage from '@/app/components/themer/ThemerPage';
 import { useUser } from '@/app/context/userContext';
-import handleError from '@/app/util/error/handleError';
 import { IUser } from '@/models/userModel';
 import { InformationCircleIcon } from '@heroicons/react/24/solid';
+import handleError from '@util/error/handleError';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';

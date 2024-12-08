@@ -1,6 +1,6 @@
-import { formatDS } from '@/app/util/format/dateUtils';
 import { IBill } from '@/models/klm';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
+import { formatDS } from '@util/format/dateUtils';
 import Link from 'next/link';
 import React from 'react';
 

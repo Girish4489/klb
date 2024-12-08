@@ -1,7 +1,7 @@
 // /src/app/api/dashboard/master-record/tax/route.ts
-import handleError from '@/app/util/error/handleError';
 import { connect } from '@/dbConfig/dbConfig';
 import { Tax } from '@/models/klm';
+import handleError from '@util/error/handleError';
 import { NextRequest, NextResponse } from 'next/server';
 
 connect();

@@ -1,9 +1,9 @@
-import bcryptUtil from '@/app/util/bcrypt/bcrypt';
-import handleError from '@/app/util/error/handleError';
-import { cookie, token } from '@/app/util/token/token';
 import { connect } from '@/dbConfig/dbConfig';
 import Company from '@/models/companyModel';
 import User from '@/models/userModel';
+import bcryptUtil from '@util/bcrypt/bcrypt';
+import handleError from '@util/error/handleError';
+import { cookie, token } from '@util/token/token';
 import { NextRequest, NextResponse } from 'next/server';
 
 connect();

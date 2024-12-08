@@ -1,10 +1,10 @@
-import { IReceipt } from '@/models/klm';
+import { IReceipt } from '@models/klm';
 import React from 'react';
 
-import QrGenerator from '@/app/components/Barcode/BarcodeGenerator';
-import { formatDS } from '@/app/util/format/dateUtils';
-import { ICompany } from '@/models/companyModel';
+import QrGenerator from '@components/Barcode/BarcodeGenerator';
 import { EnvelopeIcon, FaceSmileIcon, PhoneIcon, WalletIcon } from '@heroicons/react/24/solid';
+import { ICompany } from '@models/companyModel';
+import { formatDS } from '@util/format/dateUtils';
 import Image from 'next/image';
 
 interface ReceiptPreviewProps {
@@ -148,15 +148,25 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ receipt, cal, isDataLoa
               <thead>
                 <tr className="rounded-box bg-gray-200 p-1 text-gray-700">
                   <th>SI No</th>
-                  <th>Bill No</th>
                   <th>Paid</th>
+                  {receipt.discount > 0 && <th>Discount</th>}
+                  {receipt.tax?.length > 0 && <th>Tax</th>}
                 </tr>
               </thead>
               <tbody className="rounded-box p-1">
                 <tr>
                   <td>1</td>
-                  <td>{receipt?.bill?.billNumber ?? ''}</td>
                   <td>{receipt?.amount ?? ''}</td>
+                  {receipt?.discount > 0 && <td>{receipt?.discount ?? ''}</td>}
+                  {receipt?.tax?.length > 0 && (
+                    <td>
+                      {receipt?.tax?.map((tax, index) => (
+                        <div key={index}>
+                          {tax.taxName}: {tax.taxPercentage}%
+                        </div>
+                      )) ?? ''}
+                    </td>
+                  )}
                 </tr>
               </tbody>
             </table>

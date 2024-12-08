@@ -1,10 +1,10 @@
 'use client';
 import { useUser } from '@/app/context/userContext';
-import { fetchCompanyData } from '@/app/util/company/companyFetchUtil/companyUtils';
-import { userConfirmation } from '@/app/util/confirmation/confirmationUtil';
-import handleError from '@/app/util/error/handleError';
-import { ApiPut } from '@/app/util/makeApiRequest/makeApiRequest';
 import { ICompany } from '@/models/companyModel';
+import { fetchCompanyData } from '@util/company/companyFetchUtil/companyUtils';
+import { userConfirmation } from '@util/confirmation/confirmationUtil';
+import handleError from '@util/error/handleError';
+import { ApiPut } from '@util/makeApiRequest/makeApiRequest';
 import mongoose from 'mongoose';
 import { usePathname } from 'next/navigation';
 import React, { ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';

@@ -1,4 +1,4 @@
-import { token as tokenUtil } from '@/app/util/token/token';
+import { token as tokenUtil } from '@util/token/token';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 

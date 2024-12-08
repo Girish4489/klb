@@ -1,5 +1,5 @@
-import handleError from '@/app/util/error/handleError';
 import { loadEnvConfig } from '@next/env';
+import handleError from '@util/error/handleError';
 import mongoose from 'mongoose';
 
 // Load environment variables using Next.js

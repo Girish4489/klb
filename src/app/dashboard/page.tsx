@@ -1,11 +1,11 @@
 'use client';
 // import dynamic from 'next/dynamic';
-import AllBills from '@/app/dashboard/stats/AllBills';
-import CompletedOrders from '@/app/dashboard/stats/CompletedOrders';
-import DashboardStats from '@/app/dashboard/stats/DashboardStats';
-import DueBills from '@/app/dashboard/stats/DueBills';
-import DueDateTable from '@/app/dashboard/stats/DueDateTable';
-import UnpaidBills from '@/app/dashboard/stats/UnpaidBills';
+import AllBills from '@dashboard/stats/AllBills';
+import CompletedOrders from '@dashboard/stats/CompletedOrders';
+import DashboardStats from '@dashboard/stats/DashboardStats';
+import DueBills from '@dashboard/stats/DueBills';
+import DueDateTable from '@dashboard/stats/DueDateTable';
+import UnpaidBills from '@dashboard/stats/UnpaidBills';
 import React, { useState } from 'react';
 
 export default function DashboardPage() {

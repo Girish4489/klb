@@ -1,13 +1,13 @@
 'use client';
 import LoadingSpinner from '@/app/components/LoadingSpinner';
-import CategoryItem from '@/app/dashboard/master-record/category/components/CategoryItem';
-import { FormModals } from '@/app/dashboard/master-record/category/components/FormModals';
-import { closeModal, openModal } from '@/app/dashboard/master-record/category/components/modals';
-import { userConfirmation } from '@/app/util/confirmation/confirmationUtil';
-import handleError from '@/app/util/error/handleError';
-import { ApiGet, ApiPost } from '@/app/util/makeApiRequest/makeApiRequest';
 import { ICategory, IDimensionTypes, IDimensions, IStyle, IStyleProcess } from '@/models/klm';
+import CategoryItem from '@dashboard/master-record/category/components/CategoryItem';
+import { FormModals } from '@dashboard/master-record/category/components/FormModals';
+import { closeModal, openModal } from '@dashboard/master-record/category/components/modals';
 import { PlusCircleIcon } from '@heroicons/react/24/outline';
+import { userConfirmation } from '@util/confirmation/confirmationUtil';
+import handleError from '@util/error/handleError';
+import { ApiGet, ApiPost } from '@util/makeApiRequest/makeApiRequest';
 import React, { useEffect, useRef, useState, type JSX } from 'react';
 import toast from 'react-hot-toast';
 

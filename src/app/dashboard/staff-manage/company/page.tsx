@@ -1,8 +1,8 @@
 'use client';
 import { useCompany } from '@/app/context/companyContext';
-import AddCompanyButton from '@/app/dashboard/staff-manage/company/components/AddCompanyButton';
-import CompanyDetails from '@/app/dashboard/staff-manage/company/components/CompanyDetails';
-import UserDetails from '@/app/dashboard/staff-manage/company/components/UserDetails';
+import AddCompanyButton from '@dashboard/staff-manage/company/components/AddCompanyButton';
+import CompanyDetails from '@dashboard/staff-manage/company/components/CompanyDetails';
+import UserDetails from '@dashboard/staff-manage/company/components/UserDetails';
 import { useState } from 'react';
 
 const CompanyPage: React.FC = () => {

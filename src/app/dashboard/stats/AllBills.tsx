@@ -1,6 +1,6 @@
-import Pagination from '@/app/dashboard/stats/Pagination';
-import { formatDSNT } from '@/app/util/format/dateUtils';
+import Pagination from '@dashboard/stats/Pagination';
 import { ArrowDownCircleIcon, ArrowUpCircleIcon } from '@heroicons/react/24/solid';
+import { formatDSNT } from '@util/format/dateUtils';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 

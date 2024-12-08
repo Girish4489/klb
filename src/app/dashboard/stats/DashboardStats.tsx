@@ -1,4 +1,4 @@
-import { getComputedStyleValue } from '@/app/util/Styles';
+import { getComputedStyleValue } from '@util/Styles';
 import axios from 'axios';
 import { ArcElement, BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Tooltip } from 'chart.js';
 import { useEffect, useState } from 'react';

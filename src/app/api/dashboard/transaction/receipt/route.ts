@@ -1,9 +1,9 @@
-import handleError from '@/app/util/error/handleError';
-import { getParamsFromRequest } from '@/app/util/url/urlUtils';
 import { connect } from '@/dbConfig/dbConfig';
 import { UserTokenData } from '@/helpers/getDataFromToken';
-import { Bill, IReceipt, Receipt } from '@/models/klm';
-import User from '@/models/userModel';
+import { Bill, IReceipt, Receipt } from '@models/klm';
+import User from '@models/userModel';
+import handleError from '@util/error/handleError';
+import { getParamsFromRequest } from '@util/url/urlUtils';
 import mongoose from 'mongoose';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -59,49 +59,74 @@ export async function POST(request: NextRequest) {
       '-password -__v -email -isVerified -createdAt -updatedAt -isAdmin -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry -theme -profileImage',
     );
     if (!user) throw new Error('User not found');
+
     const data: IReceipt = await request.json();
     if (!data.bill?.billNumber) throw new Error('Bill number is required');
     if (!data.amount) throw new Error('Amount is required');
     if (!data.receiptNumber) throw new Error('Receipt number is required');
 
-    if (data.bill?.billNumber) {
-      const bill = await Bill.findOne({ billNumber: data.bill.billNumber });
-      if (!bill) throw new Error('Bill not found');
-      data.bill._id = bill._id;
-      data.bill.name = bill.name;
-      data.bill.mobile = bill.mobile;
-    }
+    // Calculate total tax amount for the receipt with rounding
+    const totalTaxAmount = Number(
+      data.tax
+        .reduce(
+          (acc, t) => acc + (t.taxType === 'Percentage' ? (data.amount * t.taxPercentage) / 100 : t.taxPercentage),
+          0,
+        )
+        .toFixed(2),
+    );
 
+    // Find and validate bill
+    const bill = await Bill.findOne({ billNumber: data.bill.billNumber });
+    if (!bill) throw new Error('Bill not found');
+
+    // Round the amount and discount
+    const roundedAmount = Number(data.amount.toFixed(2));
+    const roundedDiscount = Number((data.discount || 0).toFixed(2));
+
+    // Create receipt document
     const receipt = new Receipt({
       _id: new mongoose.Types.ObjectId(),
       receiptNumber: data.receiptNumber,
-      bill: data.bill,
-      amount: data.amount,
-      paymentDate: data.paymentDate,
-      paymentMethod: data.paymentMethod,
+      bill: {
+        _id: bill._id,
+        billNumber: bill.billNumber,
+        name: bill.name,
+        mobile: bill.mobile,
+      },
       receiptBy: {
         _id: user._id,
         name: user.username,
       },
-      createAt: new Date(),
-      updateAt: new Date(),
-    }) as IReceipt;
+      amount: roundedAmount,
+      discount: roundedDiscount,
+      tax: data.tax,
+      taxAmount: totalTaxAmount,
+      paymentDate: data.paymentDate || new Date(),
+      paymentMethod: data.paymentMethod,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
 
-    if (data.amount && data.bill?.billNumber) {
-      const bill = await Bill.findOne({ billNumber: data.bill.billNumber });
-      if (!bill) throw new Error('Bill not found');
-      bill.paidAmount += data.amount;
-      if (bill.paidAmount >= bill.totalAmount) {
-        bill.paymentStatus = 'Paid';
-      } else {
-        bill.paymentStatus = 'Partially Paid';
-      }
-      bill.dueAmount = bill.grandTotal - bill.paidAmount;
-      await bill.save();
-    }
+    // Update bill with rounded values
+    bill.paidAmount = Number((bill.paidAmount + roundedAmount).toFixed(2));
+    bill.discount = Number((bill.discount + roundedDiscount).toFixed(2));
+    bill.taxAmount = Number((bill.taxAmount + totalTaxAmount).toFixed(2));
 
-    await receipt.save();
-    return NextResponse.json({ message: 'Receipt added successfully', success: true, receipt: receipt });
+    // Recalculate bill totals with rounding
+    bill.grandTotal = Number((bill.totalAmount + bill.taxAmount - bill.discount).toFixed(2));
+    bill.dueAmount = Number((bill.grandTotal - bill.paidAmount).toFixed(2));
+
+    // Update payment status
+    bill.paymentStatus = bill.dueAmount <= 0 ? 'Paid' : bill.paidAmount > 0 ? 'Partially Paid' : 'Unpaid';
+
+    // Save both documents
+    await Promise.all([receipt.save(), bill.save()]);
+
+    return NextResponse.json({
+      message: 'Receipt added successfully',
+      success: true,
+      receipt: receipt,
+    });
   } catch (error) {
     return handleError.api(error);
   }

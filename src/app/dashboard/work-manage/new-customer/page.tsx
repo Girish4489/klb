@@ -1,5 +1,4 @@
 'use client';
-import handleError from '@/app/util/error/handleError';
 import { ICustomer } from '@/models/klm';
 import {
   CloudArrowUpIcon,
@@ -11,6 +10,7 @@ import {
   PhoneIcon,
   UserIcon,
 } from '@heroicons/react/24/solid';
+import handleError from '@util/error/handleError';
 import axios from 'axios';
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';

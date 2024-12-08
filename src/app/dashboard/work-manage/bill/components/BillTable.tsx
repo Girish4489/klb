@@ -1,6 +1,6 @@
-import { formatD } from '@/app/util/format/dateUtils';
 import { IBill } from '@/models/klm';
 import { UserIcon } from '@heroicons/react/20/solid';
+import { formatD } from '@util/format/dateUtils';
 import React from 'react';
 
 interface BillTableProps {

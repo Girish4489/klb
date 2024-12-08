@@ -1,5 +1,5 @@
 'use client';
-import handleError from '@/app/util/error/handleError';
+import handleError from '@util/error/handleError';
 import axios from 'axios';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';

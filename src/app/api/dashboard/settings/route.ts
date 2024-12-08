@@ -1,8 +1,8 @@
 // Import necessary modules and models
-import handleError from '@/app/util/error/handleError';
 import { connect } from '@/dbConfig/dbConfig';
 import { UserTokenData } from '@/helpers/getDataFromToken';
 import User from '@/models/userModel';
+import handleError from '@util/error/handleError';
 import { NextRequest, NextResponse } from 'next/server';
 
 connect();

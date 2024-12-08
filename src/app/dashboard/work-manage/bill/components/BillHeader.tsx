@@ -1,5 +1,5 @@
-import { InputField } from '@/app/dashboard/work-manage/bill/components/InputField';
 import { IBill } from '@/models/klm';
+import { InputField } from '@dashboard/work-manage/bill/components/InputField';
 import React from 'react';
 
 export interface BillHeaderProps {

@@ -1,5 +1,5 @@
-import handleError from '@/app/util/error/handleError';
 import { IUser } from '@/models/userModel';
+import handleError from '@util/error/handleError';
 import axios from 'axios';
 
 export async function fetchUserById(userId: string): Promise<IUser | null> {

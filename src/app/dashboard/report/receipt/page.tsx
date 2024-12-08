@@ -1,9 +1,9 @@
 'use client';
-import handleError from '@/app/util/error/handleError';
-import { formatD } from '@/app/util/format/dateUtils';
-import { ApiGet } from '@/app/util/makeApiRequest/makeApiRequest';
 import { IReceipt } from '@/models/klm';
 import { FunnelIcon } from '@heroicons/react/24/solid';
+import handleError from '@util/error/handleError';
+import { formatD } from '@util/format/dateUtils';
+import { ApiGet } from '@util/makeApiRequest/makeApiRequest';
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 

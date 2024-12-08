@@ -1,7 +1,8 @@
-import ColorPickerButton from '@/app/components/ColorPickerButton/ColorPickerButton';
-import { InputField } from '@/app/dashboard/work-manage/bill/components/InputField';
-import { IBill, ICategory, IColor, IDimensionTypes, IDimensions, IStyle, IStyleProcess } from '@/models/klm';
+import ColorPickerButton from '@components/ColorPickerButton/ColorPickerButton';
+import { InputField } from '@dashboard/work-manage/bill/components/InputField';
+import { updateOrderAmount } from '@dashboard/work-manage/bill/utils/billUtils';
 import { MinusCircleIcon } from '@heroicons/react/24/outline';
+import { IBill, ICategory, IColor, IDimensionTypes, IDimensions, IStyle, IStyleProcess } from '@models/klm';
 import { Types } from 'mongoose';
 import React from 'react';
 
@@ -277,17 +278,7 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
                 value={order.amount || ''}
                 onChange={(e) => {
                   const amount = parseFloat(e.currentTarget.value) || 0;
-                  const updatedOrder = bill.order.map((o, i) => (i === orderIndex ? { ...o, amount: amount } : o));
-                  const newTotalAmount = updatedOrder.reduce((total, item) => total + (item.amount || 0), 0);
-
-                  setBill(
-                    (prevBill) =>
-                      ({
-                        ...prevBill,
-                        order: updatedOrder,
-                        totalAmount: newTotalAmount,
-                      }) as IBill,
-                  );
+                  updateOrderAmount(bill, orderIndex, amount, setBill);
                 }}
                 labelClass="input-primary"
                 inputClass="grow"

@@ -1,10 +1,10 @@
 // src/app/context/UserContext.tsx
 'use client';
-import handleError from '@/app/util/error/handleError';
-import { LocalIndexer } from '@/app/util/indexing/indexingUtil';
-import { ApiPut } from '@/app/util/makeApiRequest/makeApiRequest';
-import { fetchUserData } from '@/app/util/user/userFetchUtil/userUtils';
 import { IUser, RoleType } from '@/models/userModel';
+import handleError from '@util/error/handleError';
+import { LocalIndexer } from '@util/indexing/indexingUtil';
+import { ApiPut } from '@util/makeApiRequest/makeApiRequest';
+import { fetchUserData } from '@util/user/userFetchUtil/userUtils';
 import mongoose from 'mongoose';
 import { usePathname } from 'next/navigation';
 import React, { ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';

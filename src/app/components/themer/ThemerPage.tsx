@@ -1,7 +1,7 @@
 'use client';
 import { Theme, useTheme } from '@/app/context/ThemeContext';
-import handleError from '@/app/util/error/handleError';
 import { IUser } from '@/models/userModel';
+import handleError from '@util/error/handleError';
 import axios from 'axios';
 import React from 'react';
 import toast from 'react-hot-toast';
