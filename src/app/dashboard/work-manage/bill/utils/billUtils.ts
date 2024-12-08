@@ -1,31 +1,21 @@
-import handleError from '@/app/util/error/handleError';
-import { ApiGet } from '@/app/util/makeApiRequest/makeApiRequest';
-import { setSearchParam } from '@/app/util/url/urlUtils';
-import { IBill, ICategory, IColor, ITax } from '@/models/klm';
+import { IBill, ICategory, IColor } from '@/models/klm';
+import handleError from '@util/error/handleError';
+import { ApiGet } from '@util/makeApiRequest/makeApiRequest';
+import { setSearchParam } from '@util/url/urlUtils';
+import { Types } from 'mongoose';
 
 export async function fetchInitialData(
   setCategory: React.Dispatch<React.SetStateAction<ICategory[]>>,
-  setTax: React.Dispatch<React.SetStateAction<ITax[]>>,
   setTodayBill: React.Dispatch<React.SetStateAction<IBill[]>>,
   setThisWeekBill: React.Dispatch<React.SetStateAction<IBill[]>>,
 ) {
   try {
-    const [catResponse, taxResponse, billResponse] = await Promise.all([
-      ApiGet.Category(),
-      ApiGet.Tax(),
-      ApiGet.Bill.BillToday(),
-    ]);
+    const [catResponse, billResponse] = await Promise.all([ApiGet.Category(), ApiGet.Bill.BillToday()]);
 
     if (catResponse.success) {
       setCategory(catResponse.categories);
     } else {
       throw new Error(catResponse.message);
-    }
-
-    if (taxResponse.success) {
-      setTax(taxResponse.taxes);
-    } else {
-      throw new Error(taxResponse.message);
     }
 
     if (billResponse.success) {
@@ -46,6 +36,8 @@ export async function validateBill(bill: IBill | undefined) {
   if (!bill.date) throw new Error('Date is required');
   if (!bill.dueDate) throw new Error('Due date is required');
   if (!bill.mobile) throw new Error('Mobile number is required');
+  if (!bill.name) throw new Error('Name is required');
+  if (!bill.totalAmount) throw new Error('Total amount is required');
 
   for (const [index, order] of bill.order.entries()) {
     if ((order.amount ?? 0) <= 0) {
@@ -106,12 +98,14 @@ export const searchRowClicked =
     setBill: React.Dispatch<React.SetStateAction<IBill | undefined>>,
     setSearchBill: React.Dispatch<React.SetStateAction<IBill[] | undefined>>,
     updateUrlWithBillNumber: (billNumber: string) => void,
+    setNewBill: React.Dispatch<React.SetStateAction<boolean>>,
   ) =>
   async () => {
     try {
       const selectedBill = (searchBill ?? []).find((bill) => bill._id.toString() === billId);
       if (selectedBill) {
         setBill(selectedBill);
+        setNewBill(false);
         updateUrlWithBillNumber(selectedBill.billNumber.toString());
         setSearchBill(undefined);
       } else {
@@ -170,4 +164,67 @@ export const handleSearch = async (
   } catch (error) {
     handleError.toastAndLog(error);
   }
+};
+
+export const calculateTotalAmount = (orders: IBill['order']) => {
+  return orders?.reduce((total, item) => total + (item.amount || 0), 0) || 0;
+};
+
+export const updateOrderAmount = (
+  bill: IBill | undefined,
+  orderIndex: number,
+  amount: number,
+  setBill: React.Dispatch<React.SetStateAction<IBill | undefined>>,
+) => {
+  if (!bill) return;
+  const updatedOrder = bill.order.map((o, i) => (i === orderIndex ? { ...o, amount } : o));
+  setBill({
+    ...bill,
+    order: updatedOrder,
+  } as IBill);
+};
+
+export const createEmptyOrder = () => ({
+  category: {
+    catId: new Types.ObjectId(),
+    categoryName: '',
+  },
+  dimension: [],
+  styleProcess: [],
+  work: false,
+  barcode: false,
+  measurement: '',
+  orderNotes: '',
+  color: { _id: new Types.ObjectId(), name: '', code: '' },
+  amount: 0,
+  status: 'Pending',
+});
+
+export const createInitialBill = (lastBillNumber: number = 0): Partial<IBill> => ({
+  billNumber: lastBillNumber + 1,
+  date: new Date(),
+  dueDate: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
+  urgent: false,
+  trail: false,
+  name: '',
+  email: '',
+  paidAmount: 0,
+  dueAmount: 0,
+  totalAmount: 0,
+  discount: 0,
+  grandTotal: 0,
+  deliveryStatus: 'Pending',
+  paymentStatus: 'Unpaid',
+  order: [],
+  createdAt: new Date(),
+  updatedAt: new Date(),
+});
+
+export const updateBillAmounts = (bill: Partial<IBill>): Partial<IBill> => {
+  const orderAmount = calculateTotalAmount(bill.order ?? []);
+  return {
+    ...bill,
+    totalAmount: orderAmount,
+    grandTotal: orderAmount - (bill.discount ?? 0),
+  };
 };

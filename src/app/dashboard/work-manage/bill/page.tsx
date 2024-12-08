@@ -2,37 +2,39 @@
 import BarcodeScannerPage from '@/app/components/Barcode/BarcodeScanner';
 import LoadingSpinner from '@/app/components/LoadingSpinner';
 import SearchBillForm from '@/app/components/SearchBillForm/SearchBillForm';
-import BillDetailsDropdownClear from '@/app/dashboard/work-manage/bill/components/BillDetails';
-import BillHeader from '@/app/dashboard/work-manage/bill/components/BillHeader';
-import BillTable from '@/app/dashboard/work-manage/bill/components/BillTable';
-import IncreaseDecreaseSection from '@/app/dashboard/work-manage/bill/components/IncreaseDecreaseSection';
-import ItemsTrack from '@/app/dashboard/work-manage/bill/components/ItemsTrack';
-import OrderDetails from '@/app/dashboard/work-manage/bill/components/OrderDetails';
-import SaveUpdatePrint from '@/app/dashboard/work-manage/bill/components/SaveUpdatePrint';
+import { IBill, ICategory } from '@/models/klm';
+import BillDetailsDropdownClear from '@dashboard/work-manage/bill/components/BillDetails';
+import BillHeader from '@dashboard/work-manage/bill/components/BillHeader';
+import BillTable from '@dashboard/work-manage/bill/components/BillTable';
+import IncreaseDecreaseSection from '@dashboard/work-manage/bill/components/IncreaseDecreaseSection';
+import ItemsTrack from '@dashboard/work-manage/bill/components/ItemsTrack';
+import OrderDetails from '@dashboard/work-manage/bill/components/OrderDetails';
+import SaveUpdatePrint from '@dashboard/work-manage/bill/components/SaveUpdatePrint';
 import {
   billSearch,
+  calculateTotalAmount,
   checkOrderInUrl,
   clearBill,
+  createEmptyOrder,
+  createInitialBill,
   fetchInitialData,
   handleColorSelect,
   searchRowClicked,
+  updateBillAmounts,
   updateUrlWithBillNumber,
   validateBill,
-} from '@/app/dashboard/work-manage/bill/utils/billUtils';
-import { userConfirmation } from '@/app/util/confirmation/confirmationUtil';
-import handleError from '@/app/util/error/handleError';
-import { ApiGet, ApiPost, ApiPut } from '@/app/util/makeApiRequest/makeApiRequest';
-import { getSearchParam } from '@/app/util/url/urlUtils';
-import { IBill, ICategory, ITax } from '@/models/klm';
+} from '@dashboard/work-manage/bill/utils/billUtils';
 import { PlusCircleIcon } from '@heroicons/react/24/outline';
-import { Types } from 'mongoose';
+import { userConfirmation } from '@util/confirmation/confirmationUtil';
+import handleError from '@util/error/handleError';
+import { ApiGet, ApiPost, ApiPut } from '@util/makeApiRequest/makeApiRequest';
+import { getSearchParam } from '@util/url/urlUtils';
 import React, { useEffect, useMemo } from 'react';
 import toast from 'react-hot-toast';
 
 export default function BillPage() {
   const [loading, setLoading] = React.useState<boolean>(true);
   const [category, setCategory] = React.useState<ICategory[] | []>([]);
-  const [tax, setTax] = React.useState<ITax[]>([]);
   const [bill, setBill] = React.useState<IBill>();
   const [todayBill, setTodayBill] = React.useState<IBill[]>([]);
   const [thisWeekBill, setThisWeekBill] = React.useState<IBill[]>([]);
@@ -41,44 +43,13 @@ export default function BillPage() {
   const [barcode, setBarcode] = React.useState<string>('');
   const [printType, setPrintType] = React.useState<string>('customer');
 
-  const calculateGrandTotal = React.useCallback(() => {
-    let totalTaxes = 0;
-    if (bill?.totalAmount === undefined) return;
-
-    // Check if taxes are selected or present
-    if (bill?.tax && bill.tax.length > 0) {
-      // Calculate total taxes
-      bill.tax.forEach((tax) => {
-        if (tax.taxType === 'Percentage') {
-          totalTaxes += ((bill.totalAmount - bill?.discount) * (tax.taxPercentage ?? 0)) / 100;
-        } else {
-          totalTaxes += tax.taxPercentage ?? 0; // Direct amount tax
-        }
-      });
-    }
-
-    if ((bill?.totalAmount ?? 0) >= 0) {
-      setBill(
-        (prevBill) =>
-          ({
-            ...prevBill,
-            grandTotal: (prevBill?.totalAmount ?? 0) - (prevBill?.discount ?? 0) + totalTaxes,
-          }) as IBill,
-      );
-    }
-  }, [bill?.totalAmount, bill?.discount, bill?.tax]);
-
   useEffect(() => {
     const fetchData = async () => {
-      await fetchInitialData(setCategory, setTax, setTodayBill, setThisWeekBill);
+      await fetchInitialData(setCategory, setTodayBill, setThisWeekBill);
       setLoading(false);
     };
     fetchData();
   }, []);
-
-  useEffect(() => {
-    calculateGrandTotal();
-  }, [calculateGrandTotal]);
 
   useEffect(() => {
     const billNumber = getSearchParam('billNumber');
@@ -149,48 +120,17 @@ export default function BillPage() {
     setSearchBill(undefined);
     setBill(undefined);
     const lastBill = await ApiGet.Bill.LastBill();
-    setBill({
-      billNumber: (lastBill?.lastBill?.billNumber ?? 0) + 1,
-      date: new Date(),
-      dueDate: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
-      urgent: false,
-      trail: false,
-      name: '',
-      email: '',
-      paidAmount: 0,
-      dueAmount: 0,
-      paymentStatus: 'Unpaid',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    } as IBill);
+    setBill(createInitialBill(lastBill?.lastBill?.billNumber ?? 0) as IBill);
   }
 
   const handleNewOrder = () => {
-    // Create a new order object with default values and empty dimension and styleProcess arrays
-    const newOrder = {
-      category: {
-        catId: new Types.ObjectId(),
-        categoryName: '',
-      },
-      dimension: [],
-      styleProcess: [],
-      work: false,
-      barcode: false,
-      measurement: '',
-      orderNotes: '',
-      color: { _id: new Types.ObjectId(), name: '', code: '' },
-      amount: 0,
-      status: 'Pending',
-    };
-
-    // Create a copy of the existing orders array and add the new order
-    const updatedOrders = [...(bill?.order || []), newOrder];
-
-    // Update the bill state with the new orders array
-    setBill({
-      ...bill,
-      order: updatedOrders,
-    } as IBill | undefined);
+    setBill(
+      (prevBill) =>
+        ({
+          ...prevBill,
+          order: [...(prevBill?.order || []), createEmptyOrder()],
+        }) as IBill,
+    );
   };
 
   async function handleDimensionChange(
@@ -297,30 +237,21 @@ export default function BillPage() {
     };
   }
 
-  const handleRowClick = (taxId: string) => {
-    // Find the tax object with the given ID
-    const selectedTax = tax.find((t) => t._id.toString() === taxId);
-    if (selectedTax === undefined) {
-      toast.error('Selected tax not found');
-    }
-    if (selectedTax) {
-      // If the tax is already selected, remove it from the selectedTax array
-      if (bill?.tax?.some((t) => t._id === selectedTax._id)) {
-        setBill({ ...bill, tax: bill.tax.filter((t) => t._id !== selectedTax._id) } as IBill);
-      } else {
-        // If the tax is not already selected, add it to the selectedTax array
-        setBill({ ...bill, tax: [...(bill?.tax || []), selectedTax] } as IBill);
-      }
-    }
-  };
-
   async function handleSaveBill() {
     try {
       await validateBill(bill);
-
       if (!bill) throw new Error('Bill data is undefined');
-      const res = await ApiPost.Bill(bill);
-      if (res.success === true) {
+
+      const updatedBill: Partial<IBill> = updateBillAmounts({
+        ...bill,
+        order: bill.order.map((order) => ({ ...order, status: 'Pending' })),
+        paymentStatus: 'Unpaid',
+        deliveryStatus: 'Pending',
+      });
+
+      // Type assertion here since we know the bill has all required fields
+      const res = await ApiPost.Bill(updatedBill as IBill);
+      if (res.success) {
         setTodayBill([...todayBill, res.today]);
         setBill(res.bill);
         setNewBill(false);
@@ -329,7 +260,7 @@ export default function BillPage() {
         throw new Error(res.message);
       }
     } catch (error) {
-      handleError.toastAndLog(error);
+      handleError.toast(error);
     }
   }
 
@@ -340,27 +271,29 @@ export default function BillPage() {
     });
     if (!update) return;
 
-    const updateBill = async () => {
+    try {
+      const orderAmount = calculateTotalAmount(bill?.order ?? []);
+      setBill(
+        (prevBill) =>
+          ({
+            ...prevBill,
+            totalAmount: orderAmount ?? 0,
+            grandTotal: (orderAmount ?? 0) - (prevBill?.discount ?? 0),
+          }) as IBill | undefined,
+      );
+      await validateBill(bill);
+      if (!(bill ?? {})._id) throw new Error('No bill ID found to update');
+
       const res = await ApiPut.Bill(bill?._id?.toString() ?? '', bill as IBill);
       if (res.success === true) {
         setTodayBill([...todayBill, res.today]);
         setBill(res.bill);
-        return res.message;
+        toast.success(res.message);
       } else {
         throw new Error(res.message);
       }
-    };
-
-    try {
-      await validateBill(bill);
-      if (!(bill ?? {})._id) throw new Error('No bill ID found to update');
-      await toast.promise(updateBill(), {
-        loading: 'Updating bill...',
-        success: (message: string) => <b>{message}</b>,
-        error: (error: Error) => <b>{error.message}</b>,
-      });
     } catch (error) {
-      handleError.toastAndLog(error);
+      handleError.toast(error);
     }
   }
 
@@ -391,7 +324,7 @@ export default function BillPage() {
               onSearch={(e) => billSearch(e, setBill, setSearchBill)}
               searchResults={searchBill}
               onRowClick={(billId) =>
-                searchRowClicked(billId, searchBill, setBill, setSearchBill, updateUrlWithBillNumber)
+                searchRowClicked(billId, searchBill, setBill, setSearchBill, updateUrlWithBillNumber, setNewBill)
               }
             />
           </span>
@@ -437,7 +370,7 @@ export default function BillPage() {
                   handleUpdateBill={handleUpdateBill}
                 />
               </div>
-              <ItemsTrack bill={bill} tax={tax} handleRowClick={handleRowClick} setBill={setBill} />
+              <ItemsTrack bill={bill} />
             </div>
           </span>
         )}

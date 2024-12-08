@@ -97,22 +97,24 @@ interface IBill extends Document {
     color?: IColor;
     status?: 'Pending' | 'In Progress' | 'Completed' | 'Cancelled';
   }[];
-  totalAmount: number;
+  totalAmount: number; // total without discount & tax
   discount: number;
-  tax: {
-    _id: ObjectId;
-    taxName: string;
-    taxType: string;
-    taxPercentage: number;
-  }[];
   grandTotal: number;
   paidAmount: number;
   dueAmount: number;
+  taxAmount: number;
   paymentStatus?: 'Unpaid' | 'Partially Paid' | 'Paid';
   billBy?: { _id: ObjectId; name: string };
   deliveryStatus?: 'Pending' | 'Delivered';
   createdAt: Date;
   updatedAt: Date;
+}
+
+interface IReceiptTax {
+  _id: ObjectId;
+  taxName: string;
+  taxType: 'Percentage' | 'Fixed';
+  taxPercentage: number;
 }
 
 interface IReceipt extends Document {
@@ -121,6 +123,9 @@ interface IReceipt extends Document {
   bill?: { _id: ObjectId; billNumber?: number; mobile?: number; name?: string };
   receiptBy?: { _id: ObjectId; name: string };
   amount: number;
+  discount: number;
+  tax: IReceiptTax[];
+  taxAmount: number;
   paymentDate: Date;
   paymentMethod?: string;
   createdAt: Date;
@@ -294,14 +299,6 @@ const billSchema: Schema<IBill> = new Schema<IBill>(
       type: Number,
       default: 0,
     },
-    tax: [
-      {
-        _id: { type: mongoose.Schema.Types.ObjectId, ref: 'Tax' },
-        taxName: String,
-        taxType: String,
-        taxPercentage: Number,
-      },
-    ],
     grandTotal: {
       type: Number,
       default: 0,
@@ -312,9 +309,15 @@ const billSchema: Schema<IBill> = new Schema<IBill>(
     },
     dueAmount: {
       type: Number,
-      default: function () {
-        return (isNaN(this.totalAmount) ? 0 : this.totalAmount) - (isNaN(this.paidAmount) ? 0 : this.paidAmount);
+      default: function (this: IBill) {
+        const total = typeof this.totalAmount === 'number' ? this.totalAmount : 0;
+        const paid = typeof this.paidAmount === 'number' ? this.paidAmount : 0;
+        return total - paid;
       },
+    },
+    taxAmount: {
+      type: Number,
+      default: 0,
     },
     paymentStatus: {
       type: String,
@@ -341,18 +344,35 @@ const receiptSchema: Schema<IReceipt> = new Schema<IReceipt>(
       type: Number,
       required: [true, 'Receipt number is required.'],
       unique: true,
+      index: 'desc',
     },
     bill: {
       _id: { type: mongoose.Schema.Types.ObjectId, ref: 'Bill' },
-      billNumber: Number,
+      billNumber: { type: Number, required: [true, 'Bill number is required.'], index: 'desc' },
       name: String,
-      mobile: Number,
+      mobile: { type: Number, index: 'asc' },
     },
     receiptBy: {
       _id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
       name: String,
     },
     amount: { type: Number, required: [true, 'Amount is required.'] },
+    discount: {
+      type: Number,
+      default: 0,
+    },
+    tax: [
+      {
+        _id: { type: mongoose.Schema.Types.ObjectId, ref: 'Tax' },
+        taxName: String,
+        taxType: { type: String, enum: ['Percentage', 'Fixed'] },
+        taxPercentage: Number,
+      },
+    ],
+    taxAmount: {
+      type: Number,
+      default: 0,
+    },
     paymentDate: Date,
     paymentMethod: { type: String, enum: ['Cash', 'Online', 'UPI', 'Card'], default: 'Cash' },
   },
@@ -380,6 +400,7 @@ export type {
   IDimensionTypes,
   IDimensions,
   IReceipt,
+  IReceiptTax,
   IStyle,
   IStyleProcess,
   ITax,

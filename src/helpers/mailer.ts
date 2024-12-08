@@ -1,6 +1,6 @@
-import handleError from '@/app/util/error/handleError';
-import { token } from '@/app/util/token/token';
 import User from '@/models/userModel';
+import handleError from '@util/error/handleError';
+import { token } from '@util/token/token';
 import nodemailer from 'nodemailer';
 
 interface SendEmailParams {

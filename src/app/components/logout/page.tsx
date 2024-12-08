@@ -1,8 +1,8 @@
 'use client';
 import { useCompany } from '@/app/context/companyContext';
 import { useUser } from '@/app/context/userContext';
-import handleError from '@/app/util/error/handleError';
 import { IUser } from '@/models/userModel';
+import handleError from '@util/error/handleError';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import React from 'react';

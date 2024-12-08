@@ -1,10 +1,16 @@
 'use client';
-import { Modal } from '@/app/components/Modal/Modal';
+import { MAX_COMPANY_LOGO_FILE_SIZE_MB } from '@/app/constants/constants';
 import { useCompany } from '@/app/context/companyContext';
-import { userConfirmation } from '@/app/util/confirmation/confirmationUtil';
-import { formatDNT } from '@/app/util/format/dateUtils';
-import { ICompany } from '@/models/companyModel';
-import { PencilSquareIcon, TrashIcon, XCircleIcon } from '@heroicons/react/24/outline';
+import { Modal } from '@components/Modal/Modal';
+import { FormField } from '@dashboard/staff-manage/company/components/FormField';
+import { ImagePreview } from '@dashboard/staff-manage/company/components/ImagePreview';
+import { PencilSquareIcon, PhotoIcon, TrashIcon, XCircleIcon } from '@heroicons/react/24/outline';
+import { ICompany } from '@models/companyModel';
+import { userConfirmation } from '@util/confirmation/confirmationUtil';
+import handleError from '@util/error/handleError';
+import { FileUtil } from '@util/file/FileUtil';
+import { formatDNT } from '@util/format/dateUtils';
+import { FormValidationUtil } from '@util/validation/FormValidationUtil';
 import { useState } from 'react';
 
 interface CompanyDetailsProps {
@@ -23,20 +29,27 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ company, isEditing, set
   const [fieldValue, setFieldValue] = useState<string>('');
 
   const handleSaveContactDetail = (type: 'phones' | 'emails', value: string, index: number | null) => {
-    if (value && company) {
-      const updatedDetails = [...company.contactDetails[type]];
-      if (index !== null) {
-        updatedDetails[index] = value;
-      } else {
-        updatedDetails.push(value);
-      }
-      updateCompany({
-        contactDetails: { ...company.contactDetails, [type]: updatedDetails },
-      });
-      type === 'phones' ? setNewPhone('') : setNewEmail('');
-      type === 'phones' ? setEditingPhoneIndex(null) : setEditingEmailIndex(null);
-      (document.getElementById(`${type}_modal`) as HTMLDialogElement)?.close();
+    if (!value || !company) return;
+
+    const isValid = type === 'phones' ? FormValidationUtil.isValidPhone(value) : FormValidationUtil.isValidEmail(value);
+
+    if (!isValid) {
+      handleError.toast(new Error(`Invalid ${type === 'phones' ? 'phone number' : 'email address'}`));
+      return;
     }
+
+    const updatedDetails = [...company.contactDetails[type]];
+    if (index !== null) {
+      updatedDetails[index] = value;
+    } else {
+      updatedDetails.push(value);
+    }
+    updateCompany({
+      contactDetails: { ...company.contactDetails, [type]: updatedDetails },
+    });
+    type === 'phones' ? setNewPhone('') : setNewEmail('');
+    type === 'phones' ? setEditingPhoneIndex(null) : setEditingEmailIndex(null);
+    (document.getElementById(`${type}_modal`) as HTMLDialogElement)?.close();
   };
 
   const handleDeleteContactDetail = async (type: 'phones' | 'emails', index: number) => {
@@ -70,6 +83,55 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ company, isEditing, set
       setEditingField(null);
       setFieldValue('');
       (document.getElementById('field_modal') as HTMLDialogElement)?.close();
+    }
+  };
+
+  const handleLogoChange = async (size: 'small' | 'medium' | 'large', logoUrl: string) => {
+    if (company) {
+      const updatedLogos = {
+        ...company.logos,
+        [size]: logoUrl,
+      };
+      updateCompany({
+        logos: updatedLogos,
+      });
+      setEditingField(null);
+      setFieldValue('');
+      (document.getElementById('logo_modal') as HTMLDialogElement)?.close();
+    }
+  };
+
+  const handleDeleteLogo = async (size: 'small' | 'medium' | 'large') => {
+    const confirmed = await userConfirmation({
+      header: 'Delete Logo',
+      message: `Are you sure you want to delete the ${size} logo?`,
+    });
+
+    if (confirmed && company) {
+      const updatedLogos = {
+        ...company.logos,
+        [size]: '',
+      };
+      updateCompany({
+        logos: updatedLogos,
+      });
+      setEditingField(null);
+      setFieldValue('');
+    }
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      if (!FileUtil.validateFileSize(file, MAX_COMPANY_LOGO_FILE_SIZE_MB)) {
+        throw new Error('File size should be less than 5MB');
+      }
+      const base64 = await FileUtil.toBase64(file);
+      setFieldValue(base64);
+    } catch (error) {
+      handleError.toast(error);
     }
   };
 
@@ -217,6 +279,61 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ company, isEditing, set
         </div>
         {renderContactDetails('phones', 'Phones', newPhone, setNewPhone, editingPhoneIndex, setEditingPhoneIndex)}
         {renderContactDetails('emails', 'Emails', newEmail, setNewEmail, editingEmailIndex, setEditingEmailIndex)}
+        {(company.logos?.small || company.logos?.medium || company.logos?.large || isEditing) && (
+          <div className="flex flex-col gap-2 rounded-box border border-primary/40 p-2">
+            <h3 className="text-base font-semibold">Company Logos</h3>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              {(['small', 'medium', 'large'] as const)
+                .filter((size) => company.logos?.[size] || isEditing)
+                .map((size) => (
+                  <div
+                    key={size}
+                    className="flex flex-col items-center gap-2 rounded-box border border-primary/20 bg-neutral/60 p-2"
+                  >
+                    <span className="text-sm font-semibold capitalize">{size} Logo</span>
+                    {company.logos?.[size] ? (
+                      <div className="relative">
+                        <ImagePreview src={company.logos[size]} alt={`${size} logo`} />
+                        {isEditing && (
+                          <div className="absolute bottom-0 left-0 right-0 flex w-full justify-center gap-2 bg-base-300/90 p-1">
+                            <button
+                              className="btn btn-info btn-xs"
+                              onClick={() => {
+                                setEditingField(`logos.${size}`);
+                                setFieldValue(company.logos[size]);
+                                (document.getElementById('logo_modal') as HTMLDialogElement)?.showModal();
+                              }}
+                            >
+                              <PhotoIcon className="h-4 w-4" />
+                              Change
+                            </button>
+                            <button className="btn btn-error btn-xs" onClick={() => handleDeleteLogo(size)}>
+                              <TrashIcon className="h-4 w-4" />
+                              Delete
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      isEditing && (
+                        <button
+                          className="btn btn-primary btn-sm"
+                          onClick={() => {
+                            setEditingField(`logos.${size}`);
+                            setFieldValue('');
+                            (document.getElementById('logo_modal') as HTMLDialogElement)?.showModal();
+                          }}
+                        >
+                          <PhotoIcon className="h-5 w-5" />
+                          Add {size} Logo
+                        </button>
+                      )
+                    )}
+                  </div>
+                ))}
+            </div>
+          </div>
+        )}
         <div className="flex flex-col items-center gap-2 rounded-box border border-primary/40 p-2">
           <p className="w-full grow">Created At: {formatDNT(company.createdAt)}</p>
           <p className="w-full grow">Updated At: {formatDNT(company.updatedAt)}</p>
@@ -226,16 +343,16 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ company, isEditing, set
       <Modal id="phones_modal">
         <h2 className="text-lg font-bold">{editingPhoneIndex !== null ? 'Edit Phone' : 'Add Phone'}</h2>
         <form className="flex flex-col gap-2 p-4">
-          <label className="input input-sm input-primary flex items-center gap-2">
-            Phone:
-            <input
-              type="text"
-              className="grow"
-              placeholder="Enter phone number"
-              value={newPhone}
-              onChange={(e) => setNewPhone(e.target.value)}
-            />
-          </label>
+          <FormField
+            label="Phone"
+            type="tel"
+            value={newPhone}
+            onChange={setNewPhone}
+            placeholder="Enter phone number"
+            id="phone-input"
+            name="phone-input"
+            required
+          />
           <button
             type="button"
             className="btn btn-primary btn-sm"
@@ -249,16 +366,16 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ company, isEditing, set
       <Modal id="emails_modal">
         <h2 className="text-lg font-bold">{editingEmailIndex !== null ? 'Edit Email' : 'Add Email'}</h2>
         <form className="flex flex-col gap-2 p-4">
-          <label className="input input-sm input-primary flex items-center gap-2">
-            Email:
-            <input
-              type="text"
-              className="grow"
-              placeholder="Enter email address"
-              value={newEmail}
-              onChange={(e) => setNewEmail(e.target.value)}
-            />
-          </label>
+          <FormField
+            label="Email"
+            type="email"
+            value={newEmail}
+            onChange={setNewEmail}
+            placeholder="Enter email address"
+            id="email-input"
+            name="email-input"
+            required
+          />
           <button
             type="button"
             className="btn btn-primary btn-sm"
@@ -272,18 +389,68 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ company, isEditing, set
       <Modal id="field_modal">
         <h2 className="text-lg font-bold">Edit {editingField?.replace('contactDetails.', '').toUpperCase()}</h2>
         <form className="flex flex-col gap-2 p-4">
-          <label className="input input-sm input-primary flex items-center gap-2">
-            {editingField?.replace('contactDetails.', '').toUpperCase()}:
-            <input
-              type="text"
-              className="grow"
-              placeholder={`Enter ${editingField?.replace('contactDetails.', '').toUpperCase()}`}
-              value={fieldValue}
-              onChange={(e) => setFieldValue(e.target.value)}
-            />
-          </label>
+          <FormField
+            label={editingField?.replace('contactDetails.', '').toUpperCase() || ''}
+            type="text"
+            value={fieldValue}
+            onChange={setFieldValue}
+            placeholder={`Enter ${editingField?.replace('contactDetails.', '').toUpperCase()}`}
+            id="field-input"
+            name="field-input"
+            required
+          />
           <button type="button" className="btn btn-primary btn-sm" onClick={handleSaveField}>
             Save
+          </button>
+        </form>
+      </Modal>
+
+      <Modal id="logo_modal">
+        <h2 className="text-lg font-bold">
+          {editingField?.startsWith('logos.') ? `Update ${editingField.split('.')[1]} Logo` : 'Add Logo'}
+        </h2>
+        <form className="flex flex-col gap-2 p-4">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <input
+                id="logo-file-upload"
+                name="logo-file-upload"
+                type="file"
+                accept="image/*"
+                className="file-input file-input-bordered file-input-primary file-input-sm w-full"
+                onChange={handleFileUpload}
+              />
+            </div>
+            {fieldValue && (
+              <div className="flex flex-col items-center gap-2">
+                <p className="text-sm">Preview:</p>
+                <ImagePreview src={fieldValue} alt="Preview" />
+              </div>
+            )}
+            <div className="divider">OR</div>
+            <FormField
+              label="Logo URL"
+              type="url"
+              value={fieldValue}
+              onChange={setFieldValue}
+              placeholder="Enter logo URL"
+              id="logo-url-input"
+              name="logo-url-input"
+              required
+            />
+          </div>
+          <button
+            type="button"
+            className="btn btn-primary btn-sm"
+            disabled={!fieldValue}
+            onClick={() => {
+              if (editingField?.startsWith('logos.')) {
+                const size = editingField.split('.')[1] as 'small' | 'medium' | 'large';
+                handleLogoChange(size, fieldValue);
+              }
+            }}
+          >
+            Save Logo
           </button>
         </form>
       </Modal>

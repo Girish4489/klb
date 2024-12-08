@@ -1,17 +1,16 @@
-import { IBill, ITax } from '@/models/klm';
-import { PlusCircleIcon } from '@heroicons/react/24/outline';
+import { calculateTotalAmount } from '@dashboard/work-manage/bill/utils/billUtils';
+import { IBill } from '@models/klm';
 import React from 'react';
-import { InputField } from './InputField';
-import TaxModal from './TaxModal';
 
 interface ItemsTrackProps {
   bill: IBill;
-  tax: ITax[];
-  handleRowClick: (taxId: string) => void;
-  setBill: React.Dispatch<React.SetStateAction<IBill | undefined>>;
 }
 
-const ItemsTrack: React.FC<ItemsTrackProps> = ({ bill, tax, handleRowClick, setBill }) => {
+const calculateRunningTotal = (orders: IBill['order'], upToIndex: number): number => {
+  return orders.slice(0, upToIndex + 1).reduce((total, order) => total + (order.amount ?? 0), 0);
+};
+
+const ItemsTrack: React.FC<ItemsTrackProps> = ({ bill }) => {
   return (
     <div className="flex h-full flex-col justify-between gap-1 overflow-hidden rounded-box border-2 border-base-100 bg-base-200 max-sm:w-[90%]">
       <div className="grow overflow-auto rounded-box border-4 border-base-300 bg-base-100">
@@ -24,83 +23,29 @@ const ItemsTrack: React.FC<ItemsTrackProps> = ({ bill, tax, handleRowClick, setB
               <tr className="text-center">
                 <th>Sn</th>
                 <th>Amt</th>
-                <th>Tax</th>
                 <th>Net</th>
               </tr>
             </thead>
             <tbody>
-              {bill?.order?.map((order, orderIndex) => {
-                let runningTotal: number = 0;
-                return (
-                  <tr key={orderIndex} className="text-center">
-                    <th>{orderIndex + 1}</th>
-                    <td>{order.amount}</td>
-                    <td>0</td>
-                    <td>
-                      {bill.order.slice(0, orderIndex + 1).map((o) => {
-                        runningTotal += o.amount ?? 0;
-                        return null;
-                      })}
-                      {runningTotal}
-                    </td>
-                  </tr>
-                );
-              })}
+              {bill?.order?.map((order, orderIndex) => (
+                <tr key={orderIndex} className="text-center">
+                  <th>{orderIndex + 1}</th>
+                  <td>{order.amount}</td>
+                  <td>{calculateRunningTotal(bill.order, orderIndex)}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
       </div>
-      <div className="flex flex-col gap-y-2 overflow-auto rounded-box border-4 border-base-300 bg-base-200 px-1 py-2">
-        <InputField
-          label="Sub Total"
-          id="totalNet"
-          type="number"
-          value={bill?.totalAmount || ''}
-          labelClass="input-primary text-nowrap"
-          inputClass="grow"
-          onChange={() => {}}
-          readOnly
-        />
-        <InputField
-          label="Discount"
-          id="discount"
-          type="number"
-          value={bill?.discount || ''}
-          onChange={(e) =>
-            setBill({
-              ...bill,
-              discount: parseInt(e.target.value) || '',
-            } as IBill)
-          }
-          labelClass="input-primary text-nowrap"
-          inputClass="grow"
-        />
-        <TaxModal taxList={tax} selectedTaxes={bill.tax as ITax[]} onTaxToggle={handleRowClick} />
-        <div className="flex flex-row items-center justify-between gap-1">
-          <label className="label-text" htmlFor="taxOptions">
-            Tax
-          </label>
-          <button
-            className="btn btn-primary btn-sm"
-            name="taxOptions"
-            id="taxOptions"
-            onClick={() => (document.getElementById('tax_modal') as HTMLDialogElement)?.showModal()}
-          >
-            <PlusCircleIcon className="h-5 w-5 text-primary-content" />
-            Add
-          </button>
+      {bill.order?.length > 0 && calculateTotalAmount(bill.order) > 0 && (
+        <div className="flex w-full items-center px-2 py-1">
+          <span className="btn btn-outline btn-primary btn-sm grow">
+            <span className="text-nowrap">Total Amount:</span>
+            <p className="badge badge-secondary">{calculateTotalAmount(bill.order)}</p>
+          </span>
         </div>
-        <InputField
-          label="Grand Total"
-          id="grandTotal"
-          type="number"
-          value={bill?.grandTotal || ''}
-          labelClass="input-primary text-nowrap"
-          inputClass="grow"
-          readOnly
-          onChange={() => {}}
-        />
-      </div>
+      )}
     </div>
   );
 };

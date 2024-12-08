@@ -1,9 +1,9 @@
-import handleError from '@/app/util/error/handleError';
-import { getParamsFromRequest } from '@/app/util/url/urlUtils';
 import { connect } from '@/dbConfig/dbConfig';
 import { UserTokenData } from '@/helpers/getDataFromToken';
 import { Bill, IBill } from '@/models/klm';
-import User from '@/models/userModel';
+import User from '@models/userModel';
+import handleError from '@util/error/handleError';
+import { getParamsFromRequest } from '@util/url/urlUtils';
 import { NextRequest, NextResponse } from 'next/server';
 
 connect();
@@ -77,33 +77,41 @@ export async function POST(request: NextRequest) {
     if (!user) throw new Error('User not found');
     const data = await request.json();
 
-    // check if bill number already exists.
+    // check if bill number already exists
     const billExists = await Bill.findOne({ billNumber: data.billNumber });
     if (billExists) throw new Error('Bill number already exists');
 
     const bill = new Bill(data);
-    if (bill.billBy) {
+
+    // Set bill creator info
+    if (!bill.billBy) {
       bill.billBy = {
-        ...bill.billBy,
         _id: user._id,
         name: user.username,
       };
     }
-    // Update dueAmount based on grandTotal and paidAmount
-    const { grandTotal, paidAmount } = bill;
-    bill.dueAmount = (isNaN(grandTotal) ? 0 : grandTotal) - (isNaN(paidAmount) ? 0 : paidAmount);
-    if (grandTotal === paidAmount) {
+
+    // Calculate amounts and set payment status
+    const totalAmount = bill.order.reduce((sum, order) => sum + (order.amount || 0), 0);
+    bill.totalAmount = totalAmount;
+    bill.grandTotal = totalAmount - (bill.discount || 0);
+    bill.dueAmount = bill.grandTotal - (bill.paidAmount || 0);
+
+    // Set payment status based on amounts
+    if (bill.grandTotal === bill.paidAmount) {
       bill.paymentStatus = 'Paid';
-    } else if (paidAmount === 0) {
+    } else if (bill.paidAmount === 0) {
       bill.paymentStatus = 'Unpaid';
-    } else if (paidAmount > 0 && paidAmount < grandTotal) {
+    } else if (bill.paidAmount > 0 && bill.paidAmount < bill.grandTotal) {
       bill.paymentStatus = 'Partially Paid';
     }
 
     await bill.save();
+
     const today = await Bill.findOne({
       billNumber: bill.billNumber,
     }).select('-__v -updatedAt -createdAt -_id -order -paymentStatus -email -tax');
+
     return NextResponse.json({ message: 'Bill created', success: true, bill: bill, today: today });
   } catch (error) {
     return handleError.api(error);
@@ -118,26 +126,35 @@ export async function PUT(request: NextRequest) {
       '-password -__v -email -isVerified -createdAt -updatedAt -isAdmin -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry -theme -profileImage',
     );
     if (!user) throw new Error('User not found');
+
     const billId = request.nextUrl.searchParams.get('updateBillId');
     if (!billId) throw new Error('Bill id is required');
+
     const data: IBill = await request.json();
     const billExists = await Bill.findOne({ _id: billId });
     if (!billExists) throw new Error('Bill not found');
+
+    // Calculate amounts
+    const totalAmount = data.order.reduce((sum, order) => sum + (order.amount || 0), 0);
+    data.totalAmount = totalAmount;
+    data.grandTotal = totalAmount - (data.discount || 0);
+    data.dueAmount = data.grandTotal - (data.paidAmount || 0);
+
+    // Update payment status
+    if (data.grandTotal === data.paidAmount) {
+      data.paymentStatus = 'Paid';
+    } else if (data.paidAmount === 0) {
+      data.paymentStatus = 'Unpaid';
+    } else if (data.paidAmount > 0 && data.paidAmount < data.grandTotal) {
+      data.paymentStatus = 'Partially Paid';
+    }
+
+    data.updatedAt = new Date();
+
     const bill = await Bill.findByIdAndUpdate(billId, data, { new: true });
     if (!bill) throw new Error('Bill not found');
-    // Update dueAmount based on grandTotal and paidAmount
-    const { grandTotal, paidAmount } = bill;
-    bill.dueAmount = (isNaN(grandTotal) ? 0 : grandTotal) - (isNaN(paidAmount) ? 0 : paidAmount);
-    if (grandTotal === paidAmount) {
-      bill.paymentStatus = 'Paid';
-    } else if (paidAmount === 0) {
-      bill.paymentStatus = 'Unpaid';
-    } else if (paidAmount > 0 && paidAmount < grandTotal) {
-      bill.paymentStatus = 'Partially Paid';
-    }
-    bill.updatedAt = new Date();
-    await bill.save();
-    return NextResponse.json({ message: 'Bill updated', success: true, user: user, bill: bill });
+
+    return NextResponse.json({ message: 'Bill updated', success: true, bill: bill });
   } catch (error) {
     return handleError.api(error);
   }

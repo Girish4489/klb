@@ -1,11 +1,11 @@
 'use client';
 import { Modal } from '@/app/components/Modal/Modal';
 import Logout from '@/app/components/logout/page';
-import { userConfirmation } from '@/app/util/confirmation/confirmationUtil';
-import handleError from '@/app/util/error/handleError';
-import { formatD, formatDNT } from '@/app/util/format/dateUtils';
 import { IUser } from '@/models/userModel';
 import { TrashIcon } from '@heroicons/react/24/solid';
+import { userConfirmation } from '@util/confirmation/confirmationUtil';
+import handleError from '@util/error/handleError';
+import { formatD, formatDNT } from '@util/format/dateUtils';
 import axios from 'axios';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
