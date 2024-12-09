@@ -1,6 +1,6 @@
 {
   "name": "kalamandir",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "engines": {
     "node": ">=20.0",
     "npm": ">=10.0"
@@ -27,30 +27,30 @@
     "bcryptjs": "^2.4.3",
     "chart.js": "^4.4.7",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.8.3",
+    "mongoose": "^8.8.4",
     "next": "15.0.3",
     "nodemailer": "^6.9.16",
-    "react": "19.0.0-rc-02c0e824-20241028",
+    "react": "^19.0.0",
     "react-chartjs-2": "^5.2.0",
-    "react-dom": "19.0.0-rc-02c0e824-20241028",
+    "react-dom": "^19.0.0",
     "react-hot-toast": "^2.4.1",
     "react-top-loading-bar": "^2.3.1",
     "sharp": "^0.33.5"
   },
   "devDependencies": {
     "@next/env": "15.0.2",
-    "@next/eslint-plugin-next": "^15.0.3",
+    "@next/eslint-plugin-next": "^15.0.4",
     "@types/aws4": "^1.11.6",
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "20.11.25",
     "@types/nodemailer": "^6.4.17",
-    "@types/react": "npm:types-react@19.0.0-rc.1",
-    "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1",
+    "@types/react": "^19.0.1",
+    "@types/react-dom": "^19.0.1",
     "@typescript-eslint/eslint-plugin": "^8.17.0",
     "@typescript-eslint/parser": "^8.17.0",
     "autoprefixer": "^10.4.20",
-    "daisyui": "^4.12.14",
+    "daisyui": "^4.12.20",
     "eslint": "^9.16.0",
     "eslint-plugin-react": "^7.37.2",
     "globals": "^15.13.0",
@@ -64,11 +64,5 @@
     "typescript": "5.4.2",
     "typescript-eslint": "^8.17.0"
   },
-  "packageManager": "pnpm@9.12.1+sha512.e5a7e52a4183a02d5931057f7a0dbff9d5e9ce3161e33fa68ae392125b79282a8a8a470a51dfc8a0ed86221442eb2fb57019b0990ed24fab519bf0e1bc5ccfc4",
-  "pnpm": {
-    "overrides": {
-      "@types/react": "npm:types-react@19.0.0-rc.1",
-      "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1"
-    }
-  }
+  "packageManager": "pnpm@9.12.1+sha512.e5a7e52a4183a02d5931057f7a0dbff9d5e9ce3161e33fa68ae392125b79282a8a8a470a51dfc8a0ed86221442eb2fb57019b0990ed24fab519bf0e1bc5ccfc4"
 }
