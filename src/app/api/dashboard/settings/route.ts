@@ -3,6 +3,7 @@ import { connect } from '@/dbConfig/dbConfig';
 import { UserTokenData } from '@helpers/getDataFromToken';
 import User from '@models/userModel';
 import handleError from '@util/error/handleError';
+import { ImageMetadata } from '@util/image/imageUtils';
 import { NextRequest, NextResponse } from 'next/server';
 
 connect();
@@ -15,27 +16,39 @@ async function getUserFromRequest(request: NextRequest) {
   return user;
 }
 
+const DEFAULT_PROFILE_IMAGE = {
+  __filename: 'USER_PROFILE_404_ERROR',
+  data: '',
+  contentType: '',
+  size: 0,
+  uploadAt: new Date(),
+} as const;
+
 export async function POST(request: NextRequest) {
   try {
     const user = await getUserFromRequest(request);
-
     const formData = await request.formData();
-    const file = formData.get('profileImage') as File;
 
-    if (!file) throw new Error('No file provided');
+    const base64Data = formData.get('base64') as string;
+    if (!base64Data) throw new Error('No image data provided');
 
-    const fileData = Buffer.from(await file.arrayBuffer());
+    const metadata = JSON.parse(formData.get('metadata') as string) as ImageMetadata;
+    if (!metadata) throw new Error('No metadata provided');
 
     user.profileImage = {
-      __filename: file.name,
-      data: fileData.toString('base64'),
-      contentType: file.type,
-      uploadAt: new Date(),
+      __filename: metadata.filename,
+      data: base64Data.split(',')[1],
+      contentType: metadata.contentType,
+      size: metadata.size,
+      uploadAt: metadata.uploadedAt,
     };
 
     await user.save();
-
-    return NextResponse.json({ success: true, message: 'Profile updated', profileImage: user.profileImage });
+    return NextResponse.json({
+      success: true,
+      message: 'Profile updated successfully',
+      profileImage: user.profileImage,
+    });
   } catch (error) {
     return handleError.api(error);
   }
@@ -44,17 +57,13 @@ export async function POST(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const user = await getUserFromRequest(request);
-
-    user.profileImage = {
-      __filename: 'USER_PROFILE_404_ERROR',
-      data: Buffer.from([]).toString('base64'),
-      contentType: 'image/webp',
-      uploadAt: new Date(),
-    };
-
+    user.profileImage = DEFAULT_PROFILE_IMAGE;
     await user.save();
-
-    return NextResponse.json({ success: true, message: 'Profile image removed', profileImage: user.profileImage });
+    return NextResponse.json({
+      success: true,
+      message: 'Profile image removed successfully',
+      profileImage: DEFAULT_PROFILE_IMAGE,
+    });
   } catch (error) {
     return handleError.api(error);
   }

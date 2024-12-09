@@ -1,3 +1,4 @@
+import { ALLOWED_IMAGE_TYPES, MAX_COMPANY_LOGO_FILE_SIZE_MB } from '@/app/constants/constants';
 import mongoose, { Document, Model, Schema, Types } from 'mongoose';
 
 type ObjectId = Types.ObjectId;
@@ -26,6 +27,7 @@ interface IUser extends Document {
     __filename: string;
     data: string;
     contentType: string;
+    size: number;
     uploadAt: Date;
   };
   forgotPasswordToken: string;
@@ -94,9 +96,18 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
     },
     profileImage: {
       __filename: { type: String, default: 'USER_PROFILE_404_ERROR' },
-      data: String,
-      contentType: { type: String, default: 'multipart/form-data' },
-      uploadAt: Date,
+      data: { type: String, default: '' },
+      contentType: {
+        type: String,
+        enum: [...ALLOWED_IMAGE_TYPES, ''], // Allow empty string
+        default: '',
+      },
+      size: {
+        type: Number,
+        max: MAX_COMPANY_LOGO_FILE_SIZE_MB * 1024 * 1024,
+        default: 0,
+      },
+      uploadAt: { type: Date, default: Date.now },
     },
     forgotPasswordToken: String,
     forgotPasswordTokenExpiry: Date,

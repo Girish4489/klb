@@ -13,6 +13,7 @@ export async function GET() {
     const grandTotalAmount = await Bill.aggregate([{ $group: { _id: null, total: { $sum: '$grandTotal' } } }]);
     const paidAmount = await Bill.aggregate([{ $group: { _id: null, total: { $sum: '$paidAmount' } } }]);
     const dueAmount = await Bill.aggregate([{ $group: { _id: null, total: { $sum: '$dueAmount' } } }]);
+    const discountAmount = await Bill.aggregate([{ $group: { _id: null, total: { $sum: '$discount' } } }]);
 
     return NextResponse.json({
       message: 'Stats fetched successfully',
@@ -25,6 +26,7 @@ export async function GET() {
       grandTotalAmount: grandTotalAmount[0]?.total || 0,
       paidAmount: paidAmount[0]?.total || 0,
       dueAmount: dueAmount[0]?.total || 0,
+      discountAmount: discountAmount[0]?.total || 0,
       success: true,
     });
   } catch (error) {

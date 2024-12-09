@@ -20,6 +20,7 @@ interface Stats {
   grandTotalAmount: number;
   paidAmount: number;
   dueAmount: number;
+  discountAmount: number;
 }
 
 const DashboardStats = ({ refresh }: DashboardStatsProps) => {
@@ -33,6 +34,7 @@ const DashboardStats = ({ refresh }: DashboardStatsProps) => {
     grandTotalAmount: 0,
     paidAmount: 0,
     dueAmount: 0,
+    discountAmount: 0,
   });
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
@@ -73,15 +75,16 @@ const DashboardStats = ({ refresh }: DashboardStatsProps) => {
   };
 
   const amountData = {
-    labels: ['Grand Total', 'Paid Amount', 'Due Amount'],
+    labels: ['Grand Total', 'Paid Amount', 'Due Amount', 'Discount'],
     datasets: [
       {
         label: 'Amount',
-        data: [stats.grandTotalAmount, stats.paidAmount, stats.dueAmount],
+        data: [stats.grandTotalAmount, stats.paidAmount, stats.dueAmount, stats.discountAmount],
         backgroundColor: [
           getComputedStyleValue('bg-primary', 'background-color'),
           getComputedStyleValue('bg-success', 'background-color'),
           getComputedStyleValue('bg-warning', 'background-color'),
+          getComputedStyleValue('bg-secondary', 'background-color'),
         ],
       },
     ],
