@@ -1,8 +1,8 @@
-import TopbarLoader from '@/app/components/topbarLoader/page';
-import { ThemeProvider } from '@/app/context/ThemeContext';
-import { CompanyProvider } from '@/app/context/companyContext';
-import { UserProvider } from '@/app/context/userContext';
 import '@/app/globals.css';
+import TopbarLoader from '@components/topbarLoader/page';
+import { ThemeProvider } from '@context/ThemeContext';
+import { CompanyProvider } from '@context/companyContext';
+import { UserProvider } from '@context/userContext';
 import type { Metadata } from 'next';
 import React from 'react';
 import { Toaster } from 'react-hot-toast';

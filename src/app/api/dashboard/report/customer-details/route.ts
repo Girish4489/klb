@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { connect } from '@/dbConfig/dbConfig';
-import { Customer } from '@/models/klm';
+import { Customer } from '@models/klm';
 import handleError from '@util/error/handleError';
 import { NextRequest, NextResponse } from 'next/server';
 

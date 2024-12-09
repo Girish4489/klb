@@ -1,5 +1,5 @@
-import { IBill } from '@/models/klm';
 import { MinusCircleIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
+import { IBill } from '@models/klm';
 import React from 'react';
 
 interface IncreaseDecreaseSectionProps {

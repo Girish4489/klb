@@ -1,4 +1,4 @@
-import { IReceipt, ITax } from '@/models/klm';
+import { IReceipt, ITax } from '@models/klm';
 import handleError from '@util/error/handleError';
 import { ApiGet } from '@util/makeApiRequest/makeApiRequest';
 

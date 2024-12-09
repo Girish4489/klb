@@ -1,4 +1,4 @@
-import { Bill } from '@/models/klm';
+import { Bill } from '@models/klm';
 import handleError from '@util/error/handleError';
 import { NextRequest, NextResponse } from 'next/server';
 

@@ -1,7 +1,7 @@
 'use client';
 import { MAX_COMPANY_LOGO_FILE_SIZE_MB } from '@/app/constants/constants';
-import { useCompany } from '@/app/context/companyContext';
 import { Modal } from '@components/Modal/Modal';
+import { useCompany } from '@context/companyContext';
 import { FormField } from '@dashboard/staff-manage/company/components/FormField';
 import { ImagePreview } from '@dashboard/staff-manage/company/components/ImagePreview';
 import { PencilSquareIcon, PhotoIcon, TrashIcon, XCircleIcon } from '@heroicons/react/24/outline';

@@ -1,7 +1,7 @@
 // /src/app/dashboard/report/customer-details/page.tsx
 'use client';
-import { ICustomer } from '@/models/klm';
 import { CloudArrowUpIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/solid';
+import { ICustomer } from '@models/klm';
 import { userConfirmation } from '@util/confirmation/confirmationUtil';
 import { formatD } from '@util/format/dateUtils';
 import axios from 'axios';

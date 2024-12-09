@@ -1,5 +1,5 @@
-import QrGenerator from '@/app/components/Barcode/BarcodeGenerator';
-import { IBill } from '@/models/klm';
+import QrGenerator from '@components/Barcode/BarcodeGenerator';
+import { IBill } from '@models/klm';
 import React from 'react';
 
 const OrdersTable: React.FC<{ bill: IBill; selectedOrders: number[]; handleOrderSelect: (index: number) => void }> = ({

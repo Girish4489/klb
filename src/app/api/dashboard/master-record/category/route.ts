@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // /src/app/api/dashboard/master-record/category/route.ts
 import { connect } from '@/dbConfig/dbConfig';
-import { UserTokenData } from '@/helpers/getDataFromToken';
-import { Category, ICategory, IDimensionTypes, IStyleProcess } from '@/models/klm';
-import User from '@/models/userModel';
+import { UserTokenData } from '@helpers/getDataFromToken';
+import { Category, ICategory, IDimensionTypes, IStyleProcess } from '@models/klm';
+import User from '@models/userModel';
 import handleError from '@util/error/handleError';
 import mongoose from 'mongoose';
 import { NextRequest, NextResponse } from 'next/server';

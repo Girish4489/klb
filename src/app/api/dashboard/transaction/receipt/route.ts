@@ -1,5 +1,5 @@
 import { connect } from '@/dbConfig/dbConfig';
-import { UserTokenData } from '@/helpers/getDataFromToken';
+import { UserTokenData } from '@helpers/getDataFromToken';
 import { Bill, IReceipt, Receipt } from '@models/klm';
 import User from '@models/userModel';
 import handleError from '@util/error/handleError';

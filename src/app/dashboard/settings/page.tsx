@@ -1,9 +1,9 @@
 'use client';
-import SettingsProfile from '@/app/components/profile/SettingsProfile';
-import ThemerPage from '@/app/components/themer/ThemerPage';
-import { useUser } from '@/app/context/userContext';
-import { IUser } from '@/models/userModel';
+import SettingsProfile from '@components/profile/SettingsProfile';
+import ThemerPage from '@components/themer/ThemerPage';
+import { useUser } from '@context/userContext';
 import { InformationCircleIcon } from '@heroicons/react/24/solid';
+import { IUser } from '@models/userModel';
 import handleError from '@util/error/handleError';
 import axios from 'axios';
 import { useEffect, useState } from 'react';

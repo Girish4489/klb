@@ -1,5 +1,5 @@
-import { IBill } from '@/models/klm';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
+import { IBill } from '@models/klm';
 import { formatD } from '@util/format/dateUtils';
 import React from 'react';
 

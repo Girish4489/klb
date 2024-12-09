@@ -1,7 +1,7 @@
 'use client';
-import { ITax } from '@/models/klm';
 import { PlusCircleIcon } from '@heroicons/react/24/outline';
 import { CloudArrowUpIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/solid';
+import { ITax } from '@models/klm';
 import { userConfirmation } from '@util/confirmation/confirmationUtil';
 import handleError from '@util/error/handleError';
 import { ApiDelete, ApiGet, ApiPost, ApiPut } from '@util/makeApiRequest/makeApiRequest';

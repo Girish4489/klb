@@ -1,8 +1,8 @@
 'use client';
-import { ICategory, IDimensionTypes, IDimensions, IStyle, IStyleProcess } from '@/models/klm';
 import { CustomButton } from '@dashboard/master-record/category/components/CustomButton';
 import { openModal } from '@dashboard/master-record/category/components/modals';
 import { PencilSquareIcon, PlusCircleIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { ICategory, IDimensionTypes, IDimensions, IStyle, IStyleProcess } from '@models/klm';
 import React from 'react';
 
 interface CategoryItemProps {

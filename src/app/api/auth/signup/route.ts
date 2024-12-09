@@ -1,6 +1,6 @@
 import { connect } from '@/dbConfig/dbConfig';
-import { sendEmail } from '@/helpers/mailer';
-import User from '@/models/userModel';
+import { sendEmail } from '@helpers/mailer';
+import User from '@models/userModel';
 import bcryptUtil from '@util/bcrypt/bcrypt';
 import handleError from '@util/error/handleError';
 import { NextRequest, NextResponse } from 'next/server';

@@ -1,11 +1,11 @@
 'use client';
-import BarcodeScannerPage from '@/app/components/Barcode/BarcodeScanner';
-import SearchBillForm from '@/app/components/SearchBillForm/SearchBillForm';
-import { IBill } from '@/models/klm';
+import BarcodeScannerPage from '@components/Barcode/BarcodeScanner';
+import SearchBillForm from '@components/SearchBillForm/SearchBillForm';
 import BillDetailsDropdownClear from '@dashboard/work-manage/bill/components/BillDetails';
 import { handleSearch } from '@dashboard/work-manage/bill/utils/billUtils';
 import OrdersTable from '@dashboard/work-manage/labelling/components/OrdersTable';
 import { CheckCircleIcon, MinusCircleIcon, PrinterIcon } from '@heroicons/react/24/solid';
+import { IBill } from '@models/klm';
 import handleError from '@util/error/handleError';
 import { ApiGet } from '@util/makeApiRequest/makeApiRequest';
 import { getSearchParam, setSearchParam } from '@util/url/urlUtils';

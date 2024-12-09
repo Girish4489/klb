@@ -1,5 +1,5 @@
 import { connect } from '@/dbConfig/dbConfig';
-import User, { IUser, RoleType } from '@/models/userModel';
+import User, { IUser, RoleType } from '@models/userModel';
 import handleError from '@util/error/handleError';
 import { NextRequest, NextResponse } from 'next/server';
 

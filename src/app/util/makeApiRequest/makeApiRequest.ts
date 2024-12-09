@@ -1,7 +1,7 @@
 // /src/app/util/makeApiRequest/makeApiRequest.ts
-import { ICompany } from '@/models/companyModel';
-import { IBill, IReceipt, ITax } from '@/models/klm';
-import { RoleType } from '@/models/userModel';
+import { ICompany } from '@models/companyModel';
+import { IBill, IReceipt, ITax } from '@models/klm';
+import { RoleType } from '@models/userModel';
 import axios from 'axios';
 import handleError from '../error/handleError';
 

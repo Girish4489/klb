@@ -1,6 +1,6 @@
 import { connect } from '@/dbConfig/dbConfig';
-import { UserTokenData } from '@/helpers/getDataFromToken';
-import { Bill, IBill } from '@/models/klm';
+import { UserTokenData } from '@helpers/getDataFromToken';
+import { Bill, IBill } from '@models/klm';
 import User from '@models/userModel';
 import handleError from '@util/error/handleError';
 import { getParamsFromRequest } from '@util/url/urlUtils';

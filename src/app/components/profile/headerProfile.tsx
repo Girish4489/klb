@@ -1,6 +1,5 @@
 'use client';
-import LogoutPage from '@/app/components/logout/page';
-import { IUser } from '@/models/userModel';
+import LogoutPage from '@components/logout/page';
 import {
   CheckBadgeIcon,
   Cog6ToothIcon,
@@ -11,6 +10,7 @@ import {
   UserCircleIcon,
   UserIcon,
 } from '@heroicons/react/24/solid';
+import { IUser } from '@models/userModel';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';

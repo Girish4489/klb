@@ -1,4 +1,4 @@
-import { IUser } from '@/models/userModel';
+import { IUser } from '@models/userModel';
 import handleError from '@util/error/handleError';
 import axios from 'axios';
 

@@ -1,6 +1,6 @@
 'use client';
-import { IBill } from '@/models/klm';
 import { FunnelIcon } from '@heroicons/react/24/solid';
+import { IBill } from '@models/klm';
 import handleError from '@util/error/handleError';
 import { formatD } from '@util/format/dateUtils';
 import { ApiGet } from '@util/makeApiRequest/makeApiRequest';

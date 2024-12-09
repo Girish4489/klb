@@ -1,8 +1,8 @@
 'use client';
-import { Modal } from '@/app/components/Modal/Modal';
-import Logout from '@/app/components/logout/page';
-import { IUser } from '@/models/userModel';
+import { Modal } from '@components/Modal/Modal';
+import Logout from '@components/logout/page';
 import { TrashIcon } from '@heroicons/react/24/solid';
+import { IUser } from '@models/userModel';
 import { userConfirmation } from '@util/confirmation/confirmationUtil';
 import handleError from '@util/error/handleError';
 import { formatD, formatDNT } from '@util/format/dateUtils';

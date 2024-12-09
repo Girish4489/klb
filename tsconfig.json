@@ -24,8 +24,11 @@
       "@data/*": ["./data/*"],
       "@public/*": ["./public/*"],
       "@models/*": ["./src/models/*"],
-      "@dashboard/*": ["./src/app/dashboard/*"],
+      "@helpers/*": ["./src/helpers/*"],
       "@components/*": ["./src/app/components/*"],
+      "@constants/*": ["./src/app/constants/*"],
+      "@context/*": ["./src/app/context/*"],
+      "@dashboard/*": ["./src/app/dashboard/*"],
       "@util/*": ["./src/app/util/*"]
     }
   },

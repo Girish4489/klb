@@ -1,8 +1,8 @@
 'use client';
-import HeaderProfilePage from '@/app/components/profile/headerProfile';
-import Sidebar from '@/app/components/sidebar/sidebarPage';
-import { useCompany } from '@/app/context/companyContext';
-import { useUser } from '@/app/context/userContext';
+import HeaderProfilePage from '@components/profile/headerProfile';
+import Sidebar from '@components/sidebar/sidebarPage';
+import { useCompany } from '@context/companyContext';
+import { useUser } from '@context/userContext';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { Bars3Icon } from '@heroicons/react/24/solid';
 import Link from 'next/link';

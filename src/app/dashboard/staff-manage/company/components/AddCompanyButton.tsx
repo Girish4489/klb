@@ -1,8 +1,8 @@
 'use client';
-import { Modal } from '@/app/components/Modal/Modal';
-import { useCompany } from '@/app/context/companyContext';
-import { ICompany } from '@/models/companyModel';
+import { Modal } from '@components/Modal/Modal';
+import { useCompany } from '@context/companyContext';
 import { CloudArrowUpIcon, PlusCircleIcon } from '@heroicons/react/24/solid';
+import { ICompany } from '@models/companyModel';
 import handleError from '@util/error/handleError';
 import { ApiPost } from '@util/makeApiRequest/makeApiRequest';
 import Form from 'next/form';

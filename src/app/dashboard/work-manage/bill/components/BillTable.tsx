@@ -1,5 +1,5 @@
-import { IBill } from '@/models/klm';
 import { UserIcon } from '@heroicons/react/20/solid';
+import { IBill } from '@models/klm';
 import { formatD } from '@util/format/dateUtils';
 import React from 'react';
 

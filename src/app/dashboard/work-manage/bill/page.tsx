@@ -1,8 +1,7 @@
 'use client';
-import BarcodeScannerPage from '@/app/components/Barcode/BarcodeScanner';
-import LoadingSpinner from '@/app/components/LoadingSpinner';
-import SearchBillForm from '@/app/components/SearchBillForm/SearchBillForm';
-import { IBill, ICategory } from '@/models/klm';
+import BarcodeScannerPage from '@components/Barcode/BarcodeScanner';
+import LoadingSpinner from '@components/LoadingSpinner';
+import SearchBillForm from '@components/SearchBillForm/SearchBillForm';
 import BillDetailsDropdownClear from '@dashboard/work-manage/bill/components/BillDetails';
 import BillHeader from '@dashboard/work-manage/bill/components/BillHeader';
 import BillTable from '@dashboard/work-manage/bill/components/BillTable';
@@ -25,6 +24,7 @@ import {
   validateBill,
 } from '@dashboard/work-manage/bill/utils/billUtils';
 import { PlusCircleIcon } from '@heroicons/react/24/outline';
+import { IBill, ICategory } from '@models/klm';
 import { userConfirmation } from '@util/confirmation/confirmationUtil';
 import handleError from '@util/error/handleError';
 import { ApiGet, ApiPost, ApiPut } from '@util/makeApiRequest/makeApiRequest';

@@ -1,7 +1,7 @@
 'use client';
-import { useCompany } from '@/app/context/companyContext';
-import { useUser } from '@/app/context/userContext';
-import { IUser } from '@/models/userModel';
+import { useCompany } from '@context/companyContext';
+import { useUser } from '@context/userContext';
+import { IUser } from '@models/userModel';
 import handleError from '@util/error/handleError';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';

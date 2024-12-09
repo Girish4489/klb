@@ -1,5 +1,5 @@
 'use client';
-import { useCompany } from '@/app/context/companyContext';
+import { useCompany } from '@context/companyContext';
 import AddCompanyButton from '@dashboard/staff-manage/company/components/AddCompanyButton';
 import CompanyDetails from '@dashboard/staff-manage/company/components/CompanyDetails';
 import UserDetails from '@dashboard/staff-manage/company/components/UserDetails';

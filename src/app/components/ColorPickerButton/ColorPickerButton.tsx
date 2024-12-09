@@ -1,6 +1,6 @@
 'use client';
-import { IColor } from '@/models/klm';
 import colors, { basicColors } from '@data/colors';
+import { IColor } from '@models/klm';
 import React, { useEffect, useState } from 'react';
 
 interface ColorPickerButtonProps {

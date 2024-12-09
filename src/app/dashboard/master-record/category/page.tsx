@@ -1,10 +1,10 @@
 'use client';
-import LoadingSpinner from '@/app/components/LoadingSpinner';
-import { ICategory, IDimensionTypes, IDimensions, IStyle, IStyleProcess } from '@/models/klm';
+import LoadingSpinner from '@components/LoadingSpinner';
 import CategoryItem from '@dashboard/master-record/category/components/CategoryItem';
 import { FormModals } from '@dashboard/master-record/category/components/FormModals';
 import { closeModal, openModal } from '@dashboard/master-record/category/components/modals';
 import { PlusCircleIcon } from '@heroicons/react/24/outline';
+import { ICategory, IDimensionTypes, IDimensions, IStyle, IStyleProcess } from '@models/klm';
 import { userConfirmation } from '@util/confirmation/confirmationUtil';
 import handleError from '@util/error/handleError';
 import { ApiGet, ApiPost } from '@util/makeApiRequest/makeApiRequest';

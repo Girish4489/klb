@@ -1,10 +1,10 @@
 'use client';
-import LoadingSpinner from '@/app/components/LoadingSpinner';
-import { useCompany } from '@/app/context/companyContext';
 import PrintHeader from '@/app/print-preview/components/PrintHeader';
 import WorkerBillPreview from '@/app/print-preview/components/WorkerBillPreview';
-import { IBill } from '@/models/klm';
+import LoadingSpinner from '@components/LoadingSpinner';
+import { useCompany } from '@context/companyContext';
 import { getStyle } from '@data/printStyles';
+import { IBill } from '@models/klm';
 import klm from '@public/klm.png';
 import handleError from '@util/error/handleError';
 import { ApiGet } from '@util/makeApiRequest/makeApiRequest';

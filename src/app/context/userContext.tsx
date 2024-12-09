@@ -1,6 +1,6 @@
 // src/app/context/UserContext.tsx
 'use client';
-import { IUser, RoleType } from '@/models/userModel';
+import { IUser, RoleType } from '@models/userModel';
 import handleError from '@util/error/handleError';
 import { LocalIndexer } from '@util/indexing/indexingUtil';
 import { ApiPut } from '@util/makeApiRequest/makeApiRequest';

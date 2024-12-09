@@ -1,4 +1,4 @@
-import { IBill, ICategory, IColor } from '@/models/klm';
+import { IBill, ICategory, IColor } from '@models/klm';
 import handleError from '@util/error/handleError';
 import { ApiGet } from '@util/makeApiRequest/makeApiRequest';
 import { setSearchParam } from '@util/url/urlUtils';

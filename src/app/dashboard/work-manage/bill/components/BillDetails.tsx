@@ -1,5 +1,5 @@
-import { IBill } from '@/models/klm';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
+import { IBill } from '@models/klm';
 import { formatDS } from '@util/format/dateUtils';
 import Link from 'next/link';
 import React from 'react';

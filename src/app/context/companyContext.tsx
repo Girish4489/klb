@@ -1,6 +1,6 @@
 'use client';
-import { useUser } from '@/app/context/userContext';
-import { ICompany } from '@/models/companyModel';
+import { useUser } from '@context/userContext';
+import { ICompany } from '@models/companyModel';
 import { fetchCompanyData } from '@util/company/companyFetchUtil/companyUtils';
 import { userConfirmation } from '@util/confirmation/confirmationUtil';
 import handleError from '@util/error/handleError';

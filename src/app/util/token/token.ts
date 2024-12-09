@@ -1,4 +1,4 @@
-import { IUser } from '@/models/userModel';
+import { IUser } from '@models/userModel';
 import jwt from 'jsonwebtoken';
 import { NextRequest, NextResponse } from 'next/server';
 

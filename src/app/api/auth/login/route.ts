@@ -1,6 +1,6 @@
 import { connect } from '@/dbConfig/dbConfig';
-import Company from '@/models/companyModel';
-import User from '@/models/userModel';
+import Company from '@models/companyModel';
+import User from '@models/userModel';
 import bcryptUtil from '@util/bcrypt/bcrypt';
 import handleError from '@util/error/handleError';
 import { cookie, token } from '@util/token/token';
