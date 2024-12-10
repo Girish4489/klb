@@ -43,6 +43,10 @@ interface IUser extends Document {
       name: string;
       weight: number;
     };
+    animations: {
+      enabled: boolean;
+      intensity: number; // 1-10 scale
+    };
   };
   notifications: {
     name: string;
@@ -51,7 +55,8 @@ interface IUser extends Document {
     timeOfRead: Date;
     isRead: boolean;
   }[];
-  companyAccess: {
+  isCompanyMember: boolean; // Changed from newUser
+  companyAccess?: {
     companyId: ObjectId;
     role: RoleType;
     access: {
@@ -134,6 +139,10 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
         type: String,
         default: 'dark',
       },
+      animations: {
+        enabled: { type: Boolean, default: true },
+        intensity: { type: Number, default: 10, min: 1, max: 10 },
+      },
     },
     notifications: [
       {
@@ -144,32 +153,39 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
         isRead: { type: Boolean, default: false },
       },
     ],
+    isCompanyMember: {
+      // Changed from newUser
+      type: Boolean,
+      default: false, // Default to false since new users don't belong to any company
+    },
     companyAccess: {
-      companyId: { type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true },
-      role: {
-        type: String,
-        enum: [
-          'owner',
-          'admin',
-          'hr',
-          'manager',
-          'stockManager',
-          'cashier',
-          'salesAssociate',
-          'employee',
-          'intern',
-          'guest',
-        ],
-        required: true,
-        default: 'guest',
+      type: {
+        companyId: { type: mongoose.Schema.Types.ObjectId, ref: 'Company' },
+        role: {
+          type: String,
+          enum: [
+            'owner',
+            'admin',
+            'hr',
+            'manager',
+            'stockManager',
+            'cashier',
+            'salesAssociate',
+            'employee',
+            'intern',
+            'guest',
+          ],
+          default: 'guest',
+        },
+        access: {
+          login: { type: Boolean, default: true },
+          canEdit: { type: Boolean, default: false },
+          canDelete: { type: Boolean, default: false },
+          canView: { type: Boolean, default: true },
+        },
+        accessLevels: { type: [String], default: ['guest'] },
       },
-      access: {
-        login: { type: Boolean, default: true },
-        canEdit: { type: Boolean, default: false },
-        canDelete: { type: Boolean, default: false },
-        canView: { type: Boolean, default: true },
-      },
-      accessLevels: { type: [String], default: ['guest'] },
+      required: false,
     },
     secondaryEmails: {
       type: [String],

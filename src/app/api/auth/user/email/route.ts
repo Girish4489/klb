@@ -1,6 +1,7 @@
 import { connect } from '@/dbConfig/dbConfig';
 import User, { IUser, RoleType } from '@models/userModel';
 import handleError from '@util/error/handleError';
+import mongoose from 'mongoose';
 import { NextRequest, NextResponse } from 'next/server';
 
 connect();
@@ -38,7 +39,7 @@ export async function PUT(request: NextRequest) {
       data: {
         companyAccess?: {
           role?: RoleType;
-          access?: Partial<IUser['companyAccess']['access']>;
+          access?: Partial<NonNullable<IUser['companyAccess']>['access']>;
           accessLevels?: RoleType[];
           removeAccessLevel?: RoleType;
         };
@@ -57,31 +58,48 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ success: false, message: 'User not found' }, { status: 404 });
     }
 
-    if (data.companyAccess && data.companyAccess.role) {
-      user.companyAccess.role = data.companyAccess.role;
-    }
-
-    if (data.companyAccess && data.companyAccess.access) {
-      user.companyAccess.access = {
-        ...user.companyAccess.access,
-        ...data.companyAccess.access,
+    // Initialize companyAccess if it doesn't exist
+    if (!user.companyAccess) {
+      user.companyAccess = {
+        companyId: new mongoose.Types.ObjectId(),
+        role: 'guest',
+        access: {
+          login: true,
+          canEdit: false,
+          canDelete: false,
+          canView: true,
+        },
+        accessLevels: ['guest'],
       };
     }
 
-    if (data.companyAccess && data.companyAccess.accessLevels) {
-      user.companyAccess.accessLevels = Array.from(
-        new Set([...user.companyAccess.accessLevels, ...data.companyAccess.accessLevels]),
-      );
+    if (data.companyAccess) {
+      const { role, access, accessLevels, removeAccessLevel } = data.companyAccess;
+
+      if (role) {
+        user.companyAccess.role = role;
+      }
+
+      if (access) {
+        user.companyAccess.access = {
+          ...user.companyAccess.access,
+          ...access,
+        };
+      }
+
+      if (accessLevels) {
+        user.companyAccess.accessLevels = Array.from(new Set([...user.companyAccess.accessLevels, ...accessLevels]));
+      }
+
+      if (removeAccessLevel) {
+        user.companyAccess.accessLevels = user.companyAccess.accessLevels.filter(
+          (l: RoleType) => l !== removeAccessLevel,
+        );
+      }
     }
 
     if (data.secondaryEmails) {
       user.secondaryEmails = data.secondaryEmails;
-    }
-
-    if (data.companyAccess && data.companyAccess.removeAccessLevel) {
-      user.companyAccess.accessLevels = user.companyAccess.accessLevels.filter(
-        (l: RoleType) => l !== data.companyAccess?.removeAccessLevel,
-      );
     }
 
     if (data.mobile) {

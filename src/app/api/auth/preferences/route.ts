@@ -12,14 +12,21 @@ export async function POST(request: NextRequest) {
     const userId = tokenData.getId();
 
     const formData = await request.json();
-    const { fonts } = formData;
-    if (!fonts) throw new Error('No fonts provided');
+    const { preferences } = formData;
+    if (!preferences) throw new Error('No preferences provided');
 
-    const updateResult = await User.updateOne({ _id: userId }, { $set: { 'preferences.fonts': fonts } });
+    const updateResult = await User.updateOne({ _id: userId }, { $set: { preferences } });
     if (updateResult.modifiedCount === 0 && updateResult.acknowledged)
-      throw new Error('User not found or fonts not updated');
+      throw new Error('User not found or preferences not updated');
 
-    return NextResponse.json({ success: true, message: 'Fonts Updated Successfully', fonts });
+    const updatedUser = await User.findById(userId).select('preferences');
+    if (!updatedUser) throw new Error('User not found after update');
+
+    return NextResponse.json({
+      success: true,
+      message: 'Preferences Updated Successfully',
+      preferences: updatedUser.preferences,
+    });
   } catch (error) {
     return handleError.api(error);
   }

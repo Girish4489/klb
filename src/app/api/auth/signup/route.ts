@@ -25,6 +25,7 @@ export async function POST(request: NextRequest) {
       username,
       email,
       password: hashedPassword,
+      isCompanyMember: false, // Changed from newUser: true
       createdAt: new Date(),
       updatedAt: new Date(),
     });

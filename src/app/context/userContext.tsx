@@ -6,7 +6,7 @@ import { LocalIndexer } from '@util/indexing/indexingUtil';
 import { ApiPut } from '@util/makeApiRequest/makeApiRequest';
 import { fetchUserData } from '@util/user/userFetchUtil/userUtils';
 import mongoose from 'mongoose';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import React, { ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 interface UserContextProps {
@@ -18,7 +18,7 @@ interface UserContextType {
   setUser: React.Dispatch<React.SetStateAction<IUser>>;
   updateUser: (partialUpdate: Partial<IUser>) => void;
   fetchAndSetUser: () => void;
-  updateUserAccess: (email: string, access: IUser['companyAccess']['access']) => Promise<void>;
+  updateUserAccess: (email: string, access: NonNullable<IUser['companyAccess']>['access']) => Promise<void>;
   updateUserRole: (email: string, role: RoleType) => Promise<void>;
   addUserAccessLevel: (email: string, accessLevels: RoleType[]) => Promise<void>;
   removeUserAccessLevel: (email: string, accessLevel: RoleType) => Promise<void>;
@@ -26,7 +26,12 @@ interface UserContextType {
   updateUserMobile: (email: string, mobile: string[]) => Promise<void>;
 }
 
+// Separate Auth Context
+export const AuthContext = createContext<AuthState | undefined>(undefined);
+
+// Separate User Context
 const UserContext = createContext<UserContextType | undefined>(undefined);
+
 const userIndexer = new LocalIndexer<IUser>((user) => user.username);
 
 const initialUserState: IUser = {
@@ -75,6 +80,8 @@ export const UserProvider: React.FC<UserContextProps> = ({ children }) => {
   const [user, setUser] = React.useState<IUser>(initialUserState);
   const [isClient, setIsClient] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     setIsClient(true);
@@ -115,17 +122,28 @@ export const UserProvider: React.FC<UserContextProps> = ({ children }) => {
     });
   }, []);
 
-  const updateUserAccess = useCallback(async (email: string, access: IUser['companyAccess']['access']) => {
+  const updateUserAccess = useCallback(async (email: string, access: NonNullable<IUser['companyAccess']>['access']) => {
     try {
       const response = await ApiPut.User.updateUserAccess(email, access);
       if (!response.success) throw new Error(response.message ?? 'Failed to update user access');
-      setUser((prevUser: IUser) => {
-        const updatedUser: IUser = { ...prevUser } as IUser;
-        if (updatedUser.companyAccess) {
-          updatedUser.companyAccess.access = { ...updatedUser.companyAccess.access, ...access };
-        }
-        return updatedUser;
-      });
+
+      setUser(
+        (prevUser: IUser) =>
+          ({
+            ...prevUser,
+            companyAccess: prevUser.companyAccess
+              ? {
+                  ...prevUser.companyAccess,
+                  access: { ...prevUser.companyAccess.access, ...access },
+                }
+              : {
+                  companyId: new mongoose.Types.ObjectId(),
+                  role: 'guest',
+                  access,
+                  accessLevels: ['guest'],
+                },
+          }) as IUser,
+      );
     } catch (error) {
       handleError.toastAndLog(error);
     }
@@ -135,13 +153,24 @@ export const UserProvider: React.FC<UserContextProps> = ({ children }) => {
     try {
       const response = await ApiPut.User.updateUserRole(email, role);
       if (!response.success) throw new Error(response.message ?? 'Failed to update user role');
-      setUser((prevUser: IUser) => {
-        const updatedUser: IUser = { ...prevUser } as IUser;
-        if (updatedUser.companyAccess) {
-          updatedUser.companyAccess.role = role;
-        }
-        return updatedUser;
-      });
+
+      setUser(
+        (prevUser: IUser) =>
+          ({
+            ...prevUser,
+            companyAccess: prevUser.companyAccess
+              ? {
+                  ...prevUser.companyAccess,
+                  role,
+                }
+              : {
+                  companyId: new mongoose.Types.ObjectId(),
+                  role,
+                  access: initialUserState.companyAccess!.access,
+                  accessLevels: ['guest'],
+                },
+          }) as IUser,
+      );
     } catch (error) {
       handleError.toastAndLog(error);
     }
@@ -227,6 +256,14 @@ export const UserProvider: React.FC<UserContextProps> = ({ children }) => {
     }
   }, [fetchAndSetUser, pathname, isClient]);
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push('/dashboard');
+    } else if (pathname !== '/auth/login') {
+      router.push('/auth/login');
+    }
+  }, [isAuthenticated, pathname, router]);
+
   const contextValue = useMemo(
     () => ({
       user,
@@ -265,3 +302,84 @@ export const useUser = (): UserContextType => {
 
   return context;
 };
+
+interface AuthState {
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  user: IUser | null;
+  updateUser: (data: Partial<IUser>) => void;
+  setAuthenticated: (status: boolean) => void;
+}
+
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [user, setUser] = useState<IUser | null>(null);
+
+  const updateUser = (data: Partial<IUser>) => {
+    setUser((prev) => {
+      if (!prev) return null;
+      return {
+        ...prev,
+        ...data,
+      } as IUser; // Use type assertion to handle mongoose Document methods
+    });
+  };
+
+  useEffect(() => {
+    const initAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/verify', {
+          credentials: 'include', // Important for cookies
+        });
+
+        const data = await response.json();
+
+        if (data.success && data.user) {
+          setIsAuthenticated(true);
+          setUser(data.user);
+
+          // Update local storage
+          localStorage.setItem('user', JSON.stringify(data.user));
+        } else {
+          setIsAuthenticated(false);
+          setUser(null);
+          localStorage.removeItem('user');
+        }
+      } catch (error) {
+        console.error('Auth verification failed:', error);
+        setIsAuthenticated(false);
+        setUser(null);
+        localStorage.removeItem('user');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initAuth();
+  }, []);
+
+  const value = useMemo(
+    () => ({
+      isAuthenticated,
+      isLoading,
+      user,
+      updateUser,
+      setAuthenticated: setIsAuthenticated,
+    }),
+    [isAuthenticated, isLoading, user],
+  );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within AuthProvider');
+  }
+  return context;
+};
+
+// Make sure we export the interfaces and types that might be needed
+export type { AuthState, UserContextType };

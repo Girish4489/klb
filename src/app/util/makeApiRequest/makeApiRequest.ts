@@ -1,7 +1,7 @@
 // /src/app/util/makeApiRequest/makeApiRequest.ts
 import { ICompany } from '@models/companyModel';
 import { IBill, IReceipt, ITax } from '@models/klm';
-import { RoleType } from '@models/userModel';
+import { IUser, RoleType } from '@models/userModel';
 import axios from 'axios';
 import handleError from '../error/handleError';
 
@@ -44,6 +44,32 @@ export const ApiPost = {
     SaveReceipt: async (data: IReceipt) => {
       try {
         const res = await axios.post('/api/dashboard/transaction/receipt', data);
+        return res.data;
+      } catch (error) {
+        handleError.throw(error);
+      }
+    },
+  },
+  User: {
+    updateFontPreferences: async (fonts: { name: string; weight: number }) => {
+      try {
+        const res = await axios.post('/api/auth/fonts', { fonts });
+        return res.data;
+      } catch (error) {
+        handleError.throw(error);
+      }
+    },
+    updateAnimationPreferences: async (animations: { enabled: boolean; intensity: number }) => {
+      try {
+        const res = await axios.post('/api/auth/animations', { animations });
+        return res.data;
+      } catch (error) {
+        handleError.throw(error);
+      }
+    },
+    updatePreferences: async (preferences: Partial<IUser['preferences']>) => {
+      try {
+        const res = await axios.post('/api/auth/preferences', { preferences });
         return res.data;
       } catch (error) {
         handleError.throw(error);

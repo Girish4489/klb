@@ -3,7 +3,7 @@ import Company from '@models/companyModel';
 import User from '@models/userModel';
 import bcryptUtil from '@util/bcrypt/bcrypt';
 import handleError from '@util/error/handleError';
-import { cookie, token } from '@util/token/token';
+import { token } from '@util/token/token';
 import { NextRequest, NextResponse } from 'next/server';
 
 connect();
@@ -13,57 +13,81 @@ export async function POST(request: NextRequest) {
     const reqBody = await request.json();
     const { email, password } = reqBody;
 
-    //check if user exists
+    // Check if user exists
     const user = await User.findOne({ email }).select(
       '-theme -profileImage -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry',
     );
     if (!user) throw new Error('User does not exist');
 
-    // check if user is verified
-    const isVerified = user.isVerified;
-    if (isVerified === false || null || undefined) throw new Error('User is not verified');
+    // Check if user is verified
+    if (!user.isVerified) throw new Error('User is not verified');
 
-    //check if password is correct
+    // Check if password is correct
     const validPassword = await bcryptUtil.verify(password, user.password);
     if (!validPassword) throw new Error('Invalid password');
 
-    // Fetch company details if user is not an owner
-    let companyUser;
-    if (user.companyAccess.role !== 'owner') {
-      const company = await Company.findById(user.companyAccess.companyId);
+    // Fetch company details only if user is a company member and not an owner
+    if (user.isCompanyMember && user.companyAccess?.role !== 'owner') {
+      const company = await Company.findById(user.companyAccess?.companyId);
       if (!company) throw new Error('Company does not exist');
 
-      // Fetch user details from company users field
-      companyUser = company.users.find((u) => u.userId.toString() === user._id.toString());
+      const companyUser = company.users.find((u) => u.userId.toString() === user._id.toString());
       if (!companyUser) throw new Error('User does not belong to this company');
 
-      // Check if company user has login access
-      if (!user.companyAccess.access.login) {
+      if (!user.companyAccess?.access.login) {
         throw new Error('User does not have login access in this company');
       }
     }
 
-    // update last login
+    // Update last login
     user.lastLogin = new Date();
+    await user.save();
 
-    // create token data
+    // Create token data
     const tokenData = {
+      _id: user._id, // Added _id field
       id: user._id.toString(),
       username: user.username,
       email: user.email,
+      isVerified: user.isVerified,
+      isAdmin: user.isAdmin,
+      isCompanyMember: user.isCompanyMember,
       companyAccess: user.companyAccess,
+      lastLogin: user.lastLogin,
     };
 
-    // create token
+    // Create token
     const authToken = await token.create(tokenData, '1d');
+    if (!authToken) {
+      throw new Error('Failed to create authentication token');
+    }
+
+    const tokenExpiry = await token.expiry(authToken);
+    if (!tokenExpiry) {
+      throw new Error('Failed to get token expiry');
+    }
 
     const response = NextResponse.json({
       message: 'Login successful',
       success: true,
+      user: {
+        id: user._id.toString(),
+        username: user.username,
+        email: user.email,
+        isVerified: user.isVerified,
+        isAdmin: user.isAdmin,
+        isCompanyMember: user.isCompanyMember,
+        companyAccess: user.companyAccess,
+      },
     });
 
-    const tokenExpiry = await token.expiry(authToken);
-    await cookie.set(response, authToken, tokenExpiry);
+    // Set cookie with proper security options
+    response.cookies.set('authToken', authToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      expires: new Date(tokenExpiry * 1000),
+    });
 
     return response;
   } catch (error) {

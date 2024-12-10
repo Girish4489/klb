@@ -1,54 +1,31 @@
 'use client';
 import { useCompany } from '@context/companyContext';
-import { useUser } from '@context/userContext';
-import { IUser } from '@models/userModel';
+import { useAuth } from '@context/userContext';
+import { authUtils } from '@util/auth/authUtils';
 import handleError from '@util/error/handleError';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import React from 'react';
 import { toast } from 'react-hot-toast';
 
 export default function LogoutPage() {
   const router = useRouter();
-  const { setUser } = useUser();
+  const { setAuthenticated } = useAuth();
   const { setCompany } = useCompany();
 
-  const logout = async () => {
+  const handleLogout = async () => {
     try {
       const res = await axios.get('/api/auth/logout');
       if (res.data.success) {
-        setUser({
-          username: 'User',
-          email: 'sample@example.com',
-          profileImage: {
-            data: new Uint8Array(),
-            __filename: '',
-            contentType: '',
-            uploadAt: new Date(),
-          },
-          preferences: {
-            theme: 'default',
-            fonts: {
-              name: 'Roboto',
-              weight: 400,
-            },
-          },
-          isVerified: false,
-          isAdmin: false,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        } as unknown as IUser);
-
-        // Remove company details
+        setAuthenticated(false);
         setCompany(undefined);
-        localStorage.removeItem('company');
-
-        toast.success(res.data.message ?? 'Logout successful');
-        setTimeout(() => {
-          router.push('/auth/login');
-        }, 1000);
-      } else {
-        throw new Error(res.data.message ?? 'Failed to logout');
+        authUtils.clearAuth();
+        // Call server API to clear cookie
+        await fetch('/api/auth/clear-cookie', {
+          method: 'POST',
+          credentials: 'include',
+        });
+        toast.success('Logged out successfully');
+        router.replace('/auth/login');
       }
     } catch (error) {
       handleError.toastAndLog(error);
@@ -56,10 +33,8 @@ export default function LogoutPage() {
   };
 
   return (
-    <React.Fragment>
-      <span onClick={logout}>
-        <button>Logout</button>
-      </span>
-    </React.Fragment>
+    <button onClick={handleLogout} className="btn btn-error">
+      Logout
+    </button>
   );
 }

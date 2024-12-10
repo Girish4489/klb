@@ -1,48 +1,55 @@
 'use client';
+import { useAuth } from '@context/userContext';
+import { authUtils } from '@util/auth/authUtils';
 import handleError from '@util/error/handleError';
 import axios from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { isAuthenticated, setAuthenticated } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push('/dashboard');
+    }
+  }, [isAuthenticated, router]);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const email = e.currentTarget.email.value.trim();
-    const password = e.currentTarget.password.value.trim();
+    setIsLoading(true);
 
     try {
-      const login = async () => {
-        if (email.length === 0) throw new Error('Please enter email');
-        if (password.length === 0) throw new Error('Please enter password');
-        const response = await axios.post('/api/auth/login', { email: email, password: password });
-        if (response.data.success === true) {
-          return response.data.message;
-        } else {
-          throw new Error(response.data.message ?? response.data.error);
-        }
-      };
+      const formData = new FormData(e.currentTarget);
+      const email = formData.get('email')?.toString().trim();
+      const password = formData.get('password')?.toString().trim();
 
-      await toast.promise<string>(login(), {
-        loading: 'Logging in...',
-        success: (message: string) => <b>{message}</b>,
-        error: (error: Error) => <b>{error.message}</b>,
-      });
-      setTimeout(() => {
-        router.push('/');
-      }, 1000);
+      if (!email || !password) {
+        throw new Error('Please fill in all fields');
+      }
+
+      const response = await axios.post('/api/auth/login', { email, password });
+
+      if (response.data.success) {
+        setAuthenticated(true);
+        authUtils.storeUser(response.data.user);
+        toast.success('Login successful');
+        router.replace(authUtils.getIntendedUrl());
+      } else {
+        throw new Error(response.data.message);
+      }
     } catch (error) {
-      // console.error(error);
-      // toast.error(error.response.data.error);
-      handleError.log(error);
+      handleError.toast(error);
+      setAuthenticated(false);
+      authUtils.clearAuth();
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -51,7 +58,7 @@ export default function LoginPage() {
     const forgot = e.currentTarget.forgotEmail.value.trim();
     try {
       const forgotPassword = async () => {
-        if (forgot.lenght === 0) throw new Error('Please enter email');
+        if (forgot.length === 0) throw new Error('Please enter email');
 
         const response = await axios.post('/api/auth/forgot-password', { email: forgot });
         if (response.data.success === true) {
@@ -66,8 +73,6 @@ export default function LoginPage() {
         error: (error: Error) => <b>{error.message}</b>,
       });
     } catch (error) {
-      // console.error(error);
-      // toast.error(error.response.data.error);
       handleError.log(error);
     }
   };
@@ -116,18 +121,25 @@ export default function LoginPage() {
               <label className="label grow cursor-pointer" htmlFor="check">
                 <span className="label-text-alt">Show password</span>
               </label>
-              <input type="checkbox" onChange={handleShowPassword} id="check" name="check" className="checkbox" />
+              <input
+                type="checkbox"
+                onChange={() => setShowPassword(!showPassword)}
+                id="check"
+                name="check"
+                className="checkbox"
+              />
             </div>
             <div className="form-control mt-3">
-              <button className="btn btn-primary">Login</button>
+              <button className="btn btn-primary" disabled={isLoading}>
+                Login
+              </button>
             </div>
           </form>
           <div className="card-body pt-3">
             <div className="flex flex-col justify-center">
               <details className="collapse collapse-arrow bg-base-200">
                 <summary className="collapse-title select-none py-1 text-xs font-normal">Forgot your password?</summary>
-                {/* eslint-disable-next-line react/no-unknown-property */}
-                <style jsx>{`
+                <style>{`
                   .collapse-title {
                     height: fit-content;
                     min-height: fit-content;
