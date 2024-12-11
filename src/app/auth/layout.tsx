@@ -1,4 +1,5 @@
 'use client';
+import PatternBackground, { defaultPattern } from '@components/patterns/PatternBackground';
 import React, { useEffect } from 'react';
 
 export default function AuthLayout({
@@ -9,5 +10,10 @@ export default function AuthLayout({
   useEffect(() => {
     document.title = 'Auth | Kalamandir';
   }, []);
-  return <div>{children}</div>;
+  return (
+    <div className="h-screen">
+      <PatternBackground config={defaultPattern} />
+      {children}
+    </div>
+  );
 }

@@ -5,6 +5,7 @@ import { ChartBarIcon, Cog6ToothIcon, HomeIcon } from '@heroicons/react/24/solid
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
+import toast from 'react-hot-toast';
 
 const SidebarLink = ({
   href,
@@ -12,17 +13,32 @@ const SidebarLink = ({
   isActive,
   icon,
   iconClass,
+  enable = true,
 }: {
   href: string;
   title: string;
   isActive: boolean;
   icon?: React.ForwardRefExoticComponent<React.SVGProps<SVGSVGElement>>;
   iconClass?: string;
+  enable?: boolean;
 }) => (
-  <Link href={href} className={`tooltip flex w-full flex-row ${isActive ? 'active' : ''}`} data-tip={title}>
-    {icon && React.createElement(icon, { className: iconClass })}
-    <span className="text-left">{title}</span>
-  </Link>
+  <div
+    className={`tooltip flex w-full flex-row ${isActive ? 'active' : ''} ${!enable ? 'cursor-pointer' : ''}`}
+    data-tip={title}
+    onClick={() => !enable && toast.error('Need to have company access')}
+  >
+    {enable ? (
+      <Link href={href} className="flex items-center">
+        {icon && React.createElement(icon, { className: iconClass })}
+        <span className="text-left">{title}</span>
+      </Link>
+    ) : (
+      <>
+        {icon && React.createElement(icon, { className: iconClass })}
+        <span className="text-left">{title}</span>
+      </>
+    )}
+  </div>
 );
 
 const SidebarItem = ({
@@ -54,20 +70,14 @@ const SidebarItem = ({
                 key={index}
                 className={`${subNav.enable && subNav.accessLevels.some((level) => accessLevels.includes(level)) ? '' : 'disabled hidden disabled:cursor-not-allowed'}`}
               >
-                {subNav.enable && nav.enable ? (
-                  <SidebarLink
-                    href={subNav.href ?? '#'}
-                    title={subNav.title}
-                    isActive={currentPathname === subNav.href}
-                    icon={SubNavIcon}
-                    iconClass={subNav.iconClass}
-                  />
-                ) : (
-                  <span>
-                    {SubNavIcon && <SubNavIcon className={subNav.iconClass} />}
-                    <span className="text-left">{subNav.title}</span>
-                  </span>
-                )}
+                <SidebarLink
+                  href={subNav.href ?? '#'}
+                  title={subNav.title}
+                  isActive={currentPathname === subNav.href}
+                  icon={SubNavIcon}
+                  iconClass={subNav.iconClass}
+                  enable={subNav.enable && nav.enable}
+                />
               </li>
             );
           })}
@@ -77,7 +87,13 @@ const SidebarItem = ({
   );
 };
 
-export default function SidebarPage({ accessLevels }: { accessLevels: Array<string> }) {
+export default function SidebarPage({
+  accessLevels,
+  isCompanyMember,
+}: {
+  accessLevels: Array<string>;
+  isCompanyMember: boolean;
+}) {
   const currentPathname = usePathname();
 
   return (
@@ -92,9 +108,11 @@ export default function SidebarPage({ accessLevels }: { accessLevels: Array<stri
                 Dashboard
               </Link>
             </li>
-            {navigationData.map((nav: NavItem, index) => (
-              <SidebarItem key={index} nav={nav} currentPathname={currentPathname} accessLevels={accessLevels} />
-            ))}
+
+            {isCompanyMember &&
+              navigationData.map((nav: NavItem, index) => (
+                <SidebarItem key={index} nav={nav} currentPathname={currentPathname} accessLevels={accessLevels} />
+              ))}
           </ul>
         </div>
         <div className="bottom-0 flex flex-col items-center justify-center rounded-box border-neutral">
@@ -106,10 +124,21 @@ export default function SidebarPage({ accessLevels }: { accessLevels: Array<stri
               </Link>
             </li>
             <li>
-              <Link href="/dashboard/settings" className="tooltip flex max-sm:flex-row" data-tip="Settings">
-                <Cog6ToothIcon className="h-5 w-5 text-secondary" />
-                <span className="hidden max-sm:inline-block">Settings</span>
-              </Link>
+              {isCompanyMember ? (
+                <Link href="/dashboard/settings" className="tooltip flex max-sm:flex-row" data-tip="Settings">
+                  <Cog6ToothIcon className="h-5 w-5 text-secondary" />
+                  <span className="hidden max-sm:inline-block">Settings</span>
+                </Link>
+              ) : (
+                <div
+                  className="tooltip flex cursor-pointer max-sm:flex-row"
+                  data-tip="Settings"
+                  onClick={() => toast.error('Need to have company access')}
+                >
+                  <Cog6ToothIcon className="h-5 w-5 text-secondary" />
+                  <span className="hidden max-sm:inline-block">Settings</span>
+                </div>
+              )}
             </li>
             <li>
               <Link href="#k" className="tooltip flex max-sm:flex-row" data-tip="Stats">

@@ -9,6 +9,7 @@ import { toast } from 'react-hot-toast';
 export default function SignupPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const handleShowPassword = () => {
     setShowPassword(!showPassword);
@@ -16,6 +17,7 @@ export default function SignupPage() {
 
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsLoading(true);
     const username = e.currentTarget.username.value.trim();
     const email = e.currentTarget.email.value.trim();
     const password = e.currentTarget.password.value.trim();
@@ -37,9 +39,9 @@ export default function SignupPage() {
         router.push('/auth/login');
       }, 1000);
     } catch (error) {
-      // console.log("Signup failed", error.message);
-      // toast.error(error.message);
       handleError.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -64,106 +66,98 @@ export default function SignupPage() {
         router.push('/auth/login');
       }, 1000);
     } catch (error) {
-      // console.log("resend verification failed", error.message);
-      // toast.error(error.message);
       handleError.log(error);
     }
   };
 
   return (
-    <div className="hero min-h-screen bg-base-200">
-      <div className="hero-content flex-col justify-center rounded-box shadow-2xl lg:flex-row-reverse">
-        <div className="text-center lg:text-left">
-          <h1 className="mb-5 text-5xl font-bold">Sign up now!</h1>
-          <p className="mb-5">Welcome to Kalamandir! Please enter your details to continue.</p>
+    <div className="hero relative h-full">
+      <div className="hero-content min-w-[75%] flex-col rounded-box bg-base-200 shadow-inner shadow-primary lg:flex-row-reverse">
+        <div className="flex select-none flex-col gap-2 p-4 text-center lg:text-left">
+          <h1 className="text-center text-5xl font-bold">Sign up now!</h1>
+          <p className="text-pretty px-2 py-3">Welcome to Kalamandir! Please enter your details to continue.</p>
         </div>
-        <div className="card m-3 w-full max-w-sm flex-shrink-0 bg-base-100 shadow-xl shadow-neutral">
-          <div className="card-body pb-5">
+        <div className="card w-full max-w-xs shrink-0 gap-1 bg-base-300 shadow-inner shadow-primary max-sm:max-w-sm">
+          <form className="card-body p-4" onSubmit={handleSignup}>
             <div className="flex select-none justify-center">Sign Up</div>
-            <form onSubmit={handleSignup} className="flex flex-col gap-2">
-              <div className="form-control">
-                <label className="label label-text" htmlFor="username">
-                  Username
-                </label>
+            <div className="form-control">
+              <label className="label" htmlFor="username">
+                <span className="label-text">Username</span>
+              </label>
+              <input
+                type="text"
+                name="username"
+                id="username"
+                autoComplete="username"
+                placeholder="username"
+                className="input input-sm input-bordered input-primary"
+                onFocus={(e) => e.target.select()}
+                required
+              />
+            </div>
+            <div className="form-control">
+              <label className="label" htmlFor="email">
+                <span className="label-text">Email</span>
+              </label>
+              <input
+                type="email"
+                name="email"
+                id="email"
+                autoComplete="email"
+                placeholder="email"
+                className="input input-sm input-bordered input-primary"
+                onFocus={(e) => e.target.select()}
+                required
+              />
+            </div>
+            <div className="form-control">
+              <label className="label" htmlFor="password">
+                <span className="label-text">Password</span>
+              </label>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                name="password"
+                id="password"
+                autoComplete="new-password"
+                placeholder="password"
+                className="input input-sm input-bordered input-primary"
+                onFocus={(e) => e.target.select()}
+                required
+              />
+            </div>
+            <div className="flex flex-row items-center justify-between p-2 hover:rounded-box hover:bg-neutral">
+              <label className="flex grow cursor-pointer items-center justify-between" htmlFor="check">
+                Show password:
                 <input
-                  type="text"
-                  name="username"
-                  id="username"
-                  autoComplete="username"
-                  placeholder="username"
-                  className="input input-bordered"
-                  onFocus={(e) => e.target.select()}
-                  required
+                  type="checkbox"
+                  onChange={handleShowPassword}
+                  id="check"
+                  name="check"
+                  className="checkbox-primary checkbox checkbox-sm"
                 />
-              </div>
-              <div className="form-control">
-                <label className="label label-text" htmlFor="email">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  id="email"
-                  autoComplete="email"
-                  placeholder="email"
-                  className="input input-bordered"
-                  onFocus={(e) => e.target.select()}
-                  required
-                />
-              </div>
-              <div className="form-control">
-                <label className="label label-text" htmlFor="password">
-                  Password
-                </label>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  name="password"
-                  id="password"
-                  autoComplete="new-password"
-                  placeholder="password"
-                  className="input input-bordered"
-                  onFocus={(e) => e.target.select()}
-                  required
-                />
-              </div>
-              <div className="flex flex-row items-center justify-between p-2 hover:rounded-box hover:bg-base-300/50">
-                <label className="label grow cursor-pointer" htmlFor="check">
-                  <span className="label-text-alt">Show password</span>
-                </label>
-                <input type="checkbox" onChange={handleShowPassword} id="check" name="check" className="checkbox" />
-              </div>
-              <div className="form-control mt-3">
-                <button className="btn btn-primary">Sign up</button>
-              </div>
-            </form>
-          </div>
-          <div className="card-body pt-3">
-            <div className="flex flex-col justify-center">
+              </label>
+            </div>
+            <div className="form-control">
+              <button className="btn btn-primary btn-sm" disabled={isLoading}>
+                {isLoading && <span className="loading loading-spinner"></span>}
+                Sign up
+              </button>
+            </div>
+          </form>
+          <div className="card-body p-4">
+            <div className="flex flex-col justify-center gap-2">
               <p className="px-3 py-1 text-xs font-normal text-info">
                 Note: If you have not verified your account, please enter your email below and click on resend.
               </p>
-              <details className="collapse collapse-arrow bg-base-200">
-                <summary
-                  className="collapse-title flex items-center py-1 align-middle text-xs font-normal"
-                  style={{ display: 'flex' }}
-                >
+              <details className="collapse collapse-arrow bg-base-300 shadow-inner shadow-base-300 ring-1 ring-primary transition-all duration-700">
+                <summary className="collapse-title card-compact h-fit select-none text-base">
                   Verify your Account?
                 </summary>
-                {/* eslint-disable-next-line react/no-unknown-property */}
-                <style jsx>{`
-                  .collapse-title {
-                    height: fit-content;
-                    min-height: fit-content;
-                    padding-top: 14px;
-                    padding-bottom: 14px;
-                  }
-                `}</style>
-
                 <div className="collapse-content">
-                  <form onSubmit={handleResendVerification}>
+                  <form className="card-body gap-2 p-0" onSubmit={handleResendVerification}>
                     <div className="form-control">
-                      <label className="label label-text" htmlFor="resendEmail">
-                        Email
+                      <label className="label" htmlFor="resendEmail">
+                        <span className="label-text">Email</span>
                       </label>
                       <input
                         type="email"
@@ -171,20 +165,20 @@ export default function SignupPage() {
                         name="resendEmail"
                         id="resendEmail"
                         autoComplete="email"
-                        className="input input-bordered"
+                        className="input input-sm input-bordered"
                         onFocus={(e) => e.target.select()}
                         required
                       />
                     </div>
-                    <div className="form-control mt-3">
-                      <button className="btn btn-primary">Resend</button>
+                    <div className="form-control">
+                      <button className="btn btn-warning btn-sm">Resend</button>
                     </div>
                   </form>
                 </div>
               </details>
-              <div className="flex items-center justify-center px-2">
-                <p className="label py-0.5 font-normal text-secondary">Already have an account?</p>
-                <Link href="/auth/login" className="btn btn-link pr-0">
+              <div className="flex items-center justify-center gap-4 px-2">
+                <p className="label text-pretty py-0.5 font-normal text-secondary">Already have an account?</p>
+                <Link href="/auth/login" className="btn btn-link btn-sm">
                   Login here
                 </Link>
               </div>

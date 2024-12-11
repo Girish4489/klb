@@ -1,5 +1,4 @@
 'use client';
-import LogoutPage from '@/app/auth/logout/page';
 import {
   CheckBadgeIcon,
   Cog6ToothIcon,
@@ -14,6 +13,8 @@ import { IUser } from '@models/userModel';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
+import { toast } from 'react-hot-toast';
+import LogoutButton from '../logout/LogoutButton';
 
 const LoadingSkeleton = () => (
   <div className="avatar placeholder">
@@ -59,7 +60,7 @@ const HeaderProfilePage = ({ user, isLoading }: { user: IUser | null; isLoading:
       </div>
       <ul
         tabIndex={0}
-        className="menu dropdown-content menu-sm z-50 w-auto rounded-box bg-base-200 p-2 shadow ring-1 ring-primary"
+        className="menu dropdown-content menu-sm z-50 w-auto gap-y-1 rounded-box bg-base-200 p-2 shadow ring-1 ring-primary"
       >
         <span className="flex w-full justify-around">
           <div className="transform rounded-full ring-2 ring-primary hover:scale-105 hover:ring-offset-2 hover:ring-offset-accent">
@@ -74,9 +75,7 @@ const HeaderProfilePage = ({ user, isLoading }: { user: IUser | null; isLoading:
           </div>
         </span>
         <ProfileItem icon={<UserIcon className="h-5 w-5 text-primary" />} label={user.username} tooltip="Username">
-          {user.createdAt && new Date(user.createdAt) > new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) && (
-            <span className="badge badge-primary">New</span>
-          )}
+          {!user.isCompanyMember && <span className="badge badge-primary">New</span>}
         </ProfileItem>
         <ProfileItem icon={<EnvelopeIcon className="h-5 w-5 text-primary" />} label={user.email} tooltip="Email" />
         <ProfileItem
@@ -108,12 +107,13 @@ const HeaderProfilePage = ({ user, isLoading }: { user: IUser | null; isLoading:
           label="Settings"
           tooltip="Settings"
           link="/dashboard/settings"
+          enable={user.isCompanyMember ?? true}
         />
         <li
           className="tooltip tooltip-left flex text-warning hover:rounded-lg hover:bg-error hover:font-medium hover:text-warning-content"
           data-tip="Logout"
         >
-          <LogoutPage />
+          <LogoutButton variant="error" className="btn-sm" />
         </li>
       </ul>
     </div>
@@ -127,6 +127,7 @@ const ProfileItem = ({
   liClass,
   children,
   link,
+  enable = true,
 }: {
   icon: React.ReactNode;
   label: string;
@@ -134,16 +135,25 @@ const ProfileItem = ({
   liClass?: string;
   children?: React.ReactNode;
   link?: string;
+  enable?: boolean;
 }) => (
   <li className={`tooltip tooltip-left ${liClass}`} data-tip={tooltip}>
-    {link ? (
-      <Link href={link} className="flex items-center">
+    {link && enable ? (
+      <Link href={link} className={`flex items-center`}>
         {icon}
         <span className="justify-between">
           {label}
           {children}
         </span>
       </Link>
+    ) : link ? (
+      <div className="flex cursor-pointer items-center" onClick={() => toast.error('Need to have company access')}>
+        {icon}
+        <span className="flex grow justify-between">
+          {label}
+          {children}
+        </span>
+      </div>
     ) : (
       <div className="flex items-center">
         {icon}

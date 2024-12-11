@@ -78,14 +78,14 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="hero min-h-screen bg-base-200">
-      <div className="hero-content flex-col rounded-box shadow-2xl lg:flex-row-reverse">
-        <div className="text-center lg:text-left">
-          <h1 className="text-5xl font-bold">Login now!</h1>
-          <p className="py-6">Welcome back! Please enter your username and password to continue.</p>
+    <div className="hero relative h-full">
+      <div className="hero-content min-w-[75%] flex-col rounded-box bg-base-200 shadow-inner shadow-primary lg:flex-row-reverse">
+        <div className="flex select-none flex-col gap-2 p-4 text-center lg:text-left">
+          <h1 className="text-center text-5xl font-bold">Login now!</h1>
+          <p className="text-pretty px-2 py-3">Welcome back! Please enter your username and password to continue.</p>
         </div>
-        <div className="card m-3 w-full max-w-sm shrink-0 bg-base-100 shadow-lg shadow-neutral">
-          <form className="card-body pb-5" onSubmit={handleLogin}>
+        <div className="card w-full max-w-xs shrink-0 gap-1 bg-base-300 shadow-inner shadow-primary max-sm:max-w-sm">
+          <form className="card-body p-4" onSubmit={handleLogin}>
             <div className="flex select-none justify-center">Login</div>
             <div className="form-control">
               <label className="label" htmlFor="email">
@@ -98,7 +98,7 @@ export default function LoginPage() {
                 name="email"
                 autoComplete="email"
                 onFocus={(e) => e.target.select()}
-                className="input input-bordered"
+                className="input input-sm input-bordered input-primary"
                 required
               />
             </div>
@@ -113,42 +113,37 @@ export default function LoginPage() {
                 name="password"
                 autoComplete="current-password"
                 onFocus={(e) => e.target.select()}
-                className="input input-bordered"
+                className="input input-sm input-bordered input-primary"
                 required
               />
             </div>
-            <div className="flex flex-row items-center justify-between p-2 hover:rounded-box hover:bg-base-300/50">
-              <label className="label grow cursor-pointer" htmlFor="check">
-                <span className="label-text-alt">Show password</span>
+            <div className="flex flex-row items-center justify-between p-2 hover:rounded-box hover:bg-neutral">
+              <label className="flex grow cursor-pointer items-center justify-between" htmlFor="check">
+                Show password:
+                <input
+                  type="checkbox"
+                  onChange={() => setShowPassword(!showPassword)}
+                  id="check"
+                  name="check"
+                  className="checkbox-primary checkbox checkbox-sm"
+                />
               </label>
-              <input
-                type="checkbox"
-                onChange={() => setShowPassword(!showPassword)}
-                id="check"
-                name="check"
-                className="checkbox"
-              />
             </div>
-            <div className="form-control mt-3">
-              <button className="btn btn-primary" disabled={isLoading}>
+            <div className="form-control">
+              <button className="btn btn-primary btn-sm" disabled={isLoading}>
+                {isLoading && <span className="loading loading-spinner"></span>}
                 Login
               </button>
             </div>
           </form>
-          <div className="card-body pt-3">
-            <div className="flex flex-col justify-center">
-              <details className="collapse collapse-arrow bg-base-200">
-                <summary className="collapse-title select-none py-1 text-xs font-normal">Forgot your password?</summary>
-                <style>{`
-                  .collapse-title {
-                    height: fit-content;
-                    min-height: fit-content;
-                    padding-top: 14px;
-                    padding-bottom: 14px;
-                  }
-                `}</style>
+          <div className="card-body p-4">
+            <div className="flex flex-col justify-center gap-2">
+              <details className="collapse collapse-arrow bg-base-300 shadow-inner shadow-base-300 ring-1 ring-primary transition-all duration-700">
+                <summary className="collapse-title card-compact h-fit select-none text-base">
+                  Forgot your password?
+                </summary>
                 <div className="collapse-content">
-                  <form className="card-body p-0 pb-2" onSubmit={handleForgotPassword}>
+                  <form className="card-body gap-2 p-0" onSubmit={handleForgotPassword}>
                     <div className="form-control">
                       <label className="label" htmlFor="forgotEmail">
                         <span className="label-text">Forgot Email</span>
@@ -160,19 +155,19 @@ export default function LoginPage() {
                         name="forgotEmail"
                         onFocus={(e) => e.target.select()}
                         autoComplete="email"
-                        className="input input-bordered"
+                        className="input input-sm input-bordered"
                         required
                       />
                     </div>
-                    <div className="form-control mt-3">
-                      <button className="btn btn-primary">Reset</button>
+                    <div className="form-control">
+                      <button className="btn btn-warning btn-sm">Reset</button>
                     </div>
                   </form>
                 </div>
               </details>
-              <div className="flex items-center justify-center px-2">
-                <p className="label py-0.5 font-normal text-secondary">Don{"'"}t have an account yet?</p>
-                <Link href="/auth/signup" className="btn btn-link pr-0">
+              <div className="flex items-center justify-center gap-4 px-2">
+                <p className="label text-pretty py-0.5 font-normal text-secondary">Don{"'"}t have an account yet?</p>
+                <Link href="/auth/signup" className="btn btn-link btn-sm">
                   Signup
                 </Link>
               </div>

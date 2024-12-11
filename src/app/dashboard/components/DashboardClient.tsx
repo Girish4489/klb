@@ -1,5 +1,5 @@
 'use client';
-import PatternBackground from '@/app/components/patterns/PatternBackground';
+import PatternBackground, { defaultPattern } from '@/app/components/patterns/PatternBackground';
 import { useCompany } from '@/app/context/companyContext';
 import { useUser } from '@/app/context/userContext';
 import AllBills from '@/app/dashboard/stats/AllBills';
@@ -84,7 +84,7 @@ export default function DashboardClient() {
         <div className="hidden bg-success" /> {/* Hidden element for color reference */}
         <PatternBackground
           config={{
-            shape: 'hexagon',
+            icon: 'mixed',
             size: 8,
             spacing: 24,
             color: 'bg-success', // Pass the Tailwind class name directly
@@ -140,31 +140,22 @@ export default function DashboardClient() {
 
     return (
       <div className="relative h-full w-full">
-        <div className="hidden bg-info" /> {/* Hidden element for color reference */}
-        <PatternBackground
-          config={{
-            shape: 'mixed',
-            size: 12,
-            spacing: 32,
-            color: 'bg-info', // Use Tailwind class name
-            opacity: 0.15,
-            rotate: 45,
-            rounded: true,
-          }}
-        />
+        <PatternBackground config={defaultPattern} />
         <motion.div
           {...animations.container}
-          className="relative flex h-full flex-col items-center justify-center gap-6 p-4 text-center"
+          className="relative flex h-full flex-col items-center justify-center text-center"
         >
-          <motion.div {...animations.title} className="flex flex-col gap-2">
-            <span className="text-2xl text-primary">{greeting || ''},</span>
-            <h1 className="text-4xl font-bold capitalize">{user?.username || 'Guest'}</h1>
-          </motion.div>
-          <motion.p {...animations.text} className="max-w-md text-lg">
-            Welcome to Kalamandir. You currently don't belong to any company. Please contact your administrator to get
-            access to company features.
-          </motion.p>
-          <motion.div {...animations.loader} className="loading loading-ring loading-lg text-primary" />
+          <div className="flex flex-col items-center justify-center gap-6 rounded-box bg-base-300 p-4">
+            <motion.div {...animations.title} className="flex flex-col gap-2">
+              <span className="text-2xl text-primary">{greeting || ''},</span>
+              <h1 className="text-4xl font-bold capitalize">{user?.username || 'Guest'}</h1>
+            </motion.div>
+            <motion.p {...animations.text} className="max-w-md text-lg">
+              Welcome to Kalamandir. You currently don't belong to any company. Please contact your administrator to get
+              access to company features.
+            </motion.p>
+            <motion.div {...animations.loader} className="loading loading-ring loading-lg text-primary" />
+          </div>
         </motion.div>
       </div>
     );

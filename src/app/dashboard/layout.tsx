@@ -89,7 +89,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               : 'w-0 -translate-x-full'
           }`}
         >
-          <Sidebar accessLevels={user?.companyAccess?.accessLevels || []} />
+          <Sidebar
+            accessLevels={user?.companyAccess?.accessLevels || []}
+            isCompanyMember={user.isCompanyMember || false}
+          />
         </div>
         {/* main content */}
         <div

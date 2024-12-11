@@ -1,9 +1,69 @@
 'use client';
+import {
+  AcademicCapIcon as AcademicCapOutline,
+  AdjustmentsHorizontalIcon as AdjustmentsHorizontalOutline,
+  AdjustmentsVerticalIcon as AdjustmentsVerticalOutline,
+  ArchiveBoxIcon as ArchiveBoxOutline,
+  ArrowDownCircleIcon as ArrowDownCircleOutline,
+  ArrowPathIcon as ArrowPathOutline,
+  BeakerIcon as BeakerOutline,
+  BriefcaseIcon as BriefcaseOutline,
+  CheckBadgeIcon as CheckBadgeOutline,
+  CheckCircleIcon as CheckCircleOutline,
+  CloudArrowDownIcon as CloudArrowDownOutline,
+  CloudArrowUpIcon as CloudArrowUpOutline,
+  CubeIcon as CubeOutline,
+  CurrencyRupeeIcon as CurrencyRupeeOutline,
+  CursorArrowRippleIcon as CursorArrowRippleOutline,
+  FireIcon as FireOutline,
+  FolderArrowDownIcon as FolderArrowDownOutline,
+  GiftIcon as GiftOutline,
+  HomeIcon as HomeOutline,
+  LinkIcon as LinkOutline,
+  MapPinIcon as MapPinOutline,
+  MegaphoneIcon as MegaphoneOutline,
+  SparklesIcon as SparklesOutline,
+} from '@heroicons/react/24/outline';
+
+import {
+  AcademicCapIcon as AcademicCapSolid,
+  AdjustmentsHorizontalIcon as AdjustmentsHorizontalSolid,
+  AdjustmentsVerticalIcon as AdjustmentsVerticalSolid,
+  ArchiveBoxIcon as ArchiveBoxSolid,
+  ArrowDownCircleIcon as ArrowDownCircleSolid,
+  ArrowPathIcon as ArrowPathSolid,
+  BeakerIcon as BeakerSolid,
+  BriefcaseIcon as BriefcaseSolid,
+  CheckBadgeIcon as CheckBadgeSolid,
+  CheckCircleIcon as CheckCircleSolid,
+  CloudArrowDownIcon as CloudArrowDownSolid,
+  CloudArrowUpIcon as CloudArrowUpSolid,
+  CubeIcon as CubeSolid,
+  CurrencyRupeeIcon as CurrencyRupeeSolid,
+  CursorArrowRippleIcon as CursorArrowRippleSolid,
+  FireIcon as FireSolid,
+  FolderArrowDownIcon as FolderArrowDownSolid,
+  GiftIcon as GiftSolid,
+  HomeIcon as HomeSolid,
+  LinkIcon as LinkSolid,
+  MapPinIcon as MapPinSolid,
+  MegaphoneIcon as MegaphoneSolid,
+  SparklesIcon as SparklesSolid,
+} from '@heroicons/react/24/solid';
+
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 export interface PatternConfig {
-  shape: 'circle' | 'square' | 'triangle' | 'pentagon' | 'hexagon' | 'mixed';
+  icon:
+    | 'academicCap'
+    | 'adjustmentsHorizontal'
+    | 'adjustmentsVertical'
+    | 'megaphone'
+    | 'archiveBox'
+    | 'checkBadge'
+    | 'mixed';
+  iconType?: 'outline' | 'solid';
   size: number;
   spacing: number;
   color: string;
@@ -12,89 +72,145 @@ export interface PatternConfig {
   rounded?: boolean;
 }
 
-const getShapePath = (
-  shape: PatternConfig['shape'],
-  size: number,
-  rounded: boolean = false,
-  index: number = 0,
-): string => {
-  const radius = rounded ? size * 0.2 : 0;
+const getHeroIcon = (icon: PatternConfig['icon'], iconType: PatternConfig['iconType'], index: number = 0) => {
+  const outlineIcons = [
+    AcademicCapOutline,
+    AdjustmentsHorizontalOutline,
+    AdjustmentsVerticalOutline,
+    MegaphoneOutline,
+    ArchiveBoxOutline,
+    ArrowDownCircleOutline,
+    ArrowPathOutline,
+    CursorArrowRippleOutline,
+    CloudArrowDownOutline,
+    CloudArrowUpOutline,
+    FolderArrowDownOutline,
+    CheckCircleOutline,
+    SparklesOutline,
+    GiftOutline,
+    BeakerOutline,
+    CheckBadgeOutline,
+    CubeOutline,
+    CurrencyRupeeOutline,
+    FireOutline,
+    HomeOutline,
+    BriefcaseOutline,
+    MapPinOutline,
+    LinkOutline,
+  ];
 
-  if (shape === 'mixed') {
-    const shapes: Array<Exclude<PatternConfig['shape'], 'mixed'>> = [
-      'circle',
-      'square',
-      'triangle',
-      'pentagon',
-      'hexagon',
-    ];
-    // Use index to deterministically select shape
-    return getShapePath(shapes[index % shapes.length], size, rounded);
+  const solidIcons = [
+    AcademicCapSolid,
+    AdjustmentsHorizontalSolid,
+    AdjustmentsVerticalSolid,
+    MegaphoneSolid,
+    ArchiveBoxSolid,
+    ArrowDownCircleSolid,
+    ArrowPathSolid,
+    CursorArrowRippleSolid,
+    CloudArrowDownSolid,
+    CloudArrowUpSolid,
+    FolderArrowDownSolid,
+    CheckCircleSolid,
+    SparklesSolid,
+    GiftSolid,
+    BeakerSolid,
+    CheckBadgeSolid,
+    CubeSolid,
+    CurrencyRupeeSolid,
+    FireSolid,
+    HomeSolid,
+    BriefcaseSolid,
+    MapPinSolid,
+    LinkSolid,
+  ];
+
+  const icons = iconType === 'solid' ? solidIcons : outlineIcons;
+
+  if (icon === 'mixed') {
+    return icons[index % icons.length];
   }
 
-  switch (shape) {
-    case 'square':
-      return `M${radius},0 H${size - radius} Q${size},0 ${size},${radius} V${size - radius} Q${size},${size} ${size - radius},${size} H${radius} Q0,${size} 0,${size - radius} V${radius} Q0,0 ${radius},0`;
-    case 'triangle':
-      return `M${size / 2},0 L${size},${size} L0,${size} Z`;
-    case 'pentagon':
-      const penPoints = Array.from({ length: 5 }).map((_, i) => {
-        const angle = (i * 2 * Math.PI) / 5 - Math.PI / 2;
-        return `${(size / 2) * (1 + Math.cos(angle))},${(size / 2) * (1 + Math.sin(angle))}`;
-      });
-      return `M${penPoints.join(' L')} Z`;
-    case 'hexagon':
-      const hexPoints = Array.from({ length: 6 }).map((_, i) => {
-        const angle = (i * 2 * Math.PI) / 6;
-        return `${(size / 2) * (1 + Math.cos(angle))},${(size / 2) * (1 + Math.sin(angle))}`;
-      });
-      return `M${hexPoints.join(' L')} Z`;
+  switch (icon) {
+    case 'academicCap':
+      return icons[0];
+    case 'adjustmentsHorizontal':
+      return icons[1];
+    case 'adjustmentsVertical':
+      return icons[2];
+    case 'megaphone':
+      return icons[3];
+    case 'archiveBox':
+      return icons[4];
+    case 'checkBadge':
+      return icons[15];
     default:
-      return `M${size / 2},0 A${size / 2},${size / 2} 0 1,1 ${size / 2},${size} A${size / 2},${size / 2} 0 1,1 ${size / 2},0`;
+      return icons[0];
   }
+};
+
+export const defaultPattern: PatternConfig = {
+  icon: 'mixed',
+  iconType: 'solid',
+  size: 20,
+  spacing: 40,
+  color: 'text-primary',
+  opacity: 0.5,
+  rotate: 0,
 };
 
 export default function PatternBackground({ config }: { config: PatternConfig }) {
   const [mounted, setMounted] = useState(false);
+  const [iconCount, setIconCount] = useState(0);
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    const updateIconCount = () => {
+      const count = Math.ceil((window.innerWidth * window.innerHeight) / (config.spacing * config.spacing));
+      setIconCount(count);
+    };
+    updateIconCount();
+    window.addEventListener('resize', updateIconCount);
+    return () => window.removeEventListener('resize', updateIconCount);
+  }, [config.spacing]);
 
   if (!mounted) return null;
 
-  const { shape, size, spacing, opacity = 0.3, rotate = 0 } = config;
-  const color = config.color.startsWith('bg-')
-    ? window.getComputedStyle(document.querySelector(`.${config.color}`) || document.body).backgroundColor
-    : config.color;
+  const { icon, iconType = 'outline', size, spacing, opacity = 0.3, rotate = 0 } = config;
 
-  const shapePaths =
-    shape === 'mixed'
-      ? `
-        <g transform="translate(${(spacing - size) / 2} ${(spacing - size) / 2})">
-          <path d="${getShapePath('mixed', size * 0.5, config.rounded, 0)}" fill="${color}" transform="translate(0,0)" />
-          <path d="${getShapePath('mixed', size * 0.5, config.rounded, 1)}" fill="${color}" transform="translate(${size * 0.5},0)" />
-          <path d="${getShapePath('mixed', size * 0.5, config.rounded, 2)}" fill="${color}" transform="translate(0,${size * 0.5})" />
-          <path d="${getShapePath('mixed', size * 0.5, config.rounded, 3)}" fill="${color}" transform="translate(${size * 0.5},${size * 0.5})" />
-        </g>
-      `
-      : `<path d="${getShapePath(shape, size, config.rounded)}" fill="${color}" transform="translate(${(spacing - size) / 2} ${(spacing - size) / 2})" />`;
+  const iconStyle = {
+    width: size,
+    height: size,
+    transform: `rotate(${rotate}deg)`,
+  };
 
   return (
-    <motion.div className="absolute inset-0 -z-10" initial={{ opacity: 0 }} animate={{ opacity }} exit={{ opacity: 0 }}>
+    <motion.div
+      className="absolute inset-0 -z-10 overflow-hidden"
+      initial={{ opacity: 0 }}
+      animate={{ opacity }}
+      exit={{ opacity: 0 }}
+    >
       <div
-        className="h-full w-full"
+        className="grid h-full w-full"
         style={{
-          backgroundImage: `url("data:image/svg+xml,${encodeURIComponent(`
-            <svg width="${spacing}" height="${spacing}" viewBox="0 0 ${spacing} ${spacing}" xmlns="http://www.w3.org/2000/svg">
-              <g transform="rotate(${rotate} ${spacing / 2} ${spacing / 2})">
-                ${shapePaths}
-              </g>
-            </svg>
-          `)}")`,
-          backgroundSize: `${spacing}px ${spacing}px`,
+          gridTemplateColumns: `repeat(auto-fill, minmax(${spacing}px, 1fr))`,
+          gridTemplateRows: `repeat(auto-fill, minmax(${spacing}px, 1fr))`,
         }}
-      />
+      >
+        {Array.from({ length: iconCount }).map((_, i) => {
+          const Icon = getHeroIcon(icon, iconType, i);
+          return (
+            <div
+              key={i}
+              className={`flex items-center justify-center ${config.rounded ? 'rounded-full' : ''} ${config.color}`}
+              style={{ width: spacing, height: spacing, overflow: 'hidden' }}
+            >
+              {React.createElement(Icon, { style: iconStyle })}
+            </div>
+          );
+        })}
+      </div>
     </motion.div>
   );
 }
