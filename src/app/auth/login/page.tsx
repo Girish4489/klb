@@ -2,7 +2,7 @@
 import { useAuth } from '@context/userContext';
 import { authUtils } from '@util/auth/authUtils';
 import handleError from '@util/error/handleError';
-import axios from 'axios';
+import { ApiPost } from '@util/makeApiRequest/makeApiRequest';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -17,7 +17,7 @@ export default function LoginPage() {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      router.push('/dashboard');
+      router.push('/');
     }
   }, [isAuthenticated, router]);
 
@@ -33,16 +33,20 @@ export default function LoginPage() {
       if (!email || !password) {
         throw new Error('Please fill in all fields');
       }
+      // password should be at least 6 characters
+      if (password.length < 6) {
+        throw new Error('Password should be at least 6 characters');
+      }
 
-      const response = await axios.post('/api/auth/login', { email, password });
+      const response = await ApiPost.Auth.login({ email, password });
 
-      if (response.data.success) {
+      if (response.success) {
         setAuthenticated(true);
-        authUtils.storeUser(response.data.user);
+        authUtils.storeUser(response.user);
         toast.success('Login successful');
-        router.replace(authUtils.getIntendedUrl());
+        router.replace('/');
       } else {
-        throw new Error(response.data.message);
+        throw new Error(response.message);
       }
     } catch (error) {
       handleError.toast(error);
@@ -55,16 +59,16 @@ export default function LoginPage() {
 
   const handleForgotPassword = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const forgot = e.currentTarget.forgotEmail.value.trim();
+    const email = e.currentTarget.forgotEmail.value.trim();
     try {
       const forgotPassword = async () => {
-        if (forgot.length === 0) throw new Error('Please enter email');
+        if (email.length === 0) throw new Error('Please enter email');
 
-        const response = await axios.post('/api/auth/forgot-password', { email: forgot });
-        if (response.data.success === true) {
-          return response.data.message;
+        const response = await ApiPost.Auth.forgotPassword({ email });
+        if (response.success) {
+          return response.message;
         } else {
-          throw new Error(response.data.message ?? response.data.error);
+          throw new Error(response.message ?? response.error);
         }
       };
       await toast.promise<string>(forgotPassword(), {
@@ -79,12 +83,12 @@ export default function LoginPage() {
 
   return (
     <div className="hero relative h-full">
-      <div className="hero-content min-w-[75%] flex-col rounded-box bg-base-200 shadow-inner shadow-primary lg:flex-row-reverse">
-        <div className="flex select-none flex-col gap-2 p-4 text-center lg:text-left">
+      <div className="hero-content max-h-[80%] min-h-fit min-w-[65%] max-w-[80%] flex-col rounded-box bg-base-200 px-6 py-12 shadow-inner shadow-primary sm:max-h-full lg:flex-row-reverse">
+        <div className="flex select-none flex-col gap-2 p-4 text-center lg:min-w-[55%]">
           <h1 className="text-center text-5xl font-bold">Login now!</h1>
           <p className="text-pretty px-2 py-3">Welcome back! Please enter your username and password to continue.</p>
         </div>
-        <div className="card w-full max-w-xs shrink-0 gap-1 bg-base-300 shadow-inner shadow-primary max-sm:max-w-sm">
+        <div className="card h-full w-full max-w-xs shrink-0 grow gap-1 bg-base-300 shadow-inner shadow-primary max-sm:max-w-sm sm:max-h-full lg:min-h-[85%] lg:max-w-sm">
           <form className="card-body p-4" onSubmit={handleLogin}>
             <div className="flex select-none justify-center">Login</div>
             <div className="form-control">
@@ -136,7 +140,7 @@ export default function LoginPage() {
               </button>
             </div>
           </form>
-          <div className="card-body p-4">
+          <div className="card-body grow p-4">
             <div className="flex flex-col justify-center gap-2">
               <details className="collapse collapse-arrow bg-base-300 shadow-inner shadow-base-300 ring-1 ring-primary transition-all duration-700">
                 <summary className="collapse-title card-compact h-fit select-none text-base">

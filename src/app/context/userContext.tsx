@@ -263,9 +263,9 @@ export const UserProvider: React.FC<UserContextProps> = ({ children }) => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      // Only redirect to dashboard if coming from auth pages or root
+      // Only redirect to root if coming from auth pages or root
       if (pathname === '/' || pathname.startsWith('/auth/')) {
-        router.push('/dashboard');
+        router.push('/');
       }
     } else if (!pathname.startsWith('/auth/')) {
       router.push('/auth/login');
@@ -337,21 +337,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     const initAuth = async () => {
       try {
+        setIsLoading(true);
         // Check for existing user in localStorage first
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
           const parsedUser = JSON.parse(storedUser);
           setUser(parsedUser);
           setIsAuthenticated(true);
+          setIsLoading(false);
+          return; // Exit early if we have a stored user
         }
 
-        // Verify with server
+        // Only verify with server if no stored user
         const response = await fetch('/api/auth/verify', {
           credentials: 'include',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
         });
 
         if (!response.ok) {
@@ -365,10 +364,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           setUser(data.user);
           localStorage.setItem('user', JSON.stringify(data.user));
         } else {
-          // Clear auth state if server verification fails
-          setIsAuthenticated(false);
-          setUser(null);
-          localStorage.removeItem('user');
+          throw new Error('Verification failed');
         }
       } catch (error) {
         console.error('Auth verification failed:', error);

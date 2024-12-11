@@ -122,7 +122,7 @@ export const CompanyProvider: React.FC<CompanyContextProps> = ({ children }) => 
     }
 
     // Only fetch company data if user is authenticated and a company member
-    if (user?.companyAccess?.companyId) {
+    if (user.isCompanyMember && user.companyAccess && user?.companyAccess?.companyId && user._id) {
       fetchAndSetCompany(user._id.toString(), user.companyAccess.role);
     }
   }, [isAuthenticated, user]);

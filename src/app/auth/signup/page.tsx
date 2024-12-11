@@ -1,6 +1,6 @@
 'use client';
 import handleError from '@util/error/handleError';
-import axios from 'axios';
+import { ApiPost } from '@util/makeApiRequest/makeApiRequest';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React from 'react';
@@ -21,13 +21,17 @@ export default function SignupPage() {
     const username = e.currentTarget.username.value.trim();
     const email = e.currentTarget.email.value.trim();
     const password = e.currentTarget.password.value.trim();
+    // password should be at least 6 characters
+    if (password.length < 6) {
+      throw new Error('Password should be at least 6 characters');
+    }
     try {
       const signup = async () => {
-        const response = await axios.post('/api/auth/signup', { username: username, email: email, password: password });
-        if (response.data.success === true) {
-          return response.data.message;
+        const response = await ApiPost.Auth.signup({ username, email, password });
+        if (response.success) {
+          return response.message;
         } else {
-          throw new Error(response.data.message ?? response.data.error);
+          throw new Error(response.message ?? response.error);
         }
       };
       await toast.promise(signup(), {
@@ -37,7 +41,7 @@ export default function SignupPage() {
       });
       setTimeout(() => {
         router.push('/auth/login');
-      }, 1000);
+      }, 800);
     } catch (error) {
       handleError.log(error);
     } finally {
@@ -50,11 +54,11 @@ export default function SignupPage() {
     const email = e.currentTarget.resendEmail.value.trim();
     try {
       const resendVerification = async () => {
-        const response = await axios.post('/api/auth/resend-email', { email: email });
-        if (response.data.success === true) {
-          return response.data.message;
+        const response = await ApiPost.Auth.resendEmail({ email });
+        if (response.success) {
+          return response.message;
         } else {
-          throw new Error(response.data.message ?? response.data.error);
+          throw new Error(response.message ?? response.error);
         }
       };
       await toast.promise(resendVerification(), {
@@ -72,12 +76,12 @@ export default function SignupPage() {
 
   return (
     <div className="hero relative h-full">
-      <div className="hero-content min-w-[75%] flex-col rounded-box bg-base-200 shadow-inner shadow-primary lg:flex-row-reverse">
-        <div className="flex select-none flex-col gap-2 p-4 text-center lg:text-left">
+      <div className="hero-content max-h-[80%] min-h-fit min-w-[65%] max-w-[80%] flex-col rounded-box bg-base-200 px-6 py-12 shadow-inner shadow-primary sm:max-h-full lg:flex-row-reverse">
+        <div className="flex select-none flex-col gap-2 p-4 text-center lg:min-w-[55%]">
           <h1 className="text-center text-5xl font-bold">Sign up now!</h1>
           <p className="text-pretty px-2 py-3">Welcome to Kalamandir! Please enter your details to continue.</p>
         </div>
-        <div className="card w-full max-w-xs shrink-0 gap-1 bg-base-300 shadow-inner shadow-primary max-sm:max-w-sm">
+        <div className="card h-full w-full max-w-xs shrink-0 grow gap-1 bg-base-300 shadow-inner shadow-primary max-sm:max-w-sm sm:max-h-full lg:min-h-[85%] lg:max-w-sm">
           <form className="card-body p-4" onSubmit={handleSignup}>
             <div className="flex select-none justify-center">Sign Up</div>
             <div className="form-control">
@@ -144,7 +148,7 @@ export default function SignupPage() {
               </button>
             </div>
           </form>
-          <div className="card-body p-4">
+          <div className="card-body grow p-4">
             <div className="flex flex-col justify-center gap-2">
               <p className="px-3 py-1 text-xs font-normal text-info">
                 Note: If you have not verified your account, please enter your email below and click on resend.

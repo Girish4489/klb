@@ -76,6 +76,56 @@ export const ApiPost = {
       }
     },
   },
+  Auth: {
+    login: async (data: { email: string; password: string }) => {
+      try {
+        const res = await axios.post('/api/auth/login', data);
+        return res.data;
+      } catch (error) {
+        handleError.throw(error);
+      }
+    },
+    signup: async (data: { username: string; email: string; password: string }) => {
+      try {
+        const res = await axios.post('/api/auth/signup', data);
+        return res.data;
+      } catch (error) {
+        handleError.throw(error);
+      }
+    },
+    resendEmail: async (data: { email: string }) => {
+      try {
+        const res = await axios.post('/api/auth/resend-email', data);
+        return res.data;
+      } catch (error) {
+        handleError.throw(error);
+      }
+    },
+    forgotPassword: async (data: { email: string }) => {
+      try {
+        const res = await axios.post('/api/auth/forgot-password', data);
+        return res.data;
+      } catch (error) {
+        handleError.throw(error);
+      }
+    },
+    verifyEmail: async (data: { token: string }) => {
+      try {
+        const res = await axios.post('/api/auth/verify-email', data);
+        return res.data;
+      } catch (error) {
+        handleError.throw(error);
+      }
+    },
+    resetPassword: async (data: { token: string; password: string }) => {
+      try {
+        const res = await axios.post('/api/auth/reset-password', data);
+        return res.data;
+      } catch (error) {
+        handleError.throw(error);
+      }
+    },
+  },
 };
 
 export const ApiGet = {

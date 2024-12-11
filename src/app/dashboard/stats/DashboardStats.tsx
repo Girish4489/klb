@@ -21,6 +21,7 @@ interface Stats {
   paidAmount: number;
   dueAmount: number;
   discountAmount: number;
+  discountCount: number;
 }
 
 const DashboardStats = ({ refresh }: DashboardStatsProps) => {
@@ -35,6 +36,7 @@ const DashboardStats = ({ refresh }: DashboardStatsProps) => {
     paidAmount: 0,
     dueAmount: 0,
     discountAmount: 0,
+    discountCount: 0,
   });
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
@@ -50,7 +52,7 @@ const DashboardStats = ({ refresh }: DashboardStatsProps) => {
   }, [refresh]);
 
   const data = {
-    labels: ['Paid', 'Partially Paid', 'Unpaid Bills', 'Delivered', 'Pending Delivery', 'Total Bills'],
+    labels: ['Paid', 'Partially Paid', 'Unpaid Bills', 'Delivered', 'Pending Delivery', 'Discounted', 'Total Bills'],
     datasets: [
       {
         label: 'Count',
@@ -60,6 +62,7 @@ const DashboardStats = ({ refresh }: DashboardStatsProps) => {
           stats.unpaidBillsCount,
           stats.deliveredBillsCount,
           stats.pendingDeliveryBillsCount,
+          stats.discountCount,
           stats.totalBillsCount,
         ],
         backgroundColor: [
@@ -68,6 +71,7 @@ const DashboardStats = ({ refresh }: DashboardStatsProps) => {
           getComputedStyleValue('bg-error', 'background-color'),
           getComputedStyleValue('bg-success', 'background-color'),
           getComputedStyleValue('bg-warning', 'background-color'),
+          getComputedStyleValue('bg-info', 'background-color'),
           getComputedStyleValue('bg-primary', 'background-color'),
         ],
       },

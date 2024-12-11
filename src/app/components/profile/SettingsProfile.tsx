@@ -1,5 +1,4 @@
 'use client';
-import Logout from '@/app/auth/logout/page';
 import { ImageProcessor } from '@/app/util/image/imageUtils';
 import { Modal } from '@components/Modal/Modal';
 import { TrashIcon } from '@heroicons/react/24/solid';
@@ -11,6 +10,7 @@ import axios from 'axios';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import LogoutButton from '../logout/LogoutButton';
 
 const LoadingSkeleton = () => (
   <div className="flex flex-col items-center gap-4">
@@ -226,9 +226,7 @@ export default function SettingsProfile({
             <BadgeItem label="Last Login" content={dates.lastLogin} />
             <span className="badge w-full select-none justify-between gap-2 p-5">
               <h1 className="font-bold">Logout:</h1>
-              <span className="badge badge-warning p-4 outline outline-2 outline-offset-1 outline-error hover:badge-error hover:cursor-pointer hover:font-semibold hover:outline-warning">
-                <Logout />
-              </span>
+              <LogoutButton className="btn-error btn-sm px-6 ring-2 ring-warning hover:font-semibold" />
             </span>
           </div>
         </>

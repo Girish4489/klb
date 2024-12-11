@@ -17,9 +17,24 @@ export default function DashboardClient() {
   const { company } = useCompany();
   const [showWelcome, setShowWelcome] = useState(true);
   const [greeting, setGreeting] = useState('');
+  const [visibleComponents, setVisibleComponents] = useState({
+    dashboardStats: true,
+    dueDateTable: true,
+    allBills: false,
+    dueBills: false,
+    completedOrders: false,
+    unpaidBills: false,
+  });
 
   const handleRefresh = () => {
     setRefresh(!refresh);
+  };
+
+  const toggleComponent = (key: string) => {
+    setVisibleComponents((prev) => ({
+      ...prev,
+      [key]: !prev[key as keyof typeof visibleComponents],
+    }));
   };
 
   const getAnimationConfig = () => {
@@ -165,7 +180,80 @@ export default function DashboardClient() {
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
       <div className="flex flex-col gap-1 pb-2">
         <span className="flex items-center justify-between gap-2 rounded-box bg-neutral px-4 py-0.5">
-          <h1 className="grow text-center">Dashboard</h1>
+          <h1 className="grow text-center text-neutral-content">Dashboard</h1>
+          <div className="dropdown dropdown-end">
+            <label tabIndex={0} className="btn btn-primary btn-sm m-1">
+              Show/Hide Tables
+            </label>
+            <ul tabIndex={0} className="menu dropdown-content z-[1] w-52 rounded-box bg-base-100 p-2 shadow">
+              <li>
+                <label className="label cursor-pointer">
+                  <span className="label-text">Dashboard Stats</span>
+                  <input
+                    type="checkbox"
+                    checked={visibleComponents.dashboardStats}
+                    onChange={() => toggleComponent('dashboardStats')}
+                    className="checkbox"
+                  />
+                </label>
+              </li>
+              <li>
+                <label className="label cursor-pointer">
+                  <span className="label-text">Due Date Table</span>
+                  <input
+                    type="checkbox"
+                    checked={visibleComponents.dueDateTable}
+                    onChange={() => toggleComponent('dueDateTable')}
+                    className="checkbox"
+                  />
+                </label>
+              </li>
+              <li>
+                <label className="label cursor-pointer">
+                  <span className="label-text">All Bills</span>
+                  <input
+                    type="checkbox"
+                    checked={visibleComponents.allBills}
+                    onChange={() => toggleComponent('allBills')}
+                    className="checkbox"
+                  />
+                </label>
+              </li>
+              <li>
+                <label className="label cursor-pointer">
+                  <span className="label-text">Due Bills</span>
+                  <input
+                    type="checkbox"
+                    checked={visibleComponents.dueBills}
+                    onChange={() => toggleComponent('dueBills')}
+                    className="checkbox"
+                  />
+                </label>
+              </li>
+              <li>
+                <label className="label cursor-pointer">
+                  <span className="label-text">Completed Orders</span>
+                  <input
+                    type="checkbox"
+                    checked={visibleComponents.completedOrders}
+                    onChange={() => toggleComponent('completedOrders')}
+                    className="checkbox"
+                  />
+                </label>
+              </li>
+              <li>
+                <label className="label cursor-pointer">
+                  <span className="label-text">Unpaid Bills</span>
+                  <input
+                    type="checkbox"
+                    checked={visibleComponents.unpaidBills}
+                    onChange={() => toggleComponent('unpaidBills')}
+                    className="checkbox"
+                  />
+                </label>
+              </li>
+            </ul>
+          </div>
           <button className="btn btn-info btn-sm" onClick={handleRefresh}>
             Refresh
           </button>
@@ -176,24 +264,36 @@ export default function DashboardClient() {
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.5 }}
         >
-          <span className="grow rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
-            <DashboardStats refresh={refresh} />
-          </span>
-          <span className="grow rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
-            <DueDateTable refresh={refresh} />
-          </span>
-          <span className="grow rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
-            <AllBills refresh={refresh} />
-          </span>
-          <span className="grow rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
-            <DueBills refresh={refresh} />
-          </span>
-          <span className="grow rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
-            <CompletedOrders refresh={refresh} />
-          </span>
-          <span className="grow rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
-            <UnpaidBills refresh={refresh} />
-          </span>
+          {visibleComponents.dashboardStats && (
+            <span className="grow rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
+              <DashboardStats refresh={refresh} />
+            </span>
+          )}
+          {visibleComponents.dueDateTable && (
+            <span className="grow rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
+              <DueDateTable refresh={refresh} />
+            </span>
+          )}
+          {visibleComponents.allBills && (
+            <span className="grow rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
+              <AllBills refresh={refresh} />
+            </span>
+          )}
+          {visibleComponents.dueBills && (
+            <span className="grow rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
+              <DueBills refresh={refresh} />
+            </span>
+          )}
+          {visibleComponents.completedOrders && (
+            <span className="grow rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
+              <CompletedOrders refresh={refresh} />
+            </span>
+          )}
+          {visibleComponents.unpaidBills && (
+            <span className="grow rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
+              <UnpaidBills refresh={refresh} />
+            </span>
+          )}
         </motion.span>
       </div>
     </motion.div>

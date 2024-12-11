@@ -16,14 +16,18 @@ export const config = {
   ],
 };
 
-const publicPaths = ['/auth/login', '/auth/signup', '/auth/forgot-password', '/auth/verify'];
+const publicPaths = ['/auth/login', '/auth/signup', '/auth/reset-password', '/auth/verify-email', '/not-found'];
 const apiPublicPaths = ['/api/auth/login', '/api/auth/signup', '/api/auth/verify', '/api/auth/forgot-password'];
 
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
-  // Add special case for user fetch endpoint
+  // Fix special case handling
   if (path === '/api/auth/user') {
+    return NextResponse.next();
+  }
+
+  if (path === '/not-found') {
     return NextResponse.next();
   }
 

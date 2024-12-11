@@ -23,20 +23,20 @@ const SidebarLink = ({
   enable?: boolean;
 }) => (
   <div
-    className={`tooltip flex w-full flex-row ${isActive ? 'active' : ''} ${!enable ? 'cursor-pointer' : ''}`}
+    className={`tooltip flex w-full flex-row p-0 ${isActive ? 'active' : ''} ${!enable ? 'cursor-pointer' : ''}`}
     data-tip={title}
     onClick={() => !enable && toast.error('Need to have company access')}
   >
     {enable ? (
-      <Link href={href} className="flex items-center">
+      <Link href={href} className="flex grow items-center gap-1 px-4 py-1.5">
         {icon && React.createElement(icon, { className: iconClass })}
-        <span className="text-left">{title}</span>
+        <span className="grow text-left">{title}</span>
       </Link>
     ) : (
-      <>
+      <span className="flex grow items-center gap-1 px-4 py-1.5">
         {icon && React.createElement(icon, { className: iconClass })}
-        <span className="text-left">{title}</span>
-      </>
+        <span className="grow text-left">{title}</span>
+      </span>
     )}
   </div>
 );
@@ -62,7 +62,7 @@ const SidebarItem = ({
           {NavIcon && <NavIcon className={nav.iconClass} />}
           {nav.title}
         </summary>
-        <ul>
+        <ul className="flex flex-col gap-px">
           {nav.subNav.map((subNav: SubNavItem, index) => {
             const SubNavIcon = currentPathname === subNav.href ? subNav.iconSolid : subNav.iconOutline;
             return (

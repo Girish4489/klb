@@ -14,6 +14,7 @@ export async function GET() {
     const paidAmount = await Bill.aggregate([{ $group: { _id: null, total: { $sum: '$paidAmount' } } }]);
     const dueAmount = await Bill.aggregate([{ $group: { _id: null, total: { $sum: '$dueAmount' } } }]);
     const discountAmount = await Bill.aggregate([{ $group: { _id: null, total: { $sum: '$discount' } } }]);
+    const discountCount = await Bill.countDocuments({ discount: { $gt: 0 } });
 
     return NextResponse.json({
       message: 'Stats fetched successfully',
@@ -27,6 +28,7 @@ export async function GET() {
       paidAmount: paidAmount[0]?.total || 0,
       dueAmount: dueAmount[0]?.total || 0,
       discountAmount: discountAmount[0]?.total || 0,
+      discountCount,
       success: true,
     });
   } catch (error) {
