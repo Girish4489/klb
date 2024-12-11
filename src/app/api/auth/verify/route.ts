@@ -8,28 +8,39 @@ connect();
 
 export async function GET(request: NextRequest) {
   try {
-    const authToken = request.cookies.get('authToken')?.value || '';
+    const authToken = request.cookies.get('authToken')?.value;
 
-    if (!authToken) throw new Error('No token provided');
+    if (!authToken) {
+      return NextResponse.json({ success: false, message: 'No auth token' }, { status: 401 });
+    }
 
     const tokenData = await token.verify(authToken);
+    if (!tokenData) {
+      return NextResponse.json({ success: false, message: 'Invalid token' }, { status: 401 });
+    }
 
-    if (!tokenData) throw new Error('Invalid token');
+    const user = await User.findById(tokenData.id).select(
+      '-password -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry',
+    );
 
-    const user = await User.findById(tokenData.id).select('-password');
-
-    if (!user) throw new Error('User not found');
+    if (!user) {
+      return NextResponse.json({ success: false, message: 'User not found' }, { status: 404 });
+    }
 
     return NextResponse.json({
       success: true,
-      user,
+      user: {
+        id: user._id.toString(),
+        username: user.username,
+        email: user.email,
+        isVerified: user.isVerified,
+        isAdmin: user.isAdmin,
+        isCompanyMember: user.isCompanyMember,
+        companyAccess: user.companyAccess,
+        preferences: user.preferences,
+      },
     });
   } catch (error) {
-    if (error instanceof Error) {
-      console.error('Auth verification error:', error.message);
-    } else {
-      console.error('Auth verification error:', error);
-    }
     return handleError.api(error, false);
   }
 }

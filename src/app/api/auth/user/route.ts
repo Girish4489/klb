@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     const userId = tokenData.getId();
     const user = await User.findOne({ _id: userId }).select('-password');
     if (!user) {
-      return NextResponse.json({ message: 'User not found' }, { status: 404 });
+      return NextResponse.json({ message: 'User not found', success: false, status: 404 });
     }
     return NextResponse.json({
       message: 'User found',

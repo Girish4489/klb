@@ -1,5 +1,5 @@
 'use client';
-import LogoutPage from '@components/logout/page';
+import LogoutPage from '@/app/auth/logout/page';
 import {
   CheckBadgeIcon,
   Cog6ToothIcon,

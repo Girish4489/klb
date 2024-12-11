@@ -21,6 +21,12 @@ const apiPublicPaths = ['/api/auth/login', '/api/auth/signup', '/api/auth/verify
 
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
+
+  // Add special case for user fetch endpoint
+  if (path === '/api/auth/user') {
+    return NextResponse.next();
+  }
+
   const isPublicPath = publicPaths.includes(path);
   const isPublicApi = apiPublicPaths.includes(path);
   const authToken = request.cookies.get('authToken')?.value;

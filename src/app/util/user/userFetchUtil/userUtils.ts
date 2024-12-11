@@ -1,23 +1,20 @@
 import { IUser } from '@models/userModel';
+import { logoutUtils } from '@util/auth/logoutUtils';
 import handleError from '@util/error/handleError';
 import axios from 'axios';
 
-const handleLogout = () => {
-  // Clear all local storage data
-  localStorage.clear();
-  // Redirect to login page
-  window.location.href = '/auth/login';
-};
-
 export async function fetchUserData() {
   try {
-    const {
-      data: { data: userData, success: userSuccess, message: userMessage },
-    } = await axios.get('/api/auth/user');
+    const response = await axios.get('/api/auth/user');
+    const { data: userData, success, message } = response.data;
 
-    if (!userData || !userSuccess) {
-      handleLogout();
-      throw new Error(userMessage ?? 'User session expired. Please login again.');
+    if (!success || !userData) {
+      await logoutUtils.logout({
+        onLogoutError: (error) => {
+          console.error('Logout failed during user fetch:', error);
+        },
+      });
+      throw new Error(message || 'User session expired. Please login again.');
     }
 
     return {
@@ -44,12 +41,14 @@ export async function fetchUserData() {
       updatedAt: userData.updatedAt ? new Date(userData.updatedAt) : new Date(),
     } as IUser;
   } catch (error: unknown) {
-    // If it's a 404 or 401 error, handle logout
     if (axios.isAxiosError(error) && (error.response?.status === 404 || error.response?.status === 401)) {
-      handleLogout();
+      await logoutUtils.logout({
+        onLogoutError: (error) => {
+          console.error('Logout failed during error handling:', error);
+        },
+      });
+      throw new Error('Session expired. Please login again.');
     }
-    handleError.throw(error);
+    handleError.throw(error as Error);
   }
 }
-
-export { handleLogout };

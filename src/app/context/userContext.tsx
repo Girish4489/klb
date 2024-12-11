@@ -1,6 +1,7 @@
 // src/app/context/UserContext.tsx
 'use client';
 import { IUser, RoleType } from '@models/userModel';
+import { logoutUtils } from '@util/auth/logoutUtils';
 import handleError from '@util/error/handleError';
 import { LocalIndexer } from '@util/indexing/indexingUtil';
 import { ApiPut } from '@util/makeApiRequest/makeApiRequest';
@@ -99,6 +100,7 @@ export const UserProvider: React.FC<UserContextProps> = ({ children }) => {
       }
       setUser(userData);
       userIndexer.add(userData);
+      localStorage.setItem('user', JSON.stringify(userData));
 
       if (userData.preferences) {
         document.documentElement.setAttribute('data-theme', userData.preferences.theme);
@@ -107,10 +109,13 @@ export const UserProvider: React.FC<UserContextProps> = ({ children }) => {
           document.body.style.fontWeight = userData.preferences.fonts.weight.toString() ?? '400';
         }
       }
-
-      localStorage.setItem('user', JSON.stringify(userData));
     } catch (error) {
-      handleError.toast(error);
+      console.error('Failed to fetch user data:', error);
+      await logoutUtils.logout({
+        onLogoutSuccess: () => {
+          setUser(initialUserState);
+        },
+      });
     }
   }, []);
 
@@ -249,17 +254,20 @@ export const UserProvider: React.FC<UserContextProps> = ({ children }) => {
     }
 
     const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    } else {
+    if (!storedUser && !pathname.startsWith('/auth')) {
       fetchAndSetUser();
+    } else if (storedUser) {
+      setUser(JSON.parse(storedUser));
     }
   }, [fetchAndSetUser, pathname, isClient]);
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.push('/dashboard');
-    } else if (pathname !== '/auth/login') {
+      // Only redirect to dashboard if coming from auth pages or root
+      if (pathname === '/' || pathname.startsWith('/auth/')) {
+        router.push('/dashboard');
+      }
+    } else if (!pathname.startsWith('/auth/')) {
       router.push('/auth/login');
     }
   }, [isAuthenticated, pathname, router]);
@@ -329,19 +337,35 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     const initAuth = async () => {
       try {
+        // Check for existing user in localStorage first
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          const parsedUser = JSON.parse(storedUser);
+          setUser(parsedUser);
+          setIsAuthenticated(true);
+        }
+
+        // Verify with server
         const response = await fetch('/api/auth/verify', {
-          credentials: 'include', // Important for cookies
+          credentials: 'include',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
         });
+
+        if (!response.ok) {
+          throw new Error('Verification request failed');
+        }
 
         const data = await response.json();
 
         if (data.success && data.user) {
           setIsAuthenticated(true);
           setUser(data.user);
-
-          // Update local storage
           localStorage.setItem('user', JSON.stringify(data.user));
         } else {
+          // Clear auth state if server verification fails
           setIsAuthenticated(false);
           setUser(null);
           localStorage.removeItem('user');

@@ -1,7 +1,7 @@
 'use client';
+import Logout from '@/app/auth/logout/page';
 import { ImageProcessor } from '@/app/util/image/imageUtils';
 import { Modal } from '@components/Modal/Modal';
-import Logout from '@components/logout/page';
 import { TrashIcon } from '@heroicons/react/24/solid';
 import { IUser } from '@models/userModel';
 import { userConfirmation } from '@util/confirmation/confirmationUtil';
