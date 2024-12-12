@@ -4,13 +4,13 @@ import { IBill } from '@models/klm';
 import handleError from '@util/error/handleError';
 import { formatD } from '@util/format/dateUtils';
 import { ApiGet } from '@util/makeApiRequest/makeApiRequest';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import toast from 'react-hot-toast';
 
 const PAGE_SIZE = 10; // Number of bills per page
 
 export default function BillDetails() {
-  const [fromDate, setFromDate] = React.useState<Date>();
+  const [fromDate, setFromDate] = useState<Date>();
   const [toDate, setToDate] = useState<Date>();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);

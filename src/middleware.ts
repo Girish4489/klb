@@ -1,9 +1,7 @@
 import { token as tokenUtil } from '@util/token/token';
-import type { NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 export const config = {
-  runtime: 'experimental-edge', // Changed from 'edge' to 'experimental-edge'
   matcher: [
     /*
      * Match all request paths except for the ones starting with:
@@ -21,24 +19,20 @@ const apiPublicPaths = ['/api/auth/login', '/api/auth/signup', '/api/auth/verify
 
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
+  const authToken = request.cookies.get('authToken')?.value;
 
-  // Fix special case handling
-  if (path === '/api/auth/user') {
-    return NextResponse.next();
-  }
-
-  if (path === '/not-found') {
+  // Allow public paths and API routes
+  if (path === '/api/auth/user' || path === '/not-found' || path === '/') {
     return NextResponse.next();
   }
 
   const isPublicPath = publicPaths.includes(path);
   const isPublicApi = apiPublicPaths.includes(path);
-  const authToken = request.cookies.get('authToken')?.value;
 
   // Handle public paths
   if (isPublicPath || isPublicApi) {
     if (authToken) {
-      return NextResponse.redirect(new URL('/dashboard', request.nextUrl));
+      return NextResponse.redirect(new URL('/', request.nextUrl));
     }
     return NextResponse.next();
   }
@@ -48,18 +42,14 @@ export async function middleware(request: NextRequest) {
     if (path.startsWith('/api/')) {
       return NextResponse.json({ success: false, message: 'Authentication required' }, { status: 401 });
     }
-
-    // Store intended URL before redirect
-    const intendedUrl = new URL('/auth/login', request.nextUrl);
-    intendedUrl.searchParams.set('redirect', path);
-    return NextResponse.redirect(intendedUrl);
+    return NextResponse.redirect(new URL('/auth/login', request.nextUrl));
   }
 
+  // Verify token and handle protected routes
   try {
     const tokenData = await tokenUtil.verify(authToken);
     if (!tokenData) throw new Error('Invalid token');
 
-    // Add auth headers for API routes
     if (path.startsWith('/api/')) {
       const requestHeaders = new Headers(request.headers);
       requestHeaders.set('x-user-id', tokenData.id);

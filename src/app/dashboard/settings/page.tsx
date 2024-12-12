@@ -6,7 +6,8 @@ import { InformationCircleIcon } from '@heroicons/react/24/solid';
 import { IUser } from '@models/userModel';
 import handleError from '@util/error/handleError';
 import { ApiPost } from '@util/makeApiRequest/makeApiRequest';
-import { useEffect, useState } from 'react';
+import { debounce } from 'lodash';
+import { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
 interface Fonts {
@@ -67,6 +68,13 @@ export default function SettingsPage() {
       animations: { enabled, intensity },
     });
   };
+
+  const debouncedUpdateAnimation = useCallback(
+    debounce((enabled: boolean, intensity: number) => {
+      updateAnimationPreferences(enabled, intensity);
+    }, 500),
+    [],
+  );
 
   return (
     <div className=" max-sm:m-2 md:m-5">
@@ -177,11 +185,27 @@ export default function SettingsPage() {
                   min="1"
                   max="10"
                   value={user.preferences?.animations?.intensity ?? 1}
-                  onChange={(e) =>
-                    updateAnimationPreferences(user.preferences?.animations?.enabled ?? true, parseInt(e.target.value))
-                  }
+                  onChange={(e) => {
+                    e.preventDefault();
+                    const newIntensity = parseInt(e.target.value);
+                    if (newIntensity !== user.preferences?.animations?.intensity) {
+                      debouncedUpdateAnimation(user.preferences?.animations?.enabled ?? true, newIntensity);
+                    }
+                  }}
                   className="range range-primary"
                 />
+                <div className="flex w-full justify-between px-2 text-xs">
+                  <span>1</span>
+                  <span>2</span>
+                  <span>3</span>
+                  <span>4</span>
+                  <span>5</span>
+                  <span>6</span>
+                  <span>7</span>
+                  <span>8</span>
+                  <span>9</span>
+                  <span>10</span>
+                </div>
               </div>
             </div>
           </div>

@@ -17,7 +17,7 @@ export default function LoginPage() {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      router.push('/');
+      router.push('/'); // Redirect to home page
     }
   }, [isAuthenticated, router]);
 
@@ -44,7 +44,7 @@ export default function LoginPage() {
         setAuthenticated(true);
         authUtils.storeUser(response.user);
         toast.success('Login successful');
-        router.replace('/');
+        router.replace('/'); // Always redirect to home after login
       } else {
         throw new Error(response.message);
       }

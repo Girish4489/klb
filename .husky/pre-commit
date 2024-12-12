@@ -1,4 +1,2 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
-pnpm lint && pnpm lint:fix && pnpm format
+pnpm lint && pnpm format
+git update-index --again

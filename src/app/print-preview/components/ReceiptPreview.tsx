@@ -35,13 +35,19 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ receipt, cal, isDataLoa
             <style>{style}</style>
             <h2 className="m-px">Receipt</h2>
             <div className="flex flex-col items-center gap-2">
+              {/* Company Header Section */}
               <div className="card card-side flex-col border border-dashed border-black/50 shadow-md">
                 <h2 id="header" className="card-title mx-auto grow text-lg">
                   {company?.name ?? 'Kalamandir Ladies Boutique'}
                 </h2>
                 <div className="card-body grow flex-row gap-0.5 bg-transparent p-1 pb-2 text-slate-500">
                   <figure className="w-[30%]">
-                    <Image src={klm.src} width={180} height={180} alt="Profile" />
+                    <Image
+                      src={company?.logos?.medium && company.logos.medium !== '' ? company.logos.medium : klm.src}
+                      width={180}
+                      height={180}
+                      alt="Logo"
+                    />
                   </figure>
                   <address className="w-[70%] content-center text-sm font-medium">
                     {company?.contactDetails?.address ??
@@ -173,41 +179,63 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ receipt, cal, isDataLoa
             <hr className="mx-auto my-1 w-[90%] border border-dashed border-black/60" />
             <table className="w-full text-slate-600">
               <tbody className="flex flex-col gap-[1px] p-1">
-                {/* Sub Total: Amount before discount */}
+                {/* Bill Total */}
                 <tr className="flex w-full flex-row items-center justify-between bg-gray-200 text-xs font-semibold">
-                  <th className="p-1">Sub Total:</th>
+                  <th className="p-1">Bill Total:</th>
                   <td className="p-1">{cal.totalAmount}</td>
                 </tr>
-                {/* Discount: Shown if applied */}
+
+                {/* Bill Discount */}
                 {cal.discount > 0 && (
                   <tr className="flex w-full flex-row items-center justify-between bg-gray-200 text-xs font-semibold">
-                    <th className="p-1">Discount:</th>
+                    <th className="p-1">Bill Discount:</th>
                     <td className="p-1">-{cal.discount}</td>
                   </tr>
                 )}
-                {/* Net Total: Amount after discount */}
+
+                {/* Tax Amount */}
+                {receipt.taxAmount > 0 && (
+                  <tr className="flex w-full flex-row items-center justify-between bg-gray-200 text-xs font-semibold">
+                    <th className="p-1">Tax Amount:</th>
+                    <td className="p-1">{receipt.taxAmount}</td>
+                  </tr>
+                )}
+
+                {/* Bill Grand Total */}
                 <tr className="flex w-full flex-row items-center justify-between bg-gray-200 text-xs font-semibold">
-                  <th className="p-1">Net Total:</th>
+                  <th className="p-1">Bill Grand Total:</th>
                   <td className="p-1">{cal.grandTotal}</td>
                 </tr>
-                {/* Advance Payment: Paid previously in advance */}
+
+                {/* Previous Payments */}
                 {cal.paidAmount - receipt.amount > 0 && (
                   <tr className="flex w-full flex-row items-center justify-between">
-                    <th className="p-1">Advance Payment:</th>
+                    <th className="p-1">Previous Payments(Adv):</th>
                     <td className="p-1">{cal.paidAmount - receipt.amount}</td>
                   </tr>
                 )}
-                {/* Current Payment: Payment for this receipt */}
+
+                {/* Current Payment */}
                 <tr className="flex w-full flex-row items-center justify-between text-xs font-semibold">
                   <th className="p-1">Current Payment:</th>
                   <td className="p-1">{receipt.amount}</td>
                 </tr>
-                {/* Total Paid: Sum of all payments */}
-                <tr className="flex w-full flex-row items-center justify-between">
+
+                {/* Receipt Discount */}
+                {receipt.discount > 0 && (
+                  <tr className="flex w-full flex-row items-center justify-between">
+                    <th className="p-1">Receipt Discount:</th>
+                    <td className="p-1">-{receipt.discount}</td>
+                  </tr>
+                )}
+
+                {/* Total Paid */}
+                <tr className="flex w-full flex-row items-center justify-between bg-gray-200 text-xs font-semibold">
                   <th className="p-1">Total Paid:</th>
                   <td className="p-1">{cal.paidAmount}</td>
                 </tr>
-                {/* Balance Due: Remaining amount */}
+
+                {/* Balance Due */}
                 <tr className="flex w-full flex-row items-center justify-between bg-gray-200 text-xs font-semibold">
                   <th className="p-1">Balance Due:</th>
                   <td className="p-1">{cal.dueAmount}</td>

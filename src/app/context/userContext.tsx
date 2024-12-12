@@ -27,6 +27,14 @@ interface UserContextType {
   updateUserMobile: (email: string, mobile: string[]) => Promise<void>;
 }
 
+interface AuthState {
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  user: IUser | null;
+  updateUser: (data: Partial<IUser>) => void;
+  setAuthenticated: (status: boolean) => void;
+}
+
 // Separate Auth Context
 export const AuthContext = createContext<AuthState | undefined>(undefined);
 
@@ -246,31 +254,27 @@ export const UserProvider: React.FC<UserContextProps> = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    if (!isClient) return;
-
-    if (pathname.startsWith('/auth')) {
-      setUser(initialUserState);
-      return;
-    }
-
+    setIsClient(true);
     const storedUser = localStorage.getItem('user');
-    if (!storedUser && !pathname.startsWith('/auth')) {
-      fetchAndSetUser();
-    } else if (storedUser) {
+    if (storedUser) {
       setUser(JSON.parse(storedUser));
+    } else if (!pathname.startsWith('/auth/')) {
+      fetchAndSetUser();
     }
-  }, [fetchAndSetUser, pathname, isClient]);
+  }, []);
 
   useEffect(() => {
+    if (!isClient) return;
+
     if (isAuthenticated) {
-      // Only redirect to root if coming from auth pages or root
-      if (pathname === '/' || pathname.startsWith('/auth/')) {
+      // Only redirect if on auth pages or root
+      if (pathname.startsWith('/auth/')) {
         router.push('/');
       }
     } else if (!pathname.startsWith('/auth/')) {
       router.push('/auth/login');
     }
-  }, [isAuthenticated, pathname, router]);
+  }, [isAuthenticated, pathname, isClient, router]);
 
   const contextValue = useMemo(
     () => ({
@@ -310,14 +314,6 @@ export const useUser = (): UserContextType => {
 
   return context;
 };
-
-interface AuthState {
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  user: IUser | null;
-  updateUser: (data: Partial<IUser>) => void;
-  setAuthenticated: (status: boolean) => void;
-}
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
