@@ -1,2 +1,2 @@
-pnpm lint && pnpm format
+pnpm lint-staged
 git update-index --again
