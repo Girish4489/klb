@@ -1,6 +1,6 @@
 'use client';
 import navigationData, { NavItem, SubNavItem } from '@data/navigationData';
-import { ChartBarIcon, Cog6ToothIcon, HomeIcon } from '@heroicons/react/24/solid';
+import { Cog6ToothIcon, HomeIcon } from '@heroicons/react/24/solid';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -98,56 +98,41 @@ export default function SidebarPage({
 
   return (
     <React.Fragment>
-      <div className="flex h-full w-full flex-col justify-around overflow-hidden transition-all duration-300 ease-in-out max-sm:fixed max-sm:bottom-0 max-sm:left-0 max-sm:right-0 max-sm:top-0 max-sm:z-50">
-        <div className="mx-1 mb-3 h-full overflow-y-auto rounded-box">
-          <ul className="menu rounded-box bg-base-200 shadow-xl xl:menu-vertical lg:min-w-max">
-            <h1 className="menu-title select-none text-center">Kalamndir</h1>
-            <li>
-              <Link href="/dashboard" className={currentPathname === '/dashboard' ? 'active' : ''}>
-                <HomeIcon className="h-5 w-5 text-secondary" />
-                Dashboard
-              </Link>
-            </li>
+      <div className="flex min-h-full flex-col">
+        <h1 className="menu-title sticky top-0 z-10 w-full select-none rounded-b-box bg-info py-1 text-center text-info-content">
+          Kalamndir
+        </h1>
+        <ul className="menu min-w-72 max-w-80 flex-grow overflow-y-auto rounded-b-box bg-gradient-to-tr from-base-100 to-base-300 text-base-content shadow-xl xl:menu-vertical lg:min-w-max">
+          <li>
+            <Link href="/dashboard" className={currentPathname === '/dashboard' ? 'active' : ''}>
+              <HomeIcon className="h-5 w-5 text-secondary" />
+              Dashboard
+            </Link>
+          </li>
 
-            {isCompanyMember &&
-              navigationData.map((nav: NavItem, index) => (
-                <SidebarItem key={index} nav={nav} currentPathname={currentPathname} accessLevels={accessLevels} />
-              ))}
-          </ul>
-        </div>
-        <div className="bottom-0 flex flex-col items-center justify-center rounded-box border-neutral">
-          <ul className="menu menu-horizontal my-2 flex-wrap rounded-box bg-base-200 shadow-2xl max-sm:menu-vertical">
-            <li>
-              <Link href="/dashboard" className="tooltip flex max-sm:flex-row" data-tip="Dashboard">
-                <HomeIcon className="h-5 w-5 text-secondary" />
-                <span className="hidden max-sm:inline-block">Dashboard</span>
+          {isCompanyMember &&
+            navigationData.map((nav: NavItem, index) => (
+              <SidebarItem key={index} nav={nav} currentPathname={currentPathname} accessLevels={accessLevels} />
+            ))}
+
+          <li>
+            {isCompanyMember ? (
+              <Link href="/dashboard/settings" className="tooltip flex max-sm:flex-row" data-tip="Settings">
+                <Cog6ToothIcon className="h-5 w-5 text-secondary" />
+                Settings
               </Link>
-            </li>
-            <li>
-              {isCompanyMember ? (
-                <Link href="/dashboard/settings" className="tooltip flex max-sm:flex-row" data-tip="Settings">
-                  <Cog6ToothIcon className="h-5 w-5 text-secondary" />
-                  <span className="hidden max-sm:inline-block">Settings</span>
-                </Link>
-              ) : (
-                <div
-                  className="tooltip flex cursor-pointer max-sm:flex-row"
-                  data-tip="Settings"
-                  onClick={() => toast.error('Need to have company access')}
-                >
-                  <Cog6ToothIcon className="h-5 w-5 text-secondary" />
-                  <span className="hidden max-sm:inline-block">Settings</span>
-                </div>
-              )}
-            </li>
-            <li>
-              <Link href="#k" className="tooltip flex max-sm:flex-row" data-tip="Stats">
-                <ChartBarIcon className="h-5 w-5 text-secondary" />
-                <span className="hidden max-sm:inline-block">Stats</span>
-              </Link>
-            </li>
-          </ul>
-        </div>
+            ) : (
+              <div
+                className="tooltip flex cursor-pointer max-sm:flex-row"
+                data-tip="Settings"
+                onClick={() => toast.error('Need to have company access')}
+              >
+                <Cog6ToothIcon className="h-5 w-5 text-secondary" />
+                Settings
+              </div>
+            )}
+          </li>
+        </ul>
       </div>
     </React.Fragment>
   );
