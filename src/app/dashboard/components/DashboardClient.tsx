@@ -182,10 +182,13 @@ export default function DashboardClient() {
         <span className="flex items-center justify-between gap-2 rounded-box bg-neutral px-4 py-0.5">
           <h1 className="grow text-center text-neutral-content">Dashboard</h1>
           <div className="dropdown dropdown-end">
-            <label tabIndex={0} className="btn btn-primary btn-sm m-1">
+            <label tabIndex={0} className="btn btn-primary btn-xs">
               Show/Hide Tables
             </label>
-            <ul tabIndex={0} className="menu dropdown-content z-[1] w-52 rounded-box bg-base-100 p-2 shadow">
+            <ul
+              tabIndex={0}
+              className="menu dropdown-content menu-sm z-[1] w-52 rounded-box bg-gradient-to-bl from-base-100 to-base-300 p-2 shadow ring-2 ring-secondary"
+            >
               <li>
                 <label className="label cursor-pointer">
                   <span className="label-text">Dashboard Stats</span>
@@ -193,7 +196,7 @@ export default function DashboardClient() {
                     type="checkbox"
                     checked={visibleComponents.dashboardStats}
                     onChange={() => toggleComponent('dashboardStats')}
-                    className="checkbox"
+                    className="checkbox-secondary checkbox checkbox-sm"
                   />
                 </label>
               </li>
@@ -204,7 +207,7 @@ export default function DashboardClient() {
                     type="checkbox"
                     checked={visibleComponents.dueDateTable}
                     onChange={() => toggleComponent('dueDateTable')}
-                    className="checkbox"
+                    className="checkbox-secondary checkbox checkbox-sm"
                   />
                 </label>
               </li>
@@ -215,7 +218,7 @@ export default function DashboardClient() {
                     type="checkbox"
                     checked={visibleComponents.allBills}
                     onChange={() => toggleComponent('allBills')}
-                    className="checkbox"
+                    className="checkbox-secondary checkbox checkbox-sm"
                   />
                 </label>
               </li>
@@ -226,7 +229,7 @@ export default function DashboardClient() {
                     type="checkbox"
                     checked={visibleComponents.dueBills}
                     onChange={() => toggleComponent('dueBills')}
-                    className="checkbox"
+                    className="checkbox-secondary checkbox checkbox-sm"
                   />
                 </label>
               </li>
@@ -237,7 +240,7 @@ export default function DashboardClient() {
                     type="checkbox"
                     checked={visibleComponents.completedOrders}
                     onChange={() => toggleComponent('completedOrders')}
-                    className="checkbox"
+                    className="checkbox-secondary checkbox checkbox-sm"
                   />
                 </label>
               </li>
@@ -248,13 +251,13 @@ export default function DashboardClient() {
                     type="checkbox"
                     checked={visibleComponents.unpaidBills}
                     onChange={() => toggleComponent('unpaidBills')}
-                    className="checkbox"
+                    className="checkbox-secondary checkbox checkbox-sm"
                   />
                 </label>
               </li>
             </ul>
           </div>
-          <button className="btn btn-info btn-sm" onClick={handleRefresh}>
+          <button className="btn btn-info btn-xs" onClick={handleRefresh}>
             Refresh
           </button>
         </span>

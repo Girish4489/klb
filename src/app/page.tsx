@@ -88,33 +88,12 @@ export default function Home() {
           <motion.div variants={item} className="flex flex-col items-center gap-3">
             <h2 className="text-pretty text-2xl font-semibold">
               Redirecting to Dashboard in{' '}
-              <motion.span
-                key={countdown}
-                initial={{ scale: 1.5, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                className="text-accent"
-              >
-                {countdown}
-              </motion.span>{' '}
+              <span className="countdown font-mono text-accent">
+                <span style={{ '--value': countdown.toString() } as React.CSSProperties}></span>
+              </span>{' '}
               seconds...
             </h2>
-            <div className="flex gap-2">
-              {[...Array(3)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  animate={{
-                    y: [0, -10, 0],
-                  }}
-                  transition={{
-                    duration: 0.5,
-                    repeat: Infinity,
-                    repeatType: 'reverse',
-                    delay: i * 0.2,
-                  }}
-                  className="h-4 w-4 rounded-full bg-accent"
-                />
-              ))}
-            </div>
+            <span className="loading loading-dots loading-lg bg-gradient-to-t from-secondary to-accent lg:w-16"></span>
           </motion.div>
 
           <motion.div variants={item}>

@@ -1,12 +1,12 @@
 'use client';
-import HeaderProfilePage from '@components/profile/headerProfile';
+import HeaderProfilePage from '@/app/dashboard/components/headerProfile';
 import Sidebar from '@components/sidebar/sidebarPage';
 import { useCompany } from '@context/companyContext';
 import { useUser } from '@context/userContext';
-import { XMarkIcon } from '@heroicons/react/24/outline';
-import { Bars3Icon } from '@heroicons/react/24/solid';
+import { Bars3BottomLeftIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
+import Notifications from './components/Notifications';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { fetchAndSetUser, user } = useUser();
@@ -53,25 +53,24 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       />
       <div className="drawer-content flex h-screen flex-col">
         {/* Navbar */}
-        <div className="navbar sticky top-0 z-10 flex w-full items-center gap-x-2 bg-base-300 py-1">
-          <label
-            className={`rounded-box p-2 transition-transform duration-700 ease-in-out focus:outline-none lg:hidden ${isSidebarOpen ? 'rotate-180' : 'rotate-0'}`}
-            htmlFor="my-drawer-2"
-            aria-label="close sidebar"
-          >
-            {isSidebarOpen ? (
-              <XMarkIcon className="h-7 w-7 text-current" />
-            ) : (
-              <Bars3Icon className="h-7 w-7 text-current" />
-            )}
-          </label>
-          <div className="flex-1 select-none px-2">
-            <Link href="/dashboard">{company?.name ? company.name : 'Kalamandir'}</Link>
+        <div className="navbar sticky top-0 z-10 flex min-h-10 w-full items-center gap-x-2 rounded-b-box bg-opacity-60 bg-gradient-to-t from-base-100 to-base-300 px-2 py-0.5 shadow-lg ring-1 ring-info backdrop-blur-md">
+          <div className="flex-none">
+            <button className="btn btn-square btn-ghost btn-sm lg:hidden" onClick={toggleSidebar}>
+              <Bars3BottomLeftIcon className="h-6 w-6 text-base-content" />
+            </button>
           </div>
-          <HeaderProfilePage user={user} isLoading={isLoading} />
+          <div className="flex-1">
+            <Link href="/dashboard" className="btn btn-ghost btn-sm text-base-content">
+              {company?.name ? company.name : 'Kalamandir'}
+            </Link>
+          </div>
+          <div className="flex flex-row items-center justify-between gap-x-2">
+            <Notifications notifications={user?.notifications || []} />
+            <HeaderProfilePage user={user} isLoading={isLoading} />
+          </div>
         </div>
         {/* Page content */}
-        <div className="flex-grow overflow-y-auto p-4">{children}</div>
+        <div className="flex-grow overflow-y-auto px-0 py-2">{children}</div>
       </div>
       <div className="drawer-side">
         <label htmlFor="my-drawer-2" aria-label="close sidebar" className="drawer-overlay"></label>

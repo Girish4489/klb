@@ -48,13 +48,7 @@ interface IUser extends Document {
       intensity: number; // 1-10 scale
     };
   };
-  notifications: {
-    name: string;
-    message: string;
-    timeOfArrival: Date;
-    timeOfRead: Date;
-    isRead: boolean;
-  }[];
+  notifications: INotification[];
   isCompanyMember: boolean; // Changed from newUser
   companyAccess?: {
     companyId: ObjectId;
@@ -68,6 +62,14 @@ interface IUser extends Document {
     accessLevels: RoleType[];
   };
   secondaryEmails: string[];
+}
+
+interface INotification {
+  name: string;
+  message: string;
+  timeOfArrival: Date;
+  timeOfRead?: Date;
+  isRead: boolean;
 }
 
 const userSchema: Schema<IUser> = new mongoose.Schema(
@@ -202,4 +204,4 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
 const User: Model<IUser> = mongoose.models.users || mongoose.model<IUser>('users', userSchema);
 
 export default User;
-export type { IUser, ObjectId, RoleType };
+export type { INotification, IUser, ObjectId, RoleType };

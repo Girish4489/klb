@@ -98,11 +98,13 @@ export default function SidebarPage({
 
   return (
     <React.Fragment>
-      <div className="flex min-h-full flex-col">
-        <h1 className="menu-title sticky top-0 z-10 w-full select-none rounded-b-box bg-info py-1 text-center text-info-content">
-          Kalamndir
-        </h1>
-        <ul className="menu min-w-72 max-w-80 flex-grow overflow-y-auto rounded-b-box bg-gradient-to-tr from-base-100 to-base-300 text-base-content shadow-xl xl:menu-vertical lg:min-w-max">
+      <div className="flex min-h-full flex-col bg-base-300 pr-px">
+        <span className="menu-title sticky top-0 z-10 h-11 rounded-b-box bg-gradient-to-t from-base-100 via-base-300 to-base-200 ring-1">
+          <h1 className="flex w-full select-none items-center justify-center bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text py-1 text-center text-base font-bold text-transparent">
+            Kalamandir
+          </h1>
+        </span>
+        <ul className="menu menu-sm min-w-72 flex-grow overflow-y-auto rounded-box rounded-b-box bg-gradient-to-tr from-base-300 via-base-200 to-base-300 text-base-content shadow-xl ring-1 ring-neutral xl:menu-vertical lg:min-w-max">
           <li>
             <Link href="/dashboard" className={currentPathname === '/dashboard' ? 'active' : ''}>
               <HomeIcon className="h-5 w-5 text-secondary" />
