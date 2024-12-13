@@ -179,10 +179,7 @@ const TextAreaInput: React.FC<TextAreaInputFieldProps> = ({
   textareaClass,
 }) => (
   <div className={`flex items-center ${className}`}>
-    <label
-      htmlFor={id}
-      className={`field-sizing-content textarea textarea-bordered textarea-sm flex items-center gap-1 ${labelClass}`}
-    >
+    <label htmlFor={id} className={`field-sizing-content flex items-center gap-1 ${labelClass}`}>
       {label}:
       <textarea
         id={id}

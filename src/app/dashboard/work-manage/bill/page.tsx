@@ -298,54 +298,68 @@ export default function BillPage() {
   }
 
   return (
-    <span className="table-column h-full">
-      <div className="flex h-full w-full flex-col shadow max-sm:table-cell">
-        <span className="flex min-w-fit flex-row flex-wrap items-center justify-between gap-2 rounded-box bg-accent/10 px-3 py-1.5 backdrop-blur-xl max-sm:flex-col">
-          <button className="btn btn-primary btn-sm" onClick={createNewBill}>
-            <PlusCircleIcon className="h-5 w-5" />
-            New
-          </button>
-          <h1 className="grow text-center">Bill</h1>
-          <span className="flex flex-row flex-wrap-reverse gap-2">
-            <BarcodeScannerPage
-              onScanComplete={setBarcode}
-              scannerId="billHeaderScanner"
-              scanModalId="billHeaderScanner_modal"
-            />
-            {bill && (
-              <BillDetailsDropdownClear
-                bill={bill}
-                clearBill={() => clearBill(setBill)}
-                link={`/dashboard/work-manage/bill?billNumber=${bill.billNumber}`}
-                linkDisabled={false}
+    <div className="flex h-[calc(100vh-4rem)] flex-col gap-2">
+      {/* Header Area */}
+      <div className="flex flex-col space-y-2">
+        {/* Top Bar with New/Search */}
+        <div className="rounded-lg bg-base-200 p-2 shadow">
+          <div className="flex items-center justify-between">
+            <button className="btn btn-primary btn-sm" onClick={createNewBill}>
+              <PlusCircleIcon className="h-5 w-5" />
+              New Bill
+            </button>
+            <div className="flex gap-2">
+              <BarcodeScannerPage
+                onScanComplete={setBarcode}
+                scannerId="billHeaderScanner"
+                scanModalId="billHeaderScanner_modal"
               />
-            )}
-            <SearchBillForm
-              onSearch={(e) => billSearch(e, setBill, setSearchBill)}
-              searchResults={searchBill}
-              onRowClick={(billId) =>
-                searchRowClicked(billId, searchBill, setBill, setSearchBill, updateUrlWithBillNumber, setNewBill)
-              }
-            />
-          </span>
-        </span>
+              {bill && (
+                <BillDetailsDropdownClear
+                  bill={bill}
+                  clearBill={() => clearBill(setBill)}
+                  link={`/dashboard/work-manage/bill?billNumber=${bill.billNumber}`}
+                  linkDisabled={false}
+                />
+              )}
+              <SearchBillForm
+                onSearch={(e) => billSearch(e, setBill, setSearchBill)}
+                searchResults={searchBill}
+                onRowClick={(billId) =>
+                  searchRowClicked(billId, searchBill, setBill, setSearchBill, updateUrlWithBillNumber, setNewBill)
+                }
+              />
+            </div>
+          </div>
+        </div>
 
-        {/* new bill */}
+        {/* Bill Header */}
         {bill && (
-          <span className="contents">
-            {/* Bill header */}
+          <div className="rounded-lg bg-base-200 p-2 shadow">
             <BillHeader bill={bill} setBill={setBill} />
-            {/* increase or decrease */}
+          </div>
+        )}
+      </div>
+
+      {/* Main Work Area */}
+      {bill && (
+        <div className="flex flex-1 flex-col space-y-2">
+          {/* Add/Remove Order Controls */}
+          <div className="rounded-lg bg-base-200 p-2">
             <IncreaseDecreaseSection
               bill={bill}
               handleNewOrder={handleNewOrder}
               handleRemoveOrder={handleRemoveOrder}
             />
-            {/* items and track in row */}
-            <div className="flex h-full w-full flex-row items-start gap-1 rounded-box bg-base-300 p-1 max-sm:flex-col max-sm:items-center">
-              <div className="flex min-h-full grow flex-col justify-between rounded-box border border-base-300">
-                <div className="flex max-h-[45rem] min-h-full w-full grow flex-col gap-1 overflow-auto rounded-box bg-base-200">
-                  {/* orders */}
+          </div>
+
+          {/* Orders and Tracking Area */}
+          <div className="grid flex-1 grid-cols-[1fr_auto] gap-2 px-1">
+            {/* Left: Orders Section */}
+            <div className="flex flex-col gap-1 rounded-lg bg-base-300">
+              <div className="flex-1 overflow-y-auto bg-base-100 p-1">
+                {/* Orders Content */}
+                <div className="space-y-2">
                   {bill?.order?.map((order, orderIndex) => (
                     <OrderDetails
                       key={orderIndex}
@@ -357,28 +371,35 @@ export default function BillPage() {
                       handleRemoveOrder={handleRemoveOrder}
                       handleDimensionChange={handleDimensionChange}
                       handleStyleProcessChange={handleStyleProcessChange}
-                      handleColorSelect={(color, orderIndex) => handleColorSelect(color, orderIndex, setBill)}
+                      handleColorSelect={(color) => handleColorSelect(color, orderIndex, setBill)}
                     />
                   ))}
                 </div>
-                <SaveUpdatePrint
-                  newBill={newBill}
-                  bill={bill}
-                  printType={printType}
-                  setPrintType={setPrintType}
-                  handleSaveBill={handleSaveBill}
-                  handleUpdateBill={handleUpdateBill}
-                />
               </div>
+              {/* Save/Update/Print Bar */}
+              <SaveUpdatePrint
+                newBill={newBill}
+                bill={bill}
+                printType={printType}
+                setPrintType={setPrintType}
+                handleSaveBill={handleSaveBill}
+                handleUpdateBill={handleUpdateBill}
+              />
+            </div>
+
+            {/* Right: Items Track */}
+            <div className="w-80 rounded-lg bg-base-100">
               <ItemsTrack bill={bill} />
             </div>
-          </span>
-        )}
-      </div>
-      <div className="my-0.5 flex w-full flex-col rounded-box bg-base-300 p-2">
-        <BillTable caption="Today" bills={formattedTodayBill as unknown as IBill[]} />
-        <BillTable caption="This Week (excluding today)" bills={formattedThisWeekBill as unknown as IBill[]} />
-      </div>
-    </span>
+          </div>
+
+          {/* Bottom Tables */}
+          <div className="grid grid-rows-2 gap-2 bg-base-100 px-0.5">
+            <BillTable caption="Today's Bills" bills={formattedTodayBill as unknown as IBill[]} />
+            <BillTable caption="This Week's Bills" bills={formattedThisWeekBill as unknown as IBill[]} />
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

@@ -12,38 +12,48 @@ const calculateRunningTotal = (orders: IBill['order'], upToIndex: number): numbe
 
 const ItemsTrack: React.FC<ItemsTrackProps> = ({ bill }) => {
   return (
-    <div className="flex h-full flex-col justify-between gap-1 overflow-hidden rounded-box border-2 border-base-100 bg-base-200 max-sm:w-[90%]">
-      <div className="grow overflow-auto rounded-box border-4 border-base-300 bg-base-100">
-        <div className="m-0 flex h-full max-h-96 w-full flex-col p-0">
-          <table className="z-5 table table-zebra table-pin-rows table-pin-cols">
-            <caption className="w-full caption-top text-center">
-              <h2 className="underline underline-offset-4">Items Track</h2>
-            </caption>
-            <thead>
-              <tr className="text-center">
-                <th>Sn</th>
-                <th>Amt</th>
-                <th>Net</th>
+    <div className="flex h-full flex-col rounded-box bg-base-300 shadow-lg ring-2 ring-primary">
+      <div className="border-b border-base-300 p-2">
+        <h2 className="text-center font-bold">Items Track</h2>
+      </div>
+
+      <div className="flex-1 overflow-y-auto">
+        <table className="table-compact table w-full">
+          <thead className="sticky top-0 z-10 bg-base-200">
+            <tr>
+              <th className="w-12 text-center">No</th>
+              <th className="text-center">Amount</th>
+              <th className="text-center">Running</th>
+            </tr>
+          </thead>
+          <tbody>
+            {bill?.order?.length === 0 ? (
+              <tr>
+                <td colSpan={3} className="text-center text-base-content/60">
+                  No items to track
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {bill?.order?.map((order, orderIndex) => (
+            ) : (
+              bill?.order?.map((order, orderIndex) => (
                 <tr key={orderIndex} className="text-center">
                   <th>{orderIndex + 1}</th>
                   <td>{order.amount}</td>
                   <td>{calculateRunningTotal(bill.order, orderIndex)}</td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
-      {bill.order?.length > 0 && calculateTotalAmount(bill.order) > 0 && (
-        <div className="flex w-full items-center px-2 py-1">
-          <span className="btn btn-outline btn-primary btn-sm grow">
-            <span className="text-nowrap">Total Amount:</span>
-            <p className="badge badge-secondary">{calculateTotalAmount(bill.order)}</p>
-          </span>
+
+      {bill.order?.length > 0 && (
+        <div className="border-t border-base-300 p-2">
+          <div className="rounded-lg bg-primary px-2 py-1 text-primary-content">
+            <div className="flex items-center justify-between">
+              <span>Total:</span>
+              <span className="font-bold">{calculateTotalAmount(bill.order)}</span>
+            </div>
+          </div>
         </div>
       )}
     </div>

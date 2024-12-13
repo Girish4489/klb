@@ -11,12 +11,12 @@ interface BillTableProps {
 const BillTable: React.FC<BillTableProps> = ({ caption, bills }) => {
   return (
     <div
-      className={`max-h-96 overflow-x-auto rounded-box border-2 border-base-300 bg-base-100 ${
-        bills.length === 0 && 'min-h-24'
-      }`}
+      className={`ring-300 max-h-96 overflow-x-auto rounded-box bg-base-100 ring-2 ${bills.length === 0 && 'min-h-24'}`}
     >
       <table className="table table-zebra table-pin-rows">
-        <caption className="px-1 py-2 font-bold">{caption}</caption>
+        <caption className="bg-gradient-to-b from-base-300 to-base-100 px-1 py-2 font-bold text-base-content">
+          {caption}
+        </caption>
         {bills.length === 0 ? (
           <tbody>
             <tr>
@@ -28,7 +28,7 @@ const BillTable: React.FC<BillTableProps> = ({ caption, bills }) => {
         ) : (
           <>
             <thead>
-              <tr className="text-center">
+              <tr className="bg-base-300 text-center text-base-content">
                 <th>Slno</th>
                 <th>BillNumber</th>
                 <th>Mobile</th>
@@ -40,7 +40,7 @@ const BillTable: React.FC<BillTableProps> = ({ caption, bills }) => {
             </thead>
             <tbody>
               {bills.map((bill: IBill, index) => (
-                <tr key={index} className="text-center">
+                <tr key={index} className="hover text-center">
                   <td>{index + 1}</td>
                   <td>{bill?.billNumber ?? ''}</td>
                   <td>{bill?.mobile ?? ''}</td>
