@@ -111,7 +111,7 @@ const DueBills = ({ refresh }: DueBillsProps) => {
       }
     };
     fetchDueBills();
-  }, [refresh]);
+  }, [refresh, currentPage]);
 
   return (
     <div className="w-full">

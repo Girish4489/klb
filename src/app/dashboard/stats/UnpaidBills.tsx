@@ -99,19 +99,19 @@ const UnpaidBills = ({ refresh }: UnpaidBillsProps) => {
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
+  const fetchUnpaidBills = async () => {
+    try {
+      const response = await axios.get(`/api/dashboard/stats/unpaidBills?page=${currentPage}&limit=${billsPerPage}`);
+      setUnpaidBills(response.data.unpaidBills);
+      setSortConfig({ key: 'paymentStatus', direction: 'ascending' }); // Default sorting
+    } catch (err) {
+      setError('Failed to fetch unpaid bills' + err);
+    }
+  };
+
   useEffect(() => {
-    const fetchUnpaidBills = async () => {
-      try {
-        const response = await axios.get('/api/dashboard/stats/unpaidBills');
-        setUnpaidBills(response.data.unpaidBills);
-        setSortConfig({ key: 'paymentStatus', direction: 'ascending' });
-        setActiveIcon('paymentStatus');
-      } catch (err) {
-        setError('Failed to fetch unpaid bills' + err);
-      }
-    };
     fetchUnpaidBills();
-  }, [refresh]);
+  }, [refresh, currentPage]);
 
   return (
     <div className="w-full">
