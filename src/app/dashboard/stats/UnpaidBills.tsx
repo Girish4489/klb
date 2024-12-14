@@ -1,6 +1,6 @@
-import Pagination from '@/app/dashboard/stats/Pagination';
-import { formatDSNT } from '@/app/util/format/dateUtils';
+import Pagination from '@dashboard/stats/Pagination';
 import { ArrowDownCircleIcon, ArrowUpCircleIcon } from '@heroicons/react/24/solid';
+import { formatDSNT } from '@util/format/dateUtils';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 
@@ -22,44 +22,79 @@ interface UnpaidBillsProps {
 const UnpaidBills = ({ refresh }: UnpaidBillsProps) => {
   const [unpaidBills, setUnpaidBills] = useState<Bill[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [sortConfig, setSortConfig] = useState<{ key: keyof Bill; direction: 'ascending' | 'descending' } | null>(null);
+  const [sortConfig, setSortConfig] = useState<{ key: keyof Bill; direction: 'ascending' | 'descending' }>({
+    key: 'paymentStatus',
+    direction: 'ascending',
+  });
+  const [activeIcon, setActiveIcon] = useState<keyof Bill>('paymentStatus');
   const [currentPage, setCurrentPage] = useState(1);
   const billsPerPage = 15;
 
   const sortedBills = [...unpaidBills].sort((a, b) => {
-    if (sortConfig !== null) {
-      if (a[sortConfig.key] < b[sortConfig.key]) {
-        return sortConfig.direction === 'ascending' ? -1 : 1;
-      }
-      if (a[sortConfig.key] > b[sortConfig.key]) {
-        return sortConfig.direction === 'ascending' ? 1 : -1;
-      }
+    let comparison = 0;
+    const { key, direction } = sortConfig;
+
+    switch (key) {
+      case 'dueDate':
+      case 'date':
+        const dateA = new Date(a[key]);
+        const dateB = new Date(b[key]);
+        comparison = dateA.getTime() - dateB.getTime();
+        break;
+
+      case 'billNumber':
+      case 'totalAmount':
+      case 'paidAmount':
+      case 'dueAmount':
+        comparison = Number(a[key]) - Number(b[key]);
+        break;
+
+      case 'paymentStatus':
+        comparison = (a[key] || '').localeCompare(b[key] || '');
+        break;
+
+      default:
+        comparison = 0;
     }
-    return 0;
+
+    return direction === 'ascending' ? comparison : -comparison;
   });
 
   const indexOfLastBill = currentPage * billsPerPage;
   const indexOfFirstBill = indexOfLastBill - billsPerPage;
   const currentBills = sortedBills.slice(indexOfFirstBill, indexOfLastBill);
 
-  const requestSort = (key: keyof Bill) => {
-    let direction: 'ascending' | 'descending' = 'ascending';
-    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'ascending') {
-      direction = 'descending';
+  const handleHeaderClick = (key: keyof Bill) => {
+    if (activeIcon !== key) {
+      setActiveIcon(key);
+      setSortConfig({ key, direction: 'descending' });
     }
+  };
+
+  const handleSortIconClick = (event: React.MouseEvent, key: keyof Bill) => {
+    event.stopPropagation();
+    const direction = sortConfig.key === key && sortConfig.direction === 'descending' ? 'ascending' : 'descending';
     setSortConfig({ key, direction });
   };
 
   const getSortIcon = (key: keyof Bill) => {
-    if (!sortConfig) return null;
-    if (sortConfig.key === key) {
-      return sortConfig.direction === 'ascending' ? (
-        <ArrowUpCircleIcon className="h-6 w-6 cursor-pointer text-inherit transition-transform duration-300" />
-      ) : (
-        <ArrowDownCircleIcon className="h-6 w-6 cursor-pointer text-inherit transition-transform duration-300" />
-      );
-    }
-    return null;
+    if (activeIcon !== key) return null;
+
+    return (
+      <span className="btn btn-circle btn-info btn-xs">
+        {sortConfig.direction === 'ascending' ? (
+          <ArrowUpCircleIcon
+            className="h-5 w-5 cursor-pointer text-inherit transition-transform duration-300"
+            onClick={(e) => handleSortIconClick(e, key)}
+          />
+        ) : (
+          <ArrowDownCircleIcon
+            className="h-5 w-5 cursor-pointer text-inherit transition-transform duration-300"
+            onClick={(e) => handleSortIconClick(e, key)}
+          />
+        )}
+      </span>
+    );
   };
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
@@ -86,37 +121,37 @@ const UnpaidBills = ({ refresh }: UnpaidBillsProps) => {
           <caption>Unpaid Bills</caption>
           <thead>
             <tr className="cursor-pointer select-none text-center">
-              <th onClick={() => requestSort('billNumber')}>
+              <th onClick={() => handleHeaderClick('billNumber')}>
                 <div className="flex items-center justify-between gap-1">
                   <span className="grow">Bill Number</span> {getSortIcon('billNumber')}
                 </div>
               </th>
-              <th onClick={() => requestSort('date')}>
+              <th onClick={() => handleHeaderClick('date')}>
                 <div className="flex items-center justify-between gap-1">
                   <span className="grow">Date</span> {getSortIcon('date')}
                 </div>
               </th>
-              <th onClick={() => requestSort('dueDate')}>
+              <th onClick={() => handleHeaderClick('dueDate')}>
                 <div className="flex items-center justify-between gap-1">
                   <span className="grow">Due Date</span> {getSortIcon('dueDate')}
                 </div>
               </th>
-              <th onClick={() => requestSort('totalAmount')}>
+              <th onClick={() => handleHeaderClick('totalAmount')}>
                 <div className="flex items-center justify-between gap-1">
                   <span className="grow">Total Amount</span> {getSortIcon('totalAmount')}
                 </div>
               </th>
-              <th onClick={() => requestSort('paidAmount')}>
+              <th onClick={() => handleHeaderClick('paidAmount')}>
                 <div className="flex items-center justify-between gap-1">
                   <span className="grow">Paid Amount</span> {getSortIcon('paidAmount')}
                 </div>
               </th>
-              <th onClick={() => requestSort('dueAmount')}>
+              <th onClick={() => handleHeaderClick('dueAmount')}>
                 <div className="flex items-center justify-between gap-1">
                   <span className="grow">Due Amount</span> {getSortIcon('dueAmount')}
                 </div>
               </th>
-              <th onClick={() => requestSort('paymentStatus')}>
+              <th onClick={() => handleHeaderClick('paymentStatus')}>
                 <div className="flex items-center justify-between gap-1">
                   <span className="grow">Status</span> {getSortIcon('paymentStatus')}
                 </div>

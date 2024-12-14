@@ -1,8 +1,8 @@
-import bcryptUtil from '@/app/util/bcrypt/bcrypt';
-import handleError from '@/app/util/error/handleError';
 import { connect } from '@/dbConfig/dbConfig';
-import { sendEmail } from '@/helpers/mailer';
-import User from '@/models/userModel';
+import { sendEmail } from '@helpers/mailer';
+import User from '@models/userModel';
+import bcryptUtil from '@util/bcrypt/bcrypt';
+import handleError from '@util/error/handleError';
 import { NextRequest, NextResponse } from 'next/server';
 
 connect();
@@ -25,6 +25,7 @@ export async function POST(request: NextRequest) {
       username,
       email,
       password: hashedPassword,
+      isCompanyMember: false, // Changed from newUser: true
       createdAt: new Date(),
       updatedAt: new Date(),
     });

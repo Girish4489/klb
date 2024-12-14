@@ -1,10 +1,11 @@
 'use client';
 import navigationData, { NavItem, SubNavItem } from '@data/navigationData';
-import { ChartBarIcon, Cog6ToothIcon, HomeIcon } from '@heroicons/react/24/solid';
+import { Cog6ToothIcon, HomeIcon } from '@heroicons/react/24/solid';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
+import toast from 'react-hot-toast';
 
 const SidebarLink = ({
   href,
@@ -12,17 +13,32 @@ const SidebarLink = ({
   isActive,
   icon,
   iconClass,
+  enable = true,
 }: {
   href: string;
   title: string;
   isActive: boolean;
   icon?: React.ForwardRefExoticComponent<React.SVGProps<SVGSVGElement>>;
   iconClass?: string;
+  enable?: boolean;
 }) => (
-  <Link href={href} className={`tooltip flex w-full flex-row ${isActive ? 'active' : ''}`} data-tip={title}>
-    {icon && React.createElement(icon, { className: iconClass })}
-    <span className="text-left">{title}</span>
-  </Link>
+  <div
+    className={`tooltip flex w-full flex-row p-0 ${isActive ? 'active' : ''} ${!enable ? 'cursor-pointer' : ''}`}
+    data-tip={title}
+    onClick={() => !enable && toast.error('Need to have company access')}
+  >
+    {enable ? (
+      <Link href={href} className="flex grow items-center gap-1 px-4 py-1.5">
+        {icon && React.createElement(icon, { className: iconClass })}
+        <span className="grow text-left">{title}</span>
+      </Link>
+    ) : (
+      <span className="flex grow items-center gap-1 px-4 py-1.5">
+        {icon && React.createElement(icon, { className: iconClass })}
+        <span className="grow text-left">{title}</span>
+      </span>
+    )}
+  </div>
 );
 
 const SidebarItem = ({
@@ -46,7 +62,7 @@ const SidebarItem = ({
           {NavIcon && <NavIcon className={nav.iconClass} />}
           {nav.title}
         </summary>
-        <ul>
+        <ul className="flex flex-col gap-px">
           {nav.subNav.map((subNav: SubNavItem, index) => {
             const SubNavIcon = currentPathname === subNav.href ? subNav.iconSolid : subNav.iconOutline;
             return (
@@ -54,20 +70,14 @@ const SidebarItem = ({
                 key={index}
                 className={`${subNav.enable && subNav.accessLevels.some((level) => accessLevels.includes(level)) ? '' : 'disabled hidden disabled:cursor-not-allowed'}`}
               >
-                {subNav.enable && nav.enable ? (
-                  <SidebarLink
-                    href={subNav.href ?? '#'}
-                    title={subNav.title}
-                    isActive={currentPathname === subNav.href}
-                    icon={SubNavIcon}
-                    iconClass={subNav.iconClass}
-                  />
-                ) : (
-                  <span>
-                    {SubNavIcon && <SubNavIcon className={subNav.iconClass} />}
-                    <span className="text-left">{subNav.title}</span>
-                  </span>
-                )}
+                <SidebarLink
+                  href={subNav.href ?? '#'}
+                  title={subNav.title}
+                  isActive={currentPathname === subNav.href}
+                  icon={SubNavIcon}
+                  iconClass={subNav.iconClass}
+                  enable={subNav.enable && nav.enable}
+                />
               </li>
             );
           })}
@@ -77,48 +87,54 @@ const SidebarItem = ({
   );
 };
 
-export default function SidebarPage({ accessLevels }: { accessLevels: Array<string> }) {
+export default function SidebarPage({
+  accessLevels,
+  isCompanyMember,
+}: {
+  accessLevels: Array<string>;
+  isCompanyMember: boolean;
+}) {
   const currentPathname = usePathname();
 
   return (
     <React.Fragment>
-      <div className="flex h-full w-full flex-col justify-around overflow-hidden transition-all duration-300 ease-in-out max-sm:fixed max-sm:bottom-0 max-sm:left-0 max-sm:right-0 max-sm:top-0 max-sm:z-50">
-        <div className="mx-1 mb-3 h-full overflow-y-auto rounded-box">
-          <ul className="menu rounded-box bg-base-200 shadow-xl xl:menu-vertical lg:min-w-max">
-            <h1 className="menu-title select-none text-center">Kalamndir</h1>
-            <li>
-              <Link href="/dashboard" className={currentPathname === '/dashboard' ? 'active' : ''}>
-                <HomeIcon className="h-5 w-5 text-secondary" />
-                Dashboard
-              </Link>
-            </li>
-            {navigationData.map((nav: NavItem, index) => (
+      <div className="flex min-h-full flex-col bg-base-300 pr-px">
+        <span className="menu-title sticky top-0 z-10 h-11 rounded-b-box bg-gradient-to-t from-base-100 via-base-300 to-base-200 ring-1">
+          <h1 className="flex w-full select-none items-center justify-center bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text py-1 text-center text-base font-bold text-transparent">
+            Kalamandir
+          </h1>
+        </span>
+        <ul className="menu menu-sm min-w-72 flex-grow overflow-y-auto rounded-box rounded-b-box bg-gradient-to-tr from-base-300 via-base-200 to-base-300 text-base-content shadow-xl ring-1 ring-neutral xl:menu-vertical lg:min-w-max">
+          <li>
+            <Link href="/dashboard" className={currentPathname === '/dashboard' ? 'active' : ''}>
+              <HomeIcon className="h-5 w-5 text-secondary" />
+              Dashboard
+            </Link>
+          </li>
+
+          {isCompanyMember &&
+            navigationData.map((nav: NavItem, index) => (
               <SidebarItem key={index} nav={nav} currentPathname={currentPathname} accessLevels={accessLevels} />
             ))}
-          </ul>
-        </div>
-        <div className="bottom-0 flex flex-col items-center justify-center rounded-box border-neutral">
-          <ul className="menu menu-horizontal my-2 flex-wrap rounded-box bg-base-200 shadow-2xl max-sm:menu-vertical">
-            <li>
-              <Link href="/dashboard" className="tooltip flex max-sm:flex-row" data-tip="Dashboard">
-                <HomeIcon className="h-5 w-5 text-secondary" />
-                <span className="hidden max-sm:inline-block">Dashboard</span>
-              </Link>
-            </li>
-            <li>
+
+          <li>
+            {isCompanyMember ? (
               <Link href="/dashboard/settings" className="tooltip flex max-sm:flex-row" data-tip="Settings">
                 <Cog6ToothIcon className="h-5 w-5 text-secondary" />
-                <span className="hidden max-sm:inline-block">Settings</span>
+                Settings
               </Link>
-            </li>
-            <li>
-              <Link href="#k" className="tooltip flex max-sm:flex-row" data-tip="Stats">
-                <ChartBarIcon className="h-5 w-5 text-secondary" />
-                <span className="hidden max-sm:inline-block">Stats</span>
-              </Link>
-            </li>
-          </ul>
-        </div>
+            ) : (
+              <div
+                className="tooltip flex cursor-pointer max-sm:flex-row"
+                data-tip="Settings"
+                onClick={() => toast.error('Need to have company access')}
+              >
+                <Cog6ToothIcon className="h-5 w-5 text-secondary" />
+                Settings
+              </div>
+            )}
+          </li>
+        </ul>
       </div>
     </React.Fragment>
   );

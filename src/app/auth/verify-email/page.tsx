@@ -1,6 +1,6 @@
 'use client';
-import handleError from '@/app/util/error/handleError';
-import axios from 'axios';
+import handleError from '@util/error/handleError';
+import { ApiPost } from '@util/makeApiRequest/makeApiRequest';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { Suspense, useEffect } from 'react';
@@ -20,12 +20,11 @@ function VerifyEmailPageWrapper() {
     const verifyUserEmail = async () => {
       try {
         const verifyUser = async () => {
-          const response = await axios.post('/api/auth/verify-email', { token: token });
-          if (response.data.success === true) {
-            return response.data.message;
-          } else {
-            throw new Error(response.data.message ?? response.data.error);
+          const response = await ApiPost.Auth.verifyEmail({ token });
+          if (response.success) {
+            return response.message;
           }
+          throw new Error(response.message ?? response.error);
         };
         await toast.promise(verifyUser(), {
           loading: 'Verifying email...',
@@ -36,8 +35,6 @@ function VerifyEmailPageWrapper() {
           router.push('/auth/login');
         }, 3000);
       } catch (error) {
-        // console.log(error.response);
-        // toast.error(error.response.data.error + ' ' + error.response.status);
         handleError.log(error);
       }
     };
@@ -50,26 +47,26 @@ function VerifyEmailPageWrapper() {
   }, [token, router]);
 
   return (
-    <div className="hero min-h-screen bg-base-200">
-      <div className="hero-content flex-col justify-center rounded-box shadow-2xl lg:flex-row-reverse">
-        <div className="text-center lg:text-left">
-          <h1 className="mb-5 text-5xl font-bold">Verify Email</h1>
-          <p className="mb-5">Welcome to Kalamandir! Verifying your email is required to continue.</p>
+    <div className="hero relative h-full">
+      <div className="hero-content max-h-[80%] min-h-fit min-w-[65%] max-w-[80%] flex-col rounded-box bg-base-200 px-6 py-12 shadow-inner shadow-primary sm:max-h-full lg:flex-row-reverse">
+        <div className="flex select-none flex-col gap-2 p-4 text-center lg:min-w-[55%]">
+          <h1 className="text-center text-5xl font-bold">Verify Email</h1>
+          <p className="text-pretty px-2 py-3">Welcome to Kalamandir! Please wait while we verify your email.</p>
         </div>
-        <div className="card m-3 w-full max-w-sm flex-shrink-0 bg-base-100 shadow-xl shadow-neutral">
-          <div className="card-body pb-5">
+        <div className="card h-full w-full max-w-xs shrink-0 grow gap-1 bg-base-300 shadow-inner shadow-primary max-sm:max-w-sm sm:max-h-full lg:min-h-[85%] lg:max-w-sm">
+          <div className="card-body p-4">
             <div className="flex select-none justify-center">Verify</div>
-            <div className="card-body px-2 pt-3">
+            <div className="divider"></div>
+            <div className="flex flex-col gap-4">
               <div className="flex items-center justify-between">
-                <p className="label label-text text-secondary">If Already Verified</p>
-                <Link href="/auth/login" className="btn btn-link pr-0">
+                <p className="label-text text-secondary">Already verified?</p>
+                <Link href="/auth/login" className="btn btn-link btn-sm">
                   Login
                 </Link>
               </div>
-              <hr className="border-t-2 border-neutral bg-base-300" />
               <div className="flex items-center justify-between">
-                <p className="label label-text text-secondary">If Link expired resend verification go to signup</p>
-                <Link href="/auth/signup" className="btn btn-link pr-0">
+                <p className="label-text text-secondary">Link expired?</p>
+                <Link href="/auth/signup" className="btn btn-link btn-sm">
                   Signup
                 </Link>
               </div>

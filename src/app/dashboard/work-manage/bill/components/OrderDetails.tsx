@@ -1,7 +1,8 @@
-import ColorPickerButton from '@/app/components/ColorPickerButton/ColorPickerButton';
-import { InputField } from '@/app/dashboard/work-manage/bill/components/InputField';
-import { IBill, ICategory, IColor, IDimensionTypes, IDimensions, IStyle, IStyleProcess } from '@/models/klm';
+import ColorPickerButton from '@components/ColorPickerButton/ColorPickerButton';
+import { InputField } from '@dashboard/work-manage/bill/components/InputField';
+import { updateOrderAmount } from '@dashboard/work-manage/bill/utils/billUtils';
 import { MinusCircleIcon } from '@heroicons/react/24/outline';
+import { IBill, ICategory, IColor, IDimensionTypes, IDimensions, IStyle, IStyleProcess } from '@models/klm';
 import { Types } from 'mongoose';
 import React from 'react';
 
@@ -73,9 +74,9 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
   return (
     <div
       id={`order_${orderIndex}`}
-      className="flex w-full justify-between gap-1 rounded-box border border-base-300 bg-base-100 p-1 shadow max-sm:flex-wrap max-sm:justify-around"
+      className="flex w-full justify-between gap-2 rounded-box bg-base-100 p-1 shadow ring-2 ring-primary max-sm:flex-wrap max-sm:justify-around"
     >
-      <div className="flex grow flex-col gap-1 rounded-box border-2 border-base-300 bg-base-200 p-2 shadow">
+      <div className="flex grow flex-col gap-1 rounded-box bg-base-300 p-2 shadow ring-1 ring-base-300">
         {/* 1st row */}
         <div className="flex w-full flex-row items-center justify-between gap-x-0.5 gap-y-2 max-sm:flex-col-reverse">
           <div className="flex w-full grow flex-row flex-wrap justify-start gap-x-1.5 gap-y-2">
@@ -214,6 +215,7 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
                         cat.dimensionTypes?.length ?? 0,
                       );
                     }}
+                    labelClass="text-nowrap input-primary"
                   />
                 </div>
               ));
@@ -247,9 +249,9 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
                       order: bill.order?.map((o, i) => (i === orderIndex ? { ...o, measurement: e.target.value } : o)),
                     } as IBill)
                   }
-                  className="w-full grow max-sm:w-full"
-                  labelClass="textarea-primary grow"
-                  textareaClass="grow textarea-primary bg-base-300 min-h-fit max-sm:w-full"
+                  className="w-full grow rounded-box p-0.5 ring-1 ring-base-100 max-sm:w-full"
+                  labelClass="grow"
+                  textareaClass="grow textarea textarea-primary bg-base-300 min-h-fit max-sm:w-full"
                 />
               </span>
             </span>
@@ -277,17 +279,7 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
                 value={order.amount || ''}
                 onChange={(e) => {
                   const amount = parseFloat(e.currentTarget.value) || 0;
-                  const updatedOrder = bill.order.map((o, i) => (i === orderIndex ? { ...o, amount: amount } : o));
-                  const newTotalAmount = updatedOrder.reduce((total, item) => total + (item.amount || 0), 0);
-
-                  setBill(
-                    (prevBill) =>
-                      ({
-                        ...prevBill,
-                        order: updatedOrder,
-                        totalAmount: newTotalAmount,
-                      }) as IBill,
-                  );
+                  updateOrderAmount(bill, orderIndex, amount, setBill);
                 }}
                 labelClass="input-primary"
                 inputClass="grow"
@@ -301,7 +293,7 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
         (cat) =>
           cat._id.toString() === bill?.order?.[orderIndex]?.category?.catId?.toString() && cat.styleProcess?.length,
       ) && (
-        <div className="flex flex-col items-center gap-1 rounded-box border-2 border-base-300 bg-base-200 p-2 max-sm:w-full max-sm:items-start">
+        <div className="flex flex-col items-center gap-1 rounded-box bg-base-300 p-2 ring-1 ring-base-300 max-sm:w-full max-sm:items-start">
           <h2 className="label label-text p-0 text-center">Style</h2>
           <div className="flex w-full flex-col flex-wrap justify-between gap-1 max-sm:flex-row">
             {(category || []).map((cat) => {

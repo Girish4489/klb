@@ -1,4 +1,4 @@
-import { ITax } from '@/models/klm';
+import { ITax } from '@models/klm';
 import React from 'react';
 
 interface TaxModalProps {

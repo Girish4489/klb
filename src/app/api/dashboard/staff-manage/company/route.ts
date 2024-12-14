@@ -1,8 +1,8 @@
-import handleError from '@/app/util/error/handleError';
 import { connect } from '@/dbConfig/dbConfig';
-import { UserTokenData } from '@/helpers/getDataFromToken';
-import Company from '@/models/companyModel';
-import User from '@/models/userModel';
+import { UserTokenData } from '@helpers/getDataFromToken';
+import Company from '@models/companyModel';
+import User from '@models/userModel';
+import handleError from '@util/error/handleError';
 import { NextRequest, NextResponse } from 'next/server';
 
 connect();
@@ -15,11 +15,11 @@ export async function GET(req: NextRequest) {
       '-password -username -email -isVerified -isAdmin -theme -profileImage -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry',
     );
     if (!user) throw new Error('Invalid user operation');
-    if (!user.companyAccess.companyId && user.companyAccess.role !== 'owner')
+    if (!user.companyAccess?.companyId && user.companyAccess?.role !== 'owner')
       throw new Error('You account not linked with your company\nPlease contact Admin/Hr for linking');
-    if (!user.companyAccess.companyId && user.companyAccess.role === 'owner')
+    if (!user.companyAccess?.companyId && user.companyAccess?.role === 'owner')
       throw new Error('Company not yet created\nPlease register company');
-    const company = await Company.findOne({ _id: user.companyAccess.companyId });
+    const company = await Company.findOne({ _id: user.companyAccess?.companyId });
     if (!company) throw new Error('Company not found');
     return NextResponse.json({ success: true, data: company, message: 'Company details fetched successfuly' });
   } catch (error) {
@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
       '-password -username -email -isVerified -isAdmin -theme -profileImage -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry -preferences',
     );
     if (!user) throw new Error('invalid user operation..');
-    if (user.companyAccess.role !== 'owner') throw new Error('Company setup only done by the owner');
+    if (user.companyAccess?.role !== 'owner') throw new Error('Company setup only done by the owner');
 
     const reqBody = await req.json();
     const newCompany = new Company(reqBody);

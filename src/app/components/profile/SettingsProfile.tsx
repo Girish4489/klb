@@ -1,15 +1,16 @@
 'use client';
-import { Modal } from '@/app/components/Modal/Modal';
-import Logout from '@/app/components/logout/page';
-import { userConfirmation } from '@/app/util/confirmation/confirmationUtil';
-import handleError from '@/app/util/error/handleError';
-import { formatD, formatDNT } from '@/app/util/format/dateUtils';
-import { IUser } from '@/models/userModel';
+import { ImageProcessor } from '@/app/util/image/imageUtils';
+import { Modal } from '@components/Modal/Modal';
 import { TrashIcon } from '@heroicons/react/24/solid';
+import { IUser } from '@models/userModel';
+import { userConfirmation } from '@util/confirmation/confirmationUtil';
+import handleError from '@util/error/handleError';
+import { formatD, formatDNT } from '@util/format/dateUtils';
 import axios from 'axios';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import LogoutButton from '../logout/LogoutButton';
 
 const LoadingSkeleton = () => (
   <div className="flex flex-col items-center gap-4">
@@ -34,6 +35,13 @@ const BadgeItem: React.FC<{ label: string; content: string | boolean; badgeClass
   </span>
 );
 
+const getProfileImageSrc = (profileImage?: IUser['profileImage']): string => {
+  if (!profileImage?.data || profileImage.__filename === 'USER_PROFILE_404_ERROR') {
+    return '/klm.webp';
+  }
+  return `data:${profileImage.contentType};base64,${profileImage.data}`;
+};
+
 export default function SettingsProfile({
   user,
   updateUser,
@@ -44,9 +52,9 @@ export default function SettingsProfile({
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [dates, setDates] = useState({
-    createdAt: '',
-    updatedAt: '',
-    lastLogin: '',
+    createdAt: formatDNT(user.createdAt),
+    updatedAt: formatD(user.updatedAt),
+    lastLogin: formatD(user.lastLogin),
   });
 
   useEffect(() => {
@@ -77,84 +85,49 @@ export default function SettingsProfile({
     }
   };
 
-  async function uploadProfilePhoto(e: React.FormEvent<HTMLFormElement>) {
+  const handleImageUpload = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!profileImage) return;
 
     try {
-      const uploadImage = async () => {
-        if (!profileImage || !profileImage.type.startsWith('image/')) {
-          throw new Error('Please select a valid image');
-        }
+      setIsLoading(true);
+      const { base64, metadata } = await ImageProcessor.processImage(profileImage);
 
-        if (profileImage.size > 2 * 1024 * 1024) {
-          throw new Error('Please select an image less than 2MB');
-        }
+      const formData = new FormData();
+      formData.append('base64', base64);
+      formData.append('metadata', JSON.stringify(metadata));
 
-        const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-        const fileExtension = profileImage?.name.split('.').pop()?.toLowerCase();
-        if (!allowedExtensions.includes(fileExtension as string)) {
-          throw new Error('Please select a valid image file');
-        }
+      const { data } = await axios.post('/api/dashboard/settings', formData);
+      if (!data.success) throw new Error(data.message);
 
-        const formData = new FormData();
-        formData.append('profileImage', profileImage);
+      updateUser({ profileImage: data.profileImage });
+      toast.success(data.message);
 
-        const res = await axios.post('/api/dashboard/settings', formData);
-        if (res.data.success === true) {
-          updateUser({
-            profileImage: res.data.profileImage,
-          });
-          return res.data.message;
-        } else {
-          throw new Error(res.data.message);
-        }
-      };
-      await toast.promise<string>(uploadImage(), {
-        loading: 'Uploading...',
-        success: (message: string) => <b>{message}</b>,
-        error: (error: Error) => <b>{error.message}</b>,
-      });
       setProfileImage(null);
       clearProfileImageInput();
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        toast.error(error.response?.data?.message || 'An error occurred while removing the image');
-      } else {
-        handleError.toastAndLog(error);
-      }
+      handleError.toastAndLog(error);
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
 
   const removeProfilePhoto = async () => {
-    const removeImage = async () => {
-      const res = await axios.delete('/api/dashboard/settings');
-      if (res.data.success === true) {
-        updateUser({
-          profileImage: {
-            data: Buffer.from([]).toString(),
-            __filename: 'USER_PROFILE_404_ERROR',
-            contentType: '',
-            uploadAt: new Date(),
-          },
-        });
-        return res.data.message;
-      } else {
-        throw new Error(res.data.message);
-      }
-    };
     try {
-      const confirm = await userConfirmation({
+      const confirmed = await userConfirmation({
         header: 'Remove Profile Photo',
-        message: 'Are you sure you want to remove your profile photo? This action cannot be undone.',
+        message: 'Are you sure you want to remove your profile photo?',
       });
-      if (!confirm) return;
-      await toast.promise<string>(removeImage(), {
-        loading: 'Removing...',
-        success: (message: string) => <b>{message}</b>,
-        error: (error: Error) => <b>{error.message}</b>,
-      });
+
+      if (!confirmed) return;
+
+      const res = await axios.delete('/api/dashboard/settings');
+      if (!res.data.success) throw new Error(res.data.message);
+
+      updateUser({ profileImage: res.data.profileImage });
+      toast.success(res.data.message);
     } catch (error) {
-      handleError.log(error);
+      handleError.toastAndLog(error);
     }
   };
 
@@ -168,12 +141,8 @@ export default function SettingsProfile({
             <span className="badge indicator-item badge-secondary select-none lg:mt-4">edit..</span>
             <div className="h-24 w-24 rounded-full ring ring-primary hover:scale-105 hover:ring-offset-2  hover:ring-offset-accent">
               <Image
-                src={
-                  user.profileImage?.__filename !== 'USER_PROFILE_404_ERROR' && user.profileImage?.data
-                    ? `data:${user.profileImage.contentType};base64,${user.profileImage?.data}`
-                    : '/klm.webp'
-                }
-                alt="Landscape picture"
+                src={getProfileImageSrc(user.profileImage)}
+                alt="Profile picture"
                 className="cursor-pointer rounded-full transition-all duration-500 ease-in-out"
                 width="40"
                 height="40"
@@ -210,7 +179,7 @@ export default function SettingsProfile({
               </div>
               <div className="card-body w-full items-center">
                 <form
-                  onSubmit={uploadProfilePhoto}
+                  onSubmit={handleImageUpload}
                   encType="multipart/form-data"
                   className="flex max-w-xs flex-col gap-2"
                 >
@@ -257,9 +226,7 @@ export default function SettingsProfile({
             <BadgeItem label="Last Login" content={dates.lastLogin} />
             <span className="badge w-full select-none justify-between gap-2 p-5">
               <h1 className="font-bold">Logout:</h1>
-              <span className="badge badge-warning p-4 outline outline-2 outline-offset-1 outline-error hover:badge-error hover:cursor-pointer hover:font-semibold hover:outline-warning">
-                <Logout />
-              </span>
+              <LogoutButton className="btn-error btn-sm px-6 ring-2 ring-warning hover:font-semibold" />
             </span>
           </div>
         </>

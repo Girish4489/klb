@@ -1,4 +1,4 @@
-import { FormModal } from '@/app/dashboard/master-record/category/components/modals';
+import { FormModal } from '@dashboard/master-record/category/components/modals';
 import React from 'react';
 
 interface FormModalsProps {

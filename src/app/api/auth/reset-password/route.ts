@@ -1,7 +1,7 @@
-import bcryptUtil from '@/app/util/bcrypt/bcrypt';
-import handleError from '@/app/util/error/handleError';
 import { connect } from '@/dbConfig/dbConfig';
-import User from '@/models/userModel';
+import User from '@models/userModel';
+import bcryptUtil from '@util/bcrypt/bcrypt';
+import handleError from '@util/error/handleError';
 import bcryptjs from 'bcryptjs';
 import { NextRequest, NextResponse } from 'next/server';
 

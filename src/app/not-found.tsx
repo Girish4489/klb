@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import Image from 'next/image';
+import Link from 'next/link';
 import React from 'react';
 
 export const metadata: Metadata = {
@@ -33,16 +34,23 @@ const NotFound: React.FC = () => {
 
   const createStars = () => {
     const stars = [];
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 40; i++) {
       const randomShape = maskShapes[Math.floor(Math.random() * maskShapes.length)];
+      const size = Math.random() * 3 + 1; // Random size between 1-4px
+      const colors = ['bg-secondary', 'bg-primary', 'bg-accent'];
+      const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
       stars.push(
         <div
           key={i}
-          className={`mask ${randomShape} absolute h-2 w-2 animate-ping bg-secondary`}
+          className={`mask ${randomShape} absolute animate-ping ${randomColor}`}
           style={{
             top: `${Math.random() * 100}%`,
             left: `${Math.random() * 100}%`,
-            animationDuration: `${Math.random() * 2 + 1}s`,
+            width: `${size}px`,
+            height: `${size}px`,
+            animationDuration: `${Math.random() * 3 + 1}s`,
+            animationDelay: `${Math.random() * 2}s`,
           }}
         ></div>,
       );
@@ -51,17 +59,27 @@ const NotFound: React.FC = () => {
   };
 
   return (
-    <div className="relative flex h-screen flex-col items-center justify-center overflow-hidden">
-      <div className="absolute inset-0 bg-warning-content"></div>
-      <div className="z-10 flex items-center justify-center gap-2 rounded-box border border-info bg-info-content p-10 max-sm:flex-col">
-        <Image className="mask mask-squircle select-none" src="/klm.webp" alt="KLM" width={80} height={80} />
-        <div className="h-10 rounded-box border-4 border-base-200 max-sm:h-0 max-sm:w-12 max-sm:border-4"></div>
-        <span className="flex flex-col items-center justify-center">
-          <div className="label text-5xl font-bold text-primary">OOPS!</div>
-          <div className="label pt-0 font-bold text-warning">404 | Page not found</div>
-        </span>
+    <div className="relative flex h-screen flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-base-300 to-warning-content">
+      <div className="absolute inset-0 bg-opacity-50">{createStars()}</div>
+      <div className="animate-float z-10 flex flex-col items-center justify-center gap-6 rounded-box border-2 border-info bg-base-300/80 p-10 backdrop-blur-sm">
+        <Image
+          className="mask mask-squircle select-none transition-transform hover:scale-105"
+          src="/klm.webp"
+          alt="KLM"
+          width={100}
+          height={100}
+        />
+        <div className="flex flex-col items-center gap-2">
+          <h1 className="animate-pulse text-6xl font-bold text-primary">404</h1>
+          <p className="text-2xl font-semibold text-warning">Page Not Found</p>
+          <p className="mt-2 text-center text-info-content">
+            The page you're looking for doesn't exist or has been moved.
+          </p>
+        </div>
+        <Link href="/" className="btn btn-primary btn-sm btn-wide mt-4 transition-colors hover:btn-secondary">
+          Return Home
+        </Link>
       </div>
-      <div className="absolute inset-0">{createStars()}</div>
     </div>
   );
 };

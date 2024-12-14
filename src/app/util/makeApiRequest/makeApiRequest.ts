@@ -1,7 +1,7 @@
 // /src/app/util/makeApiRequest/makeApiRequest.ts
-import { ICompany } from '@/models/companyModel';
-import { IBill, IReceipt, ITax } from '@/models/klm';
-import { RoleType } from '@/models/userModel';
+import { ICompany } from '@models/companyModel';
+import { IBill, IReceipt, ITax } from '@models/klm';
+import { IUser, RoleType } from '@models/userModel';
 import axios from 'axios';
 import handleError from '../error/handleError';
 
@@ -44,6 +44,82 @@ export const ApiPost = {
     SaveReceipt: async (data: IReceipt) => {
       try {
         const res = await axios.post('/api/dashboard/transaction/receipt', data);
+        return res.data;
+      } catch (error) {
+        handleError.throw(error);
+      }
+    },
+  },
+  User: {
+    updateFontPreferences: async (fonts: { name: string; weight: number }) => {
+      try {
+        const res = await axios.post('/api/auth/fonts', { fonts });
+        return res.data;
+      } catch (error) {
+        handleError.throw(error);
+      }
+    },
+    updateAnimationPreferences: async (animations: { enabled: boolean; intensity: number }) => {
+      try {
+        const res = await axios.post('/api/auth/animations', { animations });
+        return res.data;
+      } catch (error) {
+        handleError.throw(error);
+      }
+    },
+    updatePreferences: async (preferences: Partial<IUser['preferences']>) => {
+      try {
+        const res = await axios.post('/api/auth/preferences', { preferences });
+        return res.data;
+      } catch (error) {
+        handleError.throw(error);
+      }
+    },
+  },
+  Auth: {
+    login: async (data: { email: string; password: string }) => {
+      try {
+        const res = await axios.post('/api/auth/login', data);
+        return res.data;
+      } catch (error) {
+        handleError.throw(error);
+      }
+    },
+    signup: async (data: { username: string; email: string; password: string }) => {
+      try {
+        const res = await axios.post('/api/auth/signup', data);
+        return res.data;
+      } catch (error) {
+        handleError.throw(error);
+      }
+    },
+    resendEmail: async (data: { email: string }) => {
+      try {
+        const res = await axios.post('/api/auth/resend-email', data);
+        return res.data;
+      } catch (error) {
+        handleError.throw(error);
+      }
+    },
+    forgotPassword: async (data: { email: string }) => {
+      try {
+        const res = await axios.post('/api/auth/forgot-password', data);
+        return res.data;
+      } catch (error) {
+        handleError.throw(error);
+      }
+    },
+    verifyEmail: async (data: { token: string }) => {
+      try {
+        const res = await axios.post('/api/auth/verify-email', data);
+        return res.data;
+      } catch (error) {
+        handleError.throw(error);
+      }
+    },
+    resetPassword: async (data: { token: string; password: string }) => {
+      try {
+        const res = await axios.post('/api/auth/reset-password', data);
         return res.data;
       } catch (error) {
         handleError.throw(error);
@@ -184,10 +260,10 @@ export const ApiGet = {
         handleError.throw(error);
       }
     },
-    PrintReceipt: async (printType: string, receiptNumber: number) => {
+    PrintReceipts: async (printType: string, billNumber: number) => {
       try {
         const res = await axios.get(
-          `/api/print-document/print-receipt?printType=${printType}&receiptNumber=${receiptNumber}`,
+          `/api/print-document/print-receipt?printType=${printType}&billNumber=${billNumber}`,
         );
         return res.data;
       } catch (error) {

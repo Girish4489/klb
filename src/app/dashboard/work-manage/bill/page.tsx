@@ -1,38 +1,40 @@
 'use client';
-import BarcodeScannerPage from '@/app/components/Barcode/BarcodeScanner';
-import LoadingSpinner from '@/app/components/LoadingSpinner';
-import SearchBillForm from '@/app/components/SearchBillForm/SearchBillForm';
-import BillDetailsDropdownClear from '@/app/dashboard/work-manage/bill/components/BillDetails';
-import BillHeader from '@/app/dashboard/work-manage/bill/components/BillHeader';
-import BillTable from '@/app/dashboard/work-manage/bill/components/BillTable';
-import IncreaseDecreaseSection from '@/app/dashboard/work-manage/bill/components/IncreaseDecreaseSection';
-import ItemsTrack from '@/app/dashboard/work-manage/bill/components/ItemsTrack';
-import OrderDetails from '@/app/dashboard/work-manage/bill/components/OrderDetails';
-import SaveUpdatePrint from '@/app/dashboard/work-manage/bill/components/SaveUpdatePrint';
+import BarcodeScannerPage from '@components/Barcode/BarcodeScanner';
+import LoadingSpinner from '@components/LoadingSpinner';
+import SearchBillForm from '@components/SearchBillForm/SearchBillForm';
+import BillDetailsDropdownClear from '@dashboard/work-manage/bill/components/BillDetails';
+import BillHeader from '@dashboard/work-manage/bill/components/BillHeader';
+import BillTable from '@dashboard/work-manage/bill/components/BillTable';
+import IncreaseDecreaseSection from '@dashboard/work-manage/bill/components/IncreaseDecreaseSection';
+import ItemsTrack from '@dashboard/work-manage/bill/components/ItemsTrack';
+import OrderDetails from '@dashboard/work-manage/bill/components/OrderDetails';
+import SaveUpdatePrint from '@dashboard/work-manage/bill/components/SaveUpdatePrint';
 import {
   billSearch,
+  calculateTotalAmount,
   checkOrderInUrl,
   clearBill,
+  createEmptyOrder,
+  createInitialBill,
   fetchInitialData,
   handleColorSelect,
   searchRowClicked,
+  updateBillAmounts,
   updateUrlWithBillNumber,
   validateBill,
-} from '@/app/dashboard/work-manage/bill/utils/billUtils';
-import { userConfirmation } from '@/app/util/confirmation/confirmationUtil';
-import handleError from '@/app/util/error/handleError';
-import { ApiGet, ApiPost, ApiPut } from '@/app/util/makeApiRequest/makeApiRequest';
-import { getSearchParam } from '@/app/util/url/urlUtils';
-import { IBill, ICategory, ITax } from '@/models/klm';
+} from '@dashboard/work-manage/bill/utils/billUtils';
 import { PlusCircleIcon } from '@heroicons/react/24/outline';
-import { Types } from 'mongoose';
+import { IBill, ICategory } from '@models/klm';
+import { userConfirmation } from '@util/confirmation/confirmationUtil';
+import handleError from '@util/error/handleError';
+import { ApiGet, ApiPost, ApiPut } from '@util/makeApiRequest/makeApiRequest';
+import { getSearchParam } from '@util/url/urlUtils';
 import React, { useEffect, useMemo } from 'react';
 import toast from 'react-hot-toast';
 
 export default function BillPage() {
   const [loading, setLoading] = React.useState<boolean>(true);
   const [category, setCategory] = React.useState<ICategory[] | []>([]);
-  const [tax, setTax] = React.useState<ITax[]>([]);
   const [bill, setBill] = React.useState<IBill>();
   const [todayBill, setTodayBill] = React.useState<IBill[]>([]);
   const [thisWeekBill, setThisWeekBill] = React.useState<IBill[]>([]);
@@ -41,44 +43,13 @@ export default function BillPage() {
   const [barcode, setBarcode] = React.useState<string>('');
   const [printType, setPrintType] = React.useState<string>('customer');
 
-  const calculateGrandTotal = React.useCallback(() => {
-    let totalTaxes = 0;
-    if (bill?.totalAmount === undefined) return;
-
-    // Check if taxes are selected or present
-    if (bill?.tax && bill.tax.length > 0) {
-      // Calculate total taxes
-      bill.tax.forEach((tax) => {
-        if (tax.taxType === 'Percentage') {
-          totalTaxes += ((bill.totalAmount - bill?.discount) * (tax.taxPercentage ?? 0)) / 100;
-        } else {
-          totalTaxes += tax.taxPercentage ?? 0; // Direct amount tax
-        }
-      });
-    }
-
-    if ((bill?.totalAmount ?? 0) >= 0) {
-      setBill(
-        (prevBill) =>
-          ({
-            ...prevBill,
-            grandTotal: (prevBill?.totalAmount ?? 0) - (prevBill?.discount ?? 0) + totalTaxes,
-          }) as IBill,
-      );
-    }
-  }, [bill?.totalAmount, bill?.discount, bill?.tax]);
-
   useEffect(() => {
     const fetchData = async () => {
-      await fetchInitialData(setCategory, setTax, setTodayBill, setThisWeekBill);
+      await fetchInitialData(setCategory, setTodayBill, setThisWeekBill);
       setLoading(false);
     };
     fetchData();
   }, []);
-
-  useEffect(() => {
-    calculateGrandTotal();
-  }, [calculateGrandTotal]);
 
   useEffect(() => {
     const billNumber = getSearchParam('billNumber');
@@ -149,48 +120,17 @@ export default function BillPage() {
     setSearchBill(undefined);
     setBill(undefined);
     const lastBill = await ApiGet.Bill.LastBill();
-    setBill({
-      billNumber: (lastBill?.lastBill?.billNumber ?? 0) + 1,
-      date: new Date(),
-      dueDate: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
-      urgent: false,
-      trail: false,
-      name: '',
-      email: '',
-      paidAmount: 0,
-      dueAmount: 0,
-      paymentStatus: 'Unpaid',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    } as IBill);
+    setBill(createInitialBill(lastBill?.lastBill?.billNumber ?? 0) as IBill);
   }
 
   const handleNewOrder = () => {
-    // Create a new order object with default values and empty dimension and styleProcess arrays
-    const newOrder = {
-      category: {
-        catId: new Types.ObjectId(),
-        categoryName: '',
-      },
-      dimension: [],
-      styleProcess: [],
-      work: false,
-      barcode: false,
-      measurement: '',
-      orderNotes: '',
-      color: { _id: new Types.ObjectId(), name: '', code: '' },
-      amount: 0,
-      status: 'Pending',
-    };
-
-    // Create a copy of the existing orders array and add the new order
-    const updatedOrders = [...(bill?.order || []), newOrder];
-
-    // Update the bill state with the new orders array
-    setBill({
-      ...bill,
-      order: updatedOrders,
-    } as IBill | undefined);
+    setBill(
+      (prevBill) =>
+        ({
+          ...prevBill,
+          order: [...(prevBill?.order || []), createEmptyOrder()],
+        }) as IBill,
+    );
   };
 
   async function handleDimensionChange(
@@ -297,30 +237,21 @@ export default function BillPage() {
     };
   }
 
-  const handleRowClick = (taxId: string) => {
-    // Find the tax object with the given ID
-    const selectedTax = tax.find((t) => t._id.toString() === taxId);
-    if (selectedTax === undefined) {
-      toast.error('Selected tax not found');
-    }
-    if (selectedTax) {
-      // If the tax is already selected, remove it from the selectedTax array
-      if (bill?.tax?.some((t) => t._id === selectedTax._id)) {
-        setBill({ ...bill, tax: bill.tax.filter((t) => t._id !== selectedTax._id) } as IBill);
-      } else {
-        // If the tax is not already selected, add it to the selectedTax array
-        setBill({ ...bill, tax: [...(bill?.tax || []), selectedTax] } as IBill);
-      }
-    }
-  };
-
   async function handleSaveBill() {
     try {
       await validateBill(bill);
-
       if (!bill) throw new Error('Bill data is undefined');
-      const res = await ApiPost.Bill(bill);
-      if (res.success === true) {
+
+      const updatedBill: Partial<IBill> = updateBillAmounts({
+        ...bill,
+        order: bill.order.map((order) => ({ ...order, status: 'Pending' })),
+        paymentStatus: 'Unpaid',
+        deliveryStatus: 'Pending',
+      });
+
+      // Type assertion here since we know the bill has all required fields
+      const res = await ApiPost.Bill(updatedBill as IBill);
+      if (res.success) {
         setTodayBill([...todayBill, res.today]);
         setBill(res.bill);
         setNewBill(false);
@@ -329,7 +260,7 @@ export default function BillPage() {
         throw new Error(res.message);
       }
     } catch (error) {
-      handleError.toastAndLog(error);
+      handleError.toast(error);
     }
   }
 
@@ -340,79 +271,95 @@ export default function BillPage() {
     });
     if (!update) return;
 
-    const updateBill = async () => {
+    try {
+      const orderAmount = calculateTotalAmount(bill?.order ?? []);
+      setBill(
+        (prevBill) =>
+          ({
+            ...prevBill,
+            totalAmount: orderAmount ?? 0,
+            grandTotal: (orderAmount ?? 0) - (prevBill?.discount ?? 0),
+          }) as IBill | undefined,
+      );
+      await validateBill(bill);
+      if (!(bill ?? {})._id) throw new Error('No bill ID found to update');
+
       const res = await ApiPut.Bill(bill?._id?.toString() ?? '', bill as IBill);
       if (res.success === true) {
         setTodayBill([...todayBill, res.today]);
         setBill(res.bill);
-        return res.message;
+        toast.success(res.message);
       } else {
         throw new Error(res.message);
       }
-    };
-
-    try {
-      await validateBill(bill);
-      if (!(bill ?? {})._id) throw new Error('No bill ID found to update');
-      await toast.promise(updateBill(), {
-        loading: 'Updating bill...',
-        success: (message: string) => <b>{message}</b>,
-        error: (error: Error) => <b>{error.message}</b>,
-      });
     } catch (error) {
-      handleError.toastAndLog(error);
+      handleError.toast(error);
     }
   }
 
   return (
-    <span className="table-column h-full">
-      <div className="flex h-full w-full flex-col shadow max-sm:table-cell">
-        <span className="flex min-w-fit flex-row flex-wrap items-center justify-between gap-2 rounded-box bg-accent/10 px-3 py-1.5 backdrop-blur-xl max-sm:flex-col">
-          <button className="btn btn-primary btn-sm" onClick={createNewBill}>
-            <PlusCircleIcon className="h-5 w-5" />
-            New
-          </button>
-          <h1 className="grow text-center">Bill</h1>
-          <span className="flex flex-row flex-wrap-reverse gap-2">
-            <BarcodeScannerPage
-              onScanComplete={setBarcode}
-              scannerId="billHeaderScanner"
-              scanModalId="billHeaderScanner_modal"
-            />
-            {bill && (
-              <BillDetailsDropdownClear
-                bill={bill}
-                clearBill={() => clearBill(setBill)}
-                link={`/dashboard/work-manage/bill?billNumber=${bill.billNumber}`}
-                linkDisabled={false}
+    <div className="flex h-[calc(100vh-4rem)] flex-col gap-2">
+      {/* Header Area */}
+      <div className="flex flex-col space-y-2">
+        {/* Top Bar with New/Search */}
+        <div className="rounded-lg bg-base-200 p-2 shadow">
+          <div className="flex items-center justify-between">
+            <button className="btn btn-primary btn-sm" onClick={createNewBill}>
+              <PlusCircleIcon className="h-5 w-5" />
+              New Bill
+            </button>
+            <div className="flex gap-2">
+              <BarcodeScannerPage
+                onScanComplete={setBarcode}
+                scannerId="billHeaderScanner"
+                scanModalId="billHeaderScanner_modal"
               />
-            )}
-            <SearchBillForm
-              onSearch={(e) => billSearch(e, setBill, setSearchBill)}
-              searchResults={searchBill}
-              onRowClick={(billId) =>
-                searchRowClicked(billId, searchBill, setBill, setSearchBill, updateUrlWithBillNumber)
-              }
-            />
-          </span>
-        </span>
+              {bill && (
+                <BillDetailsDropdownClear
+                  bill={bill}
+                  clearBill={() => clearBill(setBill)}
+                  link={`/dashboard/work-manage/bill?billNumber=${bill.billNumber}`}
+                  linkDisabled={false}
+                />
+              )}
+              <SearchBillForm
+                onSearch={(e) => billSearch(e, setBill, setSearchBill)}
+                searchResults={searchBill}
+                onRowClick={(billId) =>
+                  searchRowClicked(billId, searchBill, setBill, setSearchBill, updateUrlWithBillNumber, setNewBill)
+                }
+              />
+            </div>
+          </div>
+        </div>
 
-        {/* new bill */}
+        {/* Bill Header */}
         {bill && (
-          <span className="contents">
-            {/* Bill header */}
+          <div className="rounded-lg bg-base-200 p-2 shadow">
             <BillHeader bill={bill} setBill={setBill} />
-            {/* increase or decrease */}
+          </div>
+        )}
+      </div>
+
+      {/* Main Work Area */}
+      {bill && (
+        <div className="flex flex-1 flex-col space-y-2">
+          {/* Add/Remove Order Controls */}
+          <div className="rounded-lg bg-base-200 p-2">
             <IncreaseDecreaseSection
               bill={bill}
               handleNewOrder={handleNewOrder}
               handleRemoveOrder={handleRemoveOrder}
             />
-            {/* items and track in row */}
-            <div className="flex h-full w-full flex-row items-start gap-1 rounded-box bg-base-300 p-1 max-sm:flex-col max-sm:items-center">
-              <div className="flex min-h-full grow flex-col justify-between rounded-box border border-base-300">
-                <div className="flex max-h-[45rem] min-h-full w-full grow flex-col gap-1 overflow-auto rounded-box bg-base-200">
-                  {/* orders */}
+          </div>
+
+          {/* Orders and Tracking Area */}
+          <div className="grid flex-1 grid-cols-[1fr_auto] gap-2 px-1">
+            {/* Left: Orders Section */}
+            <div className="flex flex-col gap-1 rounded-lg bg-base-300">
+              <div className="flex-1 overflow-y-auto bg-base-100 p-1">
+                {/* Orders Content */}
+                <div className="space-y-2">
                   {bill?.order?.map((order, orderIndex) => (
                     <OrderDetails
                       key={orderIndex}
@@ -424,28 +371,35 @@ export default function BillPage() {
                       handleRemoveOrder={handleRemoveOrder}
                       handleDimensionChange={handleDimensionChange}
                       handleStyleProcessChange={handleStyleProcessChange}
-                      handleColorSelect={(color, orderIndex) => handleColorSelect(color, orderIndex, setBill)}
+                      handleColorSelect={(color) => handleColorSelect(color, orderIndex, setBill)}
                     />
                   ))}
                 </div>
-                <SaveUpdatePrint
-                  newBill={newBill}
-                  bill={bill}
-                  printType={printType}
-                  setPrintType={setPrintType}
-                  handleSaveBill={handleSaveBill}
-                  handleUpdateBill={handleUpdateBill}
-                />
               </div>
-              <ItemsTrack bill={bill} tax={tax} handleRowClick={handleRowClick} setBill={setBill} />
+              {/* Save/Update/Print Bar */}
+              <SaveUpdatePrint
+                newBill={newBill}
+                bill={bill}
+                printType={printType}
+                setPrintType={setPrintType}
+                handleSaveBill={handleSaveBill}
+                handleUpdateBill={handleUpdateBill}
+              />
             </div>
-          </span>
-        )}
-      </div>
-      <div className="my-0.5 flex w-full flex-col rounded-box bg-base-300 p-2">
-        <BillTable caption="Today" bills={formattedTodayBill as unknown as IBill[]} />
-        <BillTable caption="This Week (excluding today)" bills={formattedThisWeekBill as unknown as IBill[]} />
-      </div>
-    </span>
+
+            {/* Right: Items Track */}
+            <div className="w-80 rounded-lg bg-base-100">
+              <ItemsTrack bill={bill} />
+            </div>
+          </div>
+
+          {/* Bottom Tables */}
+          <div className="grid grid-rows-2 gap-2 bg-base-100 px-0.5">
+            <BillTable caption="Today's Bills" bills={formattedTodayBill as unknown as IBill[]} />
+            <BillTable caption="This Week's Bills" bills={formattedThisWeekBill as unknown as IBill[]} />
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

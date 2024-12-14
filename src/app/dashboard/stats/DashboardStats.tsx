@@ -1,4 +1,4 @@
-import { getComputedStyleValue } from '@/app/util/Styles';
+import { getComputedStyleValue } from '@util/Styles';
 import axios from 'axios';
 import { ArcElement, BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Tooltip } from 'chart.js';
 import { useEffect, useState } from 'react';
@@ -20,6 +20,8 @@ interface Stats {
   grandTotalAmount: number;
   paidAmount: number;
   dueAmount: number;
+  discountAmount: number;
+  discountCount: number;
 }
 
 const DashboardStats = ({ refresh }: DashboardStatsProps) => {
@@ -33,6 +35,8 @@ const DashboardStats = ({ refresh }: DashboardStatsProps) => {
     grandTotalAmount: 0,
     paidAmount: 0,
     dueAmount: 0,
+    discountAmount: 0,
+    discountCount: 0,
   });
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
@@ -48,7 +52,7 @@ const DashboardStats = ({ refresh }: DashboardStatsProps) => {
   }, [refresh]);
 
   const data = {
-    labels: ['Paid', 'Partially Paid', 'Unpaid Bills', 'Delivered', 'Pending Delivery', 'Total Bills'],
+    labels: ['Paid', 'Partially Paid', 'Unpaid Bills', 'Delivered', 'Pending Delivery', 'Discounted', 'Total Bills'],
     datasets: [
       {
         label: 'Count',
@@ -58,6 +62,7 @@ const DashboardStats = ({ refresh }: DashboardStatsProps) => {
           stats.unpaidBillsCount,
           stats.deliveredBillsCount,
           stats.pendingDeliveryBillsCount,
+          stats.discountCount,
           stats.totalBillsCount,
         ],
         backgroundColor: [
@@ -66,6 +71,7 @@ const DashboardStats = ({ refresh }: DashboardStatsProps) => {
           getComputedStyleValue('bg-error', 'background-color'),
           getComputedStyleValue('bg-success', 'background-color'),
           getComputedStyleValue('bg-warning', 'background-color'),
+          getComputedStyleValue('bg-info', 'background-color'),
           getComputedStyleValue('bg-primary', 'background-color'),
         ],
       },
@@ -73,15 +79,16 @@ const DashboardStats = ({ refresh }: DashboardStatsProps) => {
   };
 
   const amountData = {
-    labels: ['Grand Total', 'Paid Amount', 'Due Amount'],
+    labels: ['Grand Total', 'Paid Amount', 'Due Amount', 'Discount'],
     datasets: [
       {
         label: 'Amount',
-        data: [stats.grandTotalAmount, stats.paidAmount, stats.dueAmount],
+        data: [stats.grandTotalAmount, stats.paidAmount, stats.dueAmount, stats.discountAmount],
         backgroundColor: [
           getComputedStyleValue('bg-primary', 'background-color'),
           getComputedStyleValue('bg-success', 'background-color'),
           getComputedStyleValue('bg-warning', 'background-color'),
+          getComputedStyleValue('bg-secondary', 'background-color'),
         ],
       },
     ],

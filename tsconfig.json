@@ -22,7 +22,14 @@
     "paths": {
       "@/*": ["./src/*"],
       "@data/*": ["./data/*"],
-      "@public/*": ["./public/*"]
+      "@public/*": ["./public/*"],
+      "@models/*": ["./src/models/*"],
+      "@helpers/*": ["./src/helpers/*"],
+      "@components/*": ["./src/app/components/*"],
+      "@constants/*": ["./src/app/constants/*"],
+      "@context/*": ["./src/app/context/*"],
+      "@dashboard/*": ["./src/app/dashboard/*"],
+      "@util/*": ["./src/app/util/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

@@ -1,7 +1,7 @@
-import { checkCameraAccess } from '@/app/util/cameraAccess';
-import handleError from '@/app/util/error/handleError';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { QrCodeIcon } from '@heroicons/react/24/solid';
+import { checkCameraAccess } from '@util/cameraAccess';
+import handleError from '@util/error/handleError';
 import {
   BrowserAztecCodeReader,
   BrowserCodeReader,

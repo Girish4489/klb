@@ -1,8 +1,8 @@
-import handleError from '@/app/util/error/handleError';
 import { connect } from '@/dbConfig/dbConfig';
-import { UserTokenData } from '@/helpers/getDataFromToken';
-import Company from '@/models/companyModel';
-import User from '@/models/userModel';
+import { UserTokenData } from '@helpers/getDataFromToken';
+import Company from '@models/companyModel';
+import User from '@models/userModel';
+import handleError from '@util/error/handleError';
 import { NextRequest, NextResponse } from 'next/server';
 
 connect();
@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
       '-password -username -email -isVerified -isAdmin -theme -profileImage -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry',
     );
     if (!user) throw new Error('Invalid user');
-    if (!user.companyAccess.companyId && user.companyAccess.role !== 'owner')
+    if (!user.companyAccess || (!user.companyAccess.companyId && user.companyAccess.role !== 'owner'))
       throw new Error('You account not linked with your company\nPlease contact Admin/Hr for linking');
     if (!user.companyAccess.companyId && user.companyAccess.role === 'owner')
       throw new Error('Company not yet created\nPlease register company');

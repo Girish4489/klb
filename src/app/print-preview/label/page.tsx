@@ -1,9 +1,9 @@
 'use client';
-import QrGenerator from '@/app/components/Barcode/BarcodeGenerator';
-import LoadingSpinner from '@/app/components/LoadingSpinner';
 import PrintHeader from '@/app/print-preview/components/PrintHeader';
-import { getSearchParam } from '@/app/util/url/urlUtils';
-import { IBill } from '@/models/klm';
+import QrGenerator from '@components/Barcode/BarcodeGenerator';
+import LoadingSpinner from '@components/LoadingSpinner';
+import { IBill } from '@models/klm';
+import { getSearchParam } from '@util/url/urlUtils';
 import React, { useEffect, useState } from 'react';
 
 const BillOrderLabels: React.FC = () => {

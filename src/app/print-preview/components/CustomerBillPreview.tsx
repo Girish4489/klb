@@ -1,9 +1,9 @@
-import { IBill } from '@/models/klm';
+import { IBill } from '@models/klm';
 import React from 'react';
 
-import QrGenerator from '@/app/components/Barcode/BarcodeGenerator';
-import { formatDS } from '@/app/util/format/dateUtils';
-import { ICompany } from '@/models/companyModel';
+import QrGenerator from '@components/Barcode/BarcodeGenerator';
+import { ICompany } from '@models/companyModel';
+import { formatDS } from '@util/format/dateUtils';
 import Image from 'next/image';
 
 interface CustomerBillPreviewProps {

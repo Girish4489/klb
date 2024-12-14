@@ -1,5 +1,5 @@
-import handleError from '@/app/util/error/handleError';
-import { cookie } from '@/app/util/token/token';
+import handleError from '@util/error/handleError';
+import { cookie } from '@util/token/token';
 import { NextResponse } from 'next/server';
 
 export async function GET() {

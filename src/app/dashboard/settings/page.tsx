@@ -1,12 +1,13 @@
 'use client';
-import SettingsProfile from '@/app/components/profile/SettingsProfile';
-import ThemerPage from '@/app/components/themer/ThemerPage';
-import { useUser } from '@/app/context/userContext';
-import handleError from '@/app/util/error/handleError';
-import { IUser } from '@/models/userModel';
+import SettingsProfile from '@components/profile/SettingsProfile';
+import ThemerPage from '@components/themer/ThemerPage';
+import { useUser } from '@context/userContext';
 import { InformationCircleIcon } from '@heroicons/react/24/solid';
-import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { IUser } from '@models/userModel';
+import handleError from '@util/error/handleError';
+import { ApiPost } from '@util/makeApiRequest/makeApiRequest';
+import { debounce } from 'lodash';
+import { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
 interface Fonts {
@@ -33,32 +34,47 @@ export default function SettingsPage() {
     document.body.style.fontWeight = fonts.weight.toString();
   }, [fonts]);
 
-  const updateFontPreferences = async (updatedFonts: Fonts) => {
+  const updatePreferences = async (updatedPreferences: Partial<IUser['preferences']>) => {
     await toast
       .promise(
         (async () => {
-          const res = await axios.post('/api/auth/fonts', { fonts: updatedFonts });
-          if (res.data.success && res.data.fonts) {
-            setFonts(res.data.fonts);
+          const res = await ApiPost.User.updatePreferences(updatedPreferences);
+          if (res.success && res.preferences) {
             updateUser({
-              preferences: {
-                fonts: res.data.fonts,
-                theme: user.preferences?.theme ?? 'default',
-              },
+              preferences: res.preferences,
             });
-            return res.data.message;
+            return res.message;
           } else {
-            throw new Error(res.data.message);
+            throw new Error(res.message);
           }
         })(),
         {
-          loading: 'Updating font preferences...',
+          loading: 'Updating preferences...',
           success: (message: string) => <b>{message}</b>,
           error: (error: Error) => <b>{error.message}</b>,
         },
       )
       .catch(handleError.toastAndLog);
   };
+
+  const updateFontPreferences = async (updatedFonts: Fonts) => {
+    await updatePreferences({
+      fonts: updatedFonts,
+    });
+  };
+
+  const updateAnimationPreferences = async (enabled: boolean, intensity: number) => {
+    await updatePreferences({
+      animations: { enabled, intensity },
+    });
+  };
+
+  const debouncedUpdateAnimation = useCallback(
+    debounce((enabled: boolean, intensity: number) => {
+      updateAnimationPreferences(enabled, intensity);
+    }, 500),
+    [],
+  );
 
   return (
     <div className=" max-sm:m-2 md:m-5">
@@ -138,6 +154,63 @@ export default function SettingsPage() {
             </div>
           </div>
         </div>
+
+        {/* Animation Settings */}
+        <div id="animation" className="collapse join-item collapse-arrow border border-base-300">
+          <input type="checkbox" name="collapse" defaultChecked />
+          <div className="collapse-title text-xl font-medium">Animation Settings</div>
+          <div className="collapse-content m-2">
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-wrap items-center justify-between">
+                <label htmlFor="animationEnabled" className="label grow">
+                  Enable Animations
+                </label>
+                <input
+                  id="animationEnabled"
+                  type="checkbox"
+                  checked={user.preferences?.animations?.enabled ?? false}
+                  onChange={(e) =>
+                    updateAnimationPreferences(e.target.checked, user.preferences?.animations?.intensity ?? 10)
+                  }
+                  className="toggle toggle-primary"
+                />
+              </div>
+              <div className="flex flex-wrap items-center justify-between">
+                <label htmlFor="animationIntensity" className="label grow">
+                  Animation Intensity
+                </label>
+                <input
+                  id="animationIntensity"
+                  type="range"
+                  min="1"
+                  max="10"
+                  value={user.preferences?.animations?.intensity ?? 1}
+                  onChange={(e) => {
+                    e.preventDefault();
+                    const newIntensity = parseInt(e.target.value);
+                    if (newIntensity !== user.preferences?.animations?.intensity) {
+                      debouncedUpdateAnimation(user.preferences?.animations?.enabled ?? true, newIntensity);
+                    }
+                  }}
+                  className="range range-primary"
+                />
+                <div className="flex w-full justify-between px-2 text-xs">
+                  <span>1</span>
+                  <span>2</span>
+                  <span>3</span>
+                  <span>4</span>
+                  <span>5</span>
+                  <span>6</span>
+                  <span>7</span>
+                  <span>8</span>
+                  <span>9</span>
+                  <span>10</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="collapse join-item collapse-arrow border border-base-300">
           <input type="checkbox" name="collapse" defaultChecked />
           <div className="collapse-title text-xl font-medium">Notification</div>

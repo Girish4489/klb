@@ -97,22 +97,24 @@ interface IBill extends Document {
     color?: IColor;
     status?: 'Pending' | 'In Progress' | 'Completed' | 'Cancelled';
   }[];
-  totalAmount: number;
+  totalAmount: number; // total without discount & tax
   discount: number;
-  tax: {
-    _id: ObjectId;
-    taxName: string;
-    taxType: string;
-    taxPercentage: number;
-  }[];
   grandTotal: number;
   paidAmount: number;
   dueAmount: number;
+  taxAmount: number;
   paymentStatus?: 'Unpaid' | 'Partially Paid' | 'Paid';
   billBy?: { _id: ObjectId; name: string };
   deliveryStatus?: 'Pending' | 'Delivered';
   createdAt: Date;
   updatedAt: Date;
+}
+
+interface IReceiptTax {
+  _id: ObjectId;
+  taxName: string;
+  taxType: 'Percentage' | 'Fixed';
+  taxPercentage: number;
 }
 
 interface IReceipt extends Document {
@@ -121,8 +123,12 @@ interface IReceipt extends Document {
   bill?: { _id: ObjectId; billNumber?: number; mobile?: number; name?: string };
   receiptBy?: { _id: ObjectId; name: string };
   amount: number;
+  discount: number;
+  tax: IReceiptTax[];
+  taxAmount: number;
   paymentDate: Date;
   paymentMethod?: string;
+  paymentType: 'advance' | 'fullyPaid'; // Updated field
   createdAt: Date;
   updatedAt: Date;
 }
@@ -152,6 +158,7 @@ const customerSchema: Schema<ICustomer> = new Schema<ICustomer>(
   },
   { timestamps: true },
 );
+customerSchema.index({ phone: 1 }); // Add index to phone
 
 // Schema for Tax Data model.
 const taxSchema: Schema<ITax> = new Schema<ITax>(
@@ -173,6 +180,7 @@ const taxSchema: Schema<ITax> = new Schema<ITax>(
   },
   { timestamps: true },
 );
+taxSchema.index({ taxName: 1 }); // Add index to taxName
 
 // Schema for Category model.
 const categorySchema: Schema<ICategory> = new Schema<ICategory>(
@@ -219,6 +227,7 @@ const categorySchema: Schema<ICategory> = new Schema<ICategory>(
   },
   { timestamps: true },
 );
+categorySchema.index({ categoryName: 1 }); // Add index to categoryName
 
 // Schema for Bill model.
 const billSchema: Schema<IBill> = new Schema<IBill>(
@@ -294,14 +303,6 @@ const billSchema: Schema<IBill> = new Schema<IBill>(
       type: Number,
       default: 0,
     },
-    tax: [
-      {
-        _id: { type: mongoose.Schema.Types.ObjectId, ref: 'Tax' },
-        taxName: String,
-        taxType: String,
-        taxPercentage: Number,
-      },
-    ],
     grandTotal: {
       type: Number,
       default: 0,
@@ -312,9 +313,15 @@ const billSchema: Schema<IBill> = new Schema<IBill>(
     },
     dueAmount: {
       type: Number,
-      default: function () {
-        return (isNaN(this.totalAmount) ? 0 : this.totalAmount) - (isNaN(this.paidAmount) ? 0 : this.paidAmount);
+      default: function (this: IBill) {
+        const total = typeof this.totalAmount === 'number' ? this.totalAmount : 0;
+        const paid = typeof this.paidAmount === 'number' ? this.paidAmount : 0;
+        return total - paid;
       },
+    },
+    taxAmount: {
+      type: Number,
+      default: 0,
     },
     paymentStatus: {
       type: String,
@@ -333,6 +340,7 @@ const billSchema: Schema<IBill> = new Schema<IBill>(
   },
   { timestamps: true },
 );
+billSchema.index({ billNumber: 1 }); // Add index to billNumber
 
 // Schema for Receipts model.
 const receiptSchema: Schema<IReceipt> = new Schema<IReceipt>(
@@ -341,23 +349,47 @@ const receiptSchema: Schema<IReceipt> = new Schema<IReceipt>(
       type: Number,
       required: [true, 'Receipt number is required.'],
       unique: true,
+      index: 'desc',
     },
     bill: {
       _id: { type: mongoose.Schema.Types.ObjectId, ref: 'Bill' },
-      billNumber: Number,
+      billNumber: { type: Number, required: [true, 'Bill number is required.'], index: 'desc' },
       name: String,
-      mobile: Number,
+      mobile: { type: Number, index: 'asc' },
     },
     receiptBy: {
       _id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
       name: String,
     },
     amount: { type: Number, required: [true, 'Amount is required.'] },
+    discount: {
+      type: Number,
+      default: 0,
+    },
+    tax: [
+      {
+        _id: { type: mongoose.Schema.Types.ObjectId, ref: 'Tax' },
+        taxName: String,
+        taxType: { type: String, enum: ['Percentage', 'Fixed'] },
+        taxPercentage: Number,
+      },
+    ],
+    taxAmount: {
+      type: Number,
+      default: 0,
+    },
     paymentDate: Date,
     paymentMethod: { type: String, enum: ['Cash', 'Online', 'UPI', 'Card'], default: 'Cash' },
+    paymentType: {
+      type: String,
+      enum: ['advance', 'fullyPaid'],
+      default: 'advance',
+    },
   },
   { timestamps: true },
 );
+receiptSchema.index({ receiptNumber: 1 }); // Add index to receiptNumber
+receiptSchema.index({ 'bill.billNumber': 1 }); // Add index to bill.billNumber
 
 // Create models from the schemas
 const Customer: Model<ICustomer> = mongoose.models.Customer || mongoose.model<ICustomer>('Customer', customerSchema);
@@ -380,6 +412,7 @@ export type {
   IDimensionTypes,
   IDimensions,
   IReceipt,
+  IReceiptTax,
   IStyle,
   IStyleProcess,
   ITax,

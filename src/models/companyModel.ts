@@ -40,7 +40,7 @@ const companySchema: Schema<ICompany> = new mongoose.Schema({
   users: [
     {
       userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-      email: { type: String, required: true },
+      email: { type: String, required: true, index: 'text' },
     },
   ],
   createdAt: { type: Date, default: Date.now },

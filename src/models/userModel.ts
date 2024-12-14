@@ -1,3 +1,4 @@
+import { ALLOWED_IMAGE_TYPES, MAX_COMPANY_LOGO_FILE_SIZE_MB } from '@/app/constants/constants';
 import mongoose, { Document, Model, Schema, Types } from 'mongoose';
 
 type ObjectId = Types.ObjectId;
@@ -26,6 +27,7 @@ interface IUser extends Document {
     __filename: string;
     data: string;
     contentType: string;
+    size: number;
     uploadAt: Date;
   };
   forgotPasswordToken: string;
@@ -41,15 +43,14 @@ interface IUser extends Document {
       name: string;
       weight: number;
     };
+    animations: {
+      enabled: boolean;
+      intensity: number; // 1-10 scale
+    };
   };
-  notifications: {
-    name: string;
-    message: string;
-    timeOfArrival: Date;
-    timeOfRead: Date;
-    isRead: boolean;
-  }[];
-  companyAccess: {
+  notifications: INotification[];
+  isCompanyMember: boolean; // Changed from newUser
+  companyAccess?: {
     companyId: ObjectId;
     role: RoleType;
     access: {
@@ -61,6 +62,14 @@ interface IUser extends Document {
     accessLevels: RoleType[];
   };
   secondaryEmails: string[];
+}
+
+interface INotification {
+  name: string;
+  message: string;
+  timeOfArrival: Date;
+  timeOfRead?: Date;
+  isRead: boolean;
 }
 
 const userSchema: Schema<IUser> = new mongoose.Schema(
@@ -94,9 +103,18 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
     },
     profileImage: {
       __filename: { type: String, default: 'USER_PROFILE_404_ERROR' },
-      data: String,
-      contentType: { type: String, default: 'multipart/form-data' },
-      uploadAt: Date,
+      data: { type: String, default: '' },
+      contentType: {
+        type: String,
+        enum: [...ALLOWED_IMAGE_TYPES, ''], // Allow empty string
+        default: '',
+      },
+      size: {
+        type: Number,
+        max: MAX_COMPANY_LOGO_FILE_SIZE_MB * 1024 * 1024,
+        default: 0,
+      },
+      uploadAt: { type: Date, default: Date.now },
     },
     forgotPasswordToken: String,
     forgotPasswordTokenExpiry: Date,
@@ -123,6 +141,10 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
         type: String,
         default: 'dark',
       },
+      animations: {
+        enabled: { type: Boolean, default: true },
+        intensity: { type: Number, default: 10, min: 1, max: 10 },
+      },
     },
     notifications: [
       {
@@ -133,32 +155,39 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
         isRead: { type: Boolean, default: false },
       },
     ],
+    isCompanyMember: {
+      // Changed from newUser
+      type: Boolean,
+      default: false, // Default to false since new users don't belong to any company
+    },
     companyAccess: {
-      companyId: { type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true },
-      role: {
-        type: String,
-        enum: [
-          'owner',
-          'admin',
-          'hr',
-          'manager',
-          'stockManager',
-          'cashier',
-          'salesAssociate',
-          'employee',
-          'intern',
-          'guest',
-        ],
-        required: true,
-        default: 'guest',
+      type: {
+        companyId: { type: mongoose.Schema.Types.ObjectId, ref: 'Company' },
+        role: {
+          type: String,
+          enum: [
+            'owner',
+            'admin',
+            'hr',
+            'manager',
+            'stockManager',
+            'cashier',
+            'salesAssociate',
+            'employee',
+            'intern',
+            'guest',
+          ],
+          default: 'guest',
+        },
+        access: {
+          login: { type: Boolean, default: true },
+          canEdit: { type: Boolean, default: false },
+          canDelete: { type: Boolean, default: false },
+          canView: { type: Boolean, default: true },
+        },
+        accessLevels: { type: [String], default: ['guest'] },
       },
-      access: {
-        login: { type: Boolean, default: true },
-        canEdit: { type: Boolean, default: false },
-        canDelete: { type: Boolean, default: false },
-        canView: { type: Boolean, default: true },
-      },
-      accessLevels: { type: [String], default: ['guest'] },
+      required: false,
     },
     secondaryEmails: {
       type: [String],
@@ -175,4 +204,4 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
 const User: Model<IUser> = mongoose.models.users || mongoose.model<IUser>('users', userSchema);
 
 export default User;
-export type { IUser, ObjectId, RoleType };
+export type { INotification, IUser, ObjectId, RoleType };

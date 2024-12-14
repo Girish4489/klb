@@ -1,6 +1,6 @@
-import handleError from '@/app/util/error/handleError';
 import { connect } from '@/dbConfig/dbConfig';
-import { Bill } from '@/models/klm';
+import { Bill } from '@models/klm';
+import handleError from '@util/error/handleError';
 import { NextResponse } from 'next/server';
 
 connect();
@@ -16,6 +16,8 @@ export async function GET() {
     const grandTotalAmount = await Bill.aggregate([{ $group: { _id: null, total: { $sum: '$grandTotal' } } }]);
     const paidAmount = await Bill.aggregate([{ $group: { _id: null, total: { $sum: '$paidAmount' } } }]);
     const dueAmount = await Bill.aggregate([{ $group: { _id: null, total: { $sum: '$dueAmount' } } }]);
+    const discountAmount = await Bill.aggregate([{ $group: { _id: null, total: { $sum: '$discount' } } }]);
+    const discountCount = await Bill.countDocuments({ discount: { $gt: 0 } });
 
     return NextResponse.json({
       message: 'Stats fetched successfully',
@@ -28,6 +30,8 @@ export async function GET() {
       grandTotalAmount: grandTotalAmount[0]?.total || 0,
       paidAmount: paidAmount[0]?.total || 0,
       dueAmount: dueAmount[0]?.total || 0,
+      discountAmount: discountAmount[0]?.total || 0,
+      discountCount,
       success: true,
     });
   } catch (error) {

@@ -1,7 +1,7 @@
-import Pagination from '@/app/dashboard/stats/Pagination';
-import { formatDSNT } from '@/app/util/format/dateUtils';
+import Pagination from '@dashboard/stats/Pagination';
 import { FunnelIcon as FunnelIconOutline } from '@heroicons/react/24/outline';
 import { ArrowDownCircleIcon, ArrowUpCircleIcon, FunnelIcon } from '@heroicons/react/24/solid';
+import { formatDSNT } from '@util/format/dateUtils';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 
@@ -23,11 +23,15 @@ interface DueDateTableProps {
 const DueDateTable = ({ refresh }: DueDateTableProps) => {
   const [dueDateBills, setDueDateBills] = useState<Bill[]>([]); // Initialize as an empty array
   const [error, setError] = useState<string | null>(null);
-  const [sortConfig, setSortConfig] = useState<{ key: keyof Bill; direction: 'ascending' | 'descending' } | null>(null);
+  const [sortConfig, setSortConfig] = useState<{ key: keyof Bill; direction: 'ascending' | 'descending' }>({
+    key: 'dueDate',
+    direction: 'descending',
+  }); // Initialize with default sort config
   const [tolerance, setTolerance] = useState<number>(2);
   const [showToleranceInput, setShowToleranceInput] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState(1);
   const billsPerPage = 15;
+  const [activeIcon, setActiveIcon] = useState<keyof Bill>('dueDate'); // Set default active icon
 
   const toggleToleranceInput = (event: React.MouseEvent) => {
     event.stopPropagation();
@@ -35,40 +39,78 @@ const DueDateTable = ({ refresh }: DueDateTableProps) => {
   };
 
   const sortedBills = [...dueDateBills].sort((a, b) => {
-    const adjustedDueDateA = new Date(a.dueDate);
-    adjustedDueDateA.setDate(adjustedDueDateA.getDate() - tolerance);
-    const adjustedDueDateB = new Date(b.dueDate);
-    adjustedDueDateB.setDate(adjustedDueDateB.getDate() - tolerance);
+    if (sortConfig === null) return 0;
 
-    if (sortConfig !== null) {
-      if (adjustedDueDateA < adjustedDueDateB) {
-        return sortConfig.direction === 'ascending' ? -1 : 1;
-      }
-      if (adjustedDueDateA > adjustedDueDateB) {
-        return sortConfig.direction === 'ascending' ? 1 : -1;
-      }
+    let comparison = 0;
+    const { key, direction } = sortConfig;
+
+    // Handle different column types
+    switch (key) {
+      case 'dueDate':
+      case 'date':
+        // Date comparison with tolerance for dueDate
+        const dateA = new Date(a[key]);
+        const dateB = new Date(b[key]);
+        if (key === 'dueDate') {
+          dateA.setDate(dateA.getDate() - tolerance);
+          dateB.setDate(dateB.getDate() - tolerance);
+        }
+        comparison = dateA.getTime() - dateB.getTime();
+        break;
+
+      case 'billNumber':
+      case 'totalAmount':
+      case 'paidAmount':
+      case 'dueAmount':
+        // Number comparison
+        comparison = Number(a[key]) - Number(b[key]);
+        break;
+
+      case 'paymentStatus':
+        // String comparison
+        comparison = (a[key] || '').localeCompare(b[key] || '');
+        break;
+
+      default:
+        comparison = 0;
     }
-    return 0;
+
+    return direction === 'ascending' ? comparison : -comparison;
   });
 
-  const requestSort = (key: keyof Bill) => {
-    let direction: 'ascending' | 'descending' = 'ascending';
-    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'ascending') {
-      direction = 'descending';
+  const handleHeaderClick = (key: keyof Bill) => {
+    // When switching to a new column, set its initial sort direction to descending
+    if (activeIcon !== key) {
+      setActiveIcon(key);
+      setSortConfig({ key, direction: 'descending' });
     }
+  };
+
+  const handleSortIconClick = (event: React.MouseEvent, key: keyof Bill) => {
+    event.stopPropagation();
+    // Toggle direction only if we're clicking the same column
+    const direction = sortConfig.key === key && sortConfig.direction === 'descending' ? 'ascending' : 'descending';
     setSortConfig({ key, direction });
   };
 
   const getSortIcon = (key: keyof Bill) => {
-    if (!sortConfig) return null;
-    if (sortConfig.key === key) {
-      return sortConfig.direction === 'ascending' ? (
-        <ArrowUpCircleIcon className="h-6 w-6 cursor-pointer text-inherit transition-transform duration-300" />
-      ) : (
-        <ArrowDownCircleIcon className="h-6 w-6 cursor-pointer text-inherit transition-transform duration-300" />
-      );
-    }
-    return null;
+    if (activeIcon !== key) return null;
+
+    return (
+      <span className="btn btn-circle btn-info btn-xs">
+        {sortConfig.direction === 'ascending' ? (
+          <ArrowUpCircleIcon
+            className="h-5 w-5 cursor-pointer text-inherit transition-transform duration-300"
+            onClick={(e) => handleSortIconClick(e, key)}
+          />
+        ) : (
+          <ArrowDownCircleIcon
+            className="h-5 w-5 cursor-pointer text-inherit transition-transform duration-300"
+            onClick={(e) => handleSortIconClick(e, key)}
+          />
+        )}
+      </span>
+    );
   };
 
   const handleToleranceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -110,17 +152,17 @@ const DueDateTable = ({ refresh }: DueDateTableProps) => {
           <caption>Due Date Bills</caption>
           <thead>
             <tr className="cursor-pointer select-none text-center">
-              <th onClick={() => requestSort('billNumber')}>
+              <th onClick={() => handleHeaderClick('billNumber')}>
                 <div className="flex items-center justify-between gap-1">
                   <span className="grow">Bill Number</span> {getSortIcon('billNumber')}
                 </div>
               </th>
-              <th onClick={() => requestSort('date')}>
+              <th onClick={() => handleHeaderClick('date')}>
                 <div className="flex items-center justify-between gap-1">
                   <span className="grow">Date</span> {getSortIcon('date')}
                 </div>
               </th>
-              <th onClick={() => requestSort('dueDate')}>
+              <th onClick={() => handleHeaderClick('dueDate')}>
                 <div className="flex flex-col items-center gap-y-1">
                   <div className="flex w-full items-center justify-between gap-1">
                     <span className="grow">Due Date</span>
@@ -158,22 +200,22 @@ const DueDateTable = ({ refresh }: DueDateTableProps) => {
                   )}
                 </div>
               </th>
-              <th onClick={() => requestSort('totalAmount')}>
+              <th onClick={() => handleHeaderClick('totalAmount')}>
                 <div className="flex items-center justify-between gap-1">
                   <span className="grow">Total Amount</span> {getSortIcon('totalAmount')}
                 </div>
               </th>
-              <th onClick={() => requestSort('paidAmount')}>
+              <th onClick={() => handleHeaderClick('paidAmount')}>
                 <div className="flex items-center justify-between gap-1">
                   <span className="grow">Paid Amount</span> {getSortIcon('paidAmount')}
                 </div>
               </th>
-              <th onClick={() => requestSort('dueAmount')}>
+              <th onClick={() => handleHeaderClick('dueAmount')}>
                 <div className="flex items-center justify-between gap-1">
                   <span className="grow">Due Amount</span> {getSortIcon('dueAmount')}
                 </div>
               </th>
-              <th onClick={() => requestSort('paymentStatus')}>
+              <th onClick={() => handleHeaderClick('paymentStatus')}>
                 <div className="flex items-center justify-between gap-1">
                   <span className="grow">Status</span> {getSortIcon('paymentStatus')}
                 </div>
@@ -190,7 +232,7 @@ const DueDateTable = ({ refresh }: DueDateTableProps) => {
               return (
                 <tr
                   key={bill._id}
-                  className={`text-center ${isOverdue ? 'bg-error' : ''} ${isDueSoon ? 'bg-warning' : ''}`}
+                  className={`text-center ${isOverdue ? 'bg-error text-error-content' : ''} ${isDueSoon ? 'bg-warning text-warning-content' : ''}`}
                 >
                   <td>{bill.billNumber}</td>
                   <td className="grow">{formatDSNT(new Date(bill.date))}</td>

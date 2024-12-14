@@ -1,33 +1,69 @@
-import { IUser } from '@/models/userModel';
-import jwt from 'jsonwebtoken';
+import { IUser } from '@models/userModel';
+import { SignJWT, jwtVerify } from 'jose'; // Using jose instead of jsonwebtoken
 import { NextRequest, NextResponse } from 'next/server';
 
 interface UserTokenPayload {
   id: string;
-  username?: string;
-  email?: string;
+  username: string;
+  email: string;
+  isVerified: boolean;
+  isAdmin: boolean;
+  isCompanyMember: boolean;
   companyAccess?: IUser['companyAccess'];
-  [key: string]: unknown;
+  lastLogin: Date;
 }
 
 interface DecodedToken extends UserTokenPayload {
   exp: number;
 }
 
-const TOKEN_SECRET = process.env.TOKEN_SECRET!;
+const TOKEN_SECRET = new TextEncoder().encode(process.env.TOKEN_SECRET!);
 
-async function createAuthToken(tokenData: UserTokenPayload, expiresIn: string | number = '1d'): Promise<string> {
-  let sanitizedTokenData = { ...tokenData };
-  if (typeof sanitizedTokenData.email === 'string') {
-    sanitizedTokenData.email = sanitizedTokenData.email.replace(/\.$/, '');
+async function createAuthToken(user: Partial<IUser>, expiresIn: string | number = '1d'): Promise<string> {
+  if (!user._id) {
+    console.error('Cannot create token: Missing user ID');
+    throw new Error('Invalid user data');
   }
-  return jwt.sign(sanitizedTokenData, TOKEN_SECRET, { expiresIn });
+
+  const tokenData: UserTokenPayload = {
+    id: user._id.toString(),
+    username: user.username ?? '',
+    email: user.email?.replace(/\.$/, '') ?? '',
+    isVerified: user.isVerified ?? false,
+    isAdmin: user.isAdmin ?? false,
+    isCompanyMember: user.isCompanyMember ?? false,
+    companyAccess: user.companyAccess,
+    lastLogin: user.lastLogin ?? new Date(),
+  };
+
+  // Convert expiresIn to seconds if it's a string
+  const expTime = typeof expiresIn === 'string' ? (expiresIn === '1d' ? 24 * 60 * 60 : parseInt(expiresIn)) : expiresIn;
+
+  const jwt = await new SignJWT({ ...tokenData })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime(Math.floor(Date.now() / 1000) + expTime)
+    .sign(TOKEN_SECRET);
+
+  return jwt;
 }
 
 async function verifyAuthToken(token: string): Promise<DecodedToken | null> {
   try {
-    return jwt.verify(token, TOKEN_SECRET) as DecodedToken;
-  } catch {
+    if (!token) {
+      console.error('No token provided for verification');
+      return null;
+    }
+
+    const { payload } = await jwtVerify(token, TOKEN_SECRET);
+    if (!payload?.id) {
+      console.error('Token verification failed: Missing ID in token');
+      return null;
+    }
+
+    return payload as unknown as DecodedToken;
+  } catch (error) {
+    console.error('Token verification failed:', error);
     return null;
   }
 }

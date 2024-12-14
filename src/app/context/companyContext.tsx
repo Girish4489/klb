@@ -1,12 +1,11 @@
 'use client';
-import { useUser } from '@/app/context/userContext';
-import { fetchCompanyData } from '@/app/util/company/companyFetchUtil/companyUtils';
-import { userConfirmation } from '@/app/util/confirmation/confirmationUtil';
-import handleError from '@/app/util/error/handleError';
-import { ApiPut } from '@/app/util/makeApiRequest/makeApiRequest';
-import { ICompany } from '@/models/companyModel';
+import { useAuth, useUser } from '@context/userContext';
+import { ICompany } from '@models/companyModel';
+import { fetchCompanyData } from '@util/company/companyFetchUtil/companyUtils';
+import { userConfirmation } from '@util/confirmation/confirmationUtil';
+import handleError from '@util/error/handleError';
+import { ApiPut } from '@util/makeApiRequest/makeApiRequest';
 import mongoose from 'mongoose';
-import { usePathname } from 'next/navigation';
 import React, { ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -25,30 +24,10 @@ interface CompanyContextType {
 
 const CompanyContext = createContext<CompanyContextType | undefined>(undefined);
 
-const initialCompanyState = {
-  _id: new mongoose.Types.ObjectId(),
-  name: '',
-  gstNumber: '',
-  contactDetails: {
-    phones: [],
-    emails: [],
-    address: '',
-  },
-  logos: {
-    small: '',
-    medium: '',
-    large: '',
-  },
-  users: [],
-  createdAt: new Date(),
-  updatedAt: new Date(),
-} as unknown as ICompany;
-
 export const CompanyProvider: React.FC<CompanyContextProps> = ({ children }) => {
-  const [company, setCompany] = useState<ICompany | undefined>(initialCompanyState);
-
-  const pathname = usePathname();
-  const { user } = useUser(); // Get user from UserContext
+  const [company, setCompany] = useState<ICompany | undefined>(undefined);
+  const { user } = useUser();
+  const { isAuthenticated } = useAuth();
 
   const fetchAndSetCompany = useCallback(async (userId: string, role: string) => {
     try {
@@ -135,20 +114,18 @@ export const CompanyProvider: React.FC<CompanyContextProps> = ({ children }) => 
   );
 
   useEffect(() => {
-    if (pathname.startsWith('/auth')) {
-      setCompany(initialCompanyState);
-      // remove company data from local storage
+    // Reset company state when user is not authenticated
+    if (!isAuthenticated || !user?.isCompanyMember) {
+      setCompany(undefined);
       localStorage.removeItem('company');
       return;
     }
 
-    const storedCompany = localStorage.getItem('company');
-    if (storedCompany) {
-      setCompany(JSON.parse(storedCompany) as ICompany);
-    } else if (user && user._id && user.companyAccess && user.companyAccess.role) {
+    // Only fetch company data if user is authenticated and a company member
+    if (user.isCompanyMember && user.companyAccess && user?.companyAccess?.companyId && user._id) {
       fetchAndSetCompany(user._id.toString(), user.companyAccess.role);
     }
-  }, [fetchAndSetCompany, pathname, user]);
+  }, [isAuthenticated, user]);
 
   const contextValue = useMemo(
     () => ({
