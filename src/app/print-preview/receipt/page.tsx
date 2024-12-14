@@ -13,7 +13,7 @@ import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
 const ReceiptPage: React.FC = () => {
-  const [receipt, setReceipt] = useState<IReceipt>();
+  const [receipts, setReceipts] = useState<IReceipt[]>([]);
   const { company } = useCompany();
   const [cal, setCal] = useState({
     totalAmount: 0,
@@ -23,23 +23,27 @@ const ReceiptPage: React.FC = () => {
     dueAmount: 0,
   });
   const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false);
+  const [receiptNumberToHighlight, setReceiptNumberToHighlight] = useState<number>(0);
   const [backUrl, setBackUrl] = useState<string>('/dashboard/transaction/receipt');
   const type: string = 'Receipt';
+
   useEffect(() => {
     async function fetchData() {
-      const receiptNumber = parseInt(getSearchParam('receiptNumber') || '0', 10);
+      const receiptNumberToHighlight = parseInt(getSearchParam('receiptNumber') || '0', 10);
+      setReceiptNumberToHighlight(receiptNumberToHighlight);
+      const billNumber = parseInt(getSearchParam('billNumber') || '0', 10);
 
-      if (!receiptNumber) {
+      if (!billNumber) {
         toast.error(`${type} number is required`);
         return;
       }
 
-      setBackUrl(`/dashboard/transaction/receipt?receiptNumber=${receiptNumber}`);
+      setBackUrl(`/dashboard/transaction/receipt?billNumber=${billNumber}&receiptNumber=${receiptNumberToHighlight}`);
 
       try {
-        const response = await ApiGet.printDocument.PrintReceipt(type, receiptNumber);
+        const response = await ApiGet.printDocument.PrintReceipts(type, billNumber);
         if (response?.success) {
-          setReceipt(response.receipt);
+          setReceipts((response.receipts as IReceipt[]) || []);
           if (response.bill) {
             setCal({
               totalAmount: response.bill.totalAmount || 0,
@@ -70,12 +74,13 @@ const ReceiptPage: React.FC = () => {
         <>
           <PrintHeader backUrl={backUrl} isLoading={!isDataLoaded} />
           <ReceiptPreview
-            receipt={receipt}
+            receipts={receipts}
             cal={cal}
             isDataLoaded={isDataLoaded}
             klm={klm}
             company={company}
             style={getStyle('Receipt')}
+            highlightReceiptNumber={receiptNumberToHighlight}
           />
         </>
       )}

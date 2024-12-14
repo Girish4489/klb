@@ -26,10 +26,10 @@ const TaxModal: React.FC<TaxModalProps> = ({ taxList, selectedTaxes = [], setRec
         taxPercentage: selectedTax.taxPercentage,
       };
 
-      const isSelected = prevReceipt.tax.some((t) => t._id.toString() === selectedTax._id.toString());
+      const isSelected = prevReceipt.tax?.some((t) => t._id.toString() === selectedTax._id.toString());
       const updatedTaxes = isSelected
         ? prevReceipt.tax.filter((t) => t._id.toString() !== selectedTax._id.toString())
-        : [...prevReceipt.tax, receiptTax];
+        : [...(prevReceipt.tax || []), receiptTax];
 
       // Create a new receipt object maintaining the Document interface
       return {

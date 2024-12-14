@@ -55,8 +55,13 @@ export default function ReceiptPage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      await fetchAllInitialData(setTax, setRecentReceipt);
-      setLoading(false);
+      try {
+        await fetchAllInitialData(setTax, setRecentReceipt);
+      } catch (error) {
+        handleError.toast(error);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchData();
   }, []);
@@ -325,6 +330,7 @@ export default function ReceiptPage() {
       amount: 0,
       paymentDate: new Date(),
       paymentMethod: '',
+      paymentType: 'advance', // Default value
       createdAt: new Date(),
       updatedAt: new Date(),
     } as IReceipt);

@@ -55,6 +55,15 @@ const ReceiptHeader: React.FC<ReceiptHeaderProps> = ({ receipt, setReceipt, amtT
           readOnly
         />
         <InputField
+          label="Date"
+          id="receiptDate"
+          type="date"
+          value={receipt?.paymentDate ? new Date(receipt.paymentDate).toISOString().split('T')[0] : ''}
+          onChange={(e) => {
+            setReceipt({ ...receipt, paymentDate: new Date(e.target.value) } as IReceipt);
+          }}
+        />
+        <InputField
           label="Name"
           id="name"
           value={receipt?.bill?.name ?? ''}
@@ -75,15 +84,6 @@ const ReceiptHeader: React.FC<ReceiptHeaderProps> = ({ receipt, setReceipt, amtT
             } as IReceipt);
           }}
           placeholder="Mobile"
-        />
-        <InputField
-          label="Date"
-          id="receiptDate"
-          type="date"
-          value={receipt?.paymentDate ? new Date(receipt.paymentDate).toISOString().split('T')[0] : ''}
-          onChange={(e) => {
-            setReceipt({ ...receipt, paymentDate: new Date(e.target.value) } as IReceipt);
-          }}
         />
         <InputField
           label="Amount"

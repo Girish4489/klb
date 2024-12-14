@@ -260,10 +260,10 @@ export const ApiGet = {
         handleError.throw(error);
       }
     },
-    PrintReceipt: async (printType: string, receiptNumber: number) => {
+    PrintReceipts: async (printType: string, billNumber: number) => {
       try {
         const res = await axios.get(
-          `/api/print-document/print-receipt?printType=${printType}&receiptNumber=${receiptNumber}`,
+          `/api/print-document/print-receipt?printType=${printType}&billNumber=${billNumber}`,
         );
         return res.data;
       } catch (error) {

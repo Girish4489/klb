@@ -1,14 +1,14 @@
 import { IReceipt } from '@models/klm';
 import React from 'react';
 
+import { formatDS } from '@/app/util/format/dateUtils';
 import QrGenerator from '@components/Barcode/BarcodeGenerator';
 import { EnvelopeIcon, FaceSmileIcon, PhoneIcon, WalletIcon } from '@heroicons/react/24/solid';
 import { ICompany } from '@models/companyModel';
-import { formatDS } from '@util/format/dateUtils';
 import Image from 'next/image';
 
 interface ReceiptPreviewProps {
-  receipt: IReceipt | undefined;
+  receipts: IReceipt[] | undefined;
   cal: {
     totalAmount: number;
     discount: number;
@@ -20,16 +20,43 @@ interface ReceiptPreviewProps {
   klm: { src: string };
   company: ICompany | undefined;
   style: string;
+  highlightReceiptNumber?: number;
 }
 
-const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ receipt, cal, isDataLoaded, klm, company, style }) => {
+const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({
+  receipts,
+  cal,
+  isDataLoaded,
+  klm,
+  company,
+  style,
+  highlightReceiptNumber,
+}) => {
   if (!isDataLoaded) {
     return <div>Loading...</div>;
   }
 
+  if (!receipts || receipts?.length === 0) {
+    return <div>No Receipts found</div>;
+  }
+
+  const highlightedReceiptIndex = receipts.findIndex((receipt) => receipt.receiptNumber === highlightReceiptNumber);
+  if (highlightedReceiptIndex === -1) {
+    return <div>No Receipt found</div>;
+  }
+
+  const filteredReceipts = receipts.slice(0, highlightedReceiptIndex + 1);
+  const highlightedReceipt = filteredReceipts[highlightedReceiptIndex];
+
+  const totalPaid = filteredReceipts.reduce((acc, receipt) => acc + receipt.amount, 0);
+  const totalDiscount = filteredReceipts.reduce((acc, receipt) => acc + receipt.discount, 0);
+  const totalTax = filteredReceipts.reduce((acc, receipt) => acc + receipt.taxAmount, 0);
+  const previousPayments = totalPaid - highlightedReceipt.amount;
+  const isFullyPaid = highlightedReceipt?.paymentType === 'fullyPaid' || cal.dueAmount <= 0;
+
   return (
     <span>
-      {receipt && (
+      {receipts?.length > 0 && (
         <>
           <div className="m-1 mx-auto my-[50px] w-[300px] border border-solid border-gray-400 p-2 text-center">
             <style>{style}</style>
@@ -121,31 +148,33 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ receipt, cal, isDataLoa
               <tbody className="rounded-box p-1">
                 <tr className="bg-gray-200 text-left">
                   <th className="p-1 text-left">Bill No:</th>
-                  <td className="p-1">{receipt?.bill?.billNumber ?? ''}</td>
-                </tr>
-                <tr className="text-left">
-                  <th className="p-1 text-left">Receipt No:</th>
-                  <td className="p-1">{receipt?.receiptNumber ?? ''}</td>
-                </tr>
-                <tr className="bg-gray-200 text-left">
-                  <th className="p-1 text-left">Receipt Date:</th>
-                  <td className="p-1">{receipt?.paymentDate ? formatDS(receipt?.paymentDate) : ''}</td>
+                  <td className="p-1">{highlightedReceipt?.bill?.billNumber ?? ''}</td>
                 </tr>
                 <tr className="text-left">
                   <th className="p-1 text-left">Customer Name:</th>
-                  <td className="p-1">{receipt?.bill?.name ?? ''}</td>
+                  <td className="p-1">{highlightedReceipt?.bill?.name ?? ''}</td>
                 </tr>
                 <tr className="bg-gray-200 text-left">
                   <th className="p-1 text-left">Mobile:</th>
-                  <td className="p-1">{receipt?.bill?.mobile ?? ''}</td>
+                  <td className="p-1">{highlightedReceipt?.bill?.mobile ?? ''}</td>
                 </tr>
                 <tr className="text-left">
                   <th className="p-1 text-left">Pay Method:</th>
-                  <td className="p-1">{receipt?.paymentMethod ?? ''}</td>
+                  <td className="p-1">{highlightedReceipt?.paymentMethod ?? ''}</td>
                 </tr>
                 <tr className="bg-gray-200 text-left">
                   <th className="p-1 text-left">Receipt By:</th>
-                  <td className="p-1">{receipt?.receiptBy?.name ?? ''}</td>
+                  <td className="p-1">{highlightedReceipt?.receiptBy?.name ?? ''}</td>
+                </tr>
+                <tr className="text-left">
+                  <th className="p-1 text-left">Receipt Mode:</th>
+                  <td className="p-1">{highlightedReceipt?.paymentMethod ?? ''}</td>
+                </tr>
+                <tr className="bg-gray-200 text-left">
+                  <th className="p-1 text-left">Date:</th>
+                  <td className="p-1">
+                    {highlightedReceipt?.paymentDate ? formatDS(highlightedReceipt?.paymentDate) : ''}
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -155,28 +184,44 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ receipt, cal, isDataLoa
                 <tr className="rounded-box bg-gray-200 p-1 text-gray-700">
                   <th>SI No</th>
                   <th>Paid</th>
-                  {receipt.discount > 0 && <th>Discount</th>}
-                  {receipt.tax?.length > 0 && <th>Tax</th>}
+                  {filteredReceipts.some((receipt) => receipt.discount > 0) && <th>Discount</th>}
+                  {filteredReceipts.some((receipt) => receipt.tax?.length > 0) && <th>Tax</th>}
                 </tr>
               </thead>
               <tbody className="rounded-box p-1">
-                <tr>
-                  <td>1</td>
-                  <td>{receipt?.amount ?? ''}</td>
-                  {receipt?.discount > 0 && <td>{receipt?.discount ?? ''}</td>}
-                  {receipt?.tax?.length > 0 && (
-                    <td>
-                      {receipt?.tax?.map((tax, index) => (
-                        <div key={index}>
-                          {tax.taxName}: {tax.taxPercentage}%
-                        </div>
-                      )) ?? ''}
-                    </td>
-                  )}
-                </tr>
+                {filteredReceipts.map((receipt, index) => (
+                  <tr
+                    key={index}
+                    className={
+                      receipt.receiptNumber === highlightReceiptNumber
+                        ? 'bg-gray-400'
+                        : index % 2 !== 0
+                          ? 'bg-gray-200'
+                          : ''
+                    }
+                  >
+                    <td>{index + 1}</td>
+                    <td>{receipt?.amount ?? ''}</td>
+                    {filteredReceipts.some((receipt) => receipt.discount > 0) && (
+                      <td>{receipt?.discount > 0 ? receipt?.discount : ''}</td>
+                    )}
+                    {filteredReceipts.some((receipt) => receipt.tax?.length > 0) && (
+                      <td>
+                        {receipt?.tax?.length > 0
+                          ? receipt?.tax?.map((tax, taxIndex) => (
+                              <div key={taxIndex}>
+                                {tax.taxName}: {tax.taxPercentage}%
+                              </div>
+                            ))
+                          : ''}
+                      </td>
+                    )}
+                  </tr>
+                ))}
               </tbody>
             </table>
             <hr className="mx-auto my-1 w-[90%] border border-dashed border-black/60" />
+            {/* Calculated table */}
             <table className="w-full text-slate-600">
               <tbody className="flex flex-col gap-[1px] p-1">
                 {/* Bill Total */}
@@ -186,18 +231,18 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ receipt, cal, isDataLoa
                 </tr>
 
                 {/* Bill Discount */}
-                {cal.discount > 0 && (
+                {totalDiscount > 0 && (
                   <tr className="flex w-full flex-row items-center justify-between bg-gray-200 text-xs font-semibold">
                     <th className="p-1">Bill Discount:</th>
-                    <td className="p-1">-{cal.discount}</td>
+                    <td className="p-1">-{totalDiscount}</td>
                   </tr>
                 )}
 
                 {/* Tax Amount */}
-                {receipt.taxAmount > 0 && (
+                {totalTax > 0 && (
                   <tr className="flex w-full flex-row items-center justify-between bg-gray-200 text-xs font-semibold">
                     <th className="p-1">Tax Amount:</th>
-                    <td className="p-1">{receipt.taxAmount}</td>
+                    <td className="p-1">{totalTax}</td>
                   </tr>
                 )}
 
@@ -208,31 +253,31 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ receipt, cal, isDataLoa
                 </tr>
 
                 {/* Previous Payments */}
-                {cal.paidAmount - receipt.amount > 0 && (
+                {previousPayments > 0 && !isFullyPaid && (
                   <tr className="flex w-full flex-row items-center justify-between">
-                    <th className="p-1">Previous Payments(Adv):</th>
-                    <td className="p-1">{cal.paidAmount - receipt.amount}</td>
+                    <th className="p-1">Previous/Advance:</th>
+                    <td className="p-1">{previousPayments}</td>
                   </tr>
                 )}
 
                 {/* Current Payment */}
                 <tr className="flex w-full flex-row items-center justify-between text-xs font-semibold">
                   <th className="p-1">Current Payment:</th>
-                  <td className="p-1">{receipt.amount}</td>
+                  <td className="p-1">{highlightedReceipt?.amount}</td>
                 </tr>
 
                 {/* Receipt Discount */}
-                {receipt.discount > 0 && (
+                {highlightedReceipt?.discount > 0 && (
                   <tr className="flex w-full flex-row items-center justify-between">
                     <th className="p-1">Receipt Discount:</th>
-                    <td className="p-1">-{receipt.discount}</td>
+                    <td className="p-1">-{highlightedReceipt.discount}</td>
                   </tr>
                 )}
 
                 {/* Total Paid */}
                 <tr className="flex w-full flex-row items-center justify-between bg-gray-200 text-xs font-semibold">
                   <th className="p-1">Total Paid:</th>
-                  <td className="p-1">{cal.paidAmount}</td>
+                  <td className="p-1">{totalPaid}</td>
                 </tr>
 
                 {/* Balance Due */}
@@ -245,7 +290,7 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ receipt, cal, isDataLoa
             <span className="mb-1 flex items-center justify-around rounded-box border border-dashed border-black/50 px-2 py-1 shadow-md">
               <div className="flex">
                 <QrGenerator
-                  content={`billNumber=${receipt.bill?.billNumber ?? ''}&receiptNumber=${receipt.receiptNumber ?? ''}`}
+                  content={`billNumber=${highlightedReceipt?.bill?.billNumber ?? ''}&receiptNumber=${highlightReceiptNumber ?? ''}`}
                   size={60}
                 />
               </div>
@@ -253,7 +298,7 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ receipt, cal, isDataLoa
                 <span>
                   Thank You <span className="text-black">{`\u{1F64F}`}</span>
                 </span>
-                {cal.discount > 0 ? <span>{`Hurray! You saved ${cal.discount}₹`}</span> : ''}
+                {totalDiscount > 0 ? <span>{`Hurray! You saved ${totalDiscount}₹`}</span> : ''}
                 <span className="flex items-center gap-2">
                   Visit Again
                   <FaceSmileIcon className="h-5 w-auto text-gray-600" />
