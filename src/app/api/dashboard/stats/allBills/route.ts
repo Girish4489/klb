@@ -1,5 +1,5 @@
-import { Bill } from '@models/klm';
 import { connect } from '@/dbConfig/dbConfig';
+import { Bill } from '@models/klm';
 import handleError from '@util/error/handleError';
 import { NextRequest, NextResponse } from 'next/server';
 
