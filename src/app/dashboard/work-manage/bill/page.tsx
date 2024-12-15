@@ -239,8 +239,24 @@ export default function BillPage() {
 
   async function handleSaveBill() {
     try {
-      await validateBill(bill);
       if (!bill) throw new Error('Bill data is undefined');
+
+      // Calculate the total amount before validating the bill
+      const orderAmount = calculateTotalAmount(bill.order ?? []);
+      setBill(
+        (prevBill) =>
+          ({
+            ...prevBill,
+            totalAmount: orderAmount,
+            grandTotal: orderAmount - (prevBill?.discount ?? 0),
+          }) as IBill | undefined,
+      );
+
+      await validateBill({
+        ...bill,
+        totalAmount: orderAmount,
+        grandTotal: orderAmount - (bill?.discount ?? 0),
+      } as IBill);
 
       const updatedBill: Partial<IBill> = updateBillAmounts({
         ...bill,
