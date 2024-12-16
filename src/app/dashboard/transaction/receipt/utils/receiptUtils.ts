@@ -43,10 +43,11 @@ export function validateReceipt(receipt: IReceipt, amtTrack: AmtTrack) {
   if (amount > amtTrack.due) throw new Error('Amount exceeds due amount');
   if (discount < 0) throw new Error('Invalid discount');
 
-  const totalTaxAmount = tax?.reduce(
-    (acc, t) => acc + (t.taxType === 'Percentage' ? (amount * t.taxPercentage) / 100 : t.taxPercentage),
-    0,
-  ) ?? 0;
+  const totalTaxAmount =
+    tax?.reduce(
+      (acc, t) => acc + (t.taxType === 'Percentage' ? (amount * t.taxPercentage) / 100 : t.taxPercentage),
+      0,
+    ) ?? 0;
   if (amount + totalTaxAmount > amtTrack.due) throw new Error('Total amount exceeds due amount');
 
   receipt.paymentType = amtTrack.due - amount - totalTaxAmount + discount <= 0 ? 'fullyPaid' : 'advance';
