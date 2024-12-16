@@ -8,7 +8,7 @@ import handleError from '@util/error/handleError';
 import { formatD, formatDNT } from '@util/format/dateUtils';
 import axios from 'axios';
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import LogoutButton from '../logout/LogoutButton';
 
@@ -131,6 +131,10 @@ export default function SettingsProfile({
     }
   };
 
+  const handleImageClick = useCallback(() => {
+    myModel('profile_modal');
+  }, []);
+
   return (
     <div className="card flex flex-col items-center gap-4 lg:card-side">
       {isLoading ? (
@@ -146,7 +150,7 @@ export default function SettingsProfile({
                 className="cursor-pointer rounded-full transition-all duration-500 ease-in-out"
                 width="40"
                 height="40"
-                onClick={() => myModel('profile_modal')}
+                onClick={handleImageClick}
               />
             </div>
           </div>
