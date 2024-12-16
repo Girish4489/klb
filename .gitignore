@@ -37,6 +37,7 @@ yarn-error.log*
 # IDE
 /.idea
 .vscode/*
+.vs/*
 !.vscode/launch.json
 !.vscode/settings.json
 .vs/*
@@ -44,3 +45,5 @@ yarn-error.log*
 # env
 .env
 ```
+# design
+*.excalidraw

@@ -51,7 +51,6 @@ import {
   SparklesIcon as SparklesSolid,
 } from '@heroicons/react/24/solid';
 
-import { motion } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
 
 export interface PatternConfig {
@@ -185,12 +184,7 @@ export default function PatternBackground({ config }: { config: PatternConfig })
   };
 
   return (
-    <motion.div
-      className="absolute inset-0 -z-10 overflow-hidden"
-      initial={{ opacity: 0 }}
-      animate={{ opacity }}
-      exit={{ opacity: 0 }}
-    >
+    <div className="absolute inset-0 -z-10 overflow-hidden" style={{ opacity }}>
       <div
         className="grid h-full w-full"
         style={{
@@ -211,6 +205,6 @@ export default function PatternBackground({ config }: { config: PatternConfig })
           );
         })}
       </div>
-    </motion.div>
+    </div>
   );
 }
