@@ -1,4 +1,5 @@
 import '@/app/globals.css';
+import { SpeedInsightsWrapper } from '@/components/SpeedInsights';
 import TopbarLoader from '@components/topbarLoader/page';
 import { ThemeProvider } from '@context/ThemeContext';
 import { CompanyProvider } from '@context/companyContext';
@@ -33,6 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <TopbarLoader />
                 <Toaster />
                 {children}
+                <SpeedInsightsWrapper />
               </body>
             </CompanyProvider>
           </UserProvider>
