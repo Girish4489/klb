@@ -50,12 +50,23 @@ interface ThemeContextInterface {
 const ThemeContext = createContext<ThemeContextInterface | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [theme, setTheme] = useState<Theme>(DEFAULT_THEME);
+  const [theme, setTheme] = useState<Theme>(() => {
+    if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem('theme');
+      return savedTheme ? (savedTheme as Theme) : DEFAULT_THEME;
+    }
+    return DEFAULT_THEME;
+  });
 
   const contextValue: ThemeContextInterface = {
     themes,
     currentTheme: theme,
-    setTheme,
+    setTheme: (newTheme: Theme) => {
+      setTheme(newTheme);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('theme', newTheme);
+      }
+    },
   };
 
   useEffect(() => {

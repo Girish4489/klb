@@ -1,4 +1,5 @@
 'use client';
+import { ThemeToggle } from '@/app/components/ThemeToggle';
 import ScrollProgress from '@components/ScrollProgress';
 import constants from '@constants/constants';
 import { IdentificationIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
@@ -15,6 +16,7 @@ export function NavbarWithProgress() {
           </Link>
         </div>
         <div className="navbar-end gap-2">
+          <ThemeToggle />
           <Link href={constants.AUTH_LOGIN_PAGE} className="btn btn-outline btn-secondary btn-sm">
             <ShieldCheckIcon className="h-5 w-5" />
             Login
@@ -38,6 +40,7 @@ export function Navbar() {
         </Link>
       </div>
       <div className="navbar-end gap-2">
+        <ThemeToggle />
         <Link href={constants.AUTH_LOGIN_PAGE} className="btn btn-outline btn-secondary btn-sm">
           <ShieldCheckIcon className="h-5 w-5" />
           Login
