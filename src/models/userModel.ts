@@ -1,4 +1,4 @@
-import { ALLOWED_IMAGE_TYPES, MAX_COMPANY_LOGO_FILE_SIZE_MB } from '@/app/constants/constants';
+import constants from '@constants/constants';
 import mongoose, { Document, Model, Schema, Types } from 'mongoose';
 
 type ObjectId = Types.ObjectId;
@@ -106,12 +106,12 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
       data: { type: String, default: '' },
       contentType: {
         type: String,
-        enum: [...ALLOWED_IMAGE_TYPES, ''], // Allow empty string
+        enum: [...constants.ALLOWED_IMAGE_TYPES, ''], // Allow empty string
         default: '',
       },
       size: {
         type: Number,
-        max: MAX_COMPANY_LOGO_FILE_SIZE_MB * 1024 * 1024,
+        max: constants.MAX_COMPANY_LOGO_FILE_SIZE_MB * 1024 * 1024,
         default: 0,
       },
       uploadAt: { type: Date, default: Date.now },

@@ -1,21 +1,22 @@
+'use client';
 import '@/app/globals.css';
 import { SpeedInsightsWrapper } from '@components/SpeedInsights';
 import TopbarLoader from '@components/topbarLoader/page';
 import { ThemeProvider } from '@context/ThemeContext';
 import { CompanyProvider } from '@context/companyContext';
 import { AuthProvider, UserProvider } from '@context/userContext';
-import type { Metadata } from 'next';
+import { defaultMetadata } from '@utils/metadata';
+import Head from 'next/head';
 import React from 'react';
 import { Toaster } from 'react-hot-toast';
-
-export const metadata: Metadata = {
-  title: 'Kalamandir',
-  description: 'Kalamandir is a platform for Fashion and Lifestyle products Management',
-};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
+      <Head>
+        <title>{defaultMetadata.title as string}</title>
+        <meta name="description" content={defaultMetadata.description as string} />
+      </Head>
       <head>
         <link rel="apple-touch-icon" sizes="180x180" href="/icons/logo/apple-touch-icon.png" />
         <link rel="icon" type="image/png" sizes="32x32" href="/icons/logo/favicon-32x32.png" />

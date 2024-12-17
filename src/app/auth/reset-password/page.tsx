@@ -1,4 +1,7 @@
 'use client';
+import GlassCard from '@components/GlassCard';
+import constants from '@constants/constants';
+import { KeyIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 import handleError from '@utils/error/handleError';
 import { ApiPost } from '@utils/makeApiRequest/makeApiRequest';
 import Link from 'next/link';
@@ -44,7 +47,7 @@ function ResetPasswordContent() {
       });
 
       setTimeout(() => {
-        router.push('/auth/login');
+        router.push(constants.AUTH_LOGIN_PAGE);
       }, 1000);
     } catch (error) {
       handleError.log(error);
@@ -54,72 +57,95 @@ function ResetPasswordContent() {
   };
 
   return (
-    <div className="hero relative h-full">
-      <div className="hero-content max-h-[80%] min-h-fit min-w-[65%] max-w-[80%] flex-col rounded-box bg-base-200 px-6 py-12 shadow-inner shadow-primary sm:max-h-full lg:flex-row-reverse">
-        <div className="flex select-none flex-col gap-2 p-4 text-center lg:min-w-[55%]">
-          <h1 className="text-center text-5xl font-bold">Reset Password</h1>
-          <p className="text-pretty px-2 py-3">Welcome back! Please enter your new password to continue.</p>
+    <GlassCard variant="primary" className="animate-slideUp">
+      <div className="flex flex-col gap-8 p-8 lg:flex-row-reverse">
+        {/* Info Section */}
+        <div className="flex select-none flex-col justify-center gap-4 lg:w-1/2">
+          <div className="text-center">
+            <h1 className="bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-5xl font-bold text-transparent">
+              Reset Password
+            </h1>
+            <p className="mt-4 text-pretty text-base-content/70">
+              Create a new password for your account to regain access to your fashion business management tools.
+            </p>
+          </div>
+          <div className="mt-4 space-y-4 rounded-box bg-base-200/50 p-6 backdrop-blur-sm">
+            <h2 className="text-lg font-semibold">Password Requirements:</h2>
+            <ul className="ml-6 list-disc space-y-2 text-base-content/70">
+              <li>At least 6 characters long</li>
+              <li>Include numbers and letters</li>
+              <li>Avoid common passwords</li>
+              <li>Use unique combinations</li>
+            </ul>
+          </div>
         </div>
-        <div className="card h-full w-full max-w-xs shrink-0 grow gap-1 bg-base-300 shadow-inner shadow-primary max-sm:max-w-sm sm:max-h-full lg:min-h-[85%] lg:max-w-sm">
-          <form className="card-body p-4" onSubmit={resetUserPassword}>
-            <div className="flex select-none justify-center">Reset Password</div>
+
+        {/* Form Section */}
+        <div className="lg:w-1/2">
+          <form className="space-y-6" onSubmit={resetUserPassword}>
             <div className="form-control">
-              <label className="label" htmlFor="password">
-                <span className="label-text">New Password</span>
+              <label className="label">
+                <span className="label-text flex items-center gap-2">
+                  <KeyIcon className="h-4 w-4" />
+                  New Password
+                </span>
               </label>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                id="password"
-                name="password"
-                placeholder="New Password"
-                className="input input-sm input-bordered input-primary"
-                autoComplete="new-password"
-                required
-              />
-            </div>
-            <div className="form-control">
-              <label className="label" htmlFor="retypepassword">
-                <span className="label-text">Confirm Password</span>
-              </label>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                id="retypepassword"
-                name="retypepassword"
-                placeholder="Confirm Password"
-                className="input input-sm input-bordered input-primary"
-                autoComplete="new-password"
-                required
-              />
-            </div>
-            <div className="flex flex-row items-center justify-between p-2 hover:rounded-box hover:bg-neutral">
-              <label className="flex grow cursor-pointer items-center justify-between" htmlFor="check">
-                Show password:
+              <div className="relative">
                 <input
-                  type="checkbox"
-                  onChange={() => setShowPassword(!showPassword)}
-                  id="check"
-                  className="checkbox-primary checkbox checkbox-sm"
+                  type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  placeholder="Enter new password"
+                  className="input input-bordered w-full bg-base-100/50 pr-10 backdrop-blur-sm"
+                  required
                 />
+                <label className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    onChange={() => setShowPassword(!showPassword)}
+                    className="checkbox-primary checkbox checkbox-xs"
+                    checked={showPassword}
+                  />
+                </label>
+              </div>
+            </div>
+
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text flex items-center gap-2">
+                  <LockClosedIcon className="h-4 w-4" />
+                  Confirm Password
+                </span>
               </label>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                name="retypepassword"
+                placeholder="Confirm new password"
+                className="input input-bordered bg-base-100/50 backdrop-blur-sm"
+                required
+              />
             </div>
-            <div className="form-control mt-2">
-              <button className="btn btn-primary btn-sm" disabled={isLoading}>
-                {isLoading && <span className="loading loading-spinner"></span>}
-                Reset Password
-              </button>
-            </div>
+
+            <button
+              type="submit"
+              className="btn btn-primary btn-block bg-gradient-to-r from-primary via-accent to-secondary text-primary-content transition-all hover:scale-[1.02]"
+              disabled={isLoading}
+            >
+              {isLoading ? <span className="loading loading-spinner loading-sm" /> : <KeyIcon className="h-5 w-5" />}
+              Reset Password
+            </button>
           </form>
-          <div className="card-body p-4">
-            <div className="flex items-center justify-center gap-4">
-              <p className="label-text text-secondary">Link expired?</p>
-              <Link href="/auth/login" className="btn btn-link btn-sm">
-                Go to Login
+
+          <div className="mt-6 text-center">
+            <p className="text-sm text-base-content/70">
+              Remember your password?{' '}
+              <Link href={constants.AUTH_LOGIN_PAGE} className="link link-primary font-semibold hover:link-accent">
+                Sign in
               </Link>
-            </div>
+            </p>
           </div>
         </div>
       </div>
-    </div>
+    </GlassCard>
   );
 }
 

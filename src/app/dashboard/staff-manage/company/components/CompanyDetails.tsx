@@ -1,6 +1,6 @@
 'use client';
-import { MAX_COMPANY_LOGO_FILE_SIZE_MB } from '@/app/constants/constants';
 import { Modal } from '@components/Modal/Modal';
+import constants from '@constants/constants';
 import { useCompany } from '@context/companyContext';
 import { FormField } from '@dashboard/staff-manage/company/components/FormField';
 import { ImagePreview } from '@dashboard/staff-manage/company/components/ImagePreview';
@@ -125,7 +125,7 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ company, isEditing, set
     if (!file) return;
 
     try {
-      if (!FileUtil.validateFileSize(file, MAX_COMPANY_LOGO_FILE_SIZE_MB)) {
+      if (!FileUtil.validateFileSize(file, constants.MAX_COMPANY_LOGO_FILE_SIZE_MB)) {
         throw new Error('File size should be less than 5MB');
       }
       const base64 = await FileUtil.toBase64(file);

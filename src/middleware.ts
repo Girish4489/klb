@@ -1,3 +1,4 @@
+import constants from '@constants/constants';
 import { token as tokenUtil } from '@utils/token/token';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -14,54 +15,98 @@ export const config = {
   ],
 };
 
-const publicPaths = ['/auth/login', '/auth/signup', '/auth/reset-password', '/auth/verify-email', '/not-found'];
-const apiPublicPaths = ['/api/auth/login', '/api/auth/signup', '/api/auth/verify', '/api/auth/forgot-password'];
+// Path configurations
+const paths = {
+  public: {
+    static: ['/_next/', '/favicon.ico', '/public/', '/icons/', '/images/'],
+    pages: ['/', '/not-found'],
+    auth: [
+      constants.AUTH_LOGIN_PAGE,
+      constants.AUTH_SIGNUP_PAGE,
+      constants.AUTH_RESET_PASSWORD_PAGE,
+      constants.AUTH_VERIFY_EMAIL_PAGE,
+    ],
+    landing: [constants.LANDING_PUBLIC_HOME_PAGE, constants.LANDING_PUBLIC_PAGE, constants.LANDING_PUBLIC_LOGOUT_PAGE],
+    api: [
+      '/api/auth/login',
+      '/api/auth/signup',
+      '/api/auth/verify',
+      '/api/auth/forgot-password',
+      '/api/auth/logout',
+      '/api/auth/clear-cookie',
+    ],
+  },
+  protected: {
+    landing: [constants.LANDING_LOGIN_SUCCESS_PAGE, constants.LANDING_USER_PAGE],
+    dashboard: [constants.DASHBOARD_PAGE],
+    printPreview: ['/print-preview'],
+    api: ['/api/user/', '/api/dashboard/'],
+  },
+};
 
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const authToken = request.cookies.get('authToken')?.value;
 
-  // Allow public paths and API routes
-  if (path === '/api/auth/user' || path === '/not-found' || path === '/') {
+  // 1. Static files bypass
+  if (paths.public.static.some((prefix) => path.startsWith(prefix))) {
     return NextResponse.next();
   }
 
-  const isPublicPath = publicPaths.includes(path);
-  const isPublicApi = apiPublicPaths.includes(path);
+  // 2. Check auth token validity
+  const isValidToken = authToken ? await tokenUtil.verify(authToken) : null;
 
-  // Handle public paths
-  if (isPublicPath || isPublicApi) {
-    if (authToken) {
-      return NextResponse.redirect(new URL('/', request.nextUrl));
-    }
+  // 3. Path type checks
+  const isPublicPage = paths.public.pages.includes(path);
+  const isAuthPage = paths.public.auth.some((prefix) => path.startsWith(prefix));
+  const isPublicLanding = paths.public.landing.some((prefix) => path.startsWith(prefix));
+  const isProtectedLanding = paths.protected.landing.some((prefix) => path.startsWith(prefix));
+  const isPublicApi = paths.public.api.some((prefix) => path.startsWith(prefix));
+  const isDashboard = paths.protected.dashboard.some((prefix) => path.startsWith(prefix));
+  const isPrintPreview = paths.protected.printPreview.some((prefix) => path.startsWith(prefix));
+  const isProtectedApi = paths.protected.api.some((prefix) => path.startsWith(prefix));
+
+  // 4. Enhanced routing logic
+  // 4.1 Root path handling
+  if (path === '/') {
+    return isValidToken
+      ? NextResponse.redirect(new URL(constants.DASHBOARD_PAGE, request.nextUrl))
+      : NextResponse.redirect(new URL(constants.LANDING_PUBLIC_HOME_PAGE, request.nextUrl));
+  }
+
+  // 4.2 Public routes - no auth needed
+  if (isPublicPage || isPublicLanding || isPublicApi) {
     return NextResponse.next();
   }
 
-  // Handle missing auth token
-  if (!authToken) {
-    if (path.startsWith('/api/')) {
-      return NextResponse.json({ success: false, message: 'Authentication required' }, { status: 401 });
-    }
-    return NextResponse.redirect(new URL('/auth/login', request.nextUrl));
+  // 4.3 Auth pages - redirect to dashboard if already authenticated
+  if (isAuthPage) {
+    return isValidToken
+      ? NextResponse.redirect(new URL(constants.DASHBOARD_PAGE, request.nextUrl))
+      : NextResponse.next();
   }
 
-  // Verify token and handle protected routes
-  try {
-    const tokenData = await tokenUtil.verify(authToken);
-    if (!tokenData) throw new Error('Invalid token');
+  // 4.4 Protected routes - require authentication
+  if (isDashboard || isProtectedLanding || isPrintPreview || isProtectedApi) {
+    if (!isValidToken) {
+      if (path.startsWith('/api/')) {
+        return NextResponse.json({ success: false, message: 'Authentication required' }, { status: 401 });
+      }
 
+      // Store intended URL for post-login redirect
+      const redirectUrl = new URL(constants.AUTH_LOGIN_PAGE, request.nextUrl);
+      redirectUrl.searchParams.set('redirect', path);
+      return NextResponse.redirect(redirectUrl);
+    }
+
+    // Handle API requests
     if (path.startsWith('/api/')) {
       const requestHeaders = new Headers(request.headers);
-      requestHeaders.set('x-user-id', tokenData.id);
-      requestHeaders.set('x-user-role', tokenData.companyAccess?.role || 'guest');
+      requestHeaders.set('x-user-id', isValidToken.id);
+      requestHeaders.set('x-user-role', isValidToken.companyAccess?.role || 'guest');
       return NextResponse.next({ request: { headers: requestHeaders } });
     }
-
-    return NextResponse.next();
-  } catch (error) {
-    console.error('Middleware authentication error:', error);
-    const response = NextResponse.redirect(new URL('/auth/login', request.nextUrl));
-    response.cookies.delete('authToken');
-    return response;
   }
+
+  return NextResponse.next();
 }

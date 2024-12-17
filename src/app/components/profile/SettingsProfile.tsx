@@ -1,5 +1,6 @@
 'use client';
 import { Modal } from '@components/Modal/Modal';
+import LogoutButton from '@components/logout/LogoutButton';
 import { TrashIcon } from '@heroicons/react/24/solid';
 import { IUser } from '@models/userModel';
 import { userConfirmation } from '@utils/confirmation/confirmationUtil';
@@ -10,7 +11,6 @@ import axios from 'axios';
 import Image from 'next/image';
 import React, { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import LogoutButton from '../logout/LogoutButton';
 
 const LoadingSkeleton = () => (
   <div className="flex flex-col items-center gap-4">

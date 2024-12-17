@@ -2,8 +2,8 @@
 import { ICompany } from '@models/companyModel';
 import { IBill, IReceipt, ITax } from '@models/klm';
 import { IUser, RoleType } from '@models/userModel';
+import handleError from '@utils/error/handleError';
 import axios from 'axios';
-import handleError from '../error/handleError';
 
 export const ApiPost = {
   Category: async (type: string, data: Record<string, string>) => {

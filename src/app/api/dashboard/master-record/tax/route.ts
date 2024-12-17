@@ -9,8 +9,8 @@ connect();
 export async function POST(req: NextRequest) {
   try {
     const reqBody = await req.json();
-    const exsistinTaxName = await Tax.findOne({ taxName: reqBody.taxName });
-    if (exsistinTaxName) {
+    const existingTaxName = await Tax.findOne({ taxName: reqBody.taxName });
+    if (existingTaxName) {
       throw new Error('Tax name already exists');
     }
     const tax = await Tax.create(reqBody);
@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// returns all taxs from the database
+// returns all taxes from the database
 export async function GET() {
   try {
     const taxes = await Tax.find();
@@ -39,8 +39,8 @@ export async function PUT(req: NextRequest) {
     }
     const data = await req.json();
     // existing tax name except the current tax
-    const exsistinTaxName = await Tax.findOne({ taxName: data.taxName, _id: { $ne: id } });
-    if (exsistinTaxName) {
+    const existingTaxName = await Tax.findOne({ taxName: data.taxName, _id: { $ne: id } });
+    if (existingTaxName) {
       throw new Error('Tax name already exists');
     }
 

@@ -7,7 +7,7 @@ import { LocalIndexer } from '@utils/indexing/indexingUtil';
 import { ApiPut } from '@utils/makeApiRequest/makeApiRequest';
 import { fetchUserData } from '@utils/user/userFetchUtil/userUtils';
 import mongoose from 'mongoose';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import React, { ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 interface UserContextProps {
@@ -87,18 +87,7 @@ const initialUserState: IUser = {
 
 export const UserProvider: React.FC<UserContextProps> = ({ children }) => {
   const [user, setUser] = React.useState<IUser>(initialUserState);
-  const [isClient, setIsClient] = useState(false);
   const pathname = usePathname();
-  const router = useRouter();
-  const { isAuthenticated } = useAuth();
-
-  useEffect(() => {
-    setIsClient(true);
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
 
   const fetchAndSetUser = useCallback(async () => {
     try {
@@ -120,12 +109,37 @@ export const UserProvider: React.FC<UserContextProps> = ({ children }) => {
     } catch (error) {
       console.error('Failed to fetch user data:', error);
       await logoutUtils.logout({
-        onLogoutSuccess: () => {
-          setUser(initialUserState);
-        },
+        onLogoutSuccess: () => setUser(initialUserState),
       });
     }
   }, []);
+
+  // Single useEffect for user management
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const initializeUser = async () => {
+      const storedUser = localStorage.getItem('user');
+
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+
+        // Apply user preferences if available
+        if (parsedUser.preferences) {
+          document.documentElement.setAttribute('data-theme', parsedUser.preferences.theme);
+          if (parsedUser.preferences.fonts) {
+            document.body.style.fontFamily = parsedUser.preferences.fonts.name ?? 'Roboto';
+            document.body.style.fontWeight = parsedUser.preferences.fonts.weight.toString() ?? '400';
+          }
+        }
+      } else if (!pathname.startsWith('/auth/')) {
+        await fetchAndSetUser();
+      }
+    };
+
+    initializeUser();
+  }, [pathname, fetchAndSetUser]);
 
   const updateUser = useCallback((partialUpdate: Partial<IUser>) => {
     setUser((prevUser: IUser) => {
@@ -253,29 +267,6 @@ export const UserProvider: React.FC<UserContextProps> = ({ children }) => {
     }
   }, []);
 
-  useEffect(() => {
-    setIsClient(true);
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    } else if (!pathname.startsWith('/auth/')) {
-      fetchAndSetUser();
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!isClient) return;
-
-    if (isAuthenticated) {
-      // Only redirect if on auth pages or root
-      if (pathname.startsWith('/auth/')) {
-        router.push('/');
-      }
-    } else if (!pathname.startsWith('/auth/')) {
-      router.push('/auth/login');
-    }
-  }, [isAuthenticated, pathname, isClient, router]);
-
   const contextValue = useMemo(
     () => ({
       user,
@@ -320,47 +311,28 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [user, setUser] = useState<IUser | null>(null);
 
-  const updateUser = (data: Partial<IUser>) => {
-    setUser((prev) => {
-      if (!prev) return null;
-      return {
-        ...prev,
-        ...data,
-      } as IUser; // Use type assertion to handle mongoose Document methods
-    });
-  };
-
+  // Single useEffect for auth state management
   useEffect(() => {
     const initAuth = async () => {
       try {
         setIsLoading(true);
-        // Check for existing user in localStorage first
         const storedUser = localStorage.getItem('user');
+
         if (storedUser) {
           const parsedUser = JSON.parse(storedUser);
           setUser(parsedUser);
           setIsAuthenticated(true);
-          setIsLoading(false);
-          return; // Exit early if we have a stored user
+          return;
         }
 
-        // Only verify with server if no stored user
-        const response = await fetch('/api/auth/verify', {
-          credentials: 'include',
-        });
-
-        if (!response.ok) {
-          throw new Error('Verification request failed');
-        }
-
-        const data = await response.json();
-
-        if (data.success && data.user) {
-          setIsAuthenticated(true);
-          setUser(data.user);
-          localStorage.setItem('user', JSON.stringify(data.user));
-        } else {
-          throw new Error('Verification failed');
+        const response = await fetch('/api/auth/verify', { credentials: 'include' });
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.user) {
+            setIsAuthenticated(true);
+            setUser(data.user);
+            localStorage.setItem('user', JSON.stringify(data.user));
+          }
         }
       } catch (error) {
         console.error('Auth verification failed:', error);
@@ -374,6 +346,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     initAuth();
   }, []);
+
+  const updateUser = (data: Partial<IUser>) => {
+    setUser((prev) => {
+      if (!prev) return null;
+      return {
+        ...prev,
+        ...data,
+      } as IUser; // Use type assertion to handle mongoose Document methods
+    });
+  };
 
   const value = useMemo(
     () => ({

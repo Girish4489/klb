@@ -147,6 +147,7 @@ const customerSchema: Schema<ICustomer> = new Schema<ICustomer>(
       required: [true, 'Phone number is required.'],
       unique: true,
       trim: true,
+      index: true, // Define index here instead of using Schema.index()
     },
     email: String,
     city: String,
@@ -158,7 +159,6 @@ const customerSchema: Schema<ICustomer> = new Schema<ICustomer>(
   },
   { timestamps: true },
 );
-customerSchema.index({ phone: 1 }); // Add index to phone
 
 // Schema for Tax Data model.
 const taxSchema: Schema<ITax> = new Schema<ITax>(
@@ -167,6 +167,7 @@ const taxSchema: Schema<ITax> = new Schema<ITax>(
       type: String,
       required: [true, 'Tax name is required.'],
       unique: true,
+      index: true, // Define index here instead of using Schema.index()
     },
     taxType: {
       type: String,
@@ -180,7 +181,6 @@ const taxSchema: Schema<ITax> = new Schema<ITax>(
   },
   { timestamps: true },
 );
-taxSchema.index({ taxName: 1 }); // Add index to taxName
 
 // Schema for Category model.
 const categorySchema: Schema<ICategory> = new Schema<ICategory>(
@@ -189,6 +189,7 @@ const categorySchema: Schema<ICategory> = new Schema<ICategory>(
       type: String,
       required: [true, 'Category name is required.'],
       unique: true,
+      index: true, // Define index here instead of using Schema.index()
     },
     description: String,
     styleProcess: [
@@ -227,7 +228,6 @@ const categorySchema: Schema<ICategory> = new Schema<ICategory>(
   },
   { timestamps: true },
 );
-categorySchema.index({ categoryName: 1 }); // Add index to categoryName
 
 // Schema for Bill model.
 const billSchema: Schema<IBill> = new Schema<IBill>(
@@ -236,6 +236,7 @@ const billSchema: Schema<IBill> = new Schema<IBill>(
       type: Number,
       required: [true, 'Bill number is required.'],
       unique: true,
+      index: true, // Define index here instead of using Schema.index()
     },
     date: {
       type: Date,
@@ -340,7 +341,6 @@ const billSchema: Schema<IBill> = new Schema<IBill>(
   },
   { timestamps: true },
 );
-billSchema.index({ billNumber: 1 }); // Add index to billNumber
 
 // Schema for Receipts model.
 const receiptSchema: Schema<IReceipt> = new Schema<IReceipt>(
@@ -349,11 +349,15 @@ const receiptSchema: Schema<IReceipt> = new Schema<IReceipt>(
       type: Number,
       required: [true, 'Receipt number is required.'],
       unique: true,
-      index: 'desc',
+      index: true, // Define index here instead of using Schema.index()
     },
     bill: {
       _id: { type: mongoose.Schema.Types.ObjectId, ref: 'Bill' },
-      billNumber: { type: Number, required: [true, 'Bill number is required.'], index: 'desc' },
+      billNumber: {
+        type: Number,
+        required: [true, 'Bill number is required.'],
+        index: true, // Define index here
+      },
       name: String,
       mobile: { type: Number, index: 'asc' },
     },
@@ -388,8 +392,6 @@ const receiptSchema: Schema<IReceipt> = new Schema<IReceipt>(
   },
   { timestamps: true },
 );
-receiptSchema.index({ receiptNumber: 1 }); // Add index to receiptNumber
-receiptSchema.index({ 'bill.billNumber': 1 }); // Add index to bill.billNumber
 
 // Create models from the schemas
 const Customer: Model<ICustomer> = mongoose.models.Customer || mongoose.model<ICustomer>('Customer', customerSchema);

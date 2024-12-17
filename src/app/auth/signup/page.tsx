@@ -1,4 +1,6 @@
 'use client';
+import GlassCard from '@components/GlassCard';
+import { EnvelopeIcon, IdentificationIcon, KeyIcon, UserIcon } from '@heroicons/react/24/outline';
 import handleError from '@utils/error/handleError';
 import { ApiPost } from '@utils/makeApiRequest/makeApiRequest';
 import Link from 'next/link';
@@ -75,121 +77,150 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="hero relative h-full">
-      <div className="hero-content max-h-[80%] min-h-fit min-w-[65%] max-w-[80%] flex-col rounded-box bg-base-200 px-6 py-12 shadow-inner shadow-primary sm:max-h-full lg:flex-row-reverse">
-        <div className="flex select-none flex-col gap-2 p-4 text-center lg:min-w-[55%]">
-          <h1 className="text-center text-5xl font-bold">Sign up now!</h1>
-          <p className="text-pretty px-2 py-3">Welcome to Kalamandir! Please enter your details to continue.</p>
+    <GlassCard variant="secondary" className="animate-slideUp">
+      <div className="flex flex-col gap-8 p-8 lg:flex-row-reverse">
+        {/* Info Section */}
+        <div className="flex select-none flex-col justify-center gap-4 lg:w-1/2">
+          <div className="text-center">
+            <h1 className="bg-gradient-to-r from-secondary via-primary to-accent bg-clip-text text-5xl font-bold text-transparent">
+              Create Account
+            </h1>
+            <p className="mt-4 text-pretty text-base-content/70">
+              Join Kalamandir to manage your fashion business better. Get started with a free account today.
+            </p>
+          </div>
+          <div className="mt-4 space-y-4 rounded-box bg-base-200/50 p-6 backdrop-blur-sm">
+            <h2 className="text-lg font-semibold">What you'll get:</h2>
+            <ul className="ml-6 list-disc space-y-2 text-base-content/70">
+              <li>Real-time inventory tracking</li>
+              <li>Sales analytics dashboard</li>
+              <li>Customer relationship tools</li>
+              <li>Secure data management</li>
+            </ul>
+          </div>
         </div>
-        <div className="card h-full w-full max-w-xs shrink-0 grow gap-1 bg-base-300 shadow-inner shadow-primary max-sm:max-w-sm sm:max-h-full lg:min-h-[85%] lg:max-w-sm">
-          <form className="card-body p-4" onSubmit={handleSignup}>
-            <div className="flex select-none justify-center">Sign Up</div>
+
+        {/* Form Section */}
+        <div className="lg:w-1/2">
+          <form className="space-y-6" onSubmit={handleSignup}>
             <div className="form-control">
               <label className="label" htmlFor="username">
-                <span className="label-text">Username</span>
+                <span className="label-text flex items-center gap-2">
+                  <UserIcon className="h-4 w-4" />
+                  Username
+                </span>
               </label>
               <input
                 type="text"
                 name="username"
                 id="username"
                 autoComplete="username"
-                placeholder="username"
-                className="input input-sm input-bordered input-primary"
+                placeholder="Enter your username"
+                className="input input-bordered bg-base-100/50 backdrop-blur-sm"
                 onFocus={(e) => e.target.select()}
                 required
               />
             </div>
+
             <div className="form-control">
               <label className="label" htmlFor="email">
-                <span className="label-text">Email</span>
+                <span className="label-text flex items-center gap-2">
+                  <EnvelopeIcon className="h-4 w-4" />
+                  Email
+                </span>
               </label>
               <input
                 type="email"
                 name="email"
                 id="email"
                 autoComplete="email"
-                placeholder="email"
-                className="input input-sm input-bordered input-primary"
+                placeholder="Enter your email"
+                className="input input-bordered bg-base-100/50 backdrop-blur-sm"
                 onFocus={(e) => e.target.select()}
                 required
               />
             </div>
+
             <div className="form-control">
               <label className="label" htmlFor="password">
-                <span className="label-text">Password</span>
+                <span className="label-text flex items-center gap-2">
+                  <KeyIcon className="h-4 w-4" />
+                  Password
+                </span>
               </label>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                name="password"
-                id="password"
-                autoComplete="new-password"
-                placeholder="password"
-                className="input input-sm input-bordered input-primary"
-                onFocus={(e) => e.target.select()}
-                required
-              />
-            </div>
-            <div className="flex flex-row items-center justify-between p-2 hover:rounded-box hover:bg-neutral">
-              <label className="flex grow cursor-pointer items-center justify-between" htmlFor="check">
-                Show password:
+              <div className="relative">
                 <input
-                  type="checkbox"
-                  onChange={handleShowPassword}
-                  id="check"
-                  name="check"
-                  className="checkbox-primary checkbox checkbox-sm"
+                  type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  id="password"
+                  autoComplete="new-password"
+                  placeholder="Create a password"
+                  className="input input-bordered w-full bg-base-100/50 pr-10 backdrop-blur-sm"
+                  required
                 />
+                <label className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    onChange={handleShowPassword}
+                    className="checkbox-secondary checkbox checkbox-xs"
+                    checked={showPassword}
+                  />
+                </label>
+              </div>
+              <label className="label">
+                <span className="label-text-alt text-info">Must be at least 6 characters</span>
               </label>
             </div>
-            <div className="form-control">
-              <button className="btn btn-primary btn-sm" disabled={isLoading}>
-                {isLoading && <span className="loading loading-spinner"></span>}
-                Sign up
-              </button>
-            </div>
+
+            <button
+              type="submit"
+              className="btn btn-secondary btn-block bg-gradient-to-r from-secondary via-primary to-accent text-secondary-content transition-all hover:scale-[1.02]"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <span className="loading loading-spinner loading-sm" />
+              ) : (
+                <IdentificationIcon className="h-5 w-5" />
+              )}
+              Create Account
+            </button>
           </form>
-          <div className="card-body grow p-4">
-            <div className="flex flex-col justify-center gap-2">
-              <p className="px-3 py-1 text-xs font-normal text-info">
-                Note: If you have not verified your account, please enter your email below and click on resend.
-              </p>
-              <details className="collapse collapse-arrow bg-base-300 shadow-inner shadow-base-300 ring-1 ring-primary transition-all duration-700">
-                <summary className="collapse-title card-compact h-fit select-none text-base">
-                  Verify your Account?
-                </summary>
-                <div className="collapse-content">
-                  <form className="card-body gap-2 p-0" onSubmit={handleResendVerification}>
-                    <div className="form-control">
-                      <label className="label" htmlFor="resendEmail">
-                        <span className="label-text">Email</span>
-                      </label>
-                      <input
-                        type="email"
-                        placeholder="email"
-                        name="resendEmail"
-                        id="resendEmail"
-                        autoComplete="email"
-                        className="input input-sm input-bordered"
-                        onFocus={(e) => e.target.select()}
-                        required
-                      />
-                    </div>
-                    <div className="form-control">
-                      <button className="btn btn-warning btn-sm">Resend</button>
-                    </div>
-                  </form>
-                </div>
-              </details>
-              <div className="flex items-center justify-center gap-4 px-2">
-                <p className="label text-pretty py-0.5 font-normal text-secondary">Already have an account?</p>
-                <Link href="/auth/login" className="btn btn-link btn-sm">
-                  Login here
-                </Link>
+
+          <div className="divider my-8">OR</div>
+
+          {/* Account verification section */}
+          <div className="space-y-4 rounded-box bg-base-200/50 p-4 backdrop-blur-sm">
+            <details className="collapse collapse-plus bg-base-100/50">
+              <summary className="collapse-title text-sm font-medium">Need to verify your account?</summary>
+              <div className="collapse-content">
+                <form className="mt-4 space-y-4" onSubmit={handleResendVerification}>
+                  <div className="form-control">
+                    <input
+                      type="email"
+                      name="resendEmail"
+                      placeholder="Enter your email"
+                      className="input input-sm input-bordered"
+                      required
+                    />
+                  </div>
+                  <button type="submit" className="btn btn-warning btn-sm btn-block">
+                    Resend Verification
+                  </button>
+                </form>
               </div>
-            </div>
+            </details>
+          </div>
+
+          <div className="mt-6 text-center">
+            <p className="text-sm text-base-content/70">
+              Already have an account?{' '}
+              <Link href="/auth/login" className="link link-secondary font-semibold hover:link-accent">
+                Sign in
+              </Link>
+            </p>
           </div>
         </div>
       </div>
-    </div>
+    </GlassCard>
   );
 }

@@ -1,13 +1,13 @@
-import { ALLOWED_IMAGE_TYPES, MAX_COMPANY_LOGO_FILE_SIZE_MB } from '@/app/constants/constants';
+import constants from '@constants/constants';
 
 export class ImageProcessor {
   static validateImage(file: File): void {
     if (!file) throw new Error('No file provided');
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-      throw new Error(`Invalid file type. Allowed types: ${ALLOWED_IMAGE_TYPES.join(', ')}`);
+    if (!constants.ALLOWED_IMAGE_TYPES.includes(file.type as 'image/jpeg' | 'image/png' | 'image/gif')) {
+      throw new Error(`Invalid file type. Allowed types: ${constants.ALLOWED_IMAGE_TYPES.join(', ')}`);
     }
-    if (file.size > MAX_COMPANY_LOGO_FILE_SIZE_MB * 1024 * 1024) {
-      throw new Error(`File size must be less than ${MAX_COMPANY_LOGO_FILE_SIZE_MB}MB`);
+    if (file.size > constants.MAX_COMPANY_LOGO_FILE_SIZE_MB * 1024 * 1024) {
+      throw new Error(`File size must be less than ${constants.MAX_COMPANY_LOGO_FILE_SIZE_MB}MB`);
     }
   }
 

@@ -1,4 +1,5 @@
 'use client';
+import constants from '@constants/constants';
 import { useCompany } from '@context/companyContext';
 import { useAuth } from '@context/userContext';
 import { logoutUtils } from '@utils/auth/logoutUtils';
@@ -25,7 +26,7 @@ export default function LogoutButton({
       onLogoutSuccess: () => {
         setAuthenticated(false);
         setCompany(undefined);
-        router.replace('/auth/login');
+        router.replace(constants.LANDING_PUBLIC_LOGOUT_PAGE);
       },
     });
   };
