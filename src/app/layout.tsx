@@ -1,5 +1,5 @@
 import '@/app/globals.css';
-import { SpeedInsightsWrapper } from '@/components/SpeedInsights';
+import { SpeedInsightsWrapper } from '@components/SpeedInsights';
 import TopbarLoader from '@components/topbarLoader/page';
 import { ThemeProvider } from '@context/ThemeContext';
 import { CompanyProvider } from '@context/companyContext';
