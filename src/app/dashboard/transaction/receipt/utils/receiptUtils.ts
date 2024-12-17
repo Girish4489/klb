@@ -1,6 +1,6 @@
 import { IReceipt, ITax } from '@models/klm';
-import handleError from '@util/error/handleError';
-import { ApiGet } from '@util/makeApiRequest/makeApiRequest';
+import handleError from '@utils/error/handleError';
+import { ApiGet } from '@utils/makeApiRequest/makeApiRequest';
 
 interface AmtTrack {
   total: number;

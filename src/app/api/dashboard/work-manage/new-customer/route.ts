@@ -1,6 +1,6 @@
 import { connect } from '@/dbConfig/dbConfig';
 import { Customer } from '@models/klm';
-import handleError from '@util/error/handleError';
+import handleError from '@utils/error/handleError';
 import { NextRequest, NextResponse } from 'next/server';
 
 connect();

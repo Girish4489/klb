@@ -1,6 +1,6 @@
 import { PrinterIcon, UserIcon } from '@heroicons/react/24/solid';
 import { IReceipt } from '@models/klm';
-import { formatD } from '@util/format/dateUtils';
+import { formatD } from '@utils/format/dateUtils';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 

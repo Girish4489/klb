@@ -1,7 +1,7 @@
 'use client';
 import { useAuth } from '@context/userContext';
 import { CheckBadgeIcon, ChevronRightIcon, HomeIcon } from '@heroicons/react/24/solid';
-import { homeMetadata } from '@util/metadata';
+import { homeMetadata } from '@utils/metadata';
 import Head from 'next/head';
 import Link from 'next/link';
 import React, { useEffect } from 'react';

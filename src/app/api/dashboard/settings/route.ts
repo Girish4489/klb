@@ -2,8 +2,8 @@
 import { connect } from '@/dbConfig/dbConfig';
 import { UserTokenData } from '@helpers/getDataFromToken';
 import User from '@models/userModel';
-import handleError from '@util/error/handleError';
-import { ImageMetadata } from '@util/image/imageUtils';
+import handleError from '@utils/error/handleError';
+import { ImageMetadata } from '@utils/image/imageUtils';
 import { NextRequest, NextResponse } from 'next/server';
 
 connect();

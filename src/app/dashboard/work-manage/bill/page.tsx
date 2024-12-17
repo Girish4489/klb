@@ -25,10 +25,10 @@ import {
 } from '@dashboard/work-manage/bill/utils/billUtils';
 import { PlusCircleIcon } from '@heroicons/react/24/outline';
 import { IBill, ICategory } from '@models/klm';
-import { userConfirmation } from '@util/confirmation/confirmationUtil';
-import handleError from '@util/error/handleError';
-import { ApiGet, ApiPost, ApiPut } from '@util/makeApiRequest/makeApiRequest';
-import { getSearchParam } from '@util/url/urlUtils';
+import { userConfirmation } from '@utils/confirmation/confirmationUtil';
+import handleError from '@utils/error/handleError';
+import { ApiGet, ApiPost, ApiPut } from '@utils/makeApiRequest/makeApiRequest';
+import { getSearchParam } from '@utils/url/urlUtils';
 import React, { useEffect, useMemo } from 'react';
 import toast from 'react-hot-toast';
 

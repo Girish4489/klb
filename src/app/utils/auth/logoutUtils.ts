@@ -1,5 +1,5 @@
-import { authUtils } from '@util/auth/authUtils';
-import handleError from '@util/error/handleError';
+import { authUtils } from '@utils/auth/authUtils';
+import handleError from '@utils/error/handleError';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 

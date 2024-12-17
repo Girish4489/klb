@@ -1,6 +1,6 @@
 'use client';
-import handleError from '@util/error/handleError';
-import { ApiPost } from '@util/makeApiRequest/makeApiRequest';
+import handleError from '@utils/error/handleError';
+import { ApiPost } from '@utils/makeApiRequest/makeApiRequest';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React from 'react';

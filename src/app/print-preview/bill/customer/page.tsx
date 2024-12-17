@@ -6,9 +6,9 @@ import { useCompany } from '@context/companyContext';
 import { getStyle } from '@data/printStyles';
 import { IBill } from '@models/klm';
 import klm from '@public/klm.png';
-import handleError from '@util/error/handleError';
-import { ApiGet } from '@util/makeApiRequest/makeApiRequest';
-import { getSearchParam } from '@util/url/urlUtils';
+import handleError from '@utils/error/handleError';
+import { ApiGet } from '@utils/makeApiRequest/makeApiRequest';
+import { getSearchParam } from '@utils/url/urlUtils';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 

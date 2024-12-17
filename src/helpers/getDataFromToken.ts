@@ -1,5 +1,5 @@
-import handleError from '@util/error/handleError';
-import { cookie, token } from '@util/token/token';
+import handleError from '@utils/error/handleError';
+import { cookie, token } from '@utils/token/token';
 import { NextRequest } from 'next/server';
 
 export class UserTokenData {

@@ -1,7 +1,7 @@
 import { IBill, ICategory, IColor } from '@models/klm';
-import handleError from '@util/error/handleError';
-import { ApiGet } from '@util/makeApiRequest/makeApiRequest';
-import { setSearchParam } from '@util/url/urlUtils';
+import handleError from '@utils/error/handleError';
+import { ApiGet } from '@utils/makeApiRequest/makeApiRequest';
+import { setSearchParam } from '@utils/url/urlUtils';
 import { Types } from 'mongoose';
 
 export async function fetchInitialData(

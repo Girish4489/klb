@@ -1,4 +1,4 @@
-import { token as tokenUtil } from '@util/token/token';
+import { token as tokenUtil } from '@utils/token/token';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const config = {

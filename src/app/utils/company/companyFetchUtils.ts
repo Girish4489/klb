@@ -1,5 +1,5 @@
 import axios from 'axios';
-import handleError from '../../error/handleError';
+import handleError from '../error/handleError';
 
 export async function fetchCompanyData(userId: string, role: string) {
   try {

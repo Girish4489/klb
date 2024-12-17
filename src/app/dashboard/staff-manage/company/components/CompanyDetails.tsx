@@ -6,11 +6,11 @@ import { FormField } from '@dashboard/staff-manage/company/components/FormField'
 import { ImagePreview } from '@dashboard/staff-manage/company/components/ImagePreview';
 import { PencilSquareIcon, PhotoIcon, TrashIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import { ICompany } from '@models/companyModel';
-import { userConfirmation } from '@util/confirmation/confirmationUtil';
-import handleError from '@util/error/handleError';
-import { FileUtil } from '@util/file/FileUtil';
-import { formatDNT } from '@util/format/dateUtils';
-import { FormValidationUtil } from '@util/validation/FormValidationUtil';
+import { userConfirmation } from '@utils/confirmation/confirmationUtil';
+import handleError from '@utils/error/handleError';
+import { FileUtil } from '@utils/file/FileUtil';
+import { formatDNT } from '@utils/format/dateUtils';
+import { FormValidationUtil } from '@utils/validation/FormValidationUtil';
 import { useState } from 'react';
 
 interface CompanyDetailsProps {

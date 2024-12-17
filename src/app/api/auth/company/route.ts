@@ -2,7 +2,7 @@ import { connect } from '@/dbConfig/dbConfig';
 import { UserTokenData } from '@helpers/getDataFromToken';
 import Company from '@models/companyModel';
 import User from '@models/userModel';
-import handleError from '@util/error/handleError';
+import handleError from '@utils/error/handleError';
 import { NextRequest, NextResponse } from 'next/server';
 
 connect();

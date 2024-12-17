@@ -1,9 +1,9 @@
 'use client';
-import { loginMetadata } from '@/app/util/metadata';
 import { useAuth } from '@context/userContext';
-import { authUtils } from '@util/auth/authUtils';
-import handleError from '@util/error/handleError';
-import { ApiPost } from '@util/makeApiRequest/makeApiRequest';
+import { authUtils } from '@utils/auth/authUtils';
+import handleError from '@utils/error/handleError';
+import { ApiPost } from '@utils/makeApiRequest/makeApiRequest';
+import { loginMetadata } from '@utils/metadata';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';

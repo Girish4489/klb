@@ -1,11 +1,11 @@
 // src/app/context/UserContext.tsx
 'use client';
 import { IUser, RoleType } from '@models/userModel';
-import { logoutUtils } from '@util/auth/logoutUtils';
-import handleError from '@util/error/handleError';
-import { LocalIndexer } from '@util/indexing/indexingUtil';
-import { ApiPut } from '@util/makeApiRequest/makeApiRequest';
-import { fetchUserData } from '@util/user/userFetchUtil/userUtils';
+import { logoutUtils } from '@utils/auth/logoutUtils';
+import handleError from '@utils/error/handleError';
+import { LocalIndexer } from '@utils/indexing/indexingUtil';
+import { ApiPut } from '@utils/makeApiRequest/makeApiRequest';
+import { fetchUserData } from '@utils/user/userFetchUtil/userUtils';
 import mongoose from 'mongoose';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';

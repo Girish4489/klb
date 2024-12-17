@@ -5,7 +5,7 @@ import React from 'react';
 
 import QrGenerator from '@components/Barcode/BarcodeGenerator';
 import { ICompany } from '@models/companyModel';
-import { formatDS, formatDSNT } from '@util/format/dateUtils';
+import { formatDS, formatDSNT } from '@utils/format/dateUtils';
 import Image from 'next/image';
 
 interface WorkerBillPreviewProps {

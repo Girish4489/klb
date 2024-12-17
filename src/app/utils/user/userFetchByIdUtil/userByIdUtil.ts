@@ -1,14 +1,14 @@
 import { IUser } from '@models/userModel';
-import handleError from '@util/error/handleError';
+import handleError from '@utils/error/handleError';
 import axios from 'axios';
 
-export async function fetchUserByEmail(email: string): Promise<IUser | null> {
-  if (!email) throw new Error('Email is required to fetch user data');
+export async function fetchUserById(userId: string): Promise<IUser | null> {
+  if (!userId) throw new Error('User ID is required to fetch user data');
 
   try {
     const {
       data: { data: userData, success: userSuccess, message: userMessage },
-    } = await axios.get(`/api/auth/user/email?email=${email}`);
+    } = await axios.get(`/api/auth/user/id?userId=${userId}`);
 
     if (!userData) throw new Error('User not found');
     if (!userSuccess) throw new Error(userMessage ?? 'Failed to fetch user data');

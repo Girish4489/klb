@@ -1,7 +1,7 @@
 import Pagination from '@dashboard/stats/Pagination';
 import { FunnelIcon as FunnelIconOutline } from '@heroicons/react/24/outline';
 import { ArrowDownCircleIcon, ArrowUpCircleIcon, FunnelIcon } from '@heroicons/react/24/solid';
-import { formatDSNT } from '@util/format/dateUtils';
+import { formatDSNT } from '@utils/format/dateUtils';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 

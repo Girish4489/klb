@@ -1,10 +1,10 @@
 'use client';
 import { useAuth, useUser } from '@context/userContext';
 import { ICompany } from '@models/companyModel';
-import { fetchCompanyData } from '@util/company/companyFetchUtil/companyUtils';
-import { userConfirmation } from '@util/confirmation/confirmationUtil';
-import handleError from '@util/error/handleError';
-import { ApiPut } from '@util/makeApiRequest/makeApiRequest';
+import { fetchCompanyData } from '@utils/company/companyFetchUtils';
+import { userConfirmation } from '@utils/confirmation/confirmationUtil';
+import handleError from '@utils/error/handleError';
+import { ApiPut } from '@utils/makeApiRequest/makeApiRequest';
 import mongoose from 'mongoose';
 import React, { ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';

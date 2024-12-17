@@ -29,7 +29,7 @@
       "@constants/*": ["./src/app/constants/*"],
       "@context/*": ["./src/app/context/*"],
       "@dashboard/*": ["./src/app/dashboard/*"],
-      "@util/*": ["./src/app/util/*"]
+      "@utils/*": ["./src/app/utils/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

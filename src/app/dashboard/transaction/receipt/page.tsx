@@ -8,9 +8,9 @@ import { fetchAllInitialData, validateReceipt } from '@dashboard/transaction/rec
 import { PlusCircleIcon } from '@heroicons/react/24/outline';
 import { CloudArrowUpIcon, MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { IBill, IReceipt, ITax } from '@models/klm';
-import handleError from '@util/error/handleError';
-import { ApiGet, ApiPost } from '@util/makeApiRequest/makeApiRequest';
-import { getParamsFromQueryString, updateSearchParams } from '@util/url/urlUtils';
+import handleError from '@utils/error/handleError';
+import { ApiGet, ApiPost } from '@utils/makeApiRequest/makeApiRequest';
+import { getParamsFromQueryString, updateSearchParams } from '@utils/url/urlUtils';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';

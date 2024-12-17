@@ -10,7 +10,7 @@ import {
   UserIcon,
 } from '@heroicons/react/24/solid';
 import { ICustomer } from '@models/klm';
-import handleError from '@util/error/handleError';
+import handleError from '@utils/error/handleError';
 import axios from 'axios';
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';

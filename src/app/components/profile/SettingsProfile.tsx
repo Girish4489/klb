@@ -1,11 +1,11 @@
 'use client';
-import { ImageProcessor } from '@/app/util/image/imageUtils';
 import { Modal } from '@components/Modal/Modal';
 import { TrashIcon } from '@heroicons/react/24/solid';
 import { IUser } from '@models/userModel';
-import { userConfirmation } from '@util/confirmation/confirmationUtil';
-import handleError from '@util/error/handleError';
-import { formatD, formatDNT } from '@util/format/dateUtils';
+import { userConfirmation } from '@utils/confirmation/confirmationUtil';
+import handleError from '@utils/error/handleError';
+import { formatD, formatDNT } from '@utils/format/dateUtils';
+import { ImageProcessor } from '@utils/image/imageUtils';
 import axios from 'axios';
 import Image from 'next/image';
 import React, { useCallback, useEffect, useState } from 'react';

@@ -1,6 +1,6 @@
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { IBill } from '@models/klm';
-import { formatD } from '@util/format/dateUtils';
+import { formatD } from '@utils/format/dateUtils';
 import React from 'react';
 
 interface SearchFormProps {

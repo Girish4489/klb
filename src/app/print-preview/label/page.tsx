@@ -3,7 +3,7 @@ import PrintHeader from '@/app/print-preview/components/PrintHeader';
 import QrGenerator from '@components/Barcode/BarcodeGenerator';
 import LoadingSpinner from '@components/LoadingSpinner';
 import { IBill } from '@models/klm';
-import { getSearchParam } from '@util/url/urlUtils';
+import { getSearchParam } from '@utils/url/urlUtils';
 import React, { useEffect, useState } from 'react';
 
 const BillOrderLabels: React.FC = () => {

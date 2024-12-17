@@ -3,7 +3,7 @@ import React from 'react';
 
 import QrGenerator from '@components/Barcode/BarcodeGenerator';
 import { ICompany } from '@models/companyModel';
-import { formatDS } from '@util/format/dateUtils';
+import { formatDS } from '@utils/format/dateUtils';
 import Image from 'next/image';
 
 interface CustomerBillPreviewProps {

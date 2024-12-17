@@ -1,7 +1,7 @@
 'use client';
 import { useCompany } from '@context/companyContext';
 import { useAuth } from '@context/userContext';
-import { logoutUtils } from '@util/auth/logoutUtils';
+import { logoutUtils } from '@utils/auth/logoutUtils';
 import { useRouter } from 'next/navigation';
 import { ComponentPropsWithoutRef } from 'react';
 

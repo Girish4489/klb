@@ -5,9 +5,9 @@ import { FormModals } from '@dashboard/master-record/category/components/FormMod
 import { closeModal, openModal } from '@dashboard/master-record/category/components/modals';
 import { PlusCircleIcon } from '@heroicons/react/24/outline';
 import { ICategory, IDimensionTypes, IDimensions, IStyle, IStyleProcess } from '@models/klm';
-import { userConfirmation } from '@util/confirmation/confirmationUtil';
-import handleError from '@util/error/handleError';
-import { ApiGet, ApiPost } from '@util/makeApiRequest/makeApiRequest';
+import { userConfirmation } from '@utils/confirmation/confirmationUtil';
+import handleError from '@utils/error/handleError';
+import { ApiGet, ApiPost } from '@utils/makeApiRequest/makeApiRequest';
 import React, { useEffect, useRef, useState, type JSX } from 'react';
 import toast from 'react-hot-toast';
 

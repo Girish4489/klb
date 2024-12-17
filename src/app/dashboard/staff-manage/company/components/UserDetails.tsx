@@ -6,10 +6,10 @@ import { useUser } from '@context/userContext';
 import { PencilSquareIcon, TrashIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import { ObjectId } from '@models/companyModel';
 import { RoleType } from '@models/userModel';
-import { userConfirmation } from '@util/confirmation/confirmationUtil';
-import handleError from '@util/error/handleError';
-import { ApiGet, ApiPut } from '@util/makeApiRequest/makeApiRequest';
-import { fetchUserByEmail } from '@util/user/userFetchByEmailUtil/userByEmailUtil';
+import { userConfirmation } from '@utils/confirmation/confirmationUtil';
+import handleError from '@utils/error/handleError';
+import { ApiGet, ApiPut } from '@utils/makeApiRequest/makeApiRequest';
+import { fetchUserByEmail } from '@utils/user/userFetchByEmailUtil/userByEmailUtil';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 

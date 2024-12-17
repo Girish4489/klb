@@ -2,9 +2,9 @@
 import { PlusCircleIcon } from '@heroicons/react/24/outline';
 import { CloudArrowUpIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { ITax } from '@models/klm';
-import { userConfirmation } from '@util/confirmation/confirmationUtil';
-import handleError from '@util/error/handleError';
-import { ApiDelete, ApiGet, ApiPost, ApiPut } from '@util/makeApiRequest/makeApiRequest';
+import { userConfirmation } from '@utils/confirmation/confirmationUtil';
+import handleError from '@utils/error/handleError';
+import { ApiDelete, ApiGet, ApiPost, ApiPut } from '@utils/makeApiRequest/makeApiRequest';
 import React, { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 

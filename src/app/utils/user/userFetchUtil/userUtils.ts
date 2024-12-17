@@ -1,6 +1,6 @@
 import { IUser } from '@models/userModel';
-import { logoutUtils } from '@util/auth/logoutUtils';
-import handleError from '@util/error/handleError';
+import { logoutUtils } from '@utils/auth/logoutUtils';
+import handleError from '@utils/error/handleError';
 import axios from 'axios';
 
 export async function fetchUserData() {

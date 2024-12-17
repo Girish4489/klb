@@ -4,8 +4,8 @@ import ThemerPage from '@components/themer/ThemerPage';
 import { useUser } from '@context/userContext';
 import { InformationCircleIcon } from '@heroicons/react/24/solid';
 import { IUser } from '@models/userModel';
-import handleError from '@util/error/handleError';
-import { ApiPost } from '@util/makeApiRequest/makeApiRequest';
+import handleError from '@utils/error/handleError';
+import { ApiPost } from '@utils/makeApiRequest/makeApiRequest';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
