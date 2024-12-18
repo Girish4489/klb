@@ -15,4 +15,14 @@ export const loginMetadata: Metadata = {
   description: 'Login to Kalamandir to manage your Fashion and Lifestyle products' as string,
 };
 
+export const loginSuccessMetadata: Metadata = {
+  title: 'Login Success - Kalamandir' as string,
+  description: 'You have successfully logged in to Kalamandir' as string,
+};
+
+export const not_found_metadata: Metadata = {
+  title: '404 - Page Not Found' as string,
+  description: 'The page you are looking for could not be found.' as string,
+};
+
 // Add more metadata for other pages as needed

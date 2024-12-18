@@ -2,6 +2,7 @@
 import { NavbarWithProgress } from '@components/Navbar';
 import constants from '@constants/constants';
 import {
+  ArrowUpIcon,
   ChartBarIcon,
   ClipboardDocumentListIcon,
   LightBulbIcon,
@@ -13,7 +14,7 @@ import { StarIcon } from '@heroicons/react/24/solid';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -77,6 +78,20 @@ export default function Home() {
   const [imagesLoaded, setImagesLoaded] = useState<Record<string, boolean>>({});
   const [heroImages] = useState(heroImagesData);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [showScrollButton, setShowScrollButton] = useState(false);
+
+  useEffect(() => {
+    document.title = 'Home | Kalamandir';
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollButton(window.scrollY > 300);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleImageLoad = (id: string) => {
     setImagesLoaded((prev) => ({ ...prev, [id]: true }));
@@ -84,6 +99,10 @@ export default function Home() {
 
   const handleSlideChange = (index: number) => {
     setCurrentSlide(index);
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const features = [
@@ -206,6 +225,7 @@ export default function Home() {
                       className={`h-full w-full object-cover object-center ${!imagesLoaded[`hero-${index}`] ? 'invisible' : ''}`}
                       priority={index === 0}
                       quality={90}
+                      referrerPolicy="no-referrer"
                       onLoad={() => handleImageLoad(`hero-${index}`)}
                       onError={() => setImagesLoaded((prev) => ({ ...prev, [`hero-${index}`]: false }))}
                     />
@@ -489,6 +509,15 @@ export default function Home() {
           </div>
         </motion.div>
       </footer>
+
+      {showScrollButton && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-8 right-8 z-50 flex items-center justify-center rounded-full bg-primary p-3 text-primary-content shadow-lg transition-transform duration-300 hover:scale-110"
+        >
+          <ArrowUpIcon className="h-6 w-6" />
+        </button>
+      )}
     </div>
   );
 }

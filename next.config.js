@@ -4,7 +4,11 @@ const nextConfig = {
     dirs: ['src'],
   },
   images: {
-    domains: ['upload.wikimedia.org', 'commons.wikimedia.org', 'images.unsplash.com'],
+    remotePatterns: [
+      { hostname: 'upload.wikimedia.org' },
+      { hostname: 'commons.wikimedia.org' },
+      { hostname: 'images.unsplash.com' },
+    ],
   },
 };
 
