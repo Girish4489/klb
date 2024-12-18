@@ -1,4 +1,5 @@
 'use client';
+import Notifications from '@/app/dashboard/components/Notifications';
 import HeaderProfilePage from '@/app/dashboard/components/headerProfile';
 import Sidebar from '@components/sidebar/sidebarPage';
 import { useCompany } from '@context/companyContext';
@@ -6,7 +7,6 @@ import { useUser } from '@context/userContext';
 import { Bars3BottomLeftIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
-import Notifications from './components/Notifications';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { fetchAndSetUser, user } = useUser();

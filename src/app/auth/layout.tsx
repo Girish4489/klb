@@ -1,7 +1,11 @@
 'use client';
 import { Navbar } from '@components/Navbar';
+import { useEffect } from 'react';
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
+  useEffect(() => {
+    document.title = 'Auth | Kalamandir';
+  }, []);
   return (
     <div className="min-h-screen">
       <Navbar />
