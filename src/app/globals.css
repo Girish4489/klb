@@ -91,12 +91,13 @@
 body {
   font-family: 'Roboto', sans-serif;
   font-weight: 400;
+  @apply scrollbar;
 }
 
 /* Default width */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   scroll-behavior: smooth;
 }
 
@@ -111,6 +112,7 @@ body {
 
 /* Default track */
 ::-webkit-scrollbar-track {
+  background: var(--daisyui-colors-base-200);
   --tw-bg-opacity: 0.2;
   background-color: var(--fallback-p, oklch(var(--p) / var(--tw-bg-opacity)));
   border-radius: 5px;
@@ -124,6 +126,8 @@ body {
 
 /* Default handle (thumb) */
 ::-webkit-scrollbar-thumb {
+  background: var(--daisyui-colors-primary);
+  border-radius: 4px;
   --tw-bg-opacity: 0.8;
   background-color: var(--fallback-p, oklch(var(--p) / var(--tw-bg-opacity)));
   border-radius: 5px;
@@ -132,9 +136,37 @@ body {
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
+  background: var(--daisyui-colors-primary-focus);
   --tw-bg-opacity: 0.8;
   background-color: var(--fallback-s, oklch(var(--s) / var(--tw-bg-opacity)));
   cursor: pointer;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: var(--daisyui-colors-primary-active);
+}
+
+/* Beautiful Scrollbar Styles */
+.scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+  background: var(--daisyui-colors-base-200);
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background: var(--daisyui-colors-primary);
+  border-radius: 4px;
+}
+
+.scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--daisyui-colors-primary-focus);
+}
+
+.scrollbar::-webkit-scrollbar-thumb:active {
+  background: var(--daisyui-colors-primary-active);
 }
 
 /* HTML: <div class="grid-lines"></div> */
