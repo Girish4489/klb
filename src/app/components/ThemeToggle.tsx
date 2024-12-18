@@ -2,11 +2,7 @@
 import { Theme, useTheme } from '@/app/context/ThemeContext';
 
 export function ThemeToggle() {
-  const { currentTheme, setTheme } = useTheme();
-
-  const toggleTheme = () => {
-    setTheme(currentTheme === Theme.Dark ? Theme.Light : Theme.Dark);
-  };
+  const { currentTheme, toggleTheme } = useTheme();
 
   return (
     <label className="grid cursor-pointer place-items-center">

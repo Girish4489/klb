@@ -45,6 +45,8 @@ interface ThemeContextInterface {
   themes: ReadonlyArray<Theme>;
   currentTheme: Theme;
   setTheme: (theme: Theme) => void;
+  toggleTheme: () => void;
+  listenToSystemTheme: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextInterface | undefined>(undefined);
@@ -66,6 +68,17 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       if (typeof window !== 'undefined') {
         localStorage.setItem('theme', newTheme);
       }
+    },
+    toggleTheme: () => {
+      setTheme((prevTheme) => (prevTheme === Theme.Dark ? Theme.Light : Theme.Dark));
+    },
+    listenToSystemTheme: () => {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const handleChange = (e: MediaQueryListEvent) => {
+        setTheme(e.matches ? Theme.Dark : Theme.Light);
+      };
+      mediaQuery.addEventListener('change', handleChange);
+      return () => mediaQuery.removeEventListener('change', handleChange);
     },
   };
 
