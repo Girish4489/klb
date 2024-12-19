@@ -3,7 +3,7 @@ import { ApiGet } from '@utils/makeApiRequest/makeApiRequest';
 import toast from 'react-hot-toast';
 
 interface BillDetails {
-  baseTotal: number;  // Add this field
+  baseTotal: number; // Add this field
   discount: number;
   grandTotal: number;
   paidAmount: number;
@@ -12,7 +12,7 @@ interface BillDetails {
 }
 
 const initialBillDetails: BillDetails = {
-  baseTotal: 0,     // Add this field
+  baseTotal: 0, // Add this field
   discount: 0,
   grandTotal: 0,
   paidAmount: 0,
@@ -29,7 +29,7 @@ const calculateDetailsFromReceipts = (receipts: IReceipt[], billTotalAmount: num
   const dueAmount = Number((grandTotal - totalAmountPaid).toFixed(2));
 
   return {
-    baseTotal,      // Include this field
+    baseTotal, // Include this field
     discount,
     grandTotal,
     paidAmount: totalAmountPaid,

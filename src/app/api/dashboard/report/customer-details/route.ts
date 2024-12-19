@@ -1,8 +1,23 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { connect } from '@/dbConfig/dbConfig';
-import { Customer } from '@models/klm';
+import { Customer, ICustomer } from '@models/klm';
 import handleError from '@utils/error/handleError';
+import { Types } from 'mongoose';
 import { NextRequest, NextResponse } from 'next/server';
+
+// Add interfaces for request bodies
+interface DeleteCustomerRequest {
+  type: 'deleteCustomer';
+  customerId: string;
+}
+
+interface UpdateCustomerRequest {
+  type: 'updateCustomer';
+  customerId: string;
+  customer: Omit<ICustomer, '_id'> & {
+    _id?: Types.ObjectId;
+    phone: number;
+  };
+}
 
 connect();
 
@@ -40,7 +55,7 @@ export async function POST(request: NextRequest) {
         query = {
           phone: parseInt(mobile, 10)
             ? { $gte: parseInt(mobile + '0'), $lt: parseInt(mobile + '9') + 1 }
-            : { $exists: true }
+            : { $exists: true },
         };
         break;
 
@@ -49,10 +64,10 @@ export async function POST(request: NextRequest) {
         break;
 
       case 'deleteCustomer':
-        return await handleDeleteCustomer(reqBody);
+        return await handleDeleteCustomer(reqBody as DeleteCustomerRequest);
 
       case 'updateCustomer':
-        return await handleUpdateCustomer(reqBody);
+        return await handleUpdateCustomer(reqBody as UpdateCustomerRequest);
 
       default:
         throw new Error('Invalid request type');
@@ -77,7 +92,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function handleDeleteCustomer(reqBody: any) {
+async function handleDeleteCustomer(reqBody: DeleteCustomerRequest) {
   const customer = await Customer.findByIdAndDelete(reqBody.customerId);
   if (!customer) {
     throw new Error('Customer not found');
@@ -88,13 +103,13 @@ async function handleDeleteCustomer(reqBody: any) {
   });
 }
 
-async function handleUpdateCustomer(reqBody: any) {
+async function handleUpdateCustomer(reqBody: UpdateCustomerRequest) {
   const { customerId, customer: editedCustomer } = reqBody;
 
   // Ensure phone is number type
   const customerData = {
     ...editedCustomer,
-    phone: parseInt(editedCustomer.phone.toString(), 10)
+    phone: parseInt(editedCustomer.phone.toString(), 10),
   };
 
   // Check for duplicate phone number
@@ -107,11 +122,7 @@ async function handleUpdateCustomer(reqBody: any) {
     throw new Error('Phone number already belongs to another customer');
   }
 
-  const updatedCustomer = await Customer.findByIdAndUpdate(
-    customerId,
-    customerData,
-    { new: true }
-  );
+  const updatedCustomer = await Customer.findByIdAndUpdate(customerId, customerData, { new: true });
 
   if (!updatedCustomer) {
     throw new Error('Customer not found');

@@ -1,11 +1,11 @@
 import { connect } from '@/dbConfig/dbConfig';
+import { IBillDetails } from '@dashboard/report/bill-details/types';
 import { UserTokenData } from '@helpers/getDataFromToken';
 import { Bill, Receipt } from '@models/klm';
 import User from '@models/userModel';
 import handleError from '@utils/error/handleError';
 import { getParamsFromRequest } from '@utils/url/urlUtils';
 import { NextRequest, NextResponse } from 'next/server';
-import { IBillDetails } from '@/app/dashboard/report/bill-details/types';
 
 connect();
 
@@ -49,9 +49,7 @@ export async function GET(request: NextRequest) {
     // Fetch and calculate receipt data for each bill
     const billsWithReceipts = await Promise.all(
       bills.map(async (bill) => {
-        const receipts = await Receipt.find({ 'bill._id': bill._id })
-          .select('amount discount tax taxAmount')
-          .lean();
+        const receipts = await Receipt.find({ 'bill._id': bill._id }).select('amount discount tax taxAmount').lean();
 
         const totalPaid = receipts.reduce((sum, receipt) => sum + receipt.amount, 0);
         const totalDiscount = receipts.reduce((sum, receipt) => sum + receipt.discount, 0);
@@ -68,7 +66,7 @@ export async function GET(request: NextRequest) {
           grandTotal,
           dueAmount,
         } as IBillDetails;
-      })
+      }),
     );
 
     return NextResponse.json({

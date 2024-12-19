@@ -34,17 +34,12 @@ export interface ExportData {
 }
 
 export const exportToCSV = (data: ExportData, filename: string) => {
-  const selectedColumns = data.columns.filter(col => col.selected);
-  const headers = selectedColumns.map(col => col.header);
+  const selectedColumns = data.columns.filter((col) => col.selected);
+  const headers = selectedColumns.map((col) => col.header);
 
-  const rows = data.data.map(row =>
-    selectedColumns.map(col => row[col.field] || '')
-  );
+  const rows = data.data.map((row) => selectedColumns.map((col) => row[col.field] || ''));
 
-  const csvContent = [
-    headers,
-    ...rows,
-  ].map(e => e.join(',')).join('\n');
+  const csvContent = [headers, ...rows].map((e) => e.join(',')).join('\n');
 
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
@@ -67,17 +62,17 @@ export const exportToPDF = (data: ExportData, filename: string) => {
   doc.setFontSize(10);
   doc.text(`Generated on: ${today}`, 14, 22);
 
-  const selectedColumns = data.columns.filter(col => col.selected);
-  const tableData = data.data.map(row =>
-    selectedColumns.map(col => {
+  const selectedColumns = data.columns.filter((col) => col.selected);
+  const tableData = data.data.map((row) =>
+    selectedColumns.map((col) => {
       const value = row[col.field];
       // Convert all values to strings, skip JSX elements
       return typeof value === 'object' ? '' : String(value || '');
-    })
+    }),
   );
 
   const tableOptions: UserOptions = {
-    head: [selectedColumns.map(col => col.header)],
+    head: [selectedColumns.map((col) => col.header)],
     body: tableData,
     startY: 25,
     styles: { fontSize: 8 },
@@ -93,7 +88,7 @@ export const exportToPDF = (data: ExportData, filename: string) => {
     const summaryY = finalY + 10;
     doc.setFontSize(10);
     Object.entries(data.summary).forEach(([key, value], index) => {
-      doc.text(`${key}: ${formatCurrency(value)}`, 14, summaryY + (index * 6));
+      doc.text(`${key}: ${formatCurrency(value)}`, 14, summaryY + index * 6);
     });
   }
 
