@@ -46,7 +46,8 @@ export default function ReceiptPage() {
 
   // helper function to set amount tracking
   const setAmountTrack = async (bill: IBill) => {
-    const receipts = await ApiGet.Receipt.ReceiptSearch(bill.billNumber, 'bill');
+    const response = await ApiGet.Receipt.ReceiptSearch(bill.billNumber, 'bill');
+    const receipts = response.receipt || [];
     const totalPaidAmount = receipts.reduce((sum: number, receipt: IReceipt) => sum + receipt.amount, 0);
     const totalDiscount = receipts.reduce((sum: number, receipt: IReceipt) => sum + receipt.discount, 0);
     const totalTaxAmount = receipts.reduce((sum: number, receipt: IReceipt) => sum + receipt.taxAmount, 0);
@@ -59,7 +60,7 @@ export default function ReceiptPage() {
       discount: totalDiscount,
       paid: totalPaidAmount,
       due: dueAmount,
-      taxAmount: totalTaxAmount, // Add this field
+      taxAmount: totalTaxAmount,
     });
   };
 
