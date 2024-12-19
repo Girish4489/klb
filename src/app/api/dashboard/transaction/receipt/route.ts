@@ -104,15 +104,7 @@ export async function POST(request: NextRequest) {
       updatedAt: new Date(),
     });
 
-    bill.paidAmount = Number((bill.paidAmount + roundedAmount).toFixed(2));
-    bill.discount = Number((bill.discount + roundedDiscount).toFixed(2));
-    bill.taxAmount = Number((bill.taxAmount + totalTaxAmount).toFixed(2));
-    bill.grandTotal = Number((bill.totalAmount + bill.taxAmount - bill.discount).toFixed(2));
-    bill.dueAmount = Number((bill.grandTotal - bill.paidAmount).toFixed(2));
-    bill.paymentStatus = bill.dueAmount <= 0 ? 'Paid' : bill.paidAmount > 0 ? 'Partially Paid' : 'Unpaid';
-    receipt.paymentType = bill.dueAmount <= 0 ? 'fullyPaid' : 'advance';
-
-    await Promise.all([receipt.save(), bill.save()]);
+    await receipt.save();
 
     return NextResponse.json({
       message: 'Receipt added successfully',

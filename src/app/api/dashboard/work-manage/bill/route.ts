@@ -1,6 +1,7 @@
+import { calculateDetailsFromReceipts } from '@/app/utils/calculateBillDetails';
 import { connect } from '@/dbConfig/dbConfig';
 import { UserTokenData } from '@helpers/getDataFromToken';
-import { Bill, IBill } from '@models/klm';
+import { Bill, IBill, Receipt } from '@models/klm';
 import User from '@models/userModel';
 import handleError from '@utils/error/handleError';
 import { getParamsFromRequest } from '@utils/url/urlUtils';
@@ -91,20 +92,12 @@ export async function POST(request: NextRequest) {
       };
     }
 
-    // Calculate amounts and set payment status
+    // Calculate total amount
     const totalAmount = bill.order.reduce((sum, order) => sum + (order.amount || 0), 0);
     bill.totalAmount = totalAmount;
-    bill.grandTotal = totalAmount - (bill.discount || 0);
-    bill.dueAmount = bill.grandTotal - (bill.paidAmount || 0);
 
-    // Set payment status based on amounts
-    if (bill.grandTotal === bill.paidAmount) {
-      bill.paymentStatus = 'Paid';
-    } else if (bill.paidAmount === 0) {
-      bill.paymentStatus = 'Unpaid';
-    } else if (bill.paidAmount > 0 && bill.paidAmount < bill.grandTotal) {
-      bill.paymentStatus = 'Partially Paid';
-    }
+    // Set payment status
+    bill.paymentStatus = 'Unpaid';
 
     await bill.save();
 
@@ -134,19 +127,28 @@ export async function PUT(request: NextRequest) {
     const billExists = await Bill.findOne({ _id: billId });
     if (!billExists) throw new Error('Bill not found');
 
-    // Calculate amounts
+    // Calculate total amount
     const totalAmount = data.order.reduce((sum, order) => sum + (order.amount || 0), 0);
     data.totalAmount = totalAmount;
-    data.grandTotal = totalAmount - (data.discount || 0);
-    data.dueAmount = data.grandTotal - (data.paidAmount || 0);
 
     // Update payment status
-    if (data.grandTotal === data.paidAmount) {
-      data.paymentStatus = 'Paid';
-    } else if (data.paidAmount === 0) {
+    data.paymentStatus = 'Unpaid';
+
+    // Use the existing bill and receipt data
+    const receipts = await Receipt.find({ 'bill.billNumber': data.billNumber });
+    if (receipts && receipts.length > 0) {
+      const { dueAmount } = calculateDetailsFromReceipts(receipts, totalAmount);
+
+      // Update payment status based on due amount
+      if (dueAmount <= 0) {
+        data.paymentStatus = 'Paid';
+      } else if (dueAmount < totalAmount) {
+        data.paymentStatus = 'Partially Paid';
+      } else {
+        data.paymentStatus = 'Unpaid';
+      }
+    } else {
       data.paymentStatus = 'Unpaid';
-    } else if (data.paidAmount > 0 && data.paidAmount < data.grandTotal) {
-      data.paymentStatus = 'Partially Paid';
     }
 
     data.updatedAt = new Date();

@@ -98,11 +98,6 @@ interface IBill extends Document {
     status?: 'Pending' | 'In Progress' | 'Completed' | 'Cancelled';
   }[];
   totalAmount: number; // total without discount & tax
-  discount: number;
-  grandTotal: number;
-  paidAmount: number;
-  dueAmount: number;
-  taxAmount: number;
   paymentStatus?: 'Unpaid' | 'Partially Paid' | 'Paid';
   billBy?: { _id: ObjectId; name: string };
   deliveryStatus?: 'Pending' | 'Delivered';
@@ -122,7 +117,7 @@ interface IReceipt extends Document {
   receiptNumber: number;
   bill?: { _id: ObjectId; billNumber?: number; mobile?: number; name?: string };
   receiptBy?: { _id: ObjectId; name: string };
-  amount: number;
+  amount: number; // current amount paid/paying
   discount: number;
   tax: IReceiptTax[];
   taxAmount: number;
@@ -300,30 +295,6 @@ const billSchema: Schema<IBill> = new Schema<IBill>(
       },
     ],
     totalAmount: Number,
-    discount: {
-      type: Number,
-      default: 0,
-    },
-    grandTotal: {
-      type: Number,
-      default: 0,
-    },
-    paidAmount: {
-      type: Number,
-      default: 0,
-    },
-    dueAmount: {
-      type: Number,
-      default: function (this: IBill) {
-        const total = typeof this.totalAmount === 'number' ? this.totalAmount : 0;
-        const paid = typeof this.paidAmount === 'number' ? this.paidAmount : 0;
-        return total - paid;
-      },
-    },
-    taxAmount: {
-      type: Number,
-      default: 0,
-    },
     paymentStatus: {
       type: String,
       enum: ['Paid', 'Unpaid', 'Partially Paid'],

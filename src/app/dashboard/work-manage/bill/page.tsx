@@ -248,14 +248,12 @@ export default function BillPage() {
           ({
             ...prevBill,
             totalAmount: orderAmount,
-            grandTotal: orderAmount - (prevBill?.discount ?? 0),
           }) as IBill | undefined,
       );
 
       await validateBill({
         ...bill,
         totalAmount: orderAmount,
-        grandTotal: orderAmount - (bill?.discount ?? 0),
       } as IBill);
 
       const updatedBill: Partial<IBill> = updateBillAmounts({
@@ -288,14 +286,13 @@ export default function BillPage() {
     if (!update) return;
 
     try {
-      const orderAmount = calculateTotalAmount(bill?.order ?? []);
+      const orderAmount = await calculateTotalAmount(bill?.order ?? []);
       setBill(
         (prevBill) =>
           ({
             ...prevBill,
             totalAmount: orderAmount ?? 0,
-            grandTotal: (orderAmount ?? 0) - (prevBill?.discount ?? 0),
-          }) as IBill | undefined,
+          }) as IBill,
       );
       await validateBill(bill);
       if (!(bill ?? {})._id) throw new Error('No bill ID found to update');

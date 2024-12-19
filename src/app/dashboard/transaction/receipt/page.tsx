@@ -21,6 +21,7 @@ interface AmtTrack {
   discount: number;
   paid: number;
   due: number;
+  taxAmount: number; // Add this field
 }
 
 export default function ReceiptPage() {
@@ -37,19 +38,28 @@ export default function ReceiptPage() {
     discount: 0,
     paid: 0,
     due: 0,
+    taxAmount: 0, // Add this field
   });
 
   const [tax, setTax] = React.useState<ITax[]>([]);
   const [loading, setLoading] = React.useState<boolean>(true);
 
   // helper function to set amount tracking
-  const setAmountTrack = (bill: IBill) => {
+  const setAmountTrack = async (bill: IBill) => {
+    const receipts = await ApiGet.Receipt.ReceiptSearch(bill.billNumber, 'bill');
+    const totalPaidAmount = receipts.reduce((sum: number, receipt: IReceipt) => sum + receipt.amount, 0);
+    const totalDiscount = receipts.reduce((sum: number, receipt: IReceipt) => sum + receipt.discount, 0);
+    const totalTaxAmount = receipts.reduce((sum: number, receipt: IReceipt) => sum + receipt.taxAmount, 0);
+    const grandTotal = bill.totalAmount + totalTaxAmount - totalDiscount;
+    const dueAmount = grandTotal - totalPaidAmount;
+
     setAmtTrack({
       total: bill.totalAmount,
-      grand: bill.grandTotal,
-      discount: bill.discount,
-      paid: bill.paidAmount,
-      due: bill.dueAmount,
+      grand: grandTotal,
+      discount: totalDiscount,
+      paid: totalPaidAmount,
+      due: dueAmount,
+      taxAmount: totalTaxAmount, // Add this field
     });
   };
 
@@ -216,7 +226,7 @@ export default function ReceiptPage() {
 
   // Helper function to reset amount tracking
   const resetAmtTrack = () => {
-    setAmtTrack({ total: 0, grand: 0, discount: 0, paid: 0, due: 0 });
+    setAmtTrack({ total: 0, grand: 0, discount: 0, paid: 0, due: 0, taxAmount: 0 }); // Add this field
   };
 
   const fetchBill = async (billNumber: string): Promise<IBill | null> => {

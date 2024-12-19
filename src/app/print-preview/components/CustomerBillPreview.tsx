@@ -1,9 +1,10 @@
-import { IBill } from '@models/klm';
-import React from 'react';
+import { IBill, IReceipt } from '@models/klm';
+import React, { useEffect, useState } from 'react';
 
 import QrGenerator from '@components/Barcode/BarcodeGenerator';
 import { ICompany } from '@models/companyModel';
 import { formatDS } from '@utils/format/dateUtils';
+import { ApiGet } from '@utils/makeApiRequest/makeApiRequest';
 import Image from 'next/image';
 
 interface CustomerBillPreviewProps {
@@ -15,6 +16,29 @@ interface CustomerBillPreviewProps {
 }
 
 const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, company, isDataLoaded, klm, style }) => {
+  const [calculatedValues, setCalculatedValues] = useState({
+    discount: 0,
+    grandTotal: 0,
+  });
+
+  useEffect(() => {
+    if (bill) {
+      const fetchReceiptData = async () => {
+        const receipts = await ApiGet.Receipt.ReceiptSearch(bill.billNumber, 'bill');
+        const totalDiscount = receipts.reduce((sum: number, receipt: IReceipt) => sum + receipt.discount, 0);
+        const totalTaxAmount = receipts.reduce((sum: number, receipt: IReceipt) => sum + receipt.taxAmount, 0);
+        const grandTotal = bill.totalAmount + totalTaxAmount - totalDiscount;
+
+        setCalculatedValues({
+          discount: totalDiscount,
+          grandTotal: grandTotal,
+        });
+      };
+
+      fetchReceiptData();
+    }
+  }, [bill]);
+
   if (!isDataLoaded) {
     return <div>Loading...</div>;
   }
@@ -282,7 +306,7 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, company
                     </span>
                     <span className="field">
                       <h2>Discount:</h2>
-                      <h3>{bill?.discount}</h3>
+                      <h3>{calculatedValues.discount}</h3>
                     </span>
                     <span className="field">
                       <h2>Tax:</h2>
@@ -292,7 +316,7 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, company
 
                   <span className="flex grow items-center justify-around gap-3">
                     <h2 className="grow text-end text-lg">Grand:</h2>
-                    <h2 className="grow text-start text-lg">{bill?.grandTotal}</h2>
+                    <h2 className="grow text-start text-lg">{calculatedValues.grandTotal}</h2>
                   </span>
                   <span className="flex grow flex-row items-center justify-around gap-4 ">
                     <span className="flex flex-row items-center gap-2">

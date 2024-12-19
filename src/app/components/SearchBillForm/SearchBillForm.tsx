@@ -52,7 +52,6 @@ const SearchBillForm: React.FC<SearchFormProps> = ({ onSearch, searchResults, on
                   {bill.trail && <span className="text-success">T</span>}
                 </td>
                 <td>{bill.totalAmount}</td>
-                <td>{bill.grandTotal}</td>
                 <td>{bill.billBy?.name}</td>
               </tr>
             ))

@@ -208,11 +208,7 @@ export const createInitialBill = (lastBillNumber: number = 0): Partial<IBill> =>
   trail: false,
   name: '',
   email: '',
-  paidAmount: 0,
-  dueAmount: 0,
   totalAmount: 0,
-  discount: 0,
-  grandTotal: 0,
   deliveryStatus: 'Pending',
   paymentStatus: 'Unpaid',
   order: [],
@@ -225,6 +221,5 @@ export const updateBillAmounts = (bill: Partial<IBill>): Partial<IBill> => {
   return {
     ...bill,
     totalAmount: orderAmount,
-    grandTotal: orderAmount - (bill.discount ?? 0),
   };
 };

@@ -1,85 +1,121 @@
-// /src/app/dashboard/report/customer-details/page.tsx
 'use client';
-import { CloudArrowUpIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/solid';
+import { Column, ReportTable } from '@components/table/ReportTable';
+import { CloudArrowUpIcon, FunnelIcon } from '@heroicons/react/24/solid';
 import { ICustomer } from '@models/klm';
 import { userConfirmation } from '@utils/confirmation/confirmationUtil';
+import { TableRow, exportToCSV, exportToPDF } from '@utils/exportUtils/common';
+import { prepareCustomerExportData } from '@utils/exportUtils/customers';
+import { fetchAllData } from '@utils/fetchAllData/fetchAllData';
 import { formatD } from '@utils/format/dateUtils';
 import axios from 'axios';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { JSX, useState } from 'react';
 import toast from 'react-hot-toast';
 
-interface IPagination {
-  type: string;
-  page: number;
-  itemsPerPage: number;
-  hasMore: boolean;
+const formatDateTime = (date: Date | string | undefined): string => {
+  if (!date) return '-';
+  return formatD(new Date(date));
+};
+
+interface ICustomerTableRow extends TableRow {
+  actions?: JSX.Element;
 }
 
 export default function CustomerDetails() {
   const [customer, setCustomer] = useState<ICustomer[]>([]);
-  const [pagination, setPagination] = useState<IPagination>({
-    type: 'getCustomers',
-    page: 1,
-    itemsPerPage: 10,
-    hasMore: true,
-  });
+  const [loading, setLoading] = useState(false);
+  const [searchType, setSearchType] = useState<'date' | 'mobile'>('date');
+  const [mobileNumber, setMobileNumber] = useState<string>('');
+  const [fromDate, setFromDate] = useState<Date>();
+  const [toDate, setToDate] = useState<Date>();
+  const [totalPages, setTotalPages] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [columns, setColumns] = useState<Column[]>([
+    { header: 'Sl No', field: 'slNo', selected: true },
+    { header: 'Name', field: 'name', selected: true },
+    { header: 'Phone', field: 'phone', selected: true },
+    { header: 'Email', field: 'email', selected: true },
+    { header: 'City', field: 'city', selected: true },
+    { header: 'State', field: 'state', selected: true },
+    { header: 'Country', field: 'country', selected: true },
+    { header: 'Created At', field: 'createdAt', selected: true },
+    { header: 'Actions', field: 'actions', selected: false, isAction: true },
+  ]);
 
-  const initialRender = useRef(true);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!initialRender.current && pagination.hasMore) {
-        const fetch = async () => {
-          const res = await axios.post('/api/dashboard/report/customer-details', pagination);
-          if (res.data.isLastCustomerLoaded === true) {
-            setPagination((prevPagination) => ({
-              ...prevPagination,
-              hasMore: false,
-            }));
-          }
-          if (res.data.success === true) {
-            setCustomer((prevCustomers) => [...prevCustomers, ...res.data.data]);
-            return res.data.message;
-          } else {
-            throw new Error(res.data.message);
-          }
-        };
-        try {
-          toast.promise(fetch(), {
-            loading: 'Loading...',
-            success: (message: string) => <b>{message}</b>,
-            error: (error: Error) => <b>{error.message}</b>,
-          });
-        } catch (error) {
-          // Handle error
-          if (error instanceof Error) {
-            console.error(error.message);
-            // toast.error(error.message);
-          } else {
-            console.error('An unknown error occurred');
-          }
-        }
+  const handleFilter = async () => {
+    setLoading(true);
+    try {
+      if (searchType === 'date' && (!fromDate || !toDate)) {
+        toast.error('Please provide both from date and to date');
+        return;
       }
-    };
-
-    fetchData();
-  }, [pagination]);
-
-  const loadMoreCustomers = async () => {
-    setPagination((prevPagination) => {
-      if (prevPagination.hasMore) {
-        return {
-          ...prevPagination,
-          page: prevPagination.page + 1,
-        };
+      if (searchType === 'mobile' && !mobileNumber) {
+        toast.error('Please provide a mobile number');
+        return;
       }
-      return prevPagination;
-    });
+
+      const requestBody = {
+        type: searchType === 'date' ? 'getCustomersByDate' : 'getCustomersByMobile',
+        page: currentPage,
+        itemsPerPage: 10,
+        ...(searchType === 'date'
+          ? {
+              fromDate: new Date(fromDate!).toISOString(),
+              toDate: new Date(toDate!).toISOString(),
+            }
+          : {
+              mobile: mobileNumber,
+            }),
+      };
+
+      const response = await axios.post('/api/dashboard/report/customer-details', requestBody);
+
+      if (response.data.success) {
+        setCustomer(response.data.data);
+        setTotalPages(response.data.totalPages);
+        setCurrentPage(response.data.page);
+      } else {
+        throw new Error(response.data.message);
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to fetch customers');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  useEffect(() => {
-    initialRender.current = false;
-  }, []);
+  const handlePageChange = async (page: number) => {
+    if (page < 1 || page > totalPages || page === currentPage) return;
+    setCurrentPage(page);
+    setLoading(true);
+
+    try {
+      const requestBody = {
+        type: searchType === 'date' ? 'getCustomersByDate' : 'getCustomersByMobile',
+        page,
+        itemsPerPage: 10,
+        ...(searchType === 'date'
+          ? {
+              fromDate: new Date(fromDate!).toISOString(),
+              toDate: new Date(toDate!).toISOString(),
+            }
+          : {
+              mobile: mobileNumber,
+            }),
+      };
+
+      const response = await axios.post('/api/dashboard/report/customer-details', requestBody);
+
+      if (response.data.success) {
+        setCustomer(response.data.data);
+      } else {
+        throw new Error(response.data.message);
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to fetch customers');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const [editCustomer, setEditCustomer] = useState<ICustomer>();
 
@@ -96,7 +132,11 @@ export default function CustomerDetails() {
     e.preventDefault();
     const updateCustomer = async () => {
       if (!editCustomer) throw new Error('Customer not found');
-      const updatedCustomer = { ...editCustomer, updatedAt: new Date() } as ICustomer;
+      const updatedCustomer = {
+        ...editCustomer,
+        updatedAt: new Date(),
+        phone: parseInt(editCustomer.phone?.toString() || '0', 10),
+      } as ICustomer;
       const res = await axios.post('/api/dashboard/report/customer-details', {
         type: 'updateCustomer',
         customerId: editCustomer?._id,
@@ -177,8 +217,155 @@ export default function CustomerDetails() {
     return;
   };
 
+  const handleExport = async (format: 'csv' | 'pdf') => {
+    toast.promise(
+      (async () => {
+        const allCustomers = await fetchAllData.customers();
+        const exportData = prepareCustomerExportData(allCustomers);
+        if (format === 'csv') {
+          exportToCSV(exportData, 'customer-details.csv');
+        } else if (format === 'pdf') {
+          exportToPDF(exportData, 'customer-details.pdf');
+        }
+        return 'Export completed';
+      })(),
+      {
+        loading: 'Preparing export...',
+        success: 'Export completed successfully',
+        error: 'Failed to export data',
+      },
+    );
+  };
+
+  // Transform customer data for the table
+  const getTableData = (customers: ICustomer[]): ICustomerTableRow[] => {
+    return customers.map((customer, index) => ({
+      slNo: index + 1,
+      name: customer.name || '-',
+      phone: customer.phone?.toString() || '-',
+      email: customer.email || '-',
+      city: customer.city || '-',
+      state: customer.state || '-',
+      country: customer.country || '-',
+      createdAt: formatDateTime(customer.createdAt),
+      actions: (
+        <div className="flex items-center justify-center space-x-2">
+          <button className="btn btn-primary btn-xs" onClick={() => handleEditModal(customer._id.toString())}>
+            Edit
+          </button>
+          <button className="btn btn-error btn-xs" onClick={() => handleDelete(customer._id.toString())}>
+            Delete
+          </button>
+        </div>
+      ),
+    }));
+  };
+
   return (
-    <div className="flex h-full flex-col rounded-box border border-base-300 p-4 max-sm:mx-0 max-sm:px-0">
+    <div className="flex h-full flex-col gap-4 p-4">
+      {/* Filter Section */}
+      <div className="flex flex-wrap items-center gap-4 rounded-lg bg-base-200 p-4 shadow">
+        <div className="join">
+          <input
+            type="radio"
+            className="btn join-item btn-sm"
+            checked={searchType === 'date'}
+            onChange={() => setSearchType('date')}
+            aria-label="Date Range"
+          />
+          <input
+            type="radio"
+            className="btn join-item btn-sm"
+            checked={searchType === 'mobile'}
+            onChange={() => setSearchType('mobile')}
+            aria-label="Mobile"
+          />
+        </div>
+
+        {searchType === 'date' ? (
+          <div className="flex flex-1 gap-2">
+            <label className="input input-sm label-text input-bordered input-primary flex grow items-center gap-2">
+              From:
+              <input
+                type="date"
+                className="grow"
+                value={fromDate ? new Date(fromDate).toISOString().split('T')[0] : ''}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFromDate(new Date(e.target.value))}
+              />
+            </label>
+            <label className="input input-sm label-text input-bordered input-primary flex grow items-center gap-2">
+              To:
+              <input
+                type="date"
+                className="grow"
+                value={toDate ? new Date(toDate).toISOString().split('T')[0] : ''}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setToDate(new Date(e.target.value))}
+              />
+            </label>
+          </div>
+        ) : (
+          <input
+            type="text"
+            placeholder="Mobile Number"
+            className="input input-sm input-bordered flex-1"
+            value={mobileNumber}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              // Only allow numbers
+              const value = e.target.value.replace(/[^0-9]/g, '');
+              setMobileNumber(value);
+            }}
+          />
+        )}
+
+        <div className="ml-auto flex gap-2">
+          <button className="btn btn-primary btn-sm" onClick={handleFilter} disabled={loading}>
+            {loading ? <span className="loading loading-spinner" /> : <FunnelIcon className="h-5 w-5" />}
+            Filter
+          </button>
+
+          {customer.length > 0 && (
+            <>
+              <button onClick={() => handleExport('csv')} className="btn btn-secondary btn-sm">
+                Export CSV
+              </button>
+              <button onClick={() => handleExport('pdf')} className="btn btn-secondary btn-sm">
+                Export PDF
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Table Section - Fills remaining height */}
+      <div className="min-h-0 flex-1">
+        <ReportTable
+          data={getTableData(customer)}
+          columns={columns}
+          caption="Customer Details"
+          loading={loading}
+          onColumnSelectChange={setColumns}
+        />
+      </div>
+
+      {/* Pagination Section */}
+      {customer.length > 0 && totalPages > 1 && (
+        <div className="mt-4 flex justify-center">
+          <div className="join">
+            {Array.from({ length: totalPages }, (_, index) => (
+              <button
+                key={index}
+                className={`btn join-item btn-sm ${currentPage === index + 1 ? 'btn-active' : ''}`}
+                onClick={() => handlePageChange(index + 1)}
+                disabled={currentPage === index + 1}
+              >
+                {index + 1}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Modal remains unchanged */}
       <span>
         <dialog id="CustomerEditModal" className="modal">
           <div className="modal-box min-w-fit p-0">
@@ -361,98 +548,6 @@ export default function CustomerDetails() {
             </div>
           </div>
         </dialog>
-      </span>
-      <h2 className="my-2 text-center text-2xl font-bold">Customer Details</h2>{' '}
-      <span className="customerScroll w-full grow overflow-auto rounded-box border-2 border-base-300 bg-base-300 shadow-2xl">
-        <div className="contents h-full max-h-96 max-w-96 rounded-box bg-base-300 max-sm:flex">
-          <table className="table table-zebra table-pin-rows table-pin-cols rounded-box bg-base-100">
-            <thead>
-              <tr>
-                <th>Sn</th>
-                <td className="text-center">Actions</td>
-                <td>Name</td>
-                <td>Phone</td>
-                <td>Email</td>
-                <td>Country</td>
-                <td>State</td>
-                <td>City</td>
-                <td>Pin</td>
-                <td>Address</td>
-                <td>Notes</td>
-                <td>Created At</td>
-                <td>Updated At</td>
-              </tr>
-            </thead>
-            <tbody>
-              {customer.length > 0 ? (
-                customer.map((customerItem, index) => (
-                  <tr key={customerItem._id.toString()}>
-                    <th>{index + 1}</th>
-                    <td className="text-center">
-                      <span className="flex h-full w-full flex-col items-center justify-center gap-1 max-sm:w-full max-sm:flex-row">
-                        <button
-                          className="btn btn-secondary btn-sm w-full max-sm:w-full"
-                          onClick={() => handleEditModal(customerItem._id.toString())}
-                        >
-                          <PencilSquareIcon className="h-5 w-5" />
-                          Edit
-                        </button>
-                        <button
-                          className="btn btn-warning btn-sm w-full max-sm:w-full"
-                          onClick={() => handleDelete(customerItem._id.toString())}
-                        >
-                          <TrashIcon className="h-5 w-5" />
-                          Delete
-                        </button>
-                      </span>
-                    </td>
-                    <td>{customerItem.name}</td>
-                    <td>{customerItem.phone}</td>
-                    <td>{customerItem.email}</td>
-                    <td>{customerItem.country}</td>
-                    <td>{customerItem.state}</td>
-                    <td>{customerItem.city}</td>
-                    <td>{customerItem.pin}</td>
-                    <td>{customerItem.address}</td>
-                    <td>{customerItem.notes}</td>
-                    <td>{formatD(customerItem.createdAt)}</td>
-                    <td>{formatD(customerItem.updatedAt)}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={13}>No customers found.</td>
-                </tr>
-              )}
-              {pagination.hasMore && (
-                <tr>
-                  <td colSpan={13} className="md:text-center">
-                    <button className="btn btn-primary btn-sm" onClick={loadMoreCustomers}>
-                      Load More
-                    </button>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-            <tfoot>
-              <tr>
-                <th>Sn</th>
-                <td className="text-center">Actions</td>
-                <td>Name</td>
-                <td>Phone</td>
-                <td>Email</td>
-                <td>Country</td>
-                <td>State</td>
-                <td>City</td>
-                <td>Pin</td>
-                <td>Address</td>
-                <td>Notes</td>
-                <td>Created At</td>
-                <td>Updated At</td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
       </span>
     </div>
   );

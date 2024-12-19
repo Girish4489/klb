@@ -1,7 +1,8 @@
 import { CloudArrowUpIcon, PrinterIcon } from '@heroicons/react/24/solid';
 import { IBill } from '@models/klm';
+import { fetchAndCalculateBillDetails, initialBillDetails } from '@utils/calculateBillDetails';
 import Link from 'next/link';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface SaveUpdatePrintProps {
   newBill: boolean;
@@ -12,40 +13,82 @@ interface SaveUpdatePrintProps {
   handleUpdateBill: () => Promise<void>;
 }
 
-const PaymentStatus: React.FC<{ bill: IBill }> = ({ bill }) => (
-  <div className="flex flex-row items-center justify-between gap-1 max-sm:flex-col">
-    <div className="badge badge-primary flex flex-row items-center justify-between gap-1 py-3">
-      <b>Total:</b>
-      <p>{bill.totalAmount}</p>
-    </div>
-    {bill.discount > 0 && (
-      <div className="badge badge-secondary flex flex-row items-center justify-between gap-1 py-3">
-        <b>Discount:</b>
-        <p>{bill.discount}</p>
+const PaymentStatus: React.FC<{ bill: IBill }> = ({ bill }) => {
+  const [billDetails, setBillDetails] = useState(initialBillDetails);
+
+  useEffect(() => {
+    const fetchBillDetails = async () => {
+      if (bill) {
+        const details = await fetchAndCalculateBillDetails(bill.billNumber, bill.totalAmount);
+        setBillDetails(details);
+      }
+    };
+
+    fetchBillDetails();
+  }, [bill]);
+
+  return (
+    <div className="dropdown dropdown-end dropdown-top dropdown-hover">
+      <div
+        tabIndex={0}
+        role="button"
+        className="badge badge-info flex flex-row items-center justify-between gap-1 py-3"
+      >
+        <b>Status:</b>
+        <p>{bill.paymentStatus}</p>
       </div>
-    )}
-    <div className="badge badge-accent flex flex-row items-center justify-between gap-1 py-3">
-      <b>Grand:</b>
-      <p>{bill.grandTotal}</p>
-    </div>
-    <div className="badge badge-success flex flex-row items-center justify-between gap-1 py-3">
-      <b>Paid:</b>
-      <p>{bill.paidAmount}</p>
-    </div>
-    {bill.dueAmount > 0 && (
-      <div className="badge badge-warning flex flex-row items-center justify-between gap-1 py-3">
-        <b>Due:</b>
-        <p>{bill.dueAmount}</p>
+      <div tabIndex={0} className="card dropdown-content compact z-20 w-72 min-w-52 max-w-96 pt-2 shadow">
+        <div tabIndex={0} className="card-body rounded-box bg-base-300 ring-1 ring-primary">
+          <h2 className="card-title select-none">Payment Details</h2>
+          <table className="w-full table-auto rounded-box bg-base-100 shadow-inner shadow-base-300 ring-1 ring-secondary">
+            <tbody className="">
+              <tr className="text-primary">
+                <td className="px-2 py-1">
+                  <b>Base Total:</b>
+                </td>
+                <td className="px-2 py-1 text-right text-base font-bold">{bill.totalAmount}</td>
+              </tr>
+              {billDetails.discount > 0 && (
+                <tr className="text-secondary">
+                  <td className="px-2 py-1">
+                    <b>Discount:</b>
+                  </td>
+                  <td className="px-2 py-1 text-right text-base font-bold">- {billDetails.discount}</td>
+                </tr>
+              )}
+              <tr className="text-accent">
+                <td className="px-2 py-1">
+                  <b>Tax Amount:</b>
+                </td>
+                <td className="px-2 py-1 text-right text-base font-bold">+ {billDetails.taxAmount}</td>
+              </tr>
+              <tr className="text-info">
+                <td className="px-2 py-1">
+                  <b>Grand Total:</b>
+                </td>
+                <td className="px-2 py-1 text-right text-base font-bold">{billDetails.grandTotal}</td>
+              </tr>
+              <tr className="text-success">
+                <td className="px-2 py-1">
+                  <b>Paid Amount:</b>
+                </td>
+                <td className="px-2 py-1 text-right text-base font-bold">{billDetails.paidAmount}</td>
+              </tr>
+              {billDetails.dueAmount > 0 && (
+                <tr className="text-error">
+                  <td className="px-2 py-1">
+                    <b>Due Amount:</b>
+                  </td>
+                  <td className="px-2 py-1 text-right text-base font-bold">{billDetails.dueAmount}</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
-    )}
-    <div
-      className={`badge ${bill.paymentStatus === 'Paid' ? 'badge-success' : bill.paymentStatus === 'Partially Paid' ? 'badge-warning' : 'badge-error'} flex flex-row items-center justify-between gap-1 py-3`}
-    >
-      <b>Status:</b>
-      <p>{bill.paymentStatus}</p>
     </div>
-  </div>
-);
+  );
+};
 
 const SaveUpdatePrint: React.FC<SaveUpdatePrintProps> = ({
   newBill,

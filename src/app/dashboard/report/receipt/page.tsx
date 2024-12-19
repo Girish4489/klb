@@ -1,7 +1,10 @@
 'use client';
+import { exportToCSV, exportToPDF } from '@/app/utils/exportUtils/common';
+import { prepareReceiptExportData } from '@/app/utils/exportUtils/receipts';
 import { FunnelIcon } from '@heroicons/react/24/solid';
 import { IReceipt } from '@models/klm';
 import handleError from '@utils/error/handleError';
+import { fetchAllData } from '@utils/fetchAllData/fetchAllData';
 import { formatD } from '@utils/format/dateUtils';
 import { ApiGet } from '@utils/makeApiRequest/makeApiRequest';
 import React, { useState } from 'react';
@@ -50,6 +53,31 @@ export default function Receipt() {
     } catch (error) {
       handleError.log(error);
     }
+  };
+
+  const handleExport = async (format: 'csv' | 'pdf') => {
+    if (!fromDate || !toDate) {
+      toast.error('Please select date range first');
+      return;
+    }
+
+    toast.promise(
+      (async () => {
+        const allReceipts = await fetchAllData.receipts(fromDate, toDate);
+        const exportData = prepareReceiptExportData(allReceipts);
+        if (format === 'csv') {
+          exportToCSV(exportData, 'receipt-details.csv');
+        } else if (format === 'pdf') {
+          exportToPDF(exportData, 'receipt-details.pdf');
+        }
+        return 'Export completed';
+      })(),
+      {
+        loading: 'Preparing export...',
+        success: 'Export completed successfully',
+        error: 'Failed to export data',
+      },
+    );
   };
 
   const ReceiptTable = ({ caption, receipts }: { caption: string; receipts: IReceipt[] }) => {
@@ -125,10 +153,10 @@ export default function Receipt() {
   };
 
   return (
-    <div className="p-4">
+    <div className="flex flex-col gap-4 p-2">
       <h1 className="text-center text-3xl font-bold">Receipts</h1>
-      <div className="mt-4 flex flex-col gap-1">
-        <div className="flex gap-4">
+      <div className="flex flex-col gap-1">
+        <div className="flex gap-4 rounded-box bg-base-300 px-2 py-2">
           <label
             className="input input-sm label-text input-bordered input-primary flex grow items-center gap-2"
             htmlFor="fromDate"
@@ -149,8 +177,17 @@ export default function Receipt() {
               Filter
             </button>
           </div>
+          {receipts.length > 0 && (
+            <span className="grow space-x-2">
+              <button onClick={() => handleExport('csv')} className="btn btn-secondary btn-sm">
+                Export CSV
+              </button>
+              <button onClick={() => handleExport('pdf')} className="btn btn-secondary btn-sm">
+                Export PDF
+              </button>
+            </span>
+          )}
         </div>
-
         <ReceiptTable caption="Receipts" receipts={receipts} />
         {/* Pagination 1 */}
         {receipts.length > 0 && (

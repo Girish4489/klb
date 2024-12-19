@@ -4,13 +4,21 @@ import TaxModal from '@dashboard/transaction/receipt/components/TaxModal';
 import { PlusCircleIcon } from '@heroicons/react/24/outline';
 import { IReceipt, IReceiptTax, ITax } from '@models/klm';
 import React from 'react';
+import AmountTracking from './AmountTracking';
 
 interface ReceiptHeaderProps {
   receipt: IReceipt | undefined;
   setReceipt: React.Dispatch<React.SetStateAction<IReceipt | undefined>>;
-  amtTrack: { total: number; grand: number; discount: number; paid: number; due: number };
+  amtTrack: { total: number; grand: number; discount: number; paid: number; due: number; taxAmount: number };
   setAmtTrack: React.Dispatch<
-    React.SetStateAction<{ total: number; grand: number; discount: number; paid: number; due: number }>
+    React.SetStateAction<{
+      total: number;
+      grand: number;
+      discount: number;
+      paid: number;
+      due: number;
+      taxAmount: number;
+    }>
   >;
   tax: ITax[];
 }
@@ -24,7 +32,7 @@ const ReceiptHeader: React.FC<ReceiptHeaderProps> = ({ receipt, setReceipt, amtT
   };
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-2">
       <div className="flex flex-row flex-wrap items-center gap-1 p-1">
         <InputField
           label="Receipt No"
@@ -148,22 +156,13 @@ const ReceiptHeader: React.FC<ReceiptHeaderProps> = ({ receipt, setReceipt, amtT
           </select>
         </div>
       </div>
-      <div className="rounded bg-warning/15">
-        <div className="flex flex-row flex-wrap items-center justify-center gap-2 p-1">
-          {Object.entries(amtTrack).map(([key, value]) => (
-            <div key={key} className="flex flex-row flex-wrap items-center gap-1 max-sm:w-full max-sm:justify-between">
-              <h3 className="label-text font-bold">{key.charAt(0).toUpperCase() + key.slice(1)}:</h3>
-              <h3
-                className={`label-text ${key === 'due' && amtTrack.due <= 0 ? 'text-warning' : ''} ${key === 'paid' && amtTrack.paid === amtTrack.grand ? 'text-success' : ''}`}
-              >
-                {key === 'due'
-                  ? (value - (receipt?.amount ?? 0) - (receipt?.taxAmount ?? 0) + (receipt?.discount ?? 0)).toString()
-                  : value.toString()}
-              </h3>
-            </div>
-          ))}
-        </div>
-      </div>
+
+      <AmountTracking
+        amtTrack={amtTrack}
+        currentAmount={receipt?.amount}
+        currentTax={receipt?.taxAmount}
+        currentDiscount={receipt?.discount}
+      />
     </div>
   );
 };

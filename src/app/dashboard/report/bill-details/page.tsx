@@ -1,11 +1,14 @@
 'use client';
 import { FunnelIcon } from '@heroicons/react/24/solid';
-import { IBill } from '@models/klm';
 import handleError from '@utils/error/handleError';
+import { prepareBillExportData } from '@utils/exportUtils/bills';
+import { exportToCSV, exportToPDF } from '@utils/exportUtils/common';
+import { fetchAllData } from '@utils/fetchAllData/fetchAllData';
 import { formatD } from '@utils/format/dateUtils';
 import { ApiGet } from '@utils/makeApiRequest/makeApiRequest';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
+import { IBillDetails } from './types';
 
 const PAGE_SIZE = 10; // Number of bills per page
 
@@ -14,7 +17,7 @@ export default function BillDetails() {
   const [toDate, setToDate] = useState<Date>();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [bills, setBills] = useState<IBill[]>([]);
+  const [bills, setBills] = useState<IBillDetails[]>([]);
 
   const handleFilter = async () => {
     if (!fromDate || !toDate) {
@@ -51,7 +54,7 @@ export default function BillDetails() {
     }
   };
 
-  const BillTable = ({ caption, bills }: { caption: string; bills: IBill[] }) => {
+  const BillTable = ({ caption, bills }: { caption: string; bills: IBillDetails[] }) => {
     return (
       <div
         className={`table-row overflow-auto rounded-box border-2 border-base-300 bg-base-100 ${bills.length === 0 && 'min-h-24'}`}
@@ -61,7 +64,7 @@ export default function BillDetails() {
           {bills.length === 0 ? (
             <tbody>
               <tr>
-                <td colSpan={13} className="text-warning">
+                <td colSpan={14} className="text-warning">
                   No bills
                 </td>
               </tr>
@@ -81,12 +84,13 @@ export default function BillDetails() {
                   <th>Grand</th>
                   <th>Paid</th>
                   <th>Due</th>
+                  <th>Tax Amount</th>
                   <th>Status</th>
                   <th>Bill by</th>
                 </tr>
               </thead>
               <tbody>
-                {bills.map((bill: IBill, index) => (
+                {bills.map((bill: IBillDetails, index) => (
                   <tr key={index} className="text-center">
                     <td>{index + 1}</td>
                     <td>{bill.billNumber}</td>
@@ -103,6 +107,7 @@ export default function BillDetails() {
                     <td>{bill?.grandTotal}</td>
                     <td>{bill?.paidAmount}</td>
                     <td>{bill?.dueAmount}</td>
+                    <td>{bill?.taxAmount}</td>
                     <td>{bill?.paymentStatus}</td>
                     <td>{bill?.billBy?.name}</td>
                   </tr>
@@ -117,7 +122,12 @@ export default function BillDetails() {
 
   const fetchBills = async (fromDate: Date, toDate: Date, page: number) => {
     const data = await ApiGet.Bill.BillFromToDate(fromDate, toDate, page);
-    return { message: data.message, success: data.success, bill: data.bill, totalBills: data.totalBills };
+    return {
+      message: data.message,
+      success: data.success,
+      bill: data.bill as IBillDetails[],
+      totalBills: data.totalBills,
+    };
   };
 
   const calculateTotalPages = (totalBills: number) => {
@@ -133,50 +143,81 @@ export default function BillDetails() {
     setCurrentPage(page);
   };
 
+  const handleExport = async (format: 'csv' | 'pdf') => {
+    if (!fromDate || !toDate) {
+      toast.error('Please select date range first');
+      return;
+    }
+
+    toast.promise(
+      (async () => {
+        const allBills = await fetchAllData.bills(fromDate, toDate);
+        const exportData = prepareBillExportData(allBills);
+        if (format === 'csv') {
+          exportToCSV(exportData, 'bill-details.csv');
+        } else if (format === 'pdf') {
+          exportToPDF(exportData, 'bill-details.pdf');
+        }
+        return 'Export completed';
+      })(),
+      {
+        loading: 'Preparing export...',
+        success: 'Export completed successfully',
+        error: 'Failed to export data',
+      },
+    );
+  };
+
   return (
     <div className="flex grow flex-col">
       <h1 className="text-center font-semibold">Bill Details</h1>
       <span className="backdrop-blur-sm-lg flex flex-wrap items-center gap-2 rounded-box bg-base-300 p-2 shadow">
-        <label
-          className="input input-sm label-text input-bordered input-primary flex grow items-center gap-2"
-          htmlFor="fromDate"
-        >
+        {/* Date inputs */}
+        <label className="input input-sm label-text input-bordered input-primary flex grow items-center gap-2">
           From Date:
           <input
             type="date"
-            id="fromDate"
             className="grow"
             value={fromDate ? new Date(fromDate).toISOString().split('T')[0] : ''}
             onChange={(e) => setFromDate(new Date(e.target.value))}
           />
         </label>
-        <label
-          className="input input-sm label-text input-bordered input-primary flex grow items-center gap-2"
-          htmlFor="toDate"
-        >
+        <label className="input input-sm label-text input-bordered input-primary flex grow items-center gap-2">
           To Date:
           <input
             type="date"
-            id="toDate"
             className="grow"
             value={toDate ? new Date(toDate).toISOString().split('T')[0] : ''}
             onChange={(e) => setToDate(new Date(e.target.value))}
           />
         </label>
+
+        {/* Filter Button */}
         <span className="grow">
           <button onClick={handleFilter} className="btn btn-primary btn-sm">
             <FunnelIcon className="h-6 w-6" />
             Filter
           </button>
         </span>
+
+        {/* Export Buttons - Only show when there are bills */}
+        {bills.length > 0 && (
+          <span className="grow space-x-2">
+            <button onClick={() => handleExport('csv')} className="btn btn-secondary btn-sm">
+              Export CSV
+            </button>
+            <button onClick={() => handleExport('pdf')} className="btn btn-secondary btn-sm">
+              Export PDF
+            </button>
+          </span>
+        )}
       </span>
 
       {/* Render bills */}
       <span className="table">
-        {/* Implement your logic to render bills based on currentPage */}
         <BillTable caption="Bills" bills={bills} />
         {/* Pagination */}
-        {bills.length > 0 && (
+        {bills.length > 0 && totalPages > 1 && (
           <div className="join mt-4 table-row space-y-1 text-center">
             {Array.from({ length: totalPages }, (_, index) => (
               <input

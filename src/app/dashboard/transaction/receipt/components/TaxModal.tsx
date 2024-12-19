@@ -9,14 +9,44 @@ interface TaxModalProps {
 }
 
 const TaxModal: React.FC<TaxModalProps> = ({ taxList, selectedTaxes = [], setReceipt }) => {
+  const calculateTotalTax = (amount: number, taxes: IReceiptTax[]): number => {
+    return Number(
+      taxes
+        .reduce((acc, t) => acc + (t.taxType === 'Percentage' ? (amount * t.taxPercentage) / 100 : t.taxPercentage), 0)
+        .toFixed(2),
+    );
+  };
+
+  const handleTaxChange = (tax: ITax, checked: boolean) => {
+    setReceipt((prev) => {
+      if (!prev) return prev;
+
+      const updatedTaxes: IReceiptTax[] = checked
+        ? [
+            ...(prev.tax || []),
+            {
+              _id: tax._id,
+              taxName: tax.taxName,
+              taxType: tax.taxType as 'Percentage' | 'Fixed',
+              taxPercentage: tax.taxPercentage,
+            },
+          ]
+        : (prev.tax || []).filter((t) => t._id.toString() !== tax._id.toString());
+
+      const newTaxAmount = calculateTotalTax(prev.amount || 0, updatedTaxes);
+
+      return { ...prev, tax: updatedTaxes, taxAmount: newTaxAmount } as IReceipt;
+    });
+  };
+
   const handleRowClick = (taxId: string) => {
-    setReceipt((prevReceipt) => {
-      if (!prevReceipt) return prevReceipt;
+    setReceipt((prev) => {
+      if (!prev) return prev;
 
       const selectedTax = taxList.find((t) => t._id.toString() === taxId);
       if (!selectedTax) {
         toast.error('Selected tax not found');
-        return prevReceipt;
+        return prev;
       }
 
       const receiptTax: IReceiptTax = {
@@ -26,16 +56,12 @@ const TaxModal: React.FC<TaxModalProps> = ({ taxList, selectedTaxes = [], setRec
         taxPercentage: selectedTax.taxPercentage,
       };
 
-      const isSelected = prevReceipt.tax?.some((t) => t._id.toString() === selectedTax._id.toString());
+      const isSelected = prev.tax?.some((t) => t._id.toString() === selectedTax._id.toString());
       const updatedTaxes = isSelected
-        ? prevReceipt.tax.filter((t) => t._id.toString() !== selectedTax._id.toString())
-        : [...(prevReceipt.tax || []), receiptTax];
+        ? (prev.tax || []).filter((t) => t._id.toString() !== selectedTax._id.toString())
+        : [...(prev.tax || []), receiptTax];
 
-      // Create a new receipt object maintaining the Document interface
-      return {
-        ...prevReceipt,
-        tax: updatedTaxes,
-      } as IReceipt;
+      return { ...prev, tax: updatedTaxes } as IReceipt;
     });
   };
 
@@ -69,7 +95,7 @@ const TaxModal: React.FC<TaxModalProps> = ({ taxList, selectedTaxes = [], setRec
                         name={tax.taxName}
                         id={tax.taxName}
                         checked={selectedTaxes.some((t) => t._id === tax._id)}
-                        onChange={() => handleRowClick(tax._id.toString())}
+                        onChange={(e) => handleTaxChange(tax, e.target.checked)}
                       />
                     </label>
                   </td>
