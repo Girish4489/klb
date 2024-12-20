@@ -6,6 +6,7 @@ import { ThemeProvider } from '@context/ThemeContext';
 import { CompanyProvider } from '@context/companyContext';
 import { AuthProvider, UserProvider } from '@context/userContext';
 import { defaultMetadata } from '@utils/metadata';
+import { Analytics } from '@vercel/analytics/react';
 import Head from 'next/head';
 import React from 'react';
 import { Toaster } from 'react-hot-toast';
@@ -36,6 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <Toaster />
                 {children}
                 <SpeedInsightsWrapper />
+                <Analytics />
               </body>
             </CompanyProvider>
           </UserProvider>

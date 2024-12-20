@@ -39,16 +39,26 @@ export function validateReceipt(receipt: IReceipt, amtTrack: AmtTrack) {
   if (!paymentMethod) throw new Error('Payment method is required');
   if (!paymentDate) throw new Error('Payment date is required');
   if (!bill?.name) throw new Error('Name is required');
-  if (amtTrack.paid >= amtTrack.grand || amtTrack.due <= 0) throw new Error('Bill already paid');
-  if (amount > amtTrack.due) throw new Error('Amount exceeds due amount');
+  if (amtTrack.paid >= amtTrack.grand) throw new Error('Bill already paid');
+
+  const netPayment = amount + (discount || 0);
+  const overpaymentAmount = netPayment - amtTrack.due;
+  
+  if (overpaymentAmount > 5) {
+    throw new Error(`Cannot proceed with overpayment exceeding ₹5. Current overpayment: ₹${overpaymentAmount.toFixed(2)}`);
+  }
+  
+  if (netPayment > amtTrack.due) throw new Error('Net payment exceeds due amount');
   if (discount < 0) throw new Error('Invalid discount');
+  if (netPayment <= 0) throw new Error('Net payment must be greater than zero');
 
   const totalTaxAmount =
     tax?.reduce(
       (acc, t) => acc + (t.taxType === 'Percentage' ? (amount * t.taxPercentage) / 100 : t.taxPercentage),
       0,
     ) ?? 0;
-  if (amount + totalTaxAmount > amtTrack.due) throw new Error('Total amount exceeds due amount');
+  if (totalTaxAmount < 0) throw new Error('Invalid tax amount');
 
-  receipt.paymentType = amtTrack.due - amount - totalTaxAmount + discount <= 0 ? 'fullyPaid' : 'advance';
+  const remainingDue = amtTrack.due - netPayment;
+  receipt.paymentType = remainingDue <= 0 ? 'fullyPaid' : 'advance';
 }

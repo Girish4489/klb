@@ -12,35 +12,39 @@ interface SearchFormProps {
 const SearchBillForm: React.FC<SearchFormProps> = ({ onSearch, searchResults, onRowClick }) => {
   const renderSearchBillDropdown = (bills: IBill[]) => (
     <div
-      className={`card-body max-h-96 w-full overflow-x-auto rounded-box border-2 border-base-300 bg-base-100 ${
+      className={`card-body m-0 max-h-96 w-full overflow-x-auto rounded-box border-2 border-base-300 bg-base-100 p-1 ring-1 ring-primary ${
         bills.length === 0 && 'min-h-24 min-w-24 max-w-24'
       }`}
     >
-      <table className="table table-zebra table-pin-rows">
-        <caption className="px-1 py-2 font-bold">Bills</caption>
+      <table className="table table-zebra table-pin-rows w-full rounded-box bg-base-200">
+        <caption className="rounded-t-box bg-neutral p-1 font-bold">Bills</caption>
         <thead>
-          <tr className="text-center">
+          <tr className="rounded-t-box bg-base-300 text-center">
             <th>Slno</th>
-            <th>BillNumber</th>
+            <th>Bill No</th>
             <th>Mobile</th>
             <th>Date</th>
             <th>Due Date</th>
             <th>U|T</th>
             <th>Total</th>
-            <th>Grand</th>
+            {/* <th>Grand</th> */}
             <th>Bill by</th>
           </tr>
         </thead>
         <tbody>
           {bills.length === 0 ? (
             <tr>
-              <td colSpan={9} className="text-warning">
+              <td colSpan={8} className="text-warning">
                 No bills
               </td>
             </tr>
           ) : (
             bills.map((bill, index) => (
-              <tr key={index} className="hover text-center" onClick={onRowClick(bill._id.toString())}>
+              <tr
+                key={index}
+                className="hover text-center hover:cursor-pointer"
+                onClick={onRowClick(bill._id.toString())}
+              >
                 <td>{index + 1}</td>
                 <td>{bill.billNumber}</td>
                 <td>{bill.mobile}</td>
@@ -90,7 +94,10 @@ const SearchBillForm: React.FC<SearchFormProps> = ({ onSearch, searchResults, on
           <MagnifyingGlassIcon className="join-item h-5 w-5" />
         </button>
         {searchResults && (
-          <div tabIndex={0} className="card dropdown-content card-compact z-[50] w-auto bg-base-300 shadow">
+          <div
+            tabIndex={0}
+            className="card dropdown-content card-compact z-[50] w-auto bg-base-300 shadow-inner shadow-base-300"
+          >
             {renderSearchBillDropdown(searchResults)}
           </div>
         )}

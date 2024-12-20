@@ -14,9 +14,13 @@ const AmountTracking: React.FC<AmountTrackingProps> = ({
   currentTax = 0,
   currentDiscount = 0,
 }) => {
-  const currentPayment = currentAmount + currentTax - currentDiscount;
-  const remainingDue = amtTrack.due - currentPayment;
+  // Calculate remaining due by subtracting both payment and discount
+  const netPayment = currentAmount + currentDiscount;
+  const remainingDue = amtTrack.due - netPayment;
   const isFullyPaid = remainingDue <= 0;
+  const isOverPaid = netPayment > amtTrack.due;
+  const overpaymentAmount = Math.abs(remainingDue);
+  const isOverPaymentCritical = overpaymentAmount > 5;
 
   return (
     <div className="grid grid-cols-2 gap-4 rounded-lg bg-base-200 p-4">
@@ -52,16 +56,39 @@ const AmountTracking: React.FC<AmountTrackingProps> = ({
             <div className="grid grid-cols-2 gap-1 text-sm">
               <span className="text-base-content">Current Amount:</span>
               <span className="text-right">{currentAmount.toFixed(2)}</span>
-              <span className="text-base-content">Current Tax:</span>
-              <span className="text-right text-accent">+ {currentTax.toFixed(2)}</span>
               <span className="text-base-content">Current Discount:</span>
               <span className="text-right text-secondary">- {currentDiscount.toFixed(2)}</span>
-              <span className="text-base-content">Total Payment:</span>
-              <span className="text-right font-bold">{currentPayment.toFixed(2)}</span>
+              <span className="text-base-content">Net Payment:</span>
+              <span className={`text-right font-bold ${isOverPaid ? 'text-error' : ''}`}>
+                {netPayment.toFixed(2)}
+                {isOverPaid && <div className="badge badge-error badge-sm ml-2 gap-1">Overpaid</div>}
+              </span>
+              <span className="text-base-content">Current Tax:</span>
+              <span className="text-right text-accent">+ {currentTax.toFixed(2)}</span>
+              <span className="text-base-content">Total with Tax:</span>
+              <span className="text-right font-bold">{(netPayment + currentTax).toFixed(2)}</span>
               <span className="text-base-content">Remaining Due:</span>
               <span className={`text-right font-bold ${isFullyPaid ? 'text-success' : 'text-error'}`}>
                 {isFullyPaid ? 'FULLY PAID' : remainingDue.toFixed(2)}
               </span>
+              {isOverPaid && (
+                <div className="col-span-2 mt-2">
+                  <div className={`alert ${isOverPaymentCritical ? 'alert-error' : 'alert-warning'} alert-sm py-2`}>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <span>
+                      {isOverPaymentCritical
+                        ? `Cannot save: Overpayment exceeds ₹5 limit (Current: ₹${overpaymentAmount.toFixed(2)})`
+                        : `Warning: Payment exceeds due amount by ₹${overpaymentAmount.toFixed(2)}`}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           </>
         )}
