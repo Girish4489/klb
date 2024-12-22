@@ -1,3 +1,4 @@
+import apiConstants from '@constants/api-constants';
 import constants from '@constants/constants';
 import { token as tokenUtil } from '@utils/token/token';
 import { NextRequest, NextResponse } from 'next/server';
@@ -28,12 +29,12 @@ const paths = {
     ],
     landing: [constants.LANDING_PUBLIC_HOME_PAGE, constants.LANDING_PUBLIC_PAGE, constants.LANDING_PUBLIC_LOGOUT_PAGE],
     api: [
-      '/api/auth/login',
-      '/api/auth/signup',
-      '/api/auth/verify',
-      '/api/auth/forgot-password',
-      '/api/auth/logout',
-      '/api/auth/clear-cookie',
+      apiConstants.AUTH_LOGIN_API,
+      apiConstants.AUTH_SIGNUP_API,
+      apiConstants.AUTH_VERIFY_API,
+      apiConstants.AUTH_FORGOT_PASSWORD_API,
+      apiConstants.AUTH_LOGOUT_API,
+      apiConstants.AUTH_CLEAR_COOKIE_API,
     ],
   },
   protected: {
