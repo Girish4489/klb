@@ -29,11 +29,9 @@ export async function POST(request: NextRequest) {
     const skip = (page - 1) * itemsPerPage;
 
     let query = {};
-    let customers;
-    let total;
 
     switch (type) {
-      case 'getCustomersByDate':
+      case 'getCustomersByDate': {
         const { fromDate, toDate } = reqBody;
         if (!fromDate || !toDate) {
           throw new Error('From date and To date are required');
@@ -45,8 +43,9 @@ export async function POST(request: NextRequest) {
           },
         };
         break;
+      }
 
-      case 'getCustomersByMobile':
+      case 'getCustomersByMobile': {
         const { mobile } = reqBody;
         if (!mobile) {
           throw new Error('Mobile number is required');
@@ -58,6 +57,7 @@ export async function POST(request: NextRequest) {
             : { $exists: true },
         };
         break;
+      }
 
       case 'getCustomers':
         // Default case - no specific query
@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Execute query with pagination
-    [customers, total] = await Promise.all([
+    const [customerResults, totalCount] = await Promise.all([
       Customer.find(query).sort({ createdAt: -1 }).skip(skip).limit(itemsPerPage).lean(),
       Customer.countDocuments(query),
     ]);
@@ -82,10 +82,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       message: 'Customers fetched successfully',
       success: true,
-      data: customers,
-      total,
+      data: customerResults,
+      total: totalCount,
       page,
-      totalPages: Math.ceil(total / itemsPerPage),
+      totalPages: Math.ceil(totalCount / itemsPerPage),
     });
   } catch (error) {
     return handleError.api(error);

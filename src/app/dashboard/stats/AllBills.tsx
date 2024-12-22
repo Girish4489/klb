@@ -2,7 +2,7 @@ import Pagination from '@dashboard/stats/Pagination';
 import { ArrowDownCircleIcon, ArrowUpCircleIcon } from '@heroicons/react/24/solid';
 import { formatDSNT } from '@utils/format/dateUtils';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { JSX, useEffect, useState } from 'react';
 
 interface Bill {
   _id: string;
@@ -19,7 +19,7 @@ interface AllBillsProps {
   refresh: boolean;
 }
 
-const AllBills = ({ refresh }: AllBillsProps) => {
+const AllBills = ({ refresh }: AllBillsProps): JSX.Element => {
   const [bills, setBills] = useState<Bill[]>([]); // Initialize as an empty array
   const [error, setError] = useState<string | null>(null);
   const [sortConfig, setSortConfig] = useState<{ key: keyof Bill; direction: 'ascending' | 'descending' }>({
@@ -37,12 +37,12 @@ const AllBills = ({ refresh }: AllBillsProps) => {
 
     switch (key) {
       case 'dueDate':
-      case 'date':
+      case 'date': {
         const dateA = new Date(a[key]);
         const dateB = new Date(b[key]);
         comparison = dateA.getTime() - dateB.getTime();
         break;
-
+      }
       case 'billNumber':
       case 'totalAmount':
       case 'paidAmount':
@@ -63,20 +63,20 @@ const AllBills = ({ refresh }: AllBillsProps) => {
 
   const currentBills = sortedBills;
 
-  const handleHeaderClick = (key: keyof Bill) => {
+  const handleHeaderClick = (key: keyof Bill): void => {
     if (activeIcon !== key) {
       setActiveIcon(key);
       setSortConfig({ key, direction: 'descending' });
     }
   };
 
-  const handleSortIconClick = (event: React.MouseEvent, key: keyof Bill) => {
+  const handleSortIconClick = (event: React.MouseEvent, key: keyof Bill): void => {
     event.stopPropagation();
     const direction = sortConfig.key === key && sortConfig.direction === 'descending' ? 'ascending' : 'descending';
     setSortConfig({ key, direction });
   };
 
-  const getSortIcon = (key: keyof Bill) => {
+  const getSortIcon = (key: keyof Bill): JSX.Element | null => {
     if (activeIcon !== key) return null;
 
     return (
@@ -96,9 +96,9 @@ const AllBills = ({ refresh }: AllBillsProps) => {
     );
   };
 
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+  const paginate = (pageNumber: number): void => setCurrentPage(pageNumber);
 
-  const fetchBills = async () => {
+  const fetchBills = async (): Promise<void> => {
     try {
       const response = await axios.get(`/api/dashboard/stats/allBills?page=${currentPage}&limit=${billsPerPage}`);
       setBills(response.data.bills || []); // Ensure bills is an array

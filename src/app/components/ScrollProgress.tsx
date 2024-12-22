@@ -1,18 +1,30 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { JSX, useEffect, useState } from 'react';
 
-export default function ScrollProgress() {
+export default function ScrollProgress(): JSX.Element {
   const [scrollProgress, setScrollProgress] = useState(0);
 
   useEffect(() => {
-    const updateScroll = () => {
+    let ticking = false;
+
+    const updateScroll = (): void => {
       const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
       const progress = (window.scrollY / totalHeight) * 100;
       setScrollProgress(progress);
+      ticking = false;
     };
 
-    window.addEventListener('scroll', updateScroll);
-    return () => window.removeEventListener('scroll', updateScroll);
+    const onScroll = (): void => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          updateScroll();
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', onScroll);
+    return (): void => window.removeEventListener('scroll', onScroll);
   }, []);
 
   return (

@@ -1,6 +1,6 @@
 // ThemeContext.tsx
 'use client';
-import React, { ReactNode, createContext, useContext, useEffect, useState } from 'react';
+import { FC, ReactNode, createContext, useContext, useEffect, useState } from 'react';
 
 export enum Theme {
   Light = 'light',
@@ -51,7 +51,7 @@ interface ThemeContextInterface {
 
 const ThemeContext = createContext<ThemeContextInterface | undefined>(undefined);
 
-export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const ThemeProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [theme, setTheme] = useState<Theme>(() => {
     if (typeof window !== 'undefined') {
       const savedTheme = localStorage.getItem('theme');
@@ -74,7 +74,7 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     },
     listenToSystemTheme: () => {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      const handleChange = (e: MediaQueryListEvent) => {
+      const handleChange = (e: MediaQueryListEvent): void => {
         setTheme(e.matches ? Theme.Dark : Theme.Light);
       };
       mediaQuery.addEventListener('change', handleChange);

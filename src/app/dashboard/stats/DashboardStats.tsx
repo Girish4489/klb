@@ -1,7 +1,7 @@
 import { getComputedStyleValue } from '@utils/Styles';
 import axios from 'axios';
 import { ArcElement, BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Tooltip } from 'chart.js';
-import { useEffect, useState } from 'react';
+import { JSX, useEffect, useState } from 'react';
 import { Bar, Pie } from 'react-chartjs-2';
 
 ChartJS.register(ArcElement, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
@@ -24,7 +24,7 @@ interface Stats {
   discountCount: number;
 }
 
-const DashboardStats = ({ refresh }: DashboardStatsProps) => {
+const DashboardStats = ({ refresh }: DashboardStatsProps): JSX.Element => {
   const [stats, setStats] = useState<Stats>({
     unpaidBillsCount: 0,
     partiallyPaidBillsCount: 0,
@@ -40,7 +40,7 @@ const DashboardStats = ({ refresh }: DashboardStatsProps) => {
   });
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchStats = async (): Promise<void> => {
       try {
         const response = await axios.get('/api/dashboard/stats/dashboardStats');
         setStats(response.data);

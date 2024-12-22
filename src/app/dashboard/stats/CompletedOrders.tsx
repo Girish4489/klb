@@ -2,7 +2,7 @@ import Pagination from '@dashboard/stats/Pagination';
 import { ArrowDownCircleIcon, ArrowUpCircleIcon } from '@heroicons/react/24/solid';
 import { formatDSNT } from '@utils/format/dateUtils';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { JSX, useEffect, useState } from 'react';
 
 interface Order {
   _id: string;
@@ -20,7 +20,7 @@ interface CompletedOrdersProps {
   refresh: boolean;
 }
 
-const CompletedOrders = ({ refresh }: CompletedOrdersProps) => {
+const CompletedOrders = ({ refresh }: CompletedOrdersProps): JSX.Element => {
   const [completedOrders, setCompletedOrders] = useState<Order[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [sortConfig, setSortConfig] = useState<{ key: keyof Order; direction: 'ascending' | 'descending' }>({
@@ -37,26 +37,30 @@ const CompletedOrders = ({ refresh }: CompletedOrdersProps) => {
 
     switch (key) {
       case 'dueDate':
-      case 'date':
+      case 'date': {
         const dateA = new Date(a[key]);
         const dateB = new Date(b[key]);
         comparison = dateA.getTime() - dateB.getTime();
         break;
+      }
 
       case 'billNumber':
       case 'totalAmount':
       case 'paidAmount':
-      case 'dueAmount':
+      case 'dueAmount': {
         comparison = Number(a[key]) - Number(b[key]);
         break;
+      }
 
       case 'paymentStatus':
-      case 'deliveryStatus':
+      case 'deliveryStatus': {
         comparison = (a[key] || '').localeCompare(b[key] || '');
         break;
+      }
 
-      default:
+      default: {
         comparison = 0;
+      }
     }
 
     return direction === 'ascending' ? comparison : -comparison;
@@ -66,20 +70,20 @@ const CompletedOrders = ({ refresh }: CompletedOrdersProps) => {
   const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
   const currentOrders = sortedOrders.slice(indexOfFirstOrder, indexOfLastOrder);
 
-  const handleHeaderClick = (key: keyof Order) => {
+  const handleHeaderClick = (key: keyof Order): void => {
     if (activeIcon !== key) {
       setActiveIcon(key);
       setSortConfig({ key, direction: 'descending' });
     }
   };
 
-  const handleSortIconClick = (event: React.MouseEvent, key: keyof Order) => {
+  const handleSortIconClick = (event: React.MouseEvent, key: keyof Order): void => {
     event.stopPropagation();
     const direction = sortConfig.key === key && sortConfig.direction === 'descending' ? 'ascending' : 'descending';
     setSortConfig({ key, direction });
   };
 
-  const getSortIcon = (key: keyof Order) => {
+  const getSortIcon = (key: keyof Order): JSX.Element | null => {
     if (activeIcon !== key) return null;
 
     return (
@@ -99,9 +103,9 @@ const CompletedOrders = ({ refresh }: CompletedOrdersProps) => {
     );
   };
 
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+  const paginate = (pageNumber: number): void => setCurrentPage(pageNumber);
 
-  const fetchCompletedOrders = async () => {
+  const fetchCompletedOrders = async (): Promise<void> => {
     try {
       const response = await axios.get(
         `/api/dashboard/stats/completedOrders?page=${currentPage}&limit=${ordersPerPage}`,

@@ -8,10 +8,10 @@ import { AuthProvider, UserProvider } from '@context/userContext';
 import { defaultMetadata } from '@utils/metadata';
 import { Analytics } from '@vercel/analytics/react';
 import Head from 'next/head';
-import React from 'react';
+import { JSX, ReactNode } from 'react';
 import { Toaster } from 'react-hot-toast';
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: ReactNode }): JSX.Element {
   return (
     <html lang="en">
       <Head>

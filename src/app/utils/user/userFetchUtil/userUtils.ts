@@ -3,7 +3,7 @@ import { logoutUtils } from '@utils/auth/logoutUtils';
 import handleError from '@utils/error/handleError';
 import axios from 'axios';
 
-export async function fetchUserData() {
+export async function fetchUserData(): Promise<IUser | undefined> {
   try {
     const response = await axios.get('/api/auth/user');
     const { data: userData, success, message } = response.data;

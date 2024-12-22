@@ -1,9 +1,11 @@
+import { JSX } from 'react';
+
 interface GlassCardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   variant?: 'primary' | 'secondary' | 'accent';
 }
 
-export default function GlassCard({ children, className = '', variant = 'primary' }: GlassCardProps) {
+export default function GlassCard({ children, className = '', variant = 'primary' }: GlassCardProps): JSX.Element {
   const gradientMap = {
     primary: 'from-primary/10 via-transparent to-secondary/10',
     secondary: 'from-secondary/10 via-transparent to-accent/10',

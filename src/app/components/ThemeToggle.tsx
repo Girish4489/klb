@@ -1,8 +1,9 @@
 'use client';
 import { Theme, useTheme } from '@/app/context/ThemeContext';
 import { MoonIcon, SunIcon } from '@heroicons/react/16/solid';
+import { JSX } from 'react';
 
-export function ThemeToggle() {
+export function ThemeToggle(): JSX.Element {
   const { currentTheme, toggleTheme } = useTheme();
 
   return (

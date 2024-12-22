@@ -20,7 +20,7 @@ const WorkerBillPage: React.FC = () => {
   const [backUrl, setBackUrl] = useState<string>('/dashboard/work-manage/bill');
 
   useEffect(() => {
-    async function fetchData() {
+    async function fetchData(): Promise<void> {
       const billNumber = parseInt(getSearchParam('billNumber') || '0', 10);
 
       if (!billNumber) {

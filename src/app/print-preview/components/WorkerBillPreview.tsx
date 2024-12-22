@@ -68,8 +68,11 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, company, is
                   {bill.billNumber && bill.billNumber.toString().length > 0 && (
                     <QrGenerator
                       content={
-                        `${company?.name && `Company Name=${company.name}\n`}${company?.contactDetails.address && `Address=${company.contactDetails.address}\n`}&billNumber=${bill?.billNumber.toString()}` ||
-                        ''
+                        bill?.billNumber
+                          ? `${company?.name ? `Company Name=${company.name}\n` : ''}${
+                              company?.contactDetails.address ? `Address=${company.contactDetails.address}\n` : ''
+                            }billNumber=${bill.billNumber.toString()}`
+                          : ''
                       }
                       size={90}
                     />

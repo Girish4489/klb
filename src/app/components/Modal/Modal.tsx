@@ -1,12 +1,12 @@
 'use client';
-import React from 'react';
+import { FC, ReactNode } from 'react';
 
 interface ModalProps {
   id: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
-export const Modal: React.FC<ModalProps> = ({ id, children }) => {
+export const Modal: FC<ModalProps> = ({ id, children }) => {
   return (
     <dialog id={id} className="modal">
       <div className="modal-box w-11/12 max-w-5xl border border-primary shadow-inner shadow-primary transition-shadow">

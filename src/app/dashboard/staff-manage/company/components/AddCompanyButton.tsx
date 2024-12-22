@@ -6,14 +6,14 @@ import { ICompany } from '@models/companyModel';
 import handleError from '@utils/error/handleError';
 import { ApiPost } from '@utils/makeApiRequest/makeApiRequest';
 import Form from 'next/form';
-import { useState } from 'react';
+import { JSX, useState } from 'react';
 import toast from 'react-hot-toast';
 
-const AddCompanyButton = () => {
+const AddCompanyButton = (): JSX.Element => {
   const { updateCompany } = useCompany();
   const [newCompany, setNewCompany] = useState<ICompany>();
 
-  const handleAddCompany = async () => {
+  const handleAddCompany = async (): Promise<void> => {
     try {
       if (!newCompany) throw new Error('Not valid');
       const res = await ApiPost.Company.AddNewCompany({

@@ -6,7 +6,7 @@ import { InformationCircleIcon } from '@heroicons/react/24/solid';
 import { IUser } from '@models/userModel';
 import handleError from '@utils/error/handleError';
 import { ApiPost } from '@utils/makeApiRequest/makeApiRequest';
-import { useEffect, useState } from 'react';
+import { JSX, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
 interface Fonts {
@@ -14,7 +14,7 @@ interface Fonts {
   weight: number;
 }
 
-export default function SettingsPage() {
+export default function SettingsPage(): JSX.Element {
   const { user, updateUser, setUser } = useUser() as {
     user: IUser;
     updateUser: (user: Partial<IUser>) => void;
@@ -33,7 +33,7 @@ export default function SettingsPage() {
     document.body.style.fontWeight = fonts.weight.toString();
   }, [fonts]);
 
-  const updatePreferences = async (updatedPreferences: Partial<IUser['preferences']>) => {
+  const updatePreferences = async (updatedPreferences: Partial<IUser['preferences']>): Promise<void> => {
     await toast
       .promise(
         (async () => {
@@ -56,7 +56,7 @@ export default function SettingsPage() {
       .catch(handleError.toastAndLog);
   };
 
-  const updateFontPreferences = async (updatedFonts: Fonts) => {
+  const updateFontPreferences = async (updatedFonts: Fonts): Promise<void> => {
     await updatePreferences({
       fonts: updatedFonts,
     });
@@ -69,7 +69,7 @@ export default function SettingsPage() {
           <input type="checkbox" name="collapse" defaultChecked />
           <div className="collapse-title text-xl font-medium">User Profile</div>
           <div className="collapse-content">
-            <SettingsProfile user={user} updateUser={updateUser} />
+            <SettingsProfile user={user} updateUserAction={updateUser} />
           </div>
         </div>
 
@@ -80,7 +80,7 @@ export default function SettingsPage() {
             Theme
           </div>
           <div className="collapse-content m-2">
-            <ThemerPage user={user} setUser={setUser} />
+            <ThemerPage user={user} setUserAction={setUser} />
           </div>
         </div>
 

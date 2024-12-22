@@ -14,7 +14,7 @@ import { StarIcon } from '@heroicons/react/24/solid';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { JSX, useEffect, useState } from 'react';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -74,7 +74,7 @@ const heroImagesData = [
   },
 ];
 
-export default function Home() {
+export default function Home(): JSX.Element {
   const [imagesLoaded, setImagesLoaded] = useState<Record<string, boolean>>({});
   const [heroImages] = useState(heroImagesData);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -85,23 +85,23 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const handleScroll = () => {
+    const handleScroll = (): void => {
       setShowScrollButton(window.scrollY > 300);
     };
 
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    return (): void => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleImageLoad = (id: string) => {
+  const handleImageLoad = (id: string): void => {
     setImagesLoaded((prev) => ({ ...prev, [id]: true }));
   };
 
-  const handleSlideChange = (index: number) => {
+  const handleSlideChange = (index: number): void => {
     setCurrentSlide(index);
   };
 
-  const scrollToTop = () => {
+  const scrollToTop = (): void => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -408,7 +408,7 @@ export default function Home() {
                   <div className="flex items-center gap-4">
                     <div className="avatar">
                       <div className="w-16 rounded-full ring ring-primary ring-offset-2 ring-offset-base-100">
-                        <img src={testimonial.avatar} alt={testimonial.name} />
+                        <Image src={testimonial.avatar} alt={testimonial.name} width={64} height={64} />
                       </div>
                     </div>
                     <div>

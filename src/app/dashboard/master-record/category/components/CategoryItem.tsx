@@ -64,7 +64,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
                 <CustomButton
                   className="btn-secondary btn-sm tooltip tooltip-left px-1"
                   tooltip="Edit Category"
-                  onClick={() => {
+                  onClickAction={() => {
                     setIdsState(category._id.toString());
                     openModal('editCategory');
                   }}
@@ -86,17 +86,17 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
                 <summary className="collapse-title text-xl font-medium">
                   <div className="flex flex-row items-center justify-between gap-2">
                     <p className="label-text w-max">Styles</p>
-                    <button
+                    <CustomButton
                       className="btn btn-primary btn-sm tooltip tooltip-left px-1 max-sm:p-2"
-                      data-tip="Add Process"
-                      onClick={() => {
+                      tooltip="Add Process"
+                      onClickAction={() => {
                         setIdsState(category._id.toString(), '', '', '', '');
                         openModal('addProcess');
                       }}
                     >
                       <PlusCircleIcon className="h-6 w-6 text-primary-content max-sm:hidden" />
                       <span className="hidden max-sm:flex">Add</span>
-                    </button>
+                    </CustomButton>
                   </div>
                 </summary>
                 <div className="collapse-content flex flex-col gap-1 bg-base-100 pt-2">
@@ -108,26 +108,26 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
                           <div className="flex flex-row items-center justify-between">
                             <p className="label label-text">{styleProcess.styleProcessName}</p>
                             <span className="mr-2 flex flex-row gap-1">
-                              <button
+                              <CustomButton
                                 className="btn btn-primary btn-sm tooltip tooltip-left px-1"
-                                data-tip="Add Style"
-                                onClick={() => {
+                                tooltip="Add Style"
+                                onClickAction={() => {
                                   setIdsState(category._id.toString(), styleProcess._id.toString(), '', '', '');
                                   openModal('addStyle');
                                 }}
                               >
                                 <PlusCircleIcon className="h-6 w-6 text-primary-content" />
-                              </button>
-                              <button
+                              </CustomButton>
+                              <CustomButton
                                 className="btn btn-secondary btn-sm tooltip tooltip-left px-1"
-                                data-tip="Edit Process"
-                                onClick={() => {
+                                tooltip="Edit Process"
+                                onClickAction={() => {
                                   setIdsState(category._id.toString(), styleProcess._id.toString());
                                   openModal('editProcess');
                                 }}
                               >
                                 <PencilSquareIcon className="h-6 w-6 text-secondary-content" />
-                              </button>
+                              </CustomButton>
                               <button
                                 className="btn btn-error btn-sm tooltip tooltip-left px-1"
                                 data-tip="Delete Process"
@@ -145,10 +145,10 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
                               <div key={styleIndex} className="flex flex-row items-center justify-between">
                                 <p className="label label-text">{style.styleName}</p>
                                 <span className="mr-2 flex flex-row gap-1">
-                                  <button
+                                  <CustomButton
                                     className="btn btn-secondary btn-sm tooltip tooltip-left px-1"
-                                    data-tip="Edit Style"
-                                    onClick={() => {
+                                    tooltip="Edit Style"
+                                    onClickAction={() => {
                                       setIdsState(
                                         category._id.toString(),
                                         styleProcess._id.toString(),
@@ -158,7 +158,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
                                     }}
                                   >
                                     <PencilSquareIcon className="h-6 w-6 text-secondary-content" />
-                                  </button>
+                                  </CustomButton>
                                   <button
                                     className="btn btn-error btn-sm tooltip tooltip-left px-1"
                                     data-tip="Delete Style"
@@ -185,17 +185,17 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
                 <summary className="collapse-title text-xl font-medium">
                   <div className="flex flex-row items-center justify-between gap-2">
                     <p className="label-text w-max">Dimensions</p>
-                    <button
+                    <CustomButton
                       className="btn btn-primary btn-sm tooltip tooltip-left px-1 max-sm:p-2"
-                      data-tip="Add Dimension Type"
-                      onClick={() => {
+                      tooltip="Add Dimension Type"
+                      onClickAction={() => {
                         setIdsState(category._id.toString(), '', '', '', '');
                         openModal('addDimensionTypes');
                       }}
                     >
                       <PlusCircleIcon className="h-6 w-6 text-primary-content max-sm:hidden" />
                       <span className="hidden max-sm:flex">Add</span>
-                    </button>
+                    </CustomButton>
                   </div>
                 </summary>
                 <div className="collapse-content flex flex-col gap-1 bg-base-100 pt-2">
@@ -207,26 +207,26 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
                           <div className="flex flex-row items-center justify-between">
                             <p className="label label-text">{DimensionType.dimensionTypeName}</p>
                             <span className="mr-2 flex flex-row gap-1">
-                              <button
+                              <CustomButton
                                 className="btn btn-primary btn-sm tooltip tooltip-left px-1"
-                                data-tip="Add Dimension"
-                                onClick={() => {
+                                tooltip="Add Dimension"
+                                onClickAction={() => {
                                   setIdsState(category._id.toString(), '', '', DimensionType._id.toString(), '');
                                   openModal('addDimension');
                                 }}
                               >
                                 <PlusCircleIcon className="h-6 w-6 text-primary-content" />
-                              </button>
-                              <button
+                              </CustomButton>
+                              <CustomButton
                                 className="btn btn-secondary btn-sm tooltip tooltip-left px-1"
-                                data-tip="Edit Type"
-                                onClick={() => {
+                                tooltip="Edit Type"
+                                onClickAction={() => {
                                   setIdsState(category._id.toString(), '', '', DimensionType._id.toString());
                                   openModal('editDimensionType');
                                 }}
                               >
                                 <PencilSquareIcon className="h-6 w-6 text-secondary-content" />
-                              </button>
+                              </CustomButton>
                               <button
                                 className="btn btn-error btn-sm tooltip tooltip-left px-1"
                                 data-tip="Delete Type"
@@ -244,10 +244,10 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
                               <div key={dimensionIndex} className="flex flex-row items-center justify-between">
                                 <p className="label label-text">{dimension.dimensionName}</p>
                                 <span className="mr-2 flex flex-row gap-1">
-                                  <button
+                                  <CustomButton
                                     className="btn btn-secondary btn-sm tooltip tooltip-left px-1"
-                                    data-tip="Edit Dimension"
-                                    onClick={() => {
+                                    tooltip="Edit Dimension"
+                                    onClickAction={() => {
                                       setIdsState(
                                         category._id.toString(),
                                         '',
@@ -259,7 +259,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
                                     }}
                                   >
                                     <PencilSquareIcon className="h-6 w-6 text-secondary-content" />
-                                  </button>
+                                  </CustomButton>
                                   <button
                                     className="btn btn-error btn-sm tooltip tooltip-left px-1"
                                     data-tip="Delete Dimension"

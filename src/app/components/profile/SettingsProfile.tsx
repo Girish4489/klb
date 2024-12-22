@@ -9,10 +9,10 @@ import { formatD, formatDNT } from '@utils/format/dateUtils';
 import { ImageProcessor } from '@utils/image/imageUtils';
 import axios from 'axios';
 import Image from 'next/image';
-import React, { useCallback, useEffect, useState } from 'react';
+import { ChangeEvent, FC, FormEvent, JSX, useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
-const LoadingSkeleton = () => (
+const LoadingSkeleton = (): JSX.Element => (
   <div className="flex flex-col items-center gap-4">
     <div className="avatar placeholder">
       <div className="bg-neutral-focus w-24 rounded-full text-neutral-content">
@@ -22,7 +22,7 @@ const LoadingSkeleton = () => (
   </div>
 );
 
-const BadgeItem: React.FC<{ label: string; content: string | boolean; badgeClass?: string }> = ({
+const BadgeItem: FC<{ label: string; content: string | boolean; badgeClass?: string }> = ({
   label,
   content,
   badgeClass = 'badge-primary',
@@ -44,11 +44,11 @@ const getProfileImageSrc = (profileImage?: IUser['profileImage']): string => {
 
 export default function SettingsProfile({
   user,
-  updateUser,
+  updateUserAction,
 }: {
   user: IUser;
-  updateUser: (user: Partial<IUser>) => void;
-}) {
+  updateUserAction: (user: Partial<IUser>) => void;
+}): JSX.Element {
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [dates, setDates] = useState({
@@ -66,26 +66,26 @@ export default function SettingsProfile({
     setIsLoading(false);
   }, [user]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const target = e.target as HTMLInputElement & { files: FileList };
     setProfileImage(target.files?.[0] || null);
   };
 
-  const clearProfileImageInput = () => {
+  const clearProfileImageInput = (): void => {
     const profileImageInput = document.getElementById('profileImage') as HTMLInputElement | null;
     if (profileImageInput) {
       profileImageInput.value = '';
     }
   };
 
-  const myModel = (id: string) => {
+  const myModel = (id: string): void => {
     const element = document.getElementById(id) as HTMLDialogElement | null;
     if (element) {
       element.showModal();
     }
   };
 
-  const handleImageUpload = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleImageUpload = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     if (!profileImage) return;
 
@@ -100,7 +100,7 @@ export default function SettingsProfile({
       const { data } = await axios.post('/api/dashboard/settings', formData);
       if (!data.success) throw new Error(data.message);
 
-      updateUser({ profileImage: data.profileImage });
+      updateUserAction({ profileImage: data.profileImage });
       toast.success(data.message);
 
       setProfileImage(null);
@@ -112,7 +112,7 @@ export default function SettingsProfile({
     }
   };
 
-  const removeProfilePhoto = async () => {
+  const removeProfilePhoto = async (): Promise<void> => {
     try {
       const confirmed = await userConfirmation({
         header: 'Remove Profile Photo',
@@ -124,7 +124,7 @@ export default function SettingsProfile({
       const res = await axios.delete('/api/dashboard/settings');
       if (!res.data.success) throw new Error(res.data.message);
 
-      updateUser({ profileImage: res.data.profileImage });
+      updateUserAction({ profileImage: res.data.profileImage });
       toast.success(res.data.message);
     } catch (error) {
       handleError.toastAndLog(error);

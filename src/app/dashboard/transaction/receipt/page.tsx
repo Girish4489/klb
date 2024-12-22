@@ -12,7 +12,7 @@ import handleError from '@utils/error/handleError';
 import { ApiGet, ApiPost } from '@utils/makeApiRequest/makeApiRequest';
 import { getParamsFromQueryString, updateSearchParams } from '@utils/url/urlUtils';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { JSX, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
 interface AmtTrack {
@@ -24,7 +24,7 @@ interface AmtTrack {
   taxAmount: number; // Add this field
 }
 
-export default function ReceiptPage() {
+export default function ReceiptPage(): JSX.Element {
   const [searchBill, setSearchBill] = useState<IBill[] | undefined>(undefined);
   const [receipt, setReceipt] = useState<IReceipt>();
   const [recentReceipt, setRecentReceipt] = useState<IReceipt[] | undefined>(undefined);
@@ -45,7 +45,7 @@ export default function ReceiptPage() {
   const [loading, setLoading] = React.useState<boolean>(true);
 
   // helper function to set amount tracking
-  const setAmountTrack = async (bill: IBill) => {
+  const setAmountTrack = async (bill: IBill): Promise<void> => {
     const response = await ApiGet.Receipt.ReceiptSearch(bill.billNumber, 'bill');
     const receipts = response.receipt || [];
     const totalPaidAmount = receipts.reduce((sum: number, receipt: IReceipt) => sum + receipt.amount, 0);
@@ -65,7 +65,7 @@ export default function ReceiptPage() {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async (): Promise<void> => {
       try {
         await fetchAllInitialData(setTax, setRecentReceipt);
       } catch (error) {
@@ -80,7 +80,7 @@ export default function ReceiptPage() {
   useEffect(() => {
     const { receiptNumber } = getParamsFromQueryString(window.location.search);
     if (receiptNumber) {
-      const fetchReceipt = async (receiptNumber: number) => {
+      const fetchReceipt = async (receiptNumber: number): Promise<void> => {
         try {
           const res = await ApiGet.Receipt.ReceiptSearch(receiptNumber, 'receipt');
           if (res.success && res.receipt.length > 0) {
@@ -117,7 +117,7 @@ export default function ReceiptPage() {
 
   useEffect(() => {
     if (headerBarcode) {
-      const fetchBillAndReceipt = async () => {
+      const fetchBillAndReceipt = async (): Promise<void> => {
         try {
           const { billNumber, receiptNumber } = getParamsFromQueryString(headerBarcode);
           if (billNumber || receiptNumber) {
@@ -195,7 +195,7 @@ export default function ReceiptPage() {
 
   useEffect(() => {
     if (tableBarcode) {
-      const fetchBillAndReceipt = async () => {
+      const fetchBillAndReceipt = async (): Promise<void> => {
         try {
           const { billNumber, receiptNumber } = getParamsFromQueryString(tableBarcode);
           if (billNumber || receiptNumber) {
@@ -226,7 +226,7 @@ export default function ReceiptPage() {
   }
 
   // Helper function to reset amount tracking
-  const resetAmtTrack = () => {
+  const resetAmtTrack = (): void => {
     setAmtTrack({ total: 0, grand: 0, discount: 0, paid: 0, due: 0, taxAmount: 0 }); // Add this field
   };
 
@@ -264,7 +264,7 @@ export default function ReceiptPage() {
     }
   };
 
-  const billSearch = async (event: React.FormEvent<HTMLFormElement>) => {
+  const billSearch = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
     try {
       const inputValue = parseInt((event.target as HTMLFormElement).billSearch.value);
@@ -283,7 +283,7 @@ export default function ReceiptPage() {
     }
   };
 
-  const receiptSearch = async (inputValue: number, typeReceiptOrBillOrMobile: string) => {
+  const receiptSearch = async (inputValue: number, typeReceiptOrBillOrMobile: string): Promise<void> => {
     try {
       const res = await ApiGet.Receipt.ReceiptSearch(inputValue, typeReceiptOrBillOrMobile);
 
@@ -298,7 +298,7 @@ export default function ReceiptPage() {
     }
   };
 
-  const handleReceiptSearch = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleReceiptSearch = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
     try {
       const inputValue = parseInt((event.target as HTMLFormElement).receiptSearch.value);
@@ -309,7 +309,7 @@ export default function ReceiptPage() {
     }
   };
 
-  const saveReceipt = async () => {
+  const saveReceipt = async (): Promise<void> => {
     try {
       if (!receipt) throw new Error('Receipt is undefined');
 
@@ -329,7 +329,7 @@ export default function ReceiptPage() {
     }
   };
 
-  const createNewReceipt = async () => {
+  const createNewReceipt = async (): Promise<void> => {
     setSearchBill(undefined);
     const lastReceipt = await ApiGet.Receipt.LastReceipt();
     setReceipt({
@@ -347,7 +347,7 @@ export default function ReceiptPage() {
     } as IReceipt);
   };
 
-  const searchRowClicked = (billId: string) => async () => {
+  const searchRowClicked = (billId: string) => async (): Promise<void> => {
     try {
       const selectedBill = searchBill?.find((bill) => bill._id.toString() === billId);
       if (selectedBill) {

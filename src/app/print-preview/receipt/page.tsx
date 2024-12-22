@@ -28,7 +28,7 @@ const ReceiptPage: React.FC = () => {
   const type: string = 'Receipt';
 
   useEffect(() => {
-    async function fetchData() {
+    async function fetchData(): Promise<void> {
       const receiptNumberToHighlight = parseInt(getSearchParam('receiptNumber') || '0', 10);
       setReceiptNumberToHighlight(receiptNumberToHighlight);
       const billNumber = parseInt(getSearchParam('billNumber') || '0', 10);

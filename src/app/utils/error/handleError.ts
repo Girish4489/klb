@@ -37,7 +37,7 @@ const throwError = (error: unknown): never => {
  * @param success - A boolean indicating whether the operation was successful. Defaults to `false`.
  * @returns A JSON response containing the error message and the success status.
  */
-const handleApiError = (error: unknown, success: boolean = false) => {
+const handleApiError = (error: unknown, success: boolean = false): NextResponse => {
   if (error instanceof Error && error.message) {
     return NextResponse.json({ message: error.message, success: success });
   } else {

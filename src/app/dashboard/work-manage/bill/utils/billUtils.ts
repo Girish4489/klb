@@ -3,12 +3,13 @@ import handleError from '@utils/error/handleError';
 import { ApiGet } from '@utils/makeApiRequest/makeApiRequest';
 import { setSearchParam } from '@utils/url/urlUtils';
 import { Types } from 'mongoose';
+import { Dispatch, FormEvent, SetStateAction } from 'react';
 
 export async function fetchInitialData(
-  setCategory: React.Dispatch<React.SetStateAction<ICategory[]>>,
-  setTodayBill: React.Dispatch<React.SetStateAction<IBill[]>>,
-  setThisWeekBill: React.Dispatch<React.SetStateAction<IBill[]>>,
-) {
+  setCategory: Dispatch<SetStateAction<ICategory[]>>,
+  setTodayBill: Dispatch<SetStateAction<IBill[]>>,
+  setThisWeekBill: Dispatch<SetStateAction<IBill[]>>,
+): Promise<void> {
   try {
     const [catResponse, billResponse] = await Promise.all([ApiGet.Category(), ApiGet.Bill.BillToday()]);
 
@@ -29,7 +30,7 @@ export async function fetchInitialData(
   }
 }
 
-export async function validateBill(bill: IBill | undefined) {
+export async function validateBill(bill: IBill | undefined): Promise<void> {
   if (!bill) throw new Error('No bill data found');
   if (!bill.billNumber) throw new Error('Bill number is required');
   if (!bill.order || bill.order.length === 0) throw new Error('No orders added');
@@ -49,7 +50,7 @@ export async function validateBill(bill: IBill | undefined) {
   }
 }
 
-export function checkOrderInUrl(orderNumber: string) {
+export function checkOrderInUrl(orderNumber: string): void {
   const orderElement = document.getElementById(`order_${orderNumber}`);
   if (orderElement) {
     orderElement.scrollIntoView({ behavior: 'smooth' });
@@ -61,17 +62,17 @@ export function checkOrderInUrl(orderNumber: string) {
   }
 }
 
-export function clearBill(setBill: React.Dispatch<React.SetStateAction<IBill | undefined>>) {
+export function clearBill(setBill: Dispatch<SetStateAction<IBill | undefined>>): void {
   setBill(undefined);
   setSearchParam('billNumber', '');
   setSearchParam('orderNumber', '');
 }
 
 export async function billSearch(
-  event: React.FormEvent<HTMLFormElement>,
-  setBill: React.Dispatch<React.SetStateAction<IBill | undefined>>,
-  setSearchBill: React.Dispatch<React.SetStateAction<IBill[] | undefined>>,
-) {
+  event: FormEvent<HTMLFormElement>,
+  setBill: Dispatch<SetStateAction<IBill | undefined>>,
+  setSearchBill: Dispatch<SetStateAction<IBill[] | undefined>>,
+): Promise<void> {
   event.preventDefault();
   try {
     setBill(undefined);
@@ -95,12 +96,12 @@ export const searchRowClicked =
   (
     billId: string,
     searchBill: IBill[] | undefined,
-    setBill: React.Dispatch<React.SetStateAction<IBill | undefined>>,
-    setSearchBill: React.Dispatch<React.SetStateAction<IBill[] | undefined>>,
+    setBill: Dispatch<SetStateAction<IBill | undefined>>,
+    setSearchBill: Dispatch<SetStateAction<IBill[] | undefined>>,
     updateUrlWithBillNumber: (billNumber: string) => void,
-    setNewBill: React.Dispatch<React.SetStateAction<boolean>>,
+    setNewBill: Dispatch<SetStateAction<boolean>>,
   ) =>
-  async () => {
+  async (): Promise<void> => {
     try {
       const selectedBill = (searchBill ?? []).find((bill) => bill._id.toString() === billId);
       if (selectedBill) {
@@ -116,15 +117,15 @@ export const searchRowClicked =
     }
   };
 
-export const updateUrlWithBillNumber = (billNumber: string) => {
+export const updateUrlWithBillNumber = (billNumber: string): void => {
   setSearchParam('billNumber', billNumber);
 };
 
 export const handleColorSelect = async (
   color: IColor,
   orderIndex: number,
-  setBill: React.Dispatch<React.SetStateAction<IBill | undefined>>,
-) => {
+  setBill: Dispatch<SetStateAction<IBill | undefined>>,
+): Promise<void> => {
   await setBill((prevBill) => {
     if (!prevBill) return prevBill;
 
@@ -145,9 +146,9 @@ export const handleColorSelect = async (
 };
 
 export const handleSearch = async (
-  event: React.FormEvent<HTMLFormElement>,
+  event: FormEvent<HTMLFormElement>,
   setSearchBill: (bills: IBill[] | undefined) => void,
-) => {
+): Promise<void> => {
   event.preventDefault();
   try {
     const inputValue: number = (event.target as HTMLFormElement).billSearch.value;
@@ -166,7 +167,7 @@ export const handleSearch = async (
   }
 };
 
-export const calculateTotalAmount = (orders: IBill['order']) => {
+export const calculateTotalAmount = (orders: IBill['order']): number => {
   return orders?.reduce((total, item) => total + (item.amount || 0), 0) || 0;
 };
 
@@ -174,8 +175,8 @@ export const updateOrderAmount = (
   bill: IBill | undefined,
   orderIndex: number,
   amount: number,
-  setBill: React.Dispatch<React.SetStateAction<IBill | undefined>>,
-) => {
+  setBill: Dispatch<SetStateAction<IBill | undefined>>,
+): void => {
   if (!bill) return;
   const updatedOrder = bill.order.map((o, i) => (i === orderIndex ? { ...o, amount } : o));
   setBill({

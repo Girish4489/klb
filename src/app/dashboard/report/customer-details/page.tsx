@@ -20,7 +20,7 @@ interface ICustomerTableRow extends TableRow {
   actions?: JSX.Element;
 }
 
-export default function CustomerDetails() {
+export default function CustomerDetails(): JSX.Element {
   const [customer, setCustomer] = useState<ICustomer[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchType, setSearchType] = useState<'date' | 'mobile'>('date');
@@ -41,7 +41,7 @@ export default function CustomerDetails() {
     { header: 'Actions', field: 'actions', selected: false, isAction: true },
   ]);
 
-  const handleFilter = async () => {
+  const handleFilter = async (): Promise<void> => {
     setLoading(true);
     try {
       if (searchType === 'date' && (!fromDate || !toDate)) {
@@ -83,7 +83,7 @@ export default function CustomerDetails() {
     }
   };
 
-  const handlePageChange = async (page: number) => {
+  const handlePageChange = async (page: number): Promise<void> => {
     if (page < 1 || page > totalPages || page === currentPage) return;
     setCurrentPage(page);
     setLoading(true);
@@ -119,7 +119,7 @@ export default function CustomerDetails() {
 
   const [editCustomer, setEditCustomer] = useState<ICustomer>();
 
-  const handleEditModal = async (customerId: string) => {
+  const handleEditModal = async (customerId: string): Promise<void> => {
     // Implement your edit logic here
     setEditCustomer(customer.find((customer) => customer._id.toString() === customerId));
     const element = document.getElementById('CustomerEditModal') as HTMLDialogElement | null;
@@ -128,7 +128,7 @@ export default function CustomerDetails() {
     }
   };
 
-  const handleEditCustomer = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleEditCustomer = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     const updateCustomer = async () => {
       if (!editCustomer) throw new Error('Customer not found');
@@ -179,7 +179,7 @@ export default function CustomerDetails() {
     return;
   };
 
-  const handleDelete = async (customerId: string) => {
+  const handleDelete = async (customerId: string): Promise<void> => {
     const confirmation = await userConfirmation({
       header: 'Delete Confirmation',
       message: 'Are you sure you want to delete this customer?',
@@ -217,9 +217,9 @@ export default function CustomerDetails() {
     return;
   };
 
-  const handleExport = async (format: 'csv' | 'pdf') => {
+  const handleExport = async (format: 'csv' | 'pdf'): Promise<void> => {
     toast.promise(
-      (async () => {
+      (async (): Promise<string> => {
         const allCustomers = await fetchAllData.customers();
         const exportData = prepareCustomerExportData(allCustomers);
         if (format === 'csv') {

@@ -30,9 +30,11 @@ export async function GET(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   try {
     const reqBody = await req.json();
-    const { _id, ...updateData } = reqBody;
+    const updateData = { ...reqBody };
+    delete updateData._id;
+
     const updatedCompany = await Company.findByIdAndUpdate(
-      _id,
+      reqBody._id,
       { ...updateData, updatedAt: new Date() },
       { new: true },
     );

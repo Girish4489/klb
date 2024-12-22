@@ -1,7 +1,7 @@
 'use client';
 import colors, { basicColors } from '@data/colors';
 import { IColor } from '@models/klm';
-import React, { useEffect, useState } from 'react';
+import React, { JSX, useEffect, useState } from 'react';
 
 interface ColorPickerButtonProps {
   onColorSelect: (color: IColor) => void;
@@ -29,25 +29,25 @@ function ColorPickerButton({
   selectedColor: initialSelectedColor,
   labelHtmlFor,
   inputId,
-}: ColorPickerButtonProps) {
+}: ColorPickerButtonProps): JSX.Element {
   const [selectedColor, setSelectedColor] = useState<IColor | null>(initialSelectedColor || null);
 
   useEffect(() => {
     setSelectedColor(initialSelectedColor || null);
   }, [initialSelectedColor]);
 
-  const handleButtonClick = () => {
+  const handleButtonClick = (): void => {
     const modal = document.getElementById(modalId) as HTMLDialogElement;
     if (modal) {
       modal.showModal();
     }
   };
 
-  const handleColorPickerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleColorPickerChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setSelectedColor({ type: 'Custom', name: 'Custom', hex: event.target.value });
   };
 
-  const handleColorSelect = (color: IColor) => {
+  const handleColorSelect = (color: IColor): void => {
     setSelectedColor(color);
     onColorSelect(color);
     const modal = document.getElementById(modalId) as HTMLDialogElement;

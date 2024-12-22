@@ -22,14 +22,14 @@ interface ReportTableProps {
   onAction?: (action: string, id: string) => void;
 }
 
-export function ReportTable({ data, columns, caption, loading, onColumnSelectChange }: ReportTableProps) {
+export function ReportTable({ data, columns, caption, loading, onColumnSelectChange }: ReportTableProps): JSX.Element {
   const [selectedColumns, setSelectedColumns] = useState(columns);
 
   useEffect(() => {
     setSelectedColumns(columns.map((col) => ({ ...col, selected: true })));
   }, [columns]);
 
-  const handleColumnToggle = (index: number) => {
+  const handleColumnToggle = (index: number): void => {
     const updated = selectedColumns.map((col, i) => (i === index ? { ...col, selected: !col.selected } : col));
     setSelectedColumns(updated);
     onColumnSelectChange?.(updated);

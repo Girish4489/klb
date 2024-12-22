@@ -4,9 +4,9 @@ import { homeMetadata } from '@utils/metadata';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { JSX, useEffect } from 'react';
 
-export default function Home() {
+export default function Home(): JSX.Element {
   const router = useRouter();
   useEffect(() => {
     router.push(constants.LANDING_PUBLIC_HOME_PAGE);

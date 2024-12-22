@@ -10,17 +10,17 @@ import handleError from '@utils/error/handleError';
 import { ApiGet } from '@utils/makeApiRequest/makeApiRequest';
 import { getSearchParam, setSearchParam } from '@utils/url/urlUtils';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
-const LabellingPage: React.FC = () => {
+const LabellingPage: FC = () => {
   const [searchBill, setSearchBill] = useState<IBill[] | undefined>(undefined);
   const [bill, setBill] = useState<IBill | undefined>(undefined);
   const [selectedOrders, setSelectedOrders] = useState<number[]>([]);
-  const [barcode, setBarcode] = React.useState<string>('');
+  const [barcode, setBarcode] = useState<string>('');
   const router = useRouter();
 
-  function checkOrderInUrl(orderNumber: string) {
+  function checkOrderInUrl(orderNumber: string): void {
     const orderElement = document.getElementById(`order_${orderNumber}`);
     if (orderElement) {
       orderElement.scrollIntoView({ behavior: 'smooth' });
@@ -36,7 +36,7 @@ const LabellingPage: React.FC = () => {
     const billNumber = getSearchParam('billNumber');
     const orderNumber = getSearchParam('orderNumber');
     if (billNumber) {
-      (async () => {
+      (async (): Promise<void> => {
         try {
           const res = await ApiGet.Bill.BillSearch(parseInt(billNumber), 'bill');
           if (res.success && res.bill.length > 0) {
@@ -64,7 +64,7 @@ const LabellingPage: React.FC = () => {
       return;
     }
 
-    (async () => {
+    (async (): Promise<void> => {
       try {
         if (billNumber === bill?.billNumber?.toString()) {
           toast.success('Bill already loaded');
@@ -86,7 +86,7 @@ const LabellingPage: React.FC = () => {
     })();
   }, [barcode]);
 
-  const handleOrderSelect = (orderIndex: number) => {
+  const handleOrderSelect = (orderIndex: number): void => {
     setSelectedOrders((prevSelected) =>
       prevSelected.includes(orderIndex)
         ? prevSelected.filter((index) => index !== orderIndex)
@@ -94,7 +94,7 @@ const LabellingPage: React.FC = () => {
     );
   };
 
-  const handleSelectAll = () => {
+  const handleSelectAll = (): void => {
     if (bill) {
       if (selectedOrders.length === bill.order.length) {
         setSelectedOrders([]);
@@ -105,7 +105,7 @@ const LabellingPage: React.FC = () => {
     }
   };
 
-  const handlePrintPreview = () => {
+  const handlePrintPreview = (): void => {
     if (!selectedOrders.length) {
       handleError.toast(new Error('No orders selected'));
       return;
@@ -118,11 +118,11 @@ const LabellingPage: React.FC = () => {
     }
   };
 
-  const updateUrlWithBillNumber = (billNumber: string) => {
+  const updateUrlWithBillNumber = (billNumber: string): void => {
     setSearchParam('billNumber', billNumber);
   };
 
-  const handleRowClick = (billId: string) => async () => {
+  const handleRowClick = (billId: string) => async (): Promise<void> => {
     try {
       const selectedBill = (searchBill ?? []).find((bill) => bill._id.toString() === billId);
       if (selectedBill) {
@@ -137,7 +137,7 @@ const LabellingPage: React.FC = () => {
     }
   };
 
-  const clearBill = () => {
+  const clearBill = (): void => {
     setBill(undefined);
     setSearchParam('billNumber', '');
     setSearchParam('orderNumber', '');

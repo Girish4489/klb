@@ -3,7 +3,7 @@ import { FunnelIcon as FunnelIconOutline } from '@heroicons/react/24/outline';
 import { ArrowDownCircleIcon, ArrowUpCircleIcon, FunnelIcon } from '@heroicons/react/24/solid';
 import { formatDSNT } from '@utils/format/dateUtils';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { JSX, useEffect, useState } from 'react';
 
 interface Bill {
   _id: string;
@@ -20,7 +20,7 @@ interface DueDateTableProps {
   refresh: boolean;
 }
 
-const DueDateTable = ({ refresh }: DueDateTableProps) => {
+const DueDateTable = ({ refresh }: DueDateTableProps): JSX.Element => {
   const [dueDateBills, setDueDateBills] = useState<Bill[]>([]); // Initialize as an empty array
   const [error, setError] = useState<string | null>(null);
   const [sortConfig, setSortConfig] = useState<{ key: keyof Bill; direction: 'ascending' | 'descending' }>({
@@ -33,7 +33,7 @@ const DueDateTable = ({ refresh }: DueDateTableProps) => {
   const billsPerPage = 15;
   const [activeIcon, setActiveIcon] = useState<keyof Bill>('dueDate'); // Set default active icon
 
-  const toggleToleranceInput = (event: React.MouseEvent) => {
+  const toggleToleranceInput = (event: React.MouseEvent): void => {
     event.stopPropagation();
     setShowToleranceInput(!showToleranceInput);
   };
@@ -47,7 +47,7 @@ const DueDateTable = ({ refresh }: DueDateTableProps) => {
     // Handle different column types
     switch (key) {
       case 'dueDate':
-      case 'date':
+      case 'date': {
         // Date comparison with tolerance for dueDate
         const dateA = new Date(a[key]);
         const dateB = new Date(b[key]);
@@ -57,6 +57,7 @@ const DueDateTable = ({ refresh }: DueDateTableProps) => {
         }
         comparison = dateA.getTime() - dateB.getTime();
         break;
+      }
 
       case 'billNumber':
       case 'totalAmount':
@@ -78,7 +79,7 @@ const DueDateTable = ({ refresh }: DueDateTableProps) => {
     return direction === 'ascending' ? comparison : -comparison;
   });
 
-  const handleHeaderClick = (key: keyof Bill) => {
+  const handleHeaderClick = (key: keyof Bill): void => {
     // When switching to a new column, set its initial sort direction to descending
     if (activeIcon !== key) {
       setActiveIcon(key);
@@ -86,14 +87,14 @@ const DueDateTable = ({ refresh }: DueDateTableProps) => {
     }
   };
 
-  const handleSortIconClick = (event: React.MouseEvent, key: keyof Bill) => {
+  const handleSortIconClick = (event: React.MouseEvent, key: keyof Bill): void => {
     event.stopPropagation();
     // Toggle direction only if we're clicking the same column
     const direction = sortConfig.key === key && sortConfig.direction === 'descending' ? 'ascending' : 'descending';
     setSortConfig({ key, direction });
   };
 
-  const getSortIcon = (key: keyof Bill) => {
+  const getSortIcon = (key: keyof Bill): JSX.Element | null => {
     if (activeIcon !== key) return null;
 
     return (
@@ -113,7 +114,7 @@ const DueDateTable = ({ refresh }: DueDateTableProps) => {
     );
   };
 
-  const handleToleranceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleToleranceChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setTolerance(Number(event.target.value));
   };
 
@@ -128,9 +129,9 @@ const DueDateTable = ({ refresh }: DueDateTableProps) => {
   const indexOfFirstBill = indexOfLastBill - billsPerPage;
   const currentBills = filteredBills.slice(indexOfFirstBill, indexOfLastBill);
 
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+  const paginate = (pageNumber: number): void => setCurrentPage(pageNumber);
 
-  const fetchDueDateBills = async () => {
+  const fetchDueDateBills = async (): Promise<void> => {
     try {
       const response = await axios.get(`/api/dashboard/stats/dueDateBills?page=${currentPage}&limit=${billsPerPage}`);
       setDueDateBills(response.data.dueDateBills);

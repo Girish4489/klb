@@ -29,22 +29,22 @@ import { userConfirmation } from '@utils/confirmation/confirmationUtil';
 import handleError from '@utils/error/handleError';
 import { ApiGet, ApiPost, ApiPut } from '@utils/makeApiRequest/makeApiRequest';
 import { getSearchParam } from '@utils/url/urlUtils';
-import React, { useEffect, useMemo } from 'react';
+import React, { JSX, useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 
-export default function BillPage() {
-  const [loading, setLoading] = React.useState<boolean>(true);
-  const [category, setCategory] = React.useState<ICategory[] | []>([]);
-  const [bill, setBill] = React.useState<IBill>();
-  const [todayBill, setTodayBill] = React.useState<IBill[]>([]);
-  const [thisWeekBill, setThisWeekBill] = React.useState<IBill[]>([]);
-  const [searchBill, setSearchBill] = React.useState<IBill[] | undefined>(undefined);
-  const [newBill, setNewBill] = React.useState<boolean>(true);
-  const [barcode, setBarcode] = React.useState<string>('');
-  const [printType, setPrintType] = React.useState<string>('customer');
+export default function BillPage(): JSX.Element {
+  const [loading, setLoading] = useState<boolean>(true);
+  const [category, setCategory] = useState<ICategory[] | []>([]);
+  const [bill, setBill] = useState<IBill>();
+  const [todayBill, setTodayBill] = useState<IBill[]>([]);
+  const [thisWeekBill, setThisWeekBill] = useState<IBill[]>([]);
+  const [searchBill, setSearchBill] = useState<IBill[] | undefined>(undefined);
+  const [newBill, setNewBill] = useState<boolean>(true);
+  const [barcode, setBarcode] = useState<string>('');
+  const [printType, setPrintType] = useState<string>('customer');
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async (): Promise<void> => {
       await fetchInitialData(setCategory, setTodayBill, setThisWeekBill);
       setLoading(false);
     };
@@ -56,7 +56,7 @@ export default function BillPage() {
     const orderNumber = getSearchParam('orderNumber');
 
     if (billNumber) {
-      (async () => {
+      (async (): Promise<void> => {
         try {
           const res = await ApiGet.Bill.BillSearch(parseInt(billNumber), 'bill');
           if (res.success && res.bill.length > 0) {
@@ -85,7 +85,7 @@ export default function BillPage() {
       return;
     }
 
-    (async () => {
+    (async (): Promise<void> => {
       try {
         if (billNumber === bill?.billNumber?.toString()) {
           toast.success('Bill already loaded');
@@ -115,7 +115,7 @@ export default function BillPage() {
     return <LoadingSpinner />;
   }
 
-  async function createNewBill() {
+  async function createNewBill(): Promise<void> {
     setNewBill(true);
     setSearchBill(undefined);
     setBill(undefined);
@@ -123,7 +123,7 @@ export default function BillPage() {
     setBill(createInitialBill(lastBill?.lastBill?.billNumber ?? 0) as IBill);
   }
 
-  const handleNewOrder = () => {
+  const handleNewOrder = (): void => {
     setBill(
       (prevBill) =>
         ({
@@ -140,7 +140,7 @@ export default function BillPage() {
     orderIndex: number,
     dimIndex: number,
     dimLength: number,
-  ) {
+  ): Promise<void> {
     setBill((prevBill) => {
       if (!prevBill) return prevBill;
 
@@ -180,7 +180,7 @@ export default function BillPage() {
     orderIndex: number,
     styleProcessIndex: number,
     styleProcessLength: number,
-  ) {
+  ): Promise<void> {
     setBill((prevBill) => {
       if (!prevBill) return prevBill;
 
@@ -237,7 +237,7 @@ export default function BillPage() {
     };
   }
 
-  async function handleSaveBill() {
+  async function handleSaveBill(): Promise<void> {
     try {
       if (!bill) throw new Error('Bill data is undefined');
 
@@ -278,7 +278,7 @@ export default function BillPage() {
     }
   }
 
-  async function handleUpdateBill() {
+  async function handleUpdateBill(): Promise<void> {
     const update = await userConfirmation({
       header: 'Confirm Update',
       message: 'Are you sure you want to update this bill?',

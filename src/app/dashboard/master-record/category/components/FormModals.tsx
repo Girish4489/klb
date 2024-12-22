@@ -31,18 +31,20 @@ export const FormModals: React.FC<FormModalsProps> = ({
       <FormModal
         id="editCategory"
         title="Edit Category"
-        onSubmit={(formData) => EditCategory(formData as { category: string; description: string })}
+        onSubmitAction={(formData: Record<string, string>) =>
+          EditCategory(formData as { category: string; description: string })
+        }
         buttonName="Edit"
         fields={[
           { label: 'Category', name: 'category', type: 'text', required: true, placeholder: 'Category Name' },
           { label: 'Description', name: 'description', type: 'text', placeholder: 'Description Name' },
         ]}
-        onClose={() => {}}
+        onCloseAction={() => {}}
       />
       <FormModal
         id="addProcess"
         title="Add Process"
-        onSubmit={(formData) => AddProcess(formData as { styleProcess: string })}
+        onSubmitAction={(formData: Record<string, string>) => AddProcess(formData as { styleProcess: string })}
         buttonName="Add"
         fields={[
           {
@@ -53,12 +55,12 @@ export const FormModals: React.FC<FormModalsProps> = ({
             placeholder: 'Style Process',
           },
         ]}
-        onClose={() => {}}
+        onCloseAction={() => {}}
       />
       <FormModal
         id="editProcess"
         title="Edit Process"
-        onSubmit={(formData) => EditProcess(formData as { processName: string })}
+        onSubmitAction={(formData: Record<string, string>) => EditProcess(formData as { processName: string })}
         buttonName="Edit"
         fields={[
           {
@@ -69,12 +71,12 @@ export const FormModals: React.FC<FormModalsProps> = ({
             placeholder: 'Style Process',
           },
         ]}
-        onClose={() => {}}
+        onCloseAction={() => {}}
       />
       <FormModal
         id="addStyle"
         title="Add Style"
-        onSubmit={(formData) => AddStyle(formData as { catStyle: string })}
+        onSubmitAction={(formData: Record<string, string>) => AddStyle(formData as { catStyle: string })}
         buttonName="Add"
         fields={[
           {
@@ -85,12 +87,12 @@ export const FormModals: React.FC<FormModalsProps> = ({
             placeholder: 'Style',
           },
         ]}
-        onClose={() => {}}
+        onCloseAction={() => {}}
       />
       <FormModal
         id="editStyle"
         title="Edit Style"
-        onSubmit={(formData) => EditStyles({ styleName: formData.styleName })}
+        onSubmitAction={(formData: Record<string, string>) => EditStyles({ styleName: formData.styleName })}
         buttonName="Edit"
         fields={[
           {
@@ -101,12 +103,14 @@ export const FormModals: React.FC<FormModalsProps> = ({
             placeholder: 'Style',
           },
         ]}
-        onClose={() => {}}
+        onCloseAction={() => {}}
       />
       <FormModal
         id="addDimensionTypes"
         title="Add Dimension Type"
-        onSubmit={(formData) => addDimensionTypes({ dimensionType: formData.dimensionType })}
+        onSubmitAction={(formData: Record<string, string>) =>
+          addDimensionTypes({ dimensionType: formData.dimensionType })
+        }
         buttonName="Add"
         fields={[
           {
@@ -117,12 +121,14 @@ export const FormModals: React.FC<FormModalsProps> = ({
             placeholder: 'Dimension Type',
           },
         ]}
-        onClose={() => {}}
+        onCloseAction={() => {}}
       />
       <FormModal
         id="editDimensionType"
         title="Edit Dimension Type"
-        onSubmit={(formData) => EditDimensionType({ dimensionTypeName: formData.dimensionTypeName })}
+        onSubmitAction={(formData: Record<string, string>) =>
+          EditDimensionType({ dimensionTypeName: formData.dimensionTypeName })
+        }
         buttonName="Edit"
         fields={[
           {
@@ -133,12 +139,12 @@ export const FormModals: React.FC<FormModalsProps> = ({
             placeholder: 'Dimension Type',
           },
         ]}
-        onClose={() => {}}
+        onCloseAction={() => {}}
       />
       <FormModal
         id="addDimension"
         title="Add Dimension"
-        onSubmit={(formData) => AddDimension({ dimension: formData.dimension })}
+        onSubmitAction={(formData: Record<string, string>) => AddDimension({ dimension: formData.dimension })}
         buttonName="Add"
         fields={[
           {
@@ -149,12 +155,12 @@ export const FormModals: React.FC<FormModalsProps> = ({
             placeholder: 'Dimension',
           },
         ]}
-        onClose={() => {}}
+        onCloseAction={() => {}}
       />
       <FormModal
         id="editDimension"
         title="Edit Dimension"
-        onSubmit={(formData) => EditDimension({ dimension: formData.dimension })}
+        onSubmitAction={(formData: Record<string, string>) => EditDimension({ dimension: formData.dimension })}
         buttonName="Edit"
         fields={[
           {
@@ -165,18 +171,20 @@ export const FormModals: React.FC<FormModalsProps> = ({
             placeholder: 'Dimension',
           },
         ]}
-        onClose={() => {}}
+        onCloseAction={() => {}}
       />
       <FormModal
         id="addCategory"
         title="Add Category"
-        onSubmit={(formData) => AddCategory({ category: formData.category, description: formData.description })}
+        onSubmitAction={(formData: Record<string, string>) =>
+          AddCategory({ category: formData.category, description: formData.description })
+        }
         buttonName="Add"
         fields={[
           { label: 'Category', name: 'category', type: 'text', required: true, placeholder: 'Category Name' },
           { label: 'Description', name: 'description', type: 'text', placeholder: 'Category Description' },
         ]}
-        onClose={() => {}}
+        onCloseAction={() => {}}
       />
     </span>
   );

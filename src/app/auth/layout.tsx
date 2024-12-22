@@ -1,8 +1,8 @@
 'use client';
 import { Navbar } from '@components/Navbar';
-import { useEffect } from 'react';
+import { JSX, useEffect } from 'react';
 
-export default function AuthLayout({ children }: { children: React.ReactNode }) {
+export default function AuthLayout({ children }: { children: React.ReactNode }): JSX.Element {
   useEffect(() => {
     document.title = 'Auth | Kalamandir';
   }, []);

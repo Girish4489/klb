@@ -4,7 +4,7 @@ import { useCompany } from '@context/companyContext';
 import { useAuth } from '@context/userContext';
 import { logoutUtils } from '@utils/auth/logoutUtils';
 import { useRouter } from 'next/navigation';
-import { ComponentPropsWithoutRef } from 'react';
+import { ComponentPropsWithoutRef, JSX } from 'react';
 
 interface LogoutButtonProps extends ComponentPropsWithoutRef<'button'> {
   variant?: 'default' | 'error' | 'ghost' | 'link';
@@ -16,12 +16,12 @@ export default function LogoutButton({
   children = 'Logout',
   className = '',
   ...props
-}: LogoutButtonProps) {
+}: LogoutButtonProps): JSX.Element {
   const router = useRouter();
   const { setAuthenticated } = useAuth();
   const { setCompany } = useCompany();
 
-  const handleLogout = () => {
+  const handleLogout = (): void => {
     logoutUtils.logout({
       onLogoutSuccess: () => {
         setAuthenticated(false);

@@ -1,6 +1,7 @@
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { IBill } from '@models/klm';
 import { formatDS } from '@utils/format/dateUtils';
+import { Route } from 'next';
 import Link from 'next/link';
 import React from 'react';
 
@@ -55,7 +56,7 @@ const BillDetailsDropdownClear: React.FC<{
             </div>
           </div>
           {linkDisabled && (
-            <Link href={link} className="btn btn-success btn-sm">
+            <Link href={link as Route} className="btn btn-success btn-sm">
               Show Bill Details
             </Link>
           )}

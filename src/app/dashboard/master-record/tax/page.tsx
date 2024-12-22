@@ -5,7 +5,7 @@ import { ITax } from '@models/klm';
 import { userConfirmation } from '@utils/confirmation/confirmationUtil';
 import handleError from '@utils/error/handleError';
 import { ApiDelete, ApiGet, ApiPost, ApiPut } from '@utils/makeApiRequest/makeApiRequest';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { JSX, useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
 interface InputFieldProps {
@@ -64,13 +64,13 @@ const SelectField: React.FC<SelectFieldProps> = ({ label, id, options, value, on
   </div>
 );
 
-export default function TaxPage() {
+export default function TaxPage(): JSX.Element {
   const [taxes, setTaxes] = useState<ITax[]>([]);
   const [formData, setFormData] = useState({ taxName: '', taxType: 'Percentage', taxPercentage: '' });
   const [editFormData, setEditFormData] = useState({ taxName: '', taxType: 'Percentage', taxPercentage: '', id: '' });
 
   useEffect(() => {
-    (async () => {
+    (async (): Promise<void> => {
       try {
         const taxResponse = await ApiGet.Tax();
         if (taxResponse.success) {
@@ -96,17 +96,17 @@ export default function TaxPage() {
     }
   }, []);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
     const { name, value } = e.target;
     setEditFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const saveTax = async (e: React.FormEvent<HTMLFormElement>) => {
+  const saveTax = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     const { taxName, taxType, taxPercentage } = formData;
 
@@ -135,7 +135,7 @@ export default function TaxPage() {
   };
 
   const handleDelete = useCallback(
-    (_id: string) => async () => {
+    (_id: string) => async (): Promise<void> => {
       const confirmed = await userConfirmation({
         header: 'Confirm Deletion',
         message: 'Are you sure you want to delete this tax?',
@@ -161,7 +161,7 @@ export default function TaxPage() {
     [taxes, configureToastPromise],
   );
 
-  const openEditDialog = (tax: ITax, id: string) => {
+  const openEditDialog = (tax: ITax, id: string): void => {
     setEditFormData({
       taxName: tax.taxName,
       taxType: tax.taxType,
@@ -175,7 +175,7 @@ export default function TaxPage() {
     }
   };
 
-  const handleEdit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleEdit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     const { taxName, taxType, taxPercentage, id } = editFormData;
 

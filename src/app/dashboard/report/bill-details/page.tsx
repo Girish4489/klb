@@ -6,20 +6,20 @@ import { exportToCSV, exportToPDF } from '@utils/exportUtils/common';
 import { fetchAllData } from '@utils/fetchAllData/fetchAllData';
 import { formatD } from '@utils/format/dateUtils';
 import { ApiGet } from '@utils/makeApiRequest/makeApiRequest';
-import { useState } from 'react';
+import { JSX, useState } from 'react';
 import toast from 'react-hot-toast';
 import { IBillDetails } from './types';
 
 const PAGE_SIZE = 10; // Number of bills per page
 
-export default function BillDetails() {
+export default function BillDetails(): JSX.Element {
   const [fromDate, setFromDate] = useState<Date>();
   const [toDate, setToDate] = useState<Date>();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [bills, setBills] = useState<IBillDetails[]>([]);
 
-  const handleFilter = async () => {
+  const handleFilter = async (): Promise<void> => {
     if (!fromDate || !toDate) {
       toast.error('Please provide both fromDate and toDate');
       return;
@@ -28,7 +28,7 @@ export default function BillDetails() {
       toast.error('Invalid date range. fromDate cannot be greater than toDate');
       return;
     }
-    const filter = async () => {
+    const filter = async (): Promise<string | undefined> => {
       try {
         const data = await fetchBills(fromDate, toDate, 1);
         if (data.success === true) {
@@ -54,7 +54,7 @@ export default function BillDetails() {
     }
   };
 
-  const BillTable = ({ caption, bills }: { caption: string; bills: IBillDetails[] }) => {
+  const BillTable = ({ caption, bills }: { caption: string; bills: IBillDetails[] }): JSX.Element => {
     return (
       <div
         className={`table-row overflow-auto rounded-box border-2 border-base-300 bg-base-100 ${bills.length === 0 && 'min-h-24'}`}
@@ -120,7 +120,11 @@ export default function BillDetails() {
     );
   };
 
-  const fetchBills = async (fromDate: Date, toDate: Date, page: number) => {
+  const fetchBills = async (
+    fromDate: Date,
+    toDate: Date,
+    page: number,
+  ): Promise<{ message: string; success: boolean; bill: IBillDetails[]; totalBills: number }> => {
     const data = await ApiGet.Bill.BillFromToDate(fromDate, toDate, page);
     return {
       message: data.message,
@@ -130,11 +134,11 @@ export default function BillDetails() {
     };
   };
 
-  const calculateTotalPages = (totalBills: number) => {
+  const calculateTotalPages = (totalBills: number): number => {
     return Math.ceil(totalBills / PAGE_SIZE);
   };
 
-  const handlePageChange = async (page: number) => {
+  const handlePageChange = async (page: number): Promise<void> => {
     if (page < 1 || page > totalPages) return;
     if (page === currentPage) return;
     if (!fromDate || !toDate) return;
@@ -143,14 +147,14 @@ export default function BillDetails() {
     setCurrentPage(page);
   };
 
-  const handleExport = async (format: 'csv' | 'pdf') => {
+  const handleExport = async (format: 'csv' | 'pdf'): Promise<void> => {
     if (!fromDate || !toDate) {
       toast.error('Please select date range first');
       return;
     }
 
     toast.promise(
-      (async () => {
+      (async (): Promise<string> => {
         const allBills = await fetchAllData.bills(fromDate, toDate);
         const exportData = prepareBillExportData(allBills);
         if (format === 'csv') {

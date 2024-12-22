@@ -1,7 +1,8 @@
 import { BellIcon, BellSlashIcon } from '@heroicons/react/24/outline';
 import { INotification } from '@models/userModel';
+import { JSX } from 'react';
 
-const Notifications = ({ notifications }: { notifications: INotification[] }) => {
+const Notifications = ({ notifications }: { notifications: INotification[] }): JSX.Element => {
   const unreadCount = notifications.filter((notification) => !notification.isRead).length;
 
   return (

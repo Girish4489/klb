@@ -1,6 +1,7 @@
 import { CloudArrowUpIcon, PrinterIcon } from '@heroicons/react/24/solid';
 import { IBill } from '@models/klm';
 import { fetchAndCalculateBillDetails, initialBillDetails } from '@utils/calculateBillDetails';
+import { Route } from 'next';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
@@ -17,7 +18,7 @@ const PaymentStatus: React.FC<{ bill: IBill }> = ({ bill }) => {
   const [billDetails, setBillDetails] = useState(initialBillDetails);
 
   useEffect(() => {
-    const fetchBillDetails = async () => {
+    const fetchBillDetails = async (): Promise<void> => {
       if (bill) {
         const details = await fetchAndCalculateBillDetails(bill.billNumber, bill.totalAmount);
         setBillDetails(details);
@@ -130,7 +131,7 @@ const SaveUpdatePrint: React.FC<SaveUpdatePrintProps> = ({
                 </select>
                 <Link
                   className="btn btn-accent join-item btn-sm"
-                  href={`/print-preview/bill/${printType}?billNumber=${bill.billNumber}`}
+                  href={`/print-preview/bill/${printType}?billNumber=${bill.billNumber}` as Route}
                   prefetch={false}
                 >
                   <PrinterIcon className="h-5 w-5" />

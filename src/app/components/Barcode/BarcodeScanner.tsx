@@ -37,7 +37,7 @@ const BarcodeScanner: React.FC<{
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
   const [selectedReaderType, setSelectedReaderType] = useState<keyof typeof readerTypes>('QRCode');
 
-  const fetchVideoInputDevices = async () => {
+  const fetchVideoInputDevices = async (): Promise<boolean> => {
     try {
       const hasCameraAccess = await checkCameraAccess();
       setCameraAccess(hasCameraAccess);
@@ -68,7 +68,7 @@ const BarcodeScanner: React.FC<{
   };
 
   useEffect(() => {
-    const startScanning = async () => {
+    const startScanning = async (): Promise<void> => {
       if (!selectedDeviceId || !cameraAccess) return;
 
       if (videoInputDevices.length === 0) {
@@ -117,14 +117,14 @@ const BarcodeScanner: React.FC<{
     }
   }, [isScanning, selectedDeviceId, selectedReaderType, onScanComplete, cameraAccess, videoInputDevices.length]);
 
-  const toggleScanning = async () => {
+  const toggleScanning = async (): Promise<void> => {
     const devicesAvailable = await fetchVideoInputDevices();
     if (devicesAvailable) {
       setIsScanning((prevState) => !prevState);
     }
   };
 
-  const handleClose = () => {
+  const handleClose = (): void => {
     setIsScanning(false);
     (document?.getElementById(scanModalId) as HTMLDialogElement)?.close();
   };

@@ -51,7 +51,7 @@ import {
   SparklesIcon as SparklesSolid,
 } from '@heroicons/react/24/solid';
 
-import React, { useEffect, useState } from 'react';
+import { ElementType, JSX, createElement, useEffect, useState } from 'react';
 
 export interface PatternConfig {
   icon:
@@ -71,7 +71,11 @@ export interface PatternConfig {
   rounded?: boolean;
 }
 
-const getHeroIcon = (icon: PatternConfig['icon'], iconType: PatternConfig['iconType'], index: number = 0) => {
+const getHeroIcon = (
+  icon: PatternConfig['icon'],
+  iconType: PatternConfig['iconType'],
+  index: number = 0,
+): ElementType => {
   const outlineIcons = [
     AcademicCapOutline,
     AdjustmentsHorizontalOutline,
@@ -158,19 +162,19 @@ export const defaultPattern: PatternConfig = {
   rotate: 0,
 };
 
-export default function PatternBackground({ config }: { config: PatternConfig }) {
+export default function PatternBackground({ config }: { config: PatternConfig }): JSX.Element | null {
   const [mounted, setMounted] = useState(false);
   const [iconCount, setIconCount] = useState(0);
 
   useEffect(() => {
     setMounted(true);
-    const updateIconCount = () => {
+    const updateIconCount = (): void => {
       const count = Math.ceil((window.innerWidth * window.innerHeight) / (config.spacing * config.spacing));
       setIconCount(count);
     };
     updateIconCount();
     window.addEventListener('resize', updateIconCount);
-    return () => window.removeEventListener('resize', updateIconCount);
+    return (): void => window.removeEventListener('resize', updateIconCount);
   }, [config.spacing]);
 
   if (!mounted) return null;
@@ -200,7 +204,7 @@ export default function PatternBackground({ config }: { config: PatternConfig })
               className={`flex items-center justify-center ${config.rounded ? 'rounded-full' : ''} ${config.color}`}
               style={{ width: spacing, height: spacing, overflow: 'hidden' }}
             >
-              {React.createElement(Icon, { style: iconStyle })}
+              {createElement(Icon, { style: iconStyle })}
             </div>
           );
         })}

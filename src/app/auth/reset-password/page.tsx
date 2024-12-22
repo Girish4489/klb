@@ -6,10 +6,10 @@ import handleError from '@utils/error/handleError';
 import { ApiPost } from '@utils/makeApiRequest/makeApiRequest';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { JSX, Suspense, useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
-function ResetPasswordContent() {
+function ResetPasswordContent(): JSX.Element {
   const [token, setToken] = useState('');
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -21,7 +21,7 @@ function ResetPasswordContent() {
     setToken(urlToken || '');
   }, [searchParams]);
 
-  const resetUserPassword = async (e: React.FormEvent<HTMLFormElement>) => {
+  const resetUserPassword = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setIsLoading(true);
     try {
@@ -149,7 +149,7 @@ function ResetPasswordContent() {
   );
 }
 
-export default function ResetPasswordPage() {
+export default function ResetPasswordPage(): JSX.Element {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <ResetPasswordContent />

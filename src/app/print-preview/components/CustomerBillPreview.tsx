@@ -23,7 +23,7 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, company
 
   useEffect(() => {
     if (bill) {
-      const fetchReceiptData = async () => {
+      const fetchReceiptData = async (): Promise<void> => {
         const receipts = await ApiGet.Receipt.ReceiptSearch(bill.billNumber, 'bill');
         const totalDiscount = receipts.reduce((sum: number, receipt: IReceipt) => sum + receipt.discount, 0);
         const totalTaxAmount = receipts.reduce((sum: number, receipt: IReceipt) => sum + receipt.taxAmount, 0);
@@ -156,8 +156,11 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, company
                   {bill.billNumber && bill.billNumber.toString().length > 0 && (
                     <QrGenerator
                       content={
-                        `${company?.name && `Company Name=${company.name}\n`}${company?.contactDetails.address && `Address=${company.contactDetails.address}\n`}&billNumber=${bill?.billNumber.toString()}` ||
-                        ''
+                        bill?.billNumber
+                          ? `${company?.name ? `Company Name=${company.name}\n` : ''}${
+                              company?.contactDetails.address ? `Address=${company.contactDetails.address}\n` : ''
+                            }billNumber=${bill.billNumber.toString()}`
+                          : ''
                       }
                       size={90}
                     />
@@ -291,8 +294,11 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, company
                   {bill.billNumber && bill.billNumber.toString().length > 0 && (
                     <QrGenerator
                       content={
-                        `${company?.name && `Company Name=${company.name}\n`}${company?.contactDetails.address && `Address=${company.contactDetails.address}\n`}&billNumber=${bill?.billNumber.toString()}` ||
-                        ''
+                        bill?.billNumber
+                          ? `${company?.name ? `Company Name=${company.name}\n` : ''}${
+                              company?.contactDetails?.address ? `Address=${company.contactDetails.address}\n` : ''
+                            }billNumber=${bill.billNumber.toString()}`
+                          : ''
                       }
                       size={60}
                     />

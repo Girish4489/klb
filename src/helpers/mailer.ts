@@ -9,7 +9,7 @@ interface SendEmailParams {
   userId: string;
 }
 
-const createTransporter = () => {
+const createTransporter = (): nodemailer.Transporter => {
   return nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,
@@ -21,7 +21,11 @@ const createTransporter = () => {
   });
 };
 
-const generateEmailContent = (emailType: 'VERIFY' | 'RESET', token: string, tokenExpiryTime: number) => {
+const generateEmailContent = (
+  emailType: 'VERIFY' | 'RESET',
+  token: string,
+  tokenExpiryTime: number,
+): { subject: string; html: string } => {
   const indianDate = new Date(tokenExpiryTime * 1000).toLocaleString('en-IN');
   const baseUrl = process.env.DOMAIN;
   const emailContent = {
@@ -52,7 +56,11 @@ const generateEmailContent = (emailType: 'VERIFY' | 'RESET', token: string, toke
   };
 };
 
-export const sendEmail = async ({ email, emailType, userId }: SendEmailParams) => {
+export const sendEmail = async ({
+  email,
+  emailType,
+  userId,
+}: SendEmailParams): Promise<nodemailer.SentMessageInfo | undefined> => {
   try {
     const tokenData = { id: userId, email };
     const emailToken = await token.create(tokenData, '30m');

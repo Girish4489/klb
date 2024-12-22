@@ -17,7 +17,7 @@ const TaxModal: React.FC<TaxModalProps> = ({ taxList, selectedTaxes = [], setRec
     );
   };
 
-  const updateReceiptWithTaxes = (receipt: IReceipt | undefined, updatedTaxes: IReceiptTax[]) => {
+  const updateReceiptWithTaxes = (receipt: IReceipt | undefined, updatedTaxes: IReceiptTax[]): IReceipt | undefined => {
     if (!receipt) return receipt;
     const newTaxAmount = calculateTotalTax(receipt.amount || 0, updatedTaxes);
     // Create a new receipt with updated tax information while preserving the IReceipt type
@@ -28,7 +28,7 @@ const TaxModal: React.FC<TaxModalProps> = ({ taxList, selectedTaxes = [], setRec
     } as IReceipt; // Cast to IReceipt to maintain type safety
   };
 
-  const handleTaxChange = (tax: ITax, checked: boolean) => {
+  const handleTaxChange = (tax: ITax, checked: boolean): void => {
     setReceipt((prev) => {
       if (!prev) return prev;
 
@@ -48,7 +48,7 @@ const TaxModal: React.FC<TaxModalProps> = ({ taxList, selectedTaxes = [], setRec
     });
   };
 
-  const handleRowClick = (taxId: string) => {
+  const handleRowClick = (taxId: string): void => {
     setReceipt((prev) => {
       if (!prev) return prev;
 

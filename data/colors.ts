@@ -107,7 +107,13 @@ const colorMap = {
   wisteria: '#C9A0DC',
 };
 
-const hexToRgb = (hex: string) => {
+interface RGB {
+  r: number;
+  g: number;
+  b: number;
+}
+
+const hexToRgb = (hex: string): RGB => {
   const bigint = parseInt(hex.slice(1), 16);
   const r = (bigint >> 16) & 255;
   const g = (bigint >> 8) & 255;

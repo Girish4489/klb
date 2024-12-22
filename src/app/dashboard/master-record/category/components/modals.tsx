@@ -1,5 +1,5 @@
 'use client';
-import React, { ChangeEvent, FormEvent, useState, type JSX } from 'react';
+import { ChangeEvent, FC, FormEvent, useState, type JSX } from 'react';
 
 // Represents a form field with various properties.
 interface Field {
@@ -14,37 +14,37 @@ interface Field {
 interface FormModalProps {
   id: string;
   title: string;
-  onSubmit: (formData: { [key: string]: string }) => void;
+  onSubmitAction: (formData: Record<string, string>) => Promise<void | string> | void;
   buttonName: string;
   fields: Field[];
-  onClose: () => void;
+  onCloseAction: () => void;
 }
 
 // FormModal component renders a modal dialog with a form.
-export const FormModal: React.FC<FormModalProps> = ({
+export const FormModal: FC<FormModalProps> = ({
   id,
   title,
-  onSubmit,
+  onSubmitAction,
   buttonName,
   fields,
-  onClose,
+  onCloseAction,
 }: FormModalProps): JSX.Element => {
-  const [formState, setFormState] = useState<{ [key: string]: string }>({});
+  const [formState, setFormState] = useState<Record<string, string>>({});
 
   // Handles the change event for an input element and updates the form state.
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
     setFormState({ ...formState, [e.target.name]: e.target.value });
   };
 
   // Handles the form submission event.
   const handleSubmit = (e: FormEvent): void => {
     e.preventDefault();
-    onSubmit(formState);
+    onSubmitAction(formState);
   };
 
   // Handles the click event for closing the modal.
-  const handleClickClose = () => {
-    onClose();
+  const handleClickClose = (): void => {
+    onCloseAction();
     closeModal(id);
   };
 

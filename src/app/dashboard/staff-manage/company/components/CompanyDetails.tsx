@@ -11,7 +11,7 @@ import handleError from '@utils/error/handleError';
 import { FileUtil } from '@utils/file/FileUtil';
 import { formatDNT } from '@utils/format/dateUtils';
 import { FormValidationUtil } from '@utils/validation/FormValidationUtil';
-import { useState } from 'react';
+import { JSX, useState } from 'react';
 
 interface CompanyDetailsProps {
   company: ICompany;
@@ -28,7 +28,7 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ company, isEditing, set
   const [editingField, setEditingField] = useState<string | null>(null);
   const [fieldValue, setFieldValue] = useState<string>('');
 
-  const handleSaveContactDetail = (type: 'phones' | 'emails', value: string, index: number | null) => {
+  const handleSaveContactDetail = (type: 'phones' | 'emails', value: string, index: number | null): void => {
     if (!value || !company) return;
 
     const isValid = type === 'phones' ? FormValidationUtil.isValidPhone(value) : FormValidationUtil.isValidEmail(value);
@@ -47,12 +47,17 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ company, isEditing, set
     updateCompany({
       contactDetails: { ...company.contactDetails, [type]: updatedDetails },
     });
-    type === 'phones' ? setNewPhone('') : setNewEmail('');
-    type === 'phones' ? setEditingPhoneIndex(null) : setEditingEmailIndex(null);
+    if (type === 'phones') {
+      setNewPhone('');
+      setEditingPhoneIndex(null);
+    } else {
+      setNewEmail('');
+      setEditingEmailIndex(null);
+    }
     (document.getElementById(`${type}_modal`) as HTMLDialogElement)?.close();
   };
 
-  const handleDeleteContactDetail = async (type: 'phones' | 'emails', index: number) => {
+  const handleDeleteContactDetail = async (type: 'phones' | 'emails', index: number): Promise<void> => {
     const confirmed = await userConfirmation({
       header: `Delete ${type === 'phones' ? 'Phone' : 'Email'}`,
       message: `Are you sure you want to delete this ${type === 'phones' ? 'phone number' : 'email address'}?`,
@@ -66,7 +71,7 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ company, isEditing, set
     }
   };
 
-  const handleSaveField = () => {
+  const handleSaveField = (): void => {
     if (company && editingField) {
       const updatedCompany = { ...company };
       if (editingField.startsWith('contactDetails.')) {
@@ -86,7 +91,7 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ company, isEditing, set
     }
   };
 
-  const handleLogoChange = async (size: 'small' | 'medium' | 'large', logoUrl: string) => {
+  const handleLogoChange = async (size: 'small' | 'medium' | 'large', logoUrl: string): Promise<void> => {
     if (company) {
       const updatedLogos = {
         ...company.logos,
@@ -101,7 +106,7 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ company, isEditing, set
     }
   };
 
-  const handleDeleteLogo = async (size: 'small' | 'medium' | 'large') => {
+  const handleDeleteLogo = async (size: 'small' | 'medium' | 'large'): Promise<void> => {
     const confirmed = await userConfirmation({
       header: 'Delete Logo',
       message: `Are you sure you want to delete the ${size} logo?`,
@@ -120,7 +125,7 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ company, isEditing, set
     }
   };
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -142,7 +147,7 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ company, isEditing, set
     setValue: (val: string) => void,
     editingIndex: number | null,
     setEditingIndex: (index: number | null) => void,
-  ) => (
+  ): JSX.Element => (
     <div className="flex flex-col gap-2 rounded-box border border-primary/40 p-2">
       {company && company.contactDetails && company.contactDetails[type].length === 0 && (
         <span>

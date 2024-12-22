@@ -1,12 +1,12 @@
 // src/app/components/topbarLoader/page.tsx
 'use client';
 import { usePathname } from 'next/navigation';
-import React, { useEffect } from 'react';
+import { JSX, useEffect, useRef } from 'react';
 import LoadingBar from 'react-top-loading-bar';
 
-export default function TopbarLoader() {
+export default function TopbarLoader(): JSX.Element {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const loadingBarRef = React.useRef<any>(null);
+  const loadingBarRef = useRef<any>(null);
   const currentPathname = usePathname();
 
   useEffect(() => {
@@ -15,7 +15,7 @@ export default function TopbarLoader() {
     }
 
     // Check if the page is fully loaded
-    const handleLoad = () => {
+    const handleLoad = (): void => {
       if (document.readyState === 'complete') {
         if (loadingBarRef.current) {
           loadingBarRef.current.complete();
@@ -31,7 +31,7 @@ export default function TopbarLoader() {
       }
     }, 500);
 
-    return () => {
+    return (): void => {
       clearTimeout(timerId);
       window.removeEventListener('readystatechange', handleLoad);
     };

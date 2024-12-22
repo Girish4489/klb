@@ -10,16 +10,16 @@ import { loginMetadata } from '@utils/metadata';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import React, { JSX, useState } from 'react';
 import toast from 'react-hot-toast';
 
-export default function LoginPage() {
+export default function LoginPage(): JSX.Element {
   const { setAuthenticated } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setIsLoading(true);
 
@@ -54,7 +54,7 @@ export default function LoginPage() {
     }
   };
 
-  const handleForgotPassword = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleForgotPassword = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     const email = e.currentTarget.forgotEmail.value.trim();
     try {
@@ -191,7 +191,7 @@ export default function LoginPage() {
 
             <div className="mt-6 text-center">
               <p className="text-sm text-base-content/70">
-                Don't have an account?{' '}
+                Don&apos;t have an account?{' '}
                 <Link href="/auth/signup" className="link link-primary font-semibold hover:link-accent">
                   Sign up
                 </Link>

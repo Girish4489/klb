@@ -5,13 +5,13 @@ import handleError from '@utils/error/handleError';
 import { ApiPost } from '@utils/makeApiRequest/makeApiRequest';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { Suspense, useEffect } from 'react';
+import { JSX, Suspense, useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
-function VerifyEmailPageWrapper() {
-  const [token, setToken] = React.useState('');
-  const [isVerifying, setIsVerifying] = React.useState(false);
-  const [isVerified, setIsVerified] = React.useState(false);
+function VerifyEmailPageWrapper(): JSX.Element {
+  const [token, setToken] = useState('');
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -20,7 +20,7 @@ function VerifyEmailPageWrapper() {
     setToken(urlToken || '');
   }, [searchParams]);
 
-  const handleVerification = async () => {
+  const handleVerification = async (): Promise<void> => {
     if (!token) {
       toast.error('Invalid Link or token');
       return;
@@ -55,7 +55,7 @@ function VerifyEmailPageWrapper() {
               Verify Your Email
             </h1>
             <p className="mt-4 text-pretty text-base-content/70">
-              We're verifying your email address to ensure the security of your account. This helps protect your
+              We&apos;re verifying your email address to ensure the security of your account. This helps protect your
               business data.
             </p>
           </div>
@@ -135,7 +135,7 @@ function VerifyEmailPageWrapper() {
   );
 }
 
-export default function VerifyEmailPage() {
+export default function VerifyEmailPage(): JSX.Element {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <VerifyEmailPageWrapper />

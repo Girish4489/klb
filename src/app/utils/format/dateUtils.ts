@@ -12,7 +12,7 @@
  * - Minute: Numeric
  * - Hour12: true (AM/PM)
  */
-const formatDate = (dateString: Date) => {
+const formatDate = (dateString: Date): string => {
   const options: Intl.DateTimeFormatOptions = {
     day: 'numeric',
     month: 'short',
@@ -33,7 +33,7 @@ const formatDate = (dateString: Date) => {
  * @param dateString - The date to format. It should be a valid Date object.
  * @returns The formatted date string in "dd-MMM-yyyy" format.
  */
-const formatDateNoTime = (dateString: Date) => {
+const formatDateNoTime = (dateString: Date): string => {
   const options: Intl.DateTimeFormatOptions = {
     day: '2-digit',
     month: 'short',
@@ -57,7 +57,7 @@ const formatDateNoTime = (dateString: Date) => {
  * console.log(formattedDate); // Output: "05/10/2023, 02:48 PM"
  * ```
  */
-const formatDateSlash = (dateString: Date) => {
+const formatDateSlash = (dateString: Date): string => {
   const options: Intl.DateTimeFormatOptions = {
     day: '2-digit',
     month: '2-digit',
@@ -77,7 +77,7 @@ const formatDateSlash = (dateString: Date) => {
  * @param dateString - The date to be formatted.
  * @returns A string representing the formatted date in "DD/MM/YYYY" format.
  */
-const formatDateSlashNoTime = (dateString: Date) => {
+const formatDateSlashNoTime = (dateString: Date): string => {
   const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: '2-digit', year: 'numeric' };
   const date = new Date(dateString);
   return date.toLocaleDateString('en-IN', options).replace(/-/g, '/');

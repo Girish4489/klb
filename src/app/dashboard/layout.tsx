@@ -6,16 +6,16 @@ import { useCompany } from '@context/companyContext';
 import { useUser } from '@context/userContext';
 import { Bars3BottomLeftIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import { JSX, ReactNode, useEffect, useState } from 'react';
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default function DashboardLayout({ children }: { children: ReactNode }): JSX.Element {
   const { fetchAndSetUser, user } = useUser();
   const { company } = useCompany();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const initializeUser = async () => {
+    const initializeUser = async (): Promise<void> => {
       try {
         await fetchAndSetUser();
       } finally {
@@ -34,7 +34,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
   }, []);
 
-  const toggleSidebar = () => {
+  const toggleSidebar = (): void => {
     setIsSidebarOpen((prevState) => {
       const newState = !prevState;
       localStorage.setItem('isSidebarOpen', JSON.stringify(newState));

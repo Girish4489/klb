@@ -241,7 +241,7 @@ export const receiptStyles = `
   }
 `;
 
-export const getStyle = (type: string) => {
+export const getStyle = (type: string): string => {
   switch (type) {
     case 'Customer Bill':
       return commonStyles + customerBillStyles;

@@ -3,24 +3,24 @@ import { Theme, useTheme } from '@context/ThemeContext';
 import { IUser } from '@models/userModel';
 import handleError from '@utils/error/handleError';
 import axios from 'axios';
-import React from 'react';
+import React, { Dispatch, JSX } from 'react';
 import toast from 'react-hot-toast';
 
 export default function ThemerPage({
   user,
-  setUser,
+  setUserAction,
 }: {
   user: IUser;
-  setUser: React.Dispatch<React.SetStateAction<IUser>>;
-}) {
+  setUserAction: Dispatch<React.SetStateAction<IUser>>;
+}): JSX.Element {
   const { themes, currentTheme, setTheme } = useTheme();
   const [selectedTheme, setSelectedTheme] = React.useState<string | null>(null);
 
-  const handleThemeChange = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleThemeChange = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
 
     try {
-      const saveThemeRequest = async () => {
+      const saveThemeRequest = async (): Promise<ThemeResponse> => {
         if (user.preferences?.theme === selectedTheme) {
           throw new Error('Theme already applied.\n Please select a different theme');
         }
@@ -33,7 +33,7 @@ export default function ThemerPage({
         });
         if (response.data.success) {
           setTheme(selectedTheme as Theme);
-          setUser(
+          setUserAction(
             (prevUser: IUser) =>
               ({
                 ...prevUser,

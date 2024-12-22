@@ -50,11 +50,11 @@ const NotFound: React.FC = () => {
   ];
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
+    const handleMouseMove = (e: MouseEvent): void => {
       setMousePosition({ x: e.clientX, y: e.clientY });
     };
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    return (): void => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
   useEffect(() => {
@@ -164,7 +164,7 @@ const NotFound: React.FC = () => {
           </motion.h1>
           <motion.div variants={itemVariants} className="space-y-2">
             <p className="text-3xl font-bold text-warning">Oops! Page Not Found</p>
-            <p className="text-info-content/80">Looks like you've ventured into uncharted territory...</p>
+            <p className="text-info-content/80">Looks like you&apos;ve ventured into uncharted territory...</p>
           </motion.div>
         </motion.div>
 

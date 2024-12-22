@@ -4,9 +4,9 @@ import constants from '@constants/constants';
 import { CheckBadgeIcon, ChevronRightIcon, HomeIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import { CSSProperties, JSX, useEffect, useState } from 'react';
 
-export default function LoginSuccess() {
+export default function LoginSuccess(): JSX.Element {
   const router = useRouter();
   const [countdown, setCountdown] = useState(5);
 
@@ -18,7 +18,7 @@ export default function LoginSuccess() {
         setCountdown(countdown - 1);
       }, 1000);
 
-      return () => clearTimeout(timer);
+      return (): void => clearTimeout(timer);
     }
   }, [countdown, router]);
 
@@ -44,7 +44,7 @@ export default function LoginSuccess() {
                   <h2 className="text-pretty text-2xl font-semibold">
                     Redirecting to Dashboard in{' '}
                     <span className="countdown font-mono text-accent">
-                      <span style={{ '--value': countdown } as React.CSSProperties}></span>
+                      <span style={{ '--value': countdown } as CSSProperties}></span>
                     </span>{' '}
                     seconds...
                   </h2>

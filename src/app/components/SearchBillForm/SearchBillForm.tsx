@@ -1,16 +1,16 @@
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { IBill } from '@models/klm';
 import { formatD } from '@utils/format/dateUtils';
-import React from 'react';
+import { FC, FormEvent, JSX } from 'react';
 
 interface SearchFormProps {
-  onSearch: (event: React.FormEvent<HTMLFormElement>) => void;
+  onSearch: (event: FormEvent<HTMLFormElement>) => void;
   searchResults: IBill[] | undefined;
   onRowClick: (billId: string) => () => void;
 }
 
-const SearchBillForm: React.FC<SearchFormProps> = ({ onSearch, searchResults, onRowClick }) => {
-  const renderSearchBillDropdown = (bills: IBill[]) => (
+const SearchBillForm: FC<SearchFormProps> = ({ onSearch, searchResults, onRowClick }) => {
+  const renderSearchBillDropdown = (bills: IBill[]): JSX.Element => (
     <div
       className={`card-body m-0 max-h-96 w-full overflow-x-auto rounded-box border-2 border-base-300 bg-base-100 p-1 ring-1 ring-primary ${
         bills.length === 0 && 'min-h-24 min-w-24 max-w-24'

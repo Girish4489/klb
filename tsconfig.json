@@ -30,8 +30,17 @@
       "@context/*": ["./src/app/context/*"],
       "@dashboard/*": ["./src/app/dashboard/*"],
       "@utils/*": ["./src/app/utils/*"]
-    }
+    },
+    "checkJs": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "*.mjs",
+    "*.config.mjs",
+    "src/types/**/*.d.ts"
+  ],
   "exclude": ["node_modules"]
 }

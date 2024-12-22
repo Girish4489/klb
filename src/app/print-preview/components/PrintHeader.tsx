@@ -1,5 +1,6 @@
 'use client';
 import { ArrowLeftCircleIcon, PrinterIcon } from '@heroicons/react/24/solid';
+import { Route } from 'next';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 
@@ -11,12 +12,12 @@ interface PrintHeaderProps {
 const PrintHeader: React.FC<PrintHeaderProps> = ({ backUrl, isLoading }) => {
   const router = useRouter();
 
-  const handlePrint = () => {
+  const handlePrint = (): void => {
     window.print();
   };
 
-  const handleBack = () => {
-    router.push(backUrl);
+  const handleBack = (): void => {
+    router.push(backUrl as Route);
   };
 
   return (
@@ -29,7 +30,6 @@ const PrintHeader: React.FC<PrintHeaderProps> = ({ backUrl, isLoading }) => {
         <PrinterIcon className="h-5 w-5" />
         Print
       </button>
-      {/* eslint-disable-next-line react/no-unknown-property */}
       <style jsx>{`
         .print-header {
           display: block;

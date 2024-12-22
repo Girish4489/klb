@@ -46,7 +46,7 @@ export default function CategoryPage(): JSX.Element {
   }, []);
 
   // Configures a toast notification for a given promise.
-  const configureToastPromise = async (promise: Promise<string>, loadingMessage: string) => {
+  const configureToastPromise = async (promise: Promise<string>, loadingMessage: string): Promise<void> => {
     try {
       await toast.promise(promise, {
         loading: loadingMessage,
@@ -94,7 +94,6 @@ export default function CategoryPage(): JSX.Element {
 
     if (!ids?.catId) {
       throw new Error('Category invalid try to refresh the page');
-      return;
     }
 
     // Asynchronously saves a new process to a category.
@@ -226,7 +225,7 @@ export default function CategoryPage(): JSX.Element {
     await configureToastPromise(saveDimension(), 'Adding Dimension...');
   };
 
-  const EditDimensionType = async (e: { dimensionTypeName: string }) => {
+  const EditDimensionType = async (e: { dimensionTypeName: string }): Promise<void> => {
     const { dimensionTypeName } = e;
 
     if (!ids?.catId || !ids?.dimensionTypeId) {
@@ -234,7 +233,7 @@ export default function CategoryPage(): JSX.Element {
       return;
     }
 
-    const UpdateDimension = async () => {
+    const UpdateDimension = async (): Promise<string> => {
       try {
         const res = await ApiPost.Category('editDimensionType', {
           categoryId: ids.catId,
@@ -269,6 +268,7 @@ export default function CategoryPage(): JSX.Element {
         }
       } catch (error) {
         handleError.throw(error);
+        return 'An error occurred while updating the dimension type';
       }
     };
     await configureToastPromise(UpdateDimension(), 'Updating Dimension...');
@@ -327,38 +327,41 @@ export default function CategoryPage(): JSX.Element {
   };
 
   // Deletes a category after user confirmation.
-  const DelCategory = (id: string) => async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    e.preventDefault();
-    const confirmed = await userConfirmation({
-      header: 'Confirm Deletion',
-      message: 'Are you sure you want to delete this category?',
-    });
-    if (!confirmed) return;
+  const DelCategory =
+    (id: string) =>
+    async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): Promise<void> => {
+      e.preventDefault();
+      const confirmed = await userConfirmation({
+        header: 'Confirm Deletion',
+        message: 'Are you sure you want to delete this category?',
+      });
+      if (!confirmed) return;
 
-    // Deletes a category by its ID.
-    const deleteCategory = async (): Promise<string> => {
-      try {
-        const res = await ApiPost.Category('delCategory', {
-          categoryId: id,
-        });
-        if (res.success) {
-          setCategory(category.filter((cat) => cat._id.toString() !== id));
-          return res.message;
-        } else {
-          throw new Error(res.message);
+      // Deletes a category by its ID.
+      const deleteCategory = async (): Promise<string> => {
+        try {
+          const res = await ApiPost.Category('delCategory', {
+            categoryId: id,
+          });
+          if (res.success) {
+            setCategory(category.filter((cat) => cat._id.toString() !== id));
+            return res.message;
+          } else {
+            throw new Error(res.message);
+          }
+        } catch (error) {
+          // throw new Error(error);
+          handleError.throw(error);
+          return 'An error occurred while deleting the category';
         }
-      } catch (error) {
-        // throw new Error(error);
-        handleError.throw(error);
-        return 'An error occurred while deleting the category';
-      }
+      };
+      await configureToastPromise(deleteCategory(), 'Deleting Category...');
     };
-    await configureToastPromise(deleteCategory(), 'Deleting Category...');
-  };
 
   // Handles the deletion of a style process from a category.
   const DelProcess =
-    (id: string, styleProcessId: string) => async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    (id: string, styleProcessId: string) =>
+    async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): Promise<void> => {
       e.preventDefault();
       const confirmed = await userConfirmation({
         header: 'Confirm Deletion',
@@ -401,7 +404,8 @@ export default function CategoryPage(): JSX.Element {
 
   // Deletes a dimension type from a category after user confirmation.
   const DelDimensionType =
-    (id: string, dimensionTypeId: string) => async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    (id: string, dimensionTypeId: string) =>
+    async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): Promise<void> => {
       e.preventDefault();
       const confirmed = await userConfirmation({
         header: 'Confirm Deletion',
@@ -447,7 +451,7 @@ export default function CategoryPage(): JSX.Element {
   // Handles the deletion of a style from a category's style process.
   const DelStyle =
     (id: string, styleProcessId: string, styleId: string) =>
-    async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): Promise<void> => {
       e.preventDefault();
       const confirmed = await userConfirmation({
         header: 'Confirm Deletion',
@@ -501,7 +505,7 @@ export default function CategoryPage(): JSX.Element {
   // Deletes a dimension from a category after user confirmation.
   const DelDimension =
     (id: string, dimensionTypeId: string, dimensionId: string) =>
-    async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): Promise<void> => {
       e.preventDefault();
       const confirmed = await userConfirmation({
         header: 'Confirm Deletion',
@@ -722,7 +726,7 @@ export default function CategoryPage(): JSX.Element {
       return;
     }
 
-    const UpdateDimension = async () => {
+    const UpdateDimension = async (): Promise<string> => {
       try {
         const res = await ApiPost.Category('editDimension', {
           categoryId: ids.catId,
@@ -780,7 +784,7 @@ export default function CategoryPage(): JSX.Element {
     styleId?: string,
     dimensionTypeId?: string,
     dimensionId?: string,
-  ) => {
+  ): void => {
     setIds({
       catId: catId ?? '',
       styleProcessId: styleProcessId ?? '',

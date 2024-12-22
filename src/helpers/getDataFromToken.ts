@@ -28,7 +28,7 @@ export class UserTokenData {
     return instance;
   }
 
-  async init() {
+  async init(): Promise<void> {
     try {
       const tokenValue = cookie.get(this.request);
       if (!tokenValue) {
@@ -59,7 +59,22 @@ export class UserTokenData {
     }
   }
 
-  getAllData() {
+  getAllData(): {
+    id: string;
+    username: string;
+    email: string;
+    companyAccess: {
+      companyId: string;
+      role: string;
+      access: {
+        login: boolean;
+        canEdit: boolean;
+        canDelete: boolean;
+        canView: boolean;
+      };
+      accessLevels: string[];
+    };
+  } {
     if (!this.decodedToken) {
       throw new Error('Token data is not initialized');
     }
@@ -71,42 +86,42 @@ export class UserTokenData {
     };
   }
 
-  getId() {
+  getId(): string {
     if (!this.decodedToken) {
       throw new Error('Token data is not initialized');
     }
     return this.decodedToken.id;
   }
 
-  getUsername() {
+  getUsername(): string {
     if (!this.decodedToken) {
       throw new Error('Token data is not initialized');
     }
     return this.decodedToken.username;
   }
 
-  getEmail() {
+  getEmail(): string {
     if (!this.decodedToken) {
       throw new Error('Token data is not initialized');
     }
     return this.decodedToken.email;
   }
 
-  getCompanyId() {
+  getCompanyId(): string {
     if (!this.decodedToken) {
       throw new Error('Token data is not initialized');
     }
     return this.decodedToken.companyAccess.companyId;
   }
 
-  getLoginAccess() {
+  getLoginAccess(): boolean {
     if (!this.decodedToken) {
       throw new Error('Token data is not initialized');
     }
     return this.decodedToken.companyAccess.access.login;
   }
 
-  getAccessLevels() {
+  getAccessLevels(): string[] {
     if (!this.decodedToken) {
       throw new Error('Token data is not initialized');
     }

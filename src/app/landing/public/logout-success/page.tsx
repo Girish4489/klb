@@ -3,8 +3,9 @@ import GlassCard from '@components/GlassCard';
 import constants from '@constants/constants';
 import { HomeIcon, IdentificationIcon, ShieldCheckIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
+import { JSX } from 'react';
 
-export default function LogoutSuccess() {
+export default function LogoutSuccess(): JSX.Element {
   return (
     <main className="relative min-h-screen overflow-hidden">
       <div className="hero min-h-screen">

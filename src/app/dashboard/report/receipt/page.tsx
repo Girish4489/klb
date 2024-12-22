@@ -7,19 +7,19 @@ import handleError from '@utils/error/handleError';
 import { fetchAllData } from '@utils/fetchAllData/fetchAllData';
 import { formatD } from '@utils/format/dateUtils';
 import { ApiGet } from '@utils/makeApiRequest/makeApiRequest';
-import React, { useState } from 'react';
+import React, { JSX, useState } from 'react';
 import toast from 'react-hot-toast';
 
 const PAGE_SIZE = 10; // Number of receipts per page
 
-export default function Receipt() {
+export default function Receipt(): JSX.Element {
   const [fromDate, setFromDate] = React.useState<Date>();
   const [toDate, setToDate] = useState<Date>();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [receipts, setReceipts] = useState<IReceipt[]>([]);
 
-  const handleFilter = async () => {
+  const handleFilter = async (): Promise<void> => {
     if (!fromDate || !toDate) {
       toast.error('Please provide both fromDate and toDate');
       return;
@@ -55,14 +55,14 @@ export default function Receipt() {
     }
   };
 
-  const handleExport = async (format: 'csv' | 'pdf') => {
+  const handleExport = async (format: 'csv' | 'pdf'): Promise<void> => {
     if (!fromDate || !toDate) {
       toast.error('Please select date range first');
       return;
     }
 
     toast.promise(
-      (async () => {
+      (async (): Promise<string> => {
         const allReceipts = await fetchAllData.receipts(fromDate, toDate);
         const exportData = prepareReceiptExportData(allReceipts);
         if (format === 'csv') {
@@ -80,7 +80,7 @@ export default function Receipt() {
     );
   };
 
-  const ReceiptTable = ({ caption, receipts }: { caption: string; receipts: IReceipt[] }) => {
+  const ReceiptTable = ({ caption, receipts }: { caption: string; receipts: IReceipt[] }): JSX.Element => {
     return (
       <div
         className={`table-row overflow-auto rounded-box border-2 border-base-300 bg-base-100 ${receipts.length === 0 && 'min-h-24'}`}
@@ -133,11 +133,11 @@ export default function Receipt() {
     return data;
   };
 
-  const calculateTotalPages = (totalReceipts: number) => {
+  const calculateTotalPages = (totalReceipts: number): number => {
     return Math.ceil(totalReceipts / PAGE_SIZE);
   };
 
-  const handlePageChange = async (page: number) => {
+  const handlePageChange = async (page: number): Promise<void> => {
     if (page < 1 || page > totalPages || page === currentPage) {
       return;
     }

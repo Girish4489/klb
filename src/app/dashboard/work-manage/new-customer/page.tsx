@@ -12,29 +12,21 @@ import {
 import { ICustomer } from '@models/klm';
 import handleError from '@utils/error/handleError';
 import axios from 'axios';
-import React, { useState } from 'react';
+import { ChangeEvent, ComponentType, FC, FormEvent, JSX, SVGProps, useState } from 'react';
 import toast from 'react-hot-toast';
 
 interface InputFieldProps {
   label: string;
-  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  icon: ComponentType<SVGProps<SVGSVGElement>>;
   type: string;
   name: string;
   value: string | number;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   placeholder: string;
   autoComplete: string;
 }
 
-const InputField: React.FC<InputFieldProps> = ({
-  icon: Icon,
-  type,
-  name,
-  value,
-  onChange,
-  placeholder,
-  autoComplete,
-}) => (
+const InputField: FC<InputFieldProps> = ({ icon: Icon, type, name, value, onChange, placeholder, autoComplete }) => (
   <div className="flex flex-col max-sm:w-full max-sm:flex-row max-sm:justify-between">
     <label htmlFor={name} className="input input-sm input-primary flex max-w-xs items-center gap-2">
       <Icon className="h-6 w-6 text-primary" />
@@ -54,22 +46,15 @@ const InputField: React.FC<InputFieldProps> = ({
 
 interface TextAreaFieldProps {
   label: string;
-  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  icon: ComponentType<SVGProps<SVGSVGElement>>;
   name: string;
   value: string;
-  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
   placeholder: string;
   autoComplete: string;
 }
 
-const TextAreaField: React.FC<TextAreaFieldProps> = ({
-  icon: Icon,
-  name,
-  value,
-  onChange,
-  placeholder,
-  autoComplete,
-}) => (
+const TextAreaField: FC<TextAreaFieldProps> = ({ icon: Icon, name, value, onChange, placeholder, autoComplete }) => (
   <div className="flex max-sm:w-full max-sm:justify-between">
     <label htmlFor={name} className="label label-text">
       <Icon className="h-6 w-6 text-primary" />
@@ -86,10 +71,10 @@ const TextAreaField: React.FC<TextAreaFieldProps> = ({
   </div>
 );
 
-export default function NewCustomerPage() {
+export default function NewCustomerPage(): JSX.Element {
   const [customer, setCustomer] = useState<ICustomer>();
 
-  const handleCustomerSave = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleCustomerSave = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     if (!customer) return;
 
@@ -112,15 +97,17 @@ export default function NewCustomerPage() {
     }
   };
 
-  const handleChange = (field: keyof ICustomer) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setCustomer(
-      (prevCustomer) =>
-        ({
-          ...prevCustomer,
-          [field]: e.target.value,
-        }) as ICustomer,
-    );
-  };
+  const handleChange =
+    (field: keyof ICustomer) =>
+    (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
+      setCustomer(
+        (prevCustomer) =>
+          ({
+            ...prevCustomer,
+            [field]: e.target.value,
+          }) as ICustomer,
+      );
+    };
 
   return (
     <div className="flex h-full w-full flex-col items-center justify-center bg-base-100">

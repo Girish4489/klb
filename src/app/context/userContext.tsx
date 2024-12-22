@@ -8,7 +8,18 @@ import { ApiPut } from '@utils/makeApiRequest/makeApiRequest';
 import { fetchUserData } from '@utils/user/userFetchUtil/userUtils';
 import mongoose from 'mongoose';
 import { usePathname } from 'next/navigation';
-import React, { ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  Dispatch,
+  FC,
+  ReactNode,
+  SetStateAction,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 interface UserContextProps {
   children: ReactNode;
@@ -16,7 +27,7 @@ interface UserContextProps {
 
 interface UserContextType {
   user: IUser;
-  setUser: React.Dispatch<React.SetStateAction<IUser>>;
+  setUser: Dispatch<SetStateAction<IUser>>;
   updateUser: (partialUpdate: Partial<IUser>) => void;
   fetchAndSetUser: () => void;
   updateUserAccess: (email: string, access: NonNullable<IUser['companyAccess']>['access']) => Promise<void>;
@@ -85,8 +96,8 @@ const initialUserState: IUser = {
   notifications: [],
 } as unknown as IUser;
 
-export const UserProvider: React.FC<UserContextProps> = ({ children }) => {
-  const [user, setUser] = React.useState<IUser>(initialUserState);
+export const UserProvider: FC<UserContextProps> = ({ children }) => {
+  const [user, setUser] = useState<IUser>(initialUserState);
   const pathname = usePathname();
 
   const fetchAndSetUser = useCallback(async () => {
@@ -118,7 +129,7 @@ export const UserProvider: React.FC<UserContextProps> = ({ children }) => {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    const initializeUser = async () => {
+    const initializeUser = async (): Promise<void> => {
       const storedUser = localStorage.getItem('user');
 
       if (storedUser) {
@@ -306,14 +317,14 @@ export const useUser = (): UserContextType => {
   return context;
 };
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [user, setUser] = useState<IUser | null>(null);
 
   // Single useEffect for auth state management
   useEffect(() => {
-    const initAuth = async () => {
+    const initAuth = async (): Promise<void> => {
       try {
         setIsLoading(true);
         const storedUser = localStorage.getItem('user');
@@ -347,7 +358,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     initAuth();
   }, []);
 
-  const updateUser = (data: Partial<IUser>) => {
+  const updateUser = (data: Partial<IUser>): void => {
     setUser((prev) => {
       if (!prev) return null;
       return {
@@ -371,7 +382,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-export const useAuth = () => {
+export const useAuth = (): AuthState => {
   const context = useContext(AuthContext);
   if (!context) {
     throw new Error('useAuth must be used within AuthProvider');

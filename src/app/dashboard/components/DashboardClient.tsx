@@ -9,9 +9,10 @@ import DueDateTable from '@/app/dashboard/stats/DueDateTable';
 import UnpaidBills from '@/app/dashboard/stats/UnpaidBills';
 import { ShieldCheckIcon, SparklesIcon, UserIcon } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import Image from 'next/image';
+import { JSX, useEffect, useState } from 'react';
 
-export default function DashboardClient() {
+export default function DashboardClient(): JSX.Element {
   const [refresh, setRefresh] = useState(false);
   const { user } = useUser();
   const { company } = useCompany();
@@ -26,11 +27,11 @@ export default function DashboardClient() {
     unpaidBills: false,
   });
 
-  const handleRefresh = () => {
+  const handleRefresh = (): void => {
     setRefresh(!refresh);
   };
 
-  const toggleComponent = (key: string) => {
+  const toggleComponent = (key: string): void => {
     setVisibleComponents((prev) => ({
       ...prev,
       [key]: !prev[key as keyof typeof visibleComponents],
@@ -42,7 +43,7 @@ export default function DashboardClient() {
       setShowWelcome(false);
     }, 5000);
 
-    return () => clearTimeout(timer);
+    return (): void => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -51,7 +52,13 @@ export default function DashboardClient() {
     setGreeting(newGreeting);
   }, []);
 
-  const getTimeBasedTheme = () => {
+  interface TimeTheme {
+    gradient: string;
+    icon: string;
+    message: string;
+  }
+
+  const getTimeBasedTheme = (): TimeTheme => {
     const hour = new Date().getHours();
     if (hour < 6)
       return { gradient: 'from-blue-900 via-indigo-900 to-purple-900', icon: '🌙', message: 'Working late?' };
@@ -66,7 +73,7 @@ export default function DashboardClient() {
 
   const timeTheme = getTimeBasedTheme();
 
-  const WelcomeScreen = () => (
+  const WelcomeScreen = (): JSX.Element => (
     <div className="relative h-full w-full overflow-hidden">
       <motion.div
         initial={{ opacity: 0 }}
@@ -89,10 +96,12 @@ export default function DashboardClient() {
               >
                 <div className="animate-pulse-border h-full w-full rounded-full" />
               </motion.div>
-              <img
+              <Image
                 src={company.logos.medium}
                 alt={company.name}
-                className="h-32 w-auto rounded-full object-contain ring-2 ring-primary/50 drop-shadow-2xl"
+                width={128}
+                height={128}
+                className="rounded-full object-contain ring-2 ring-primary/50 drop-shadow-2xl"
               />
             </div>
           ) : (
@@ -153,7 +162,7 @@ export default function DashboardClient() {
     </div>
   );
 
-  const NonCompanyUserScreen = () => (
+  const NonCompanyUserScreen = (): JSX.Element => (
     <div className="relative h-full w-full overflow-hidden">
       <motion.div
         initial={{ opacity: 0 }}

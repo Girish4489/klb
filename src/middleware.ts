@@ -44,7 +44,7 @@ const paths = {
   },
 };
 
-export async function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest): Promise<NextResponse | void> {
   const path = request.nextUrl.pathname;
   const authToken = request.cookies.get('authToken')?.value;
 

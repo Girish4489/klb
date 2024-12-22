@@ -1,3 +1,5 @@
+import { JSX } from 'react';
+
 interface PaginationProps {
   totalItems: number;
   itemsPerPage: number;
@@ -5,7 +7,7 @@ interface PaginationProps {
   paginate: (pageNumber: number) => void;
 }
 
-const Pagination = ({ totalItems, itemsPerPage, currentPage, paginate }: PaginationProps) => {
+const Pagination = ({ totalItems, itemsPerPage, currentPage, paginate }: PaginationProps): JSX.Element => {
   const pageNumbers = Array.from({ length: Math.ceil(totalItems / itemsPerPage) }, (_, index) => index + 1);
 
   return (

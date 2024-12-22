@@ -1,23 +1,24 @@
 'use client';
+import constants from '@/app/constants/constants';
 import GlassCard from '@components/GlassCard';
 import { EnvelopeIcon, IdentificationIcon, KeyIcon, UserIcon } from '@heroicons/react/24/outline';
 import handleError from '@utils/error/handleError';
 import { ApiPost } from '@utils/makeApiRequest/makeApiRequest';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React from 'react';
+import React, { JSX } from 'react';
 import { toast } from 'react-hot-toast';
 
-export default function SignupPage() {
+export default function SignupPage(): JSX.Element {
   const router = useRouter();
   const [showPassword, setShowPassword] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const handleShowPassword = () => {
+  const handleShowPassword = (): void => {
     setShowPassword(!showPassword);
   };
 
-  const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSignup = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setIsLoading(true);
     const username = e.currentTarget.username.value.trim();
@@ -42,7 +43,7 @@ export default function SignupPage() {
         error: (error: Error) => <b>{error.message}</b>,
       });
       setTimeout(() => {
-        router.push('/auth/login');
+        router.push(constants.AUTH_LOGIN_PAGE);
       }, 800);
     } catch (error) {
       handleError.log(error);
@@ -51,7 +52,7 @@ export default function SignupPage() {
     }
   };
 
-  const handleResendVerification = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleResendVerification = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     const email = e.currentTarget.resendEmail.value.trim();
     try {
@@ -69,7 +70,7 @@ export default function SignupPage() {
         error: (error: Error) => <b>{error.message}</b>,
       });
       setTimeout(() => {
-        router.push('/auth/login');
+        router.push(constants.AUTH_LOGIN_PAGE);
       }, 1000);
     } catch (error) {
       handleError.log(error);
@@ -90,7 +91,7 @@ export default function SignupPage() {
             </p>
           </div>
           <div className="mt-4 space-y-4 rounded-box bg-base-200/50 p-6 backdrop-blur-sm">
-            <h2 className="text-lg font-semibold">What you'll get:</h2>
+            <h2 className="text-lg font-semibold">What you&apos;ll get:</h2>
             <ul className="ml-6 list-disc space-y-2 text-base-content/70">
               <li>Real-time inventory tracking</li>
               <li>Sales analytics dashboard</li>

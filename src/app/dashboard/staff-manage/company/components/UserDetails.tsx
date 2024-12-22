@@ -1,5 +1,4 @@
 'use client';
-export {};
 import { Modal } from '@components/Modal/Modal';
 import { useCompany } from '@context/companyContext';
 import { useUser } from '@context/userContext';
@@ -10,7 +9,7 @@ import { userConfirmation } from '@utils/confirmation/confirmationUtil';
 import handleError from '@utils/error/handleError';
 import { ApiGet, ApiPut } from '@utils/makeApiRequest/makeApiRequest';
 import { fetchUserByEmail } from '@utils/user/userFetchByEmailUtil/userByEmailUtil';
-import { useEffect, useState } from 'react';
+import { FC, FormEvent, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
 interface UserDetailsProps {
@@ -48,7 +47,7 @@ const roleOptions: RoleType[] = [
   'guest',
 ];
 
-const UserDetails: React.FC<UserDetailsProps> = ({ users }) => {
+const UserDetails: FC<UserDetailsProps> = ({ users }) => {
   const { addUserToCompany } = useCompany();
   const { updateUserAccess, updateUserRole, addUserAccessLevel, removeUserAccessLevel } = useUser();
   const [newUserEmail, setNewUserEmail] = useState('');
@@ -56,7 +55,7 @@ const UserDetails: React.FC<UserDetailsProps> = ({ users }) => {
   const [loading, setLoading] = useState(true);
   const [editingUser, setEditingUser] = useState<string | null>(null);
 
-  const fetchUsersByEmails = async (emails: string[]) => {
+  const fetchUsersByEmails = async (emails: string[]): Promise<void> => {
     try {
       setLoading(true);
       const res = await ApiGet.Company.UsersByEmails(emails);
@@ -93,7 +92,7 @@ const UserDetails: React.FC<UserDetailsProps> = ({ users }) => {
     }
   }, [users]);
 
-  const handleAddUser = async () => {
+  const handleAddUser = async (): Promise<void> => {
     try {
       const user = await fetchUserByEmail(newUserEmail);
 
@@ -105,7 +104,7 @@ const UserDetails: React.FC<UserDetailsProps> = ({ users }) => {
     }
   };
 
-  const handleDeleteUser = async (email: string) => {
+  const handleDeleteUser = async (email: string): Promise<void> => {
     try {
       const user = userDetails.find((user) => user.email === email);
       if (user && user.companyAccess.role === 'owner') {
@@ -130,7 +129,7 @@ const UserDetails: React.FC<UserDetailsProps> = ({ users }) => {
     }
   };
 
-  const handleUserRoleChange = async (email: string, role: RoleType) => {
+  const handleUserRoleChange = async (email: string, role: RoleType): Promise<void> => {
     try {
       await updateUserRole(email, role);
       setUserDetails((prevDetails) =>
@@ -143,7 +142,7 @@ const UserDetails: React.FC<UserDetailsProps> = ({ users }) => {
     }
   };
 
-  const handleUserAccessChange = async (email: string, accessType: string, value: boolean) => {
+  const handleUserAccessChange = async (email: string, accessType: string, value: boolean): Promise<void> => {
     try {
       const user = userDetails.find((user) => user.email === email);
       if (user) {
@@ -160,7 +159,7 @@ const UserDetails: React.FC<UserDetailsProps> = ({ users }) => {
     }
   };
 
-  const handleAddUserRoleAndAccess = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleAddUserRoleAndAccess = async (event: FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
     try {
       const formData = new FormData(event.currentTarget);
@@ -190,7 +189,7 @@ const UserDetails: React.FC<UserDetailsProps> = ({ users }) => {
     }
   };
 
-  const handleDeleteAccessLevel = async (email: string, level: RoleType) => {
+  const handleDeleteAccessLevel = async (email: string, level: RoleType): Promise<void> => {
     try {
       const confirmed = await userConfirmation({
         header: 'Remove Access Level',
@@ -218,7 +217,7 @@ const UserDetails: React.FC<UserDetailsProps> = ({ users }) => {
     }
   };
 
-  const toggleEditUser = (email: string) => {
+  const toggleEditUser = (email: string): void => {
     setEditingUser((prevEmail) => (prevEmail === email ? null : email));
   };
 

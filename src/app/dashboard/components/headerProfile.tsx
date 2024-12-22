@@ -11,12 +11,13 @@ import {
   UserIcon,
 } from '@heroicons/react/24/solid';
 import { IUser } from '@models/userModel';
+import { Route } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import React from 'react';
+import React, { JSX } from 'react';
 import { toast } from 'react-hot-toast';
 
-const LoadingSkeleton = () => (
+const LoadingSkeleton = (): JSX.Element => (
   <div className="avatar placeholder">
     <div className="bg-neutral-focus w-12 rounded-full text-neutral-content">
       <span className="loading loading-spinner loading-sm"></span>
@@ -24,7 +25,7 @@ const LoadingSkeleton = () => (
   </div>
 );
 
-const HeaderProfilePage = ({ user, isLoading }: { user: IUser | null; isLoading: boolean }) => {
+const HeaderProfilePage = ({ user, isLoading }: { user: IUser | null; isLoading: boolean }): JSX.Element => {
   const profileImageSrc =
     user?.profileImage && user.profileImage.__filename !== 'USER_PROFILE_404_ERROR' && user.profileImage.data
       ? `data:${user.profileImage.contentType};base64,${user.profileImage?.data}`
@@ -140,10 +141,10 @@ const ProfileItem = ({
   children?: React.ReactNode;
   link?: string;
   enable?: boolean;
-}) => (
+}): JSX.Element => (
   <li className={`tooltip tooltip-left ${liClass}`} data-tip={tooltip}>
     {link && enable ? (
-      <Link href={link} className={`flex items-center`}>
+      <Link href={link as Route} className={`flex items-center`}>
         {icon}
         <span className="justify-between">
           {label}
@@ -170,7 +171,7 @@ const ProfileItem = ({
   </li>
 );
 
-const StatusIcon = ({ isTrue }: { isTrue: boolean }) => (
+const StatusIcon = ({ isTrue }: { isTrue: boolean }): JSX.Element => (
   <span
     className={`tooltip tooltip-left items-center ${isTrue ? 'tooltip-success' : 'tooltip-error'}`}
     data-tip={isTrue ? 'Verified' : 'Not Verified'}

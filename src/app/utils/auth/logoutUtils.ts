@@ -3,7 +3,7 @@ import handleError from '@utils/error/handleError';
 import axios from 'axios';
 
 export const logoutUtils = {
-  async logout(callbacks?: { onLogoutSuccess?: () => void; onLogoutError?: (error: unknown) => void }) {
+  async logout(callbacks?: { onLogoutSuccess?: () => void; onLogoutError?: (error: unknown) => void }): Promise<void> {
     try {
       // Clear storage first
       authUtils.clearAuth();

@@ -13,11 +13,11 @@ const ConfirmationModal: React.FC<{
   onConfirm: () => void;
   onCancel: () => void;
 }> = ({ header, message, onConfirm, onCancel }) => {
-  const handleConfirm = () => {
+  const handleConfirm = (): void => {
     onConfirm();
   };
 
-  const handleCancel = () => {
+  const handleCancel = (): void => {
     onCancel();
   };
 
@@ -54,17 +54,17 @@ export const userConfirmation = ({ header, message }: ConfirmationParams): Promi
       element.showModal();
     }
 
-    const handleClose = (confirmed: boolean) => {
+    const handleClose = (confirmed: boolean): void => {
       root.unmount();
       document.body.removeChild(container);
       resolve(confirmed);
     };
 
-    const handleConfirm = () => {
+    const handleConfirm = (): void => {
       handleClose(true);
     };
 
-    const handleCancel = () => {
+    const handleCancel = (): void => {
       handleClose(false);
     };
 

@@ -9,7 +9,7 @@ interface ExtendedJsPDF extends jsPDF {
   };
 }
 
-export const formatCurrency = (amount: number) => {
+export const formatCurrency = (amount: number): string => {
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'INR',
@@ -33,7 +33,7 @@ export interface ExportData {
   title: string;
 }
 
-export const exportToCSV = (data: ExportData, filename: string) => {
+export const exportToCSV = (data: ExportData, filename: string): void => {
   const selectedColumns = data.columns.filter((col) => col.selected);
   const headers = selectedColumns.map((col) => col.header);
 
@@ -50,7 +50,7 @@ export const exportToCSV = (data: ExportData, filename: string) => {
   document.body.removeChild(link);
 };
 
-export const exportToPDF = (data: ExportData, filename: string) => {
+export const exportToPDF = (data: ExportData, filename: string): void => {
   const doc = new jsPDF() as ExtendedJsPDF;
 
   // Add title

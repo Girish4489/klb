@@ -1,10 +1,11 @@
 'use client';
 import navigationData, { NavItem, SubNavItem } from '@data/navigationData';
 import { Cog6ToothIcon, HomeIcon } from '@heroicons/react/24/solid';
+import { Route } from 'next';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import React from 'react';
+import React, { JSX } from 'react';
 import toast from 'react-hot-toast';
 
 const SidebarLink = ({
@@ -21,14 +22,14 @@ const SidebarLink = ({
   icon?: React.ForwardRefExoticComponent<React.SVGProps<SVGSVGElement>>;
   iconClass?: string;
   enable?: boolean;
-}) => (
+}): JSX.Element => (
   <div
     className={`tooltip flex w-full flex-row p-0 ${isActive ? 'active' : ''} ${!enable ? 'cursor-pointer' : ''}`}
     data-tip={title}
     onClick={() => !enable && toast.error('Need to have company access')}
   >
     {enable ? (
-      <Link href={href} className="flex grow items-center gap-1 px-4 py-1.5">
+      <Link href={href as Route} className="flex grow items-center gap-1 px-4 py-1.5">
         {icon && React.createElement(icon, { className: iconClass })}
         <span className="grow text-left">{title}</span>
       </Link>
@@ -49,7 +50,7 @@ const SidebarItem = ({
   nav: NavItem;
   currentPathname: string;
   accessLevels: string[];
-}) => {
+}): JSX.Element => {
   const isActive = nav.subNav.some((subNav) => currentPathname === subNav.href && subNav.enable);
   const NavIcon = isActive ? nav.iconSolid : nav.iconOutline;
 
@@ -93,7 +94,7 @@ export default function SidebarPage({
 }: {
   accessLevels: Array<string>;
   isCompanyMember: boolean;
-}) {
+}): JSX.Element {
   const currentPathname = usePathname();
 
   return (

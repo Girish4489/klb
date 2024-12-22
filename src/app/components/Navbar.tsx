@@ -6,9 +6,9 @@ import constants from '@constants/constants';
 import { IdentificationIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { JSX, useEffect } from 'react';
 
-function NavbarContent() {
+function NavbarContent(): JSX.Element {
   return (
     <div className="navbar fixed top-0 z-50 bg-gradient-to-t from-base-100/80 to-base-300/65 py-0.5 backdrop-blur-sm">
       <div className="navbar-start">
@@ -31,7 +31,7 @@ function NavbarContent() {
   );
 }
 
-export function NavbarWithProgress() {
+export function NavbarWithProgress(): JSX.Element {
   const router = useRouter();
   const { listenToSystemTheme } = useTheme();
 
@@ -47,7 +47,7 @@ export function NavbarWithProgress() {
   );
 }
 
-export function Navbar() {
+export function Navbar(): JSX.Element {
   const router = useRouter();
   const { listenToSystemTheme } = useTheme();
 
