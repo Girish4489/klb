@@ -4,7 +4,7 @@ import { ICompany } from '@models/companyModel';
 import { fetchCompanyData } from '@utils/company/companyFetchUtils';
 import { userConfirmation } from '@utils/confirmation/confirmationUtil';
 import handleError from '@utils/error/handleError';
-import { ApiPut } from '@utils/makeApiRequest/makeApiRequest';
+import { ApiPut, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
 import mongoose from 'mongoose';
 import React, { ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -20,6 +20,10 @@ interface CompanyContextType {
   fetchAndSetCompany: (userId: string, role: string) => void;
   saveCompany: (company: ICompany) => Promise<void>;
   addUserToCompany: (userId: string, email: string) => void;
+}
+
+interface CompanyResponse extends ApiResponse {
+  data?: ICompany;
 }
 
 const CompanyContext = createContext<CompanyContextType | undefined>(undefined);
@@ -65,8 +69,19 @@ export const CompanyProvider: React.FC<CompanyContextProps> = ({ children }) => 
             ...partialUpdate.contactDetails,
           };
         }
-        const response = await ApiPut.company.updateCompany(updatedCompany._id.toString(), updatedCompany);
-        if (!response.success) throw new Error(response.message ?? 'Failed to update company details');
+        const response = await ApiPut.company.updateCompany<CompanyResponse>(
+          updatedCompany._id.toString(),
+          updatedCompany,
+        );
+
+        if (!response) {
+          throw new Error('No response from server');
+        }
+
+        if (!response.success || !response.data) {
+          throw new Error(response.message ?? 'Failed to update company details');
+        }
+
         setCompany(response.data);
         localStorage.setItem('company', JSON.stringify(response.data));
         toast.success(response.message ?? 'Company details updated successfully');
@@ -86,10 +101,19 @@ export const CompanyProvider: React.FC<CompanyContextProps> = ({ children }) => 
     if (!confirmed) return;
 
     try {
-      const updatedCompany = await ApiPut.company.updateCompany(company._id.toString(), company);
-      setCompany(updatedCompany);
-      localStorage.setItem('company', JSON.stringify(updatedCompany));
-      handleError.toast('Company details updated successfully');
+      const response = await ApiPut.company.updateCompany<CompanyResponse>(company._id.toString(), company);
+
+      if (!response) {
+        throw new Error('No response from server');
+      }
+
+      if (!response.success || !response.data) {
+        throw new Error(response.message ?? 'Failed to update company');
+      }
+
+      setCompany(response.data);
+      localStorage.setItem('company', JSON.stringify(response.data));
+      toast.success(response.message ?? 'Company details updated successfully');
     } catch (error) {
       handleError.toastAndLog(error);
     }

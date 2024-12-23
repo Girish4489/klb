@@ -194,7 +194,11 @@ export const ApiGet = {
         handleError.throw(error);
       }
     },
-    BillFromToDate: async (fromDate: Date, toDate: Date, page: number): Promise<ApiResponse | undefined> => {
+    BillFromToDate: async <T extends ApiResponse>(
+      fromDate: Date,
+      toDate: Date,
+      page: number,
+    ): Promise<T | undefined> => {
       try {
         const res = await axios.get(
           `${apiPath.REPORT_BILL_DETAILS_API}?fromDate=${fromDate}&toDate=${toDate}&page=${page}`,
@@ -230,7 +234,11 @@ export const ApiGet = {
         handleError.throw(error);
       }
     },
-    ReceiptFromToDate: async (fromDate: Date, toDate: Date, page: number): Promise<ApiResponse | undefined> => {
+    ReceiptFromToDate: async <T extends ApiResponse>(
+      fromDate: Date,
+      toDate: Date,
+      page: number,
+    ): Promise<T | undefined> => {
       try {
         const res = await axios.get(`${apiPath.REPORT_RECEIPT_API}?fromDate=${fromDate}&toDate=${toDate}&page=${page}`);
         return res.data;
@@ -369,7 +377,7 @@ export const ApiPut = {
     }
   },
   company: {
-    updateCompany: async (id: string, data: ICompany): Promise<ApiResponse | undefined> => {
+    updateCompany: async <T extends ApiResponse>(id: string, data: ICompany): Promise<T | undefined> => {
       try {
         const res = await axios.put(`${apiPath.DASHBOARD_COMPANY_API}?updateCompanyId=${id}`, data);
         return res.data;
