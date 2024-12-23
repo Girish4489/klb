@@ -1,17 +1,26 @@
 'use client';
+import constants from '@/app/constants/constants';
 import GlassCard from '@components/GlassCard';
-import constants from '@constants/constants';
 import { useAuth } from '@context/userContext';
 import { EnvelopeIcon, KeyIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
+import { IUser } from '@models/userModel';
 import { authUtils } from '@utils/auth/authUtils';
 import handleError from '@utils/error/handleError';
-import { ApiPost } from '@utils/makeApiRequest/makeApiRequest';
+import { ApiPost, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
 import { loginMetadata } from '@utils/metadata';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { JSX, useState } from 'react';
 import toast from 'react-hot-toast';
+
+interface LoginResponse extends ApiResponse {
+  user?: IUser;
+}
+
+interface ForgotPasswordResponse extends ApiResponse {
+  email?: string;
+}
 
 export default function LoginPage(): JSX.Element {
   const { setAuthenticated } = useAuth();
@@ -35,15 +44,19 @@ export default function LoginPage(): JSX.Element {
         throw new Error('Password should be at least 6 characters');
       }
 
-      const response = await ApiPost.Auth.login({ email, password });
+      const response = await ApiPost.Auth.login<LoginResponse>({ email, password });
 
-      if (response.success) {
+      if (!response) {
+        throw new Error('No response from server');
+      }
+
+      if (response.success && response.user) {
         setAuthenticated(true);
         authUtils.storeUser(response.user);
         toast.success('Login successful');
         router.push(constants.LANDING_LOGIN_SUCCESS_PAGE);
       } else {
-        throw new Error(response.message);
+        throw new Error(response.message ?? 'Login failed');
       }
     } catch (error) {
       handleError.toast(error);
@@ -58,17 +71,19 @@ export default function LoginPage(): JSX.Element {
     e.preventDefault();
     const email = e.currentTarget.forgotEmail.value.trim();
     try {
-      const forgotPassword = async () => {
+      const forgotPassword = async (): Promise<string> => {
         if (email.length === 0) throw new Error('Please enter email');
 
-        const response = await ApiPost.Auth.forgotPassword({ email });
-        if (response.success) {
-          return response.message;
-        } else {
-          throw new Error(response.message ?? response.error);
+        const response = await ApiPost.Auth.forgotPassword<ForgotPasswordResponse>({ email });
+        if (!response) {
+          throw new Error('No response from server');
         }
+        if (response.success) {
+          return response.message ?? 'Reset link sent successfully';
+        }
+        throw new Error(response.message ?? response.error ?? 'Failed to send reset link');
       };
-      await toast.promise<string>(forgotPassword(), {
+      await toast.promise(forgotPassword(), {
         loading: 'Sending reset link...',
         success: (message: string) => <b>{message}</b>,
         error: (error: Error) => <b>{error.message}</b>,

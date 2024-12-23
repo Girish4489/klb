@@ -3,11 +3,15 @@ import GlassCard from '@components/GlassCard';
 import constants from '@constants/constants';
 import { KeyIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 import handleError from '@utils/error/handleError';
-import { ApiPost } from '@utils/makeApiRequest/makeApiRequest';
+import { ApiPost, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { JSX, Suspense, useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
+
+interface ResetPasswordResponse extends ApiResponse {
+  email?: string;
+}
 
 function ResetPasswordContent(): JSX.Element {
   const [token, setToken] = useState('');
@@ -32,12 +36,15 @@ function ResetPasswordContent(): JSX.Element {
         throw new Error('Passwords do not match');
       }
 
-      const resetPassword = async () => {
-        const response = await ApiPost.Auth.resetPassword({ token, password });
-        if (response.success) {
-          return response.message;
+      const resetPassword = async (): Promise<string> => {
+        const response = await ApiPost.Auth.resetPassword<ResetPasswordResponse>({ token, password });
+        if (!response) {
+          throw new Error('No response from server');
         }
-        throw new Error(response.message ?? response.error);
+        if (response.success) {
+          return response.message ?? 'Password reset successful';
+        }
+        throw new Error(response.message ?? response.error ?? 'Failed to reset password');
       };
 
       await toast.promise(resetPassword(), {

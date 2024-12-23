@@ -5,13 +5,17 @@ import { useUser } from '@context/userContext';
 import { InformationCircleIcon } from '@heroicons/react/24/solid';
 import { IUser } from '@models/userModel';
 import handleError from '@utils/error/handleError';
-import { ApiPost } from '@utils/makeApiRequest/makeApiRequest';
+import { ApiPost, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
 import { JSX, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
 interface Fonts {
   name: string;
   weight: number;
+}
+
+interface PreferencesResponse extends ApiResponse {
+  preferences?: IUser['preferences'];
 }
 
 export default function SettingsPage(): JSX.Element {
@@ -36,16 +40,18 @@ export default function SettingsPage(): JSX.Element {
   const updatePreferences = async (updatedPreferences: Partial<IUser['preferences']>): Promise<void> => {
     await toast
       .promise(
-        (async () => {
-          const res = await ApiPost.User.updatePreferences(updatedPreferences);
+        (async (): Promise<string> => {
+          const res = await ApiPost.User.updatePreferences<PreferencesResponse>(updatedPreferences);
+          if (!res) {
+            throw new Error('No response from server');
+          }
           if (res.success && res.preferences) {
             updateUser({
               preferences: res.preferences,
             });
-            return res.message;
-          } else {
-            throw new Error(res.message);
+            return res.message ?? 'Preferences updated successfully';
           }
+          throw new Error(res.message ?? res.error ?? 'Failed to update preferences');
         })(),
         {
           loading: 'Updating preferences...',

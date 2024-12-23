@@ -2,12 +2,21 @@
 import constants from '@/app/constants/constants';
 import GlassCard from '@components/GlassCard';
 import { EnvelopeIcon, IdentificationIcon, KeyIcon, UserIcon } from '@heroicons/react/24/outline';
+import { IUser } from '@models/userModel';
 import handleError from '@utils/error/handleError';
-import { ApiPost } from '@utils/makeApiRequest/makeApiRequest';
+import { ApiPost, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { JSX } from 'react';
 import { toast } from 'react-hot-toast';
+
+interface SignupResponse extends ApiResponse {
+  savedUser?: Partial<IUser>;
+}
+
+interface EmailResponse extends ApiResponse {
+  email?: string;
+}
 
 export default function SignupPage(): JSX.Element {
   const router = useRouter();
@@ -29,13 +38,15 @@ export default function SignupPage(): JSX.Element {
       throw new Error('Password should be at least 6 characters');
     }
     try {
-      const signup = async () => {
-        const response = await ApiPost.Auth.signup({ username, email, password });
-        if (response.success) {
-          return response.message;
-        } else {
-          throw new Error(response.message ?? response.error);
+      const signup = async (): Promise<string> => {
+        const response = await ApiPost.Auth.signup<SignupResponse>({ username, email, password });
+        if (!response) {
+          throw new Error('No response from server');
         }
+        if (response.success) {
+          return response.message ?? 'Signup successful';
+        }
+        throw new Error(response.message ?? response.error ?? 'Unknown error occurred');
       };
       await toast.promise(signup(), {
         loading: 'Signing up...',
@@ -56,13 +67,15 @@ export default function SignupPage(): JSX.Element {
     e.preventDefault();
     const email = e.currentTarget.resendEmail.value.trim();
     try {
-      const resendVerification = async () => {
-        const response = await ApiPost.Auth.resendEmail({ email });
-        if (response.success) {
-          return response.message;
-        } else {
-          throw new Error(response.message ?? response.error);
+      const resendVerification = async (): Promise<string> => {
+        const response = await ApiPost.Auth.resendEmail<EmailResponse>({ email });
+        if (!response) {
+          throw new Error('No response from server');
         }
+        if (response.success) {
+          return response.message ?? 'Verification email sent';
+        }
+        throw new Error(response.message ?? response.error ?? 'Unknown error occurred');
       };
       await toast.promise(resendVerification(), {
         loading: 'Sending verification email',

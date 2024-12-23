@@ -2,11 +2,15 @@
 import GlassCard from '@components/GlassCard';
 import { EnvelopeIcon, IdentificationIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
 import handleError from '@utils/error/handleError';
-import { ApiPost } from '@utils/makeApiRequest/makeApiRequest';
+import { ApiPost, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { JSX, Suspense, useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
+
+interface VerifyEmailResponse extends ApiResponse {
+  email?: string;
+}
 
 function VerifyEmailPageWrapper(): JSX.Element {
   const [token, setToken] = useState('');
@@ -28,15 +32,20 @@ function VerifyEmailPageWrapper(): JSX.Element {
 
     setIsVerifying(true);
     try {
-      const response = await ApiPost.Auth.verifyEmail({ token });
+      const response = await ApiPost.Auth.verifyEmail<VerifyEmailResponse>({ token });
+
+      if (!response) {
+        throw new Error('No response from server');
+      }
+
       if (response.success) {
-        toast.success(response.message);
+        toast.success(response.message ?? 'Email verified successfully');
         setIsVerified(true);
         setTimeout(() => {
           router.push('/auth/login');
         }, 2000);
       } else {
-        throw new Error(response.message ?? response.error);
+        throw new Error(response.message ?? response.error ?? 'Failed to verify email');
       }
     } catch (error) {
       handleError.toast(error);
