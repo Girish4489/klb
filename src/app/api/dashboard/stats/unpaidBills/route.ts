@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
 
 connect();
 
-export async function GET() {
+export async function GET(): Promise<NextResponse> {
   try {
     const unpaidBills = await Bill.find({
       paymentStatus: { $in: ['Unpaid', 'Partially Paid'] },

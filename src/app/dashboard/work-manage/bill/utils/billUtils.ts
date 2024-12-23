@@ -185,7 +185,7 @@ export const updateOrderAmount = (
   } as IBill);
 };
 
-export const createEmptyOrder = () => ({
+export const createEmptyOrder = (): IBill['order'][number] => ({
   category: {
     catId: new Types.ObjectId(),
     categoryName: '',
@@ -196,7 +196,7 @@ export const createEmptyOrder = () => ({
   barcode: false,
   measurement: '',
   orderNotes: '',
-  color: { _id: new Types.ObjectId(), name: '', code: '' },
+  color: { type: 'Custom', name: '', hex: '' },
   amount: 0,
   status: 'Pending',
 });

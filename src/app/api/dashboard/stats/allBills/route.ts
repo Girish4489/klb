@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 connect();
 
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1', 10);

@@ -2,7 +2,7 @@ import handleError from '@utils/error/handleError';
 import { cookie } from '@utils/token/token';
 import { NextResponse } from 'next/server';
 
-export async function GET() {
+export async function GET(): Promise<NextResponse> {
   try {
     const response = NextResponse.json({
       message: 'Logout successful',

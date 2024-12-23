@@ -21,7 +21,7 @@ interface UpdateCustomerRequest {
 
 connect();
 
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const reqBody = await request.json();
     const { type, page = 1, itemsPerPage = 10 } = reqBody;
@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function handleDeleteCustomer(reqBody: DeleteCustomerRequest) {
+async function handleDeleteCustomer(reqBody: DeleteCustomerRequest): Promise<NextResponse> {
   const customer = await Customer.findByIdAndDelete(reqBody.customerId);
   if (!customer) {
     throw new Error('Customer not found');
@@ -103,7 +103,7 @@ async function handleDeleteCustomer(reqBody: DeleteCustomerRequest) {
   });
 }
 
-async function handleUpdateCustomer(reqBody: UpdateCustomerRequest) {
+async function handleUpdateCustomer(reqBody: UpdateCustomerRequest): Promise<NextResponse> {
   const { customerId, customer: editedCustomer } = reqBody;
 
   // Ensure phone is number type

@@ -16,7 +16,7 @@ connect();
  *
  * @throws {Error} - Throws an error if the request body is invalid or if there is an issue with the database query.
  */
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const { emails } = await request.json();
 

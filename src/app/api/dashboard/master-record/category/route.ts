@@ -331,11 +331,11 @@ export async function POST(request: NextRequest) {
       },
     };
 
-    const isAdmin = async () => {
+    const isAdmin = async (): Promise<boolean> => {
       const user = await User.findOne({ _id: userId }).select(
         '-password -_id -__v -email -isVerified -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry -theme -profileImage',
       );
-      return user?.isAdmin;
+      return user?.isAdmin ?? false;
     };
 
     if (await isAdmin()) {
@@ -351,7 +351,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(_request: NextRequest) {
+export async function GET(_request: NextRequest): Promise<NextResponse> {
   try {
     const categories = await Category.find();
     return NextResponse.json({

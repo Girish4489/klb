@@ -46,7 +46,7 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
     selectedCategoryId: string | null,
     selectedCategoryName: string,
     orderIndex: number,
-  ) => {
+  ): void => {
     setBill((prevBill) => {
       if (!prevBill) return prevBill;
       const updatedOrder = [...prevBill.order];

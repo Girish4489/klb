@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 connect();
 
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     const reqBody = await req.json();
     const existingTaxName = await Tax.findOne({ taxName: reqBody.taxName });
@@ -17,21 +17,21 @@ export async function POST(req: NextRequest) {
     await tax.save();
     return NextResponse.json({ message: 'Tax created successfully', success: true, data: tax });
   } catch (error) {
-    handleError.api(error);
+    return handleError.api(error);
   }
 }
 
 // returns all taxes from the database
-export async function GET() {
+export async function GET(): Promise<NextResponse> {
   try {
     const taxes = await Tax.find();
     return NextResponse.json({ message: 'Taxes fetched successfully', success: true, taxes: taxes });
   } catch (error) {
-    handleError.api(error);
+    return handleError.api(error);
   }
 }
 
-export async function PUT(req: NextRequest) {
+export async function PUT(req: NextRequest): Promise<NextResponse> {
   try {
     const id = req.nextUrl.searchParams.get('updateTId');
     if (!id) {
@@ -51,11 +51,11 @@ export async function PUT(req: NextRequest) {
     await tax.save();
     return NextResponse.json({ message: 'Tax updated successfully', success: true, data: tax });
   } catch (error) {
-    handleError.api(error);
+    return handleError.api(error);
   }
 }
 
-export async function DELETE(req: NextRequest) {
+export async function DELETE(req: NextRequest): Promise<NextResponse> {
   try {
     const id = req.nextUrl.searchParams.get('deleteTId');
 
@@ -70,6 +70,6 @@ export async function DELETE(req: NextRequest) {
 
     return NextResponse.json({ message: 'Tax deleted successfully', success: true });
   } catch (error) {
-    handleError.api(error);
+    return handleError.api(error);
   }
 }

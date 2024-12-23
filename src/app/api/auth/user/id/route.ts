@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 connect();
 
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     const userId = request.nextUrl.searchParams.get('userId');
     if (!userId) {

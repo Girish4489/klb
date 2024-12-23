@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 connect();
 
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     const tokenData = await UserTokenData.create(request);
     const userId = tokenData.getId();
@@ -46,12 +46,14 @@ export async function GET(request: NextRequest) {
       const recentReceipt = await Receipt.find().sort({ createdAt: -1 }).limit(10);
       return NextResponse.json({ message: 'Recent receipt', success: true, recentReceipt: recentReceipt });
     }
+
+    return NextResponse.json({ message: 'No data found', success: false });
   } catch (error) {
     return handleError.api(error);
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const tokenData = await UserTokenData.create(request);
     const userId = tokenData.getId();

@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 connect();
 
 // returns the single user having the email
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     const email = request.nextUrl.searchParams.get('email');
     if (!email) {
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function PUT(request: NextRequest) {
+export async function PUT(request: NextRequest): Promise<NextResponse> {
   try {
     const {
       email,

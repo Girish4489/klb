@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
 
 connect();
 
-export async function GET() {
+export async function GET(): Promise<NextResponse> {
   try {
     const today = new Date();
     const dueDate = new Date();

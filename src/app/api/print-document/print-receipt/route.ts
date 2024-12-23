@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 connect();
 
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     const tokenData = await UserTokenData.create(request);
     const userId = tokenData.getId();

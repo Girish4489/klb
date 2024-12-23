@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 connect();
 
-export async function GET(req: NextRequest) {
+export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
     const tokenData = await UserTokenData.create(req);
     const userId = tokenData.getId();
@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-export async function PUT(req: NextRequest) {
+export async function PUT(req: NextRequest): Promise<NextResponse> {
   try {
     const reqBody = await req.json();
     const updateData = { ...reqBody };
@@ -57,7 +57,7 @@ export async function PUT(req: NextRequest) {
   }
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     const tokenData = await UserTokenData.create(req);
     const userId = tokenData.getId();
@@ -80,6 +80,6 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function DELETE() {
+export async function DELETE(): Promise<NextResponse> {
   return NextResponse.json({ success: false, error: 'Method not allowed' }, { status: 405 });
 }

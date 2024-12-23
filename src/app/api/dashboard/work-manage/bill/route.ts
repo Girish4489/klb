@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 connect();
 
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     const tokenData = await UserTokenData.create(request);
     const userId = tokenData.getId();
@@ -63,12 +63,14 @@ export async function GET(request: NextRequest) {
         weekBill: weekBill,
       });
     }
+
+    return NextResponse.json({ message: 'No matching criteria', success: false });
   } catch (error) {
     return handleError.api(error);
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const tokenData = await UserTokenData.create(request);
     const userId = tokenData.getId();
@@ -111,7 +113,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function PUT(request: NextRequest) {
+export async function PUT(request: NextRequest): Promise<NextResponse> {
   try {
     const tokenData = await UserTokenData.create(request);
     const userId = tokenData.getId();
@@ -162,7 +164,7 @@ export async function PUT(request: NextRequest) {
   }
 }
 
-export async function DELETE(request: NextRequest) {
+export async function DELETE(request: NextRequest): Promise<NextResponse> {
   try {
     const tokenData = await UserTokenData.create(request);
     const userId = tokenData.getId();

@@ -24,7 +24,7 @@ const DEFAULT_PROFILE_IMAGE = {
   uploadAt: new Date(),
 } as const;
 
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const user = await getUserFromRequest(request);
     const formData = await request.formData();
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function DELETE(request: NextRequest) {
+export async function DELETE(request: NextRequest): Promise<NextResponse> {
   try {
     const user = await getUserFromRequest(request);
     user.profileImage = DEFAULT_PROFILE_IMAGE;
