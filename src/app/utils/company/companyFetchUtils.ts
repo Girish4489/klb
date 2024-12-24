@@ -1,7 +1,8 @@
+import { ICompany } from '@models/companyModel';
 import handleError from '@utils/error/handleError';
 import axios from 'axios';
 
-export async function fetchCompanyData(userId: string, role: string) {
+export async function fetchCompanyData(userId: string, role: string): Promise<ICompany | undefined> {
   try {
     const {
       data: { data: companyData, success: success, message: message },
@@ -10,5 +11,6 @@ export async function fetchCompanyData(userId: string, role: string) {
     return companyData;
   } catch (error) {
     handleError.throw(error);
+    return undefined;
   }
 }

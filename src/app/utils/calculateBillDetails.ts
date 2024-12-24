@@ -1,5 +1,5 @@
 import { IReceipt } from '@models/klm';
-import { ApiGet } from '@utils/makeApiRequest/makeApiRequest';
+import { ApiGet, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
 import toast from 'react-hot-toast';
 
 interface BillDetails {
@@ -9,6 +9,10 @@ interface BillDetails {
   paidAmount: number;
   dueAmount: number;
   taxAmount: number;
+}
+
+interface ReceiptResponse extends ApiResponse {
+  receipt: IReceipt[];
 }
 
 const initialBillDetails: BillDetails = {
@@ -43,8 +47,8 @@ export const fetchAndCalculateBillDetails = async (
   billTotalAmount: number,
 ): Promise<BillDetails> => {
   try {
-    const receiptsResponse = await ApiGet.Receipt.ReceiptSearch(billNumber, 'bill');
-    if (!Array.isArray(receiptsResponse.receipt) || receiptsResponse.success === false) {
+    const receiptsResponse = await ApiGet.Receipt.ReceiptSearch<ReceiptResponse>(billNumber, 'bill');
+    if (!receiptsResponse || !Array.isArray(receiptsResponse.receipt) || receiptsResponse.success === false) {
       toast.error('Failed to fetch receipts');
       return initialBillDetails;
     }

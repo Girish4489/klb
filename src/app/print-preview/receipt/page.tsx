@@ -7,10 +7,21 @@ import { getStyle } from '@data/printStyles';
 import { IReceipt } from '@models/klm';
 import klm from '@public/klm.png';
 import handleError from '@utils/error/handleError';
-import { ApiGet } from '@utils/makeApiRequest/makeApiRequest';
+import { ApiGet, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
 import { getSearchParam } from '@utils/url/urlUtils';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+
+interface PrintReceiptResponse extends ApiResponse {
+  receipts: IReceipt[];
+  bill?: {
+    totalAmount: number;
+    discount: number;
+    grandTotal: number;
+    paidAmount: number;
+    dueAmount: number;
+  };
+}
 
 const ReceiptPage: React.FC = () => {
   const [receipts, setReceipts] = useState<IReceipt[]>([]);
@@ -41,9 +52,13 @@ const ReceiptPage: React.FC = () => {
       setBackUrl(`/dashboard/transaction/receipt?billNumber=${billNumber}&receiptNumber=${receiptNumberToHighlight}`);
 
       try {
-        const response = await ApiGet.printDocument.PrintReceipts(type, billNumber);
-        if (response?.success) {
-          setReceipts((response.receipts as IReceipt[]) || []);
+        const response = await ApiGet.printDocument.PrintReceipts<PrintReceiptResponse>(type, billNumber);
+        if (!response) {
+          throw new Error('No response from server');
+        }
+
+        if (response.success) {
+          setReceipts(response.receipts || []);
           if (response.bill) {
             setCal({
               totalAmount: response.bill.totalAmount || 0,
@@ -56,7 +71,7 @@ const ReceiptPage: React.FC = () => {
           toast.success(<b>{response.message} fetched successfully</b>);
           setIsDataLoaded(true);
         } else {
-          toast.error(response?.message || 'Failed to fetch data');
+          throw new Error(response.message ?? 'Failed to fetch data');
         }
       } catch (error) {
         handleError.toast(error);

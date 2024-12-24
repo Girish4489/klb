@@ -1,7 +1,15 @@
 import { IBillDetails } from '@/app/dashboard/report/bill-details/types';
 import { ICustomer, IReceipt } from '@models/klm';
-import { ApiGet } from '@utils/makeApiRequest/makeApiRequest';
+import { ApiGet, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
 import axios from 'axios';
+
+interface BillResponse extends ApiResponse {
+  bill: IBillDetails[];
+}
+
+interface ReceiptResponse extends ApiResponse {
+  receipt: IReceipt[];
+}
 
 export const fetchAllData = {
   bills: async (fromDate: Date, toDate: Date): Promise<IBillDetails[]> => {
@@ -10,11 +18,15 @@ export const fetchAllData = {
     let hasMore = true;
 
     while (hasMore) {
-      const data = await ApiGet.Bill.BillFromToDate(fromDate, toDate, page);
-      if (data.bill.length === 0) {
+      const response = await ApiGet.Bill.BillFromToDate<BillResponse>(fromDate, toDate, page);
+      if (!response || !response.success) {
+        hasMore = false;
+        continue;
+      }
+      if (!response.bill || response.bill.length === 0) {
         hasMore = false;
       } else {
-        bills.push(...data.bill);
+        bills.push(...response.bill);
         page++;
       }
     }
@@ -28,11 +40,15 @@ export const fetchAllData = {
     let hasMore = true;
 
     while (hasMore) {
-      const res = await ApiGet.Receipt.ReceiptFromToDate(fromDate, toDate, page);
-      if (res.receipt.length === 0) {
+      const response = await ApiGet.Receipt.ReceiptFromToDate<ReceiptResponse>(fromDate, toDate, page);
+      if (!response || !response.success) {
+        hasMore = false;
+        continue;
+      }
+      if (!response.receipt || response.receipt.length === 0) {
         hasMore = false;
       } else {
-        receipts.push(...res.receipt);
+        receipts.push(...response.receipt);
         page++;
       }
     }

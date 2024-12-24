@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import QrGenerator from '@components/Barcode/BarcodeGenerator';
 import { ICompany } from '@models/companyModel';
 import { formatDS } from '@utils/format/dateUtils';
-import { ApiGet } from '@utils/makeApiRequest/makeApiRequest';
+import { ApiGet, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
 import Image from 'next/image';
 
 interface CustomerBillPreviewProps {
@@ -13,6 +13,10 @@ interface CustomerBillPreviewProps {
   isDataLoaded: boolean;
   klm: { src: string };
   style: string;
+}
+
+interface ReceiptSearchResponse extends ApiResponse {
+  receipt: IReceipt[];
 }
 
 const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, company, isDataLoaded, klm, style }) => {
@@ -24,9 +28,14 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, company
   useEffect(() => {
     if (bill) {
       const fetchReceiptData = async (): Promise<void> => {
-        const receipts = await ApiGet.Receipt.ReceiptSearch(bill.billNumber, 'bill');
-        const totalDiscount = receipts.reduce((sum: number, receipt: IReceipt) => sum + receipt.discount, 0);
-        const totalTaxAmount = receipts.reduce((sum: number, receipt: IReceipt) => sum + receipt.taxAmount, 0);
+        const response = await ApiGet.Receipt.ReceiptSearch<ReceiptSearchResponse>(bill.billNumber, 'bill');
+        if (!response || !response.success) {
+          return;
+        }
+
+        const receipts = response.receipt || [];
+        const totalDiscount = receipts.reduce((sum: number, receipt: IReceipt) => sum + (receipt.discount || 0), 0);
+        const totalTaxAmount = receipts.reduce((sum: number, receipt: IReceipt) => sum + (receipt.taxAmount || 0), 0);
         const grandTotal = bill.totalAmount + totalTaxAmount - totalDiscount;
 
         setCalculatedValues({

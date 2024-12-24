@@ -5,12 +5,19 @@ import { prepareBillExportData } from '@utils/exportUtils/bills';
 import { exportToCSV, exportToPDF } from '@utils/exportUtils/common';
 import { fetchAllData } from '@utils/fetchAllData/fetchAllData';
 import { formatD } from '@utils/format/dateUtils';
-import { ApiGet } from '@utils/makeApiRequest/makeApiRequest';
+import { ApiGet, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
 import { JSX, useState } from 'react';
 import toast from 'react-hot-toast';
 import { IBillDetails } from './types';
 
 const PAGE_SIZE = 10; // Number of bills per page
+
+interface BillDetailResponse extends ApiResponse {
+  success: boolean;
+  message: string;
+  bill: IBillDetails[];
+  totalBills: number;
+}
 
 export default function BillDetails(): JSX.Element {
   const [fromDate, setFromDate] = useState<Date>();
@@ -124,13 +131,22 @@ export default function BillDetails(): JSX.Element {
     fromDate: Date,
     toDate: Date,
     page: number,
-  ): Promise<{ message: string; success: boolean; bill: IBillDetails[]; totalBills: number }> => {
-    const data = await ApiGet.Bill.BillFromToDate(fromDate, toDate, page);
+  ): Promise<{
+    message: string;
+    success: boolean;
+    bill: IBillDetails[];
+    totalBills: number;
+  }> => {
+    const data = await ApiGet.Bill.BillFromToDate<BillDetailResponse>(fromDate, toDate, page);
+    if (!data) {
+      throw new Error('No response from server');
+    }
+
     return {
-      message: data.message,
+      message: data.message ?? 'No message provided',
       success: data.success,
-      bill: data.bill as IBillDetails[],
-      totalBills: data.totalBills,
+      bill: data.bill ?? [],
+      totalBills: data.totalBills ?? 0,
     };
   };
 

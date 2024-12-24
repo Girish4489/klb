@@ -1,14 +1,14 @@
 // Import necessary modules and models
 import { connect } from '@/dbConfig/dbConfig';
 import { UserTokenData } from '@helpers/getDataFromToken';
-import User from '@models/userModel';
+import User, { IUser } from '@models/userModel';
 import handleError from '@utils/error/handleError';
 import { ImageMetadata } from '@utils/image/imageUtils';
 import { NextRequest, NextResponse } from 'next/server';
 
 connect();
 
-async function getUserFromRequest(request: NextRequest) {
+async function getUserFromRequest(request: NextRequest): Promise<IUser> {
   const tokenData = await UserTokenData.create(request);
   const userId = tokenData.getId();
   const user = await User.findById(userId);

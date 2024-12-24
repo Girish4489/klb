@@ -7,11 +7,15 @@ import OrdersTable from '@dashboard/work-manage/labelling/components/OrdersTable
 import { CheckCircleIcon, MinusCircleIcon, PrinterIcon } from '@heroicons/react/24/solid';
 import { IBill } from '@models/klm';
 import handleError from '@utils/error/handleError';
-import { ApiGet } from '@utils/makeApiRequest/makeApiRequest';
+import { ApiGet, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
 import { getSearchParam, setSearchParam } from '@utils/url/urlUtils';
 import { useRouter } from 'next/navigation';
 import { FC, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+
+interface BillSearchResponse extends ApiResponse {
+  bill: IBill[];
+}
 
 const LabellingPage: FC = () => {
   const [searchBill, setSearchBill] = useState<IBill[] | undefined>(undefined);
@@ -38,12 +42,15 @@ const LabellingPage: FC = () => {
     if (billNumber) {
       (async (): Promise<void> => {
         try {
-          const res = await ApiGet.Bill.BillSearch(parseInt(billNumber), 'bill');
-          if (res.success && res.bill.length > 0) {
+          const res = await ApiGet.Bill.BillSearch<BillSearchResponse>(parseInt(billNumber), 'bill');
+          if (!res) {
+            throw new Error('No response from server');
+          }
+          if (res.success && res.bill?.length > 0) {
             setBill(res.bill[0]);
             if (orderNumber) checkOrderInUrl(orderNumber);
           } else {
-            throw new Error(res.message);
+            throw new Error(res.message ?? 'Bill not found');
           }
         } catch (error) {
           handleError.toastAndLog(error);
@@ -69,12 +76,15 @@ const LabellingPage: FC = () => {
         if (billNumber === bill?.billNumber?.toString()) {
           toast.success('Bill already loaded');
         } else {
-          const res = await ApiGet.Bill.BillSearch(parseInt(billNumber), 'bill');
-          if (res.success && res.bill.length > 0) {
+          const res = await ApiGet.Bill.BillSearch<BillSearchResponse>(parseInt(billNumber), 'bill');
+          if (!res) {
+            throw new Error('No response from server');
+          }
+          if (res.success && res.bill?.length > 0) {
             toast.success('Bill found');
             setBill(res.bill[0]);
           } else {
-            throw new Error(res.message);
+            throw new Error(res.message ?? 'Bill not found');
           }
         }
 

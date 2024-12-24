@@ -1,6 +1,6 @@
 import { IReceipt, ITax } from '@models/klm';
 import handleError from '@utils/error/handleError';
-import { ApiGet } from '@utils/makeApiRequest/makeApiRequest';
+import { ApiGet, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
 import { Dispatch, SetStateAction } from 'react';
 
 interface AmtTrack {
@@ -10,23 +10,38 @@ interface AmtTrack {
   due: number;
 }
 
+interface TaxResponse extends ApiResponse {
+  taxes: ITax[];
+}
+
+interface RecentReceiptResponse extends ApiResponse {
+  recentReceipt: IReceipt[];
+}
+
 export async function fetchAllInitialData(
   setTax: Dispatch<SetStateAction<ITax[]>>,
   setRecentReceipt: Dispatch<SetStateAction<IReceipt[] | undefined>>,
 ): Promise<void> {
   try {
-    const [taxResponse, recentReceiptResponse] = await Promise.all([ApiGet.Tax(), ApiGet.Receipt.RecentReceipt()]);
+    const [taxResponse, recentReceiptResponse] = await Promise.all([
+      ApiGet.Tax<TaxResponse>(),
+      ApiGet.Receipt.RecentReceipt<RecentReceiptResponse>(),
+    ]);
+
+    if (!taxResponse || !recentReceiptResponse) {
+      throw new Error('Failed to fetch data');
+    }
 
     if (taxResponse.success) {
       setTax(taxResponse.taxes);
     } else {
-      throw new Error(taxResponse.message);
+      throw new Error(taxResponse.message ?? 'Failed to fetch taxes');
     }
 
     if (recentReceiptResponse.success) {
       setRecentReceipt(recentReceiptResponse.recentReceipt);
     } else {
-      throw new Error(recentReceiptResponse.message);
+      throw new Error(recentReceiptResponse.message ?? 'Failed to fetch recent receipts');
     }
   } catch (error) {
     handleError.toastAndLog(error);

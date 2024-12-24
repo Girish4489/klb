@@ -6,11 +6,18 @@ import { IReceipt } from '@models/klm';
 import handleError from '@utils/error/handleError';
 import { fetchAllData } from '@utils/fetchAllData/fetchAllData';
 import { formatD } from '@utils/format/dateUtils';
-import { ApiGet } from '@utils/makeApiRequest/makeApiRequest';
+import { ApiGet, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
 import React, { JSX, useState } from 'react';
 import toast from 'react-hot-toast';
 
 const PAGE_SIZE = 10; // Number of receipts per page
+
+interface ReceiptDateResponse extends ApiResponse {
+  success: boolean;
+  message: string;
+  receipt: IReceipt[];
+  totalReceipts: number;
+}
 
 export default function Receipt(): JSX.Element {
   const [fromDate, setFromDate] = React.useState<Date>();
@@ -28,11 +35,14 @@ export default function Receipt(): JSX.Element {
       toast.error('Invalid date range. fromDate cannot be greater than toDate');
       return;
     }
-    const filter = async () => {
+    const filter = async (): Promise<string | undefined> => {
       try {
         setReceipts([]);
-        const data = await ApiGet.Receipt.ReceiptFromToDate(fromDate, toDate, 1);
-        if (data.success === true) {
+        const data = await ApiGet.Receipt.ReceiptFromToDate<ReceiptDateResponse>(fromDate, toDate, 1);
+        if (!data) {
+          throw new Error('No response from server');
+        }
+        if (data.success) {
           setReceipts(data.receipt);
           setTotalPages(calculateTotalPages(data.totalReceipts));
           setCurrentPage(1);
@@ -128,8 +138,12 @@ export default function Receipt(): JSX.Element {
     );
   };
 
-  const fetchReceipts = async (fromDate: Date, toDate: Date, page: number) => {
-    const data = await ApiGet.Receipt.ReceiptFromToDate(fromDate, toDate, page);
+  const fetchReceipts = async (
+    fromDate: Date,
+    toDate: Date,
+    page: number,
+  ): Promise<ReceiptDateResponse | undefined> => {
+    const data = await ApiGet.Receipt.ReceiptFromToDate<ReceiptDateResponse>(fromDate, toDate, page);
     return data;
   };
 
@@ -146,7 +160,7 @@ export default function Receipt(): JSX.Element {
       return;
     }
     const data = await fetchReceipts(fromDate, toDate, page);
-    if (data.success === true) {
+    if (data?.success) {
       setReceipts(data.receipt);
       setCurrentPage(page);
     }

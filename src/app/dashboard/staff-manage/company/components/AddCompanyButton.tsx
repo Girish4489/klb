@@ -4,10 +4,15 @@ import { useCompany } from '@context/companyContext';
 import { CloudArrowUpIcon, PlusCircleIcon } from '@heroicons/react/24/solid';
 import { ICompany } from '@models/companyModel';
 import handleError from '@utils/error/handleError';
-import { ApiPost } from '@utils/makeApiRequest/makeApiRequest';
+import { ApiPost, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
 import Form from 'next/form';
 import { JSX, useState } from 'react';
 import toast from 'react-hot-toast';
+
+interface CompanyResponse extends ApiResponse {
+  success: boolean;
+  data?: ICompany;
+}
 
 const AddCompanyButton = (): JSX.Element => {
   const { updateCompany } = useCompany();
@@ -16,16 +21,23 @@ const AddCompanyButton = (): JSX.Element => {
   const handleAddCompany = async (): Promise<void> => {
     try {
       if (!newCompany) throw new Error('Not valid');
-      const res = await ApiPost.Company.AddNewCompany({
+      const res = await ApiPost.Company.AddNewCompany<CompanyResponse>({
         ...newCompany,
         name: newCompany.name,
         contactDetails: { ...newCompany?.contactDetails, address: newCompany.contactDetails.address },
       } as ICompany);
+
+      if (!res) {
+        throw new Error('No response from server');
+      }
+
       if (res.success) {
         toast.success(res.message ?? 'Company added successfully');
         (document.getElementById('add_new_company_modal') as HTMLDialogElement)?.close();
-        updateCompany(res.data || undefined);
+        if (res.data) updateCompany(res.data);
         setNewCompany(undefined);
+      } else {
+        throw new Error(res.message ?? res.error ?? 'Failed to add company');
       }
     } catch (error) {
       handleError.toast(error);

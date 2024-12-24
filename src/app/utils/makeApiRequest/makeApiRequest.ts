@@ -13,7 +13,7 @@ export interface ApiResponse {
 }
 
 export const ApiPost = {
-  Category: async (type: string, data: Record<string, string>): Promise<ApiResponse | undefined> => {
+  Category: async <T extends ApiResponse>(type: string, data: Record<string, string>): Promise<T | undefined> => {
     try {
       const res = await axios.post(apiPath.DASHBOARD_CATEGORY_API, { type, ...data });
       return res.data;
@@ -21,7 +21,7 @@ export const ApiPost = {
       handleError.throw(error);
     }
   },
-  Tax: async (data: ITax): Promise<ApiResponse | undefined> => {
+  Tax: async <T extends ApiResponse>(data: ITax): Promise<T | undefined> => {
     try {
       const res = await axios.post(apiPath.DASHBOARD_TAX_API, data);
       return res.data;
@@ -29,7 +29,7 @@ export const ApiPost = {
       handleError.throw(error);
     }
   },
-  Bill: async (data: IBill): Promise<ApiResponse | undefined> => {
+  Bill: async <T extends ApiResponse>(data: IBill): Promise<T | undefined> => {
     try {
       const res = await axios.post(apiPath.DASHBOARD_BILL_API, data);
       return res.data;
@@ -38,7 +38,7 @@ export const ApiPost = {
     }
   },
   Company: {
-    AddNewCompany: async (data: ICompany): Promise<ApiResponse | undefined> => {
+    AddNewCompany: async <T extends ApiResponse>(data: ICompany): Promise<T | undefined> => {
       try {
         const res = await axios.post(apiPath.DASHBOARD_COMPANY_API, data);
         return res.data;
@@ -48,7 +48,7 @@ export const ApiPost = {
     },
   },
   Receipt: {
-    SaveReceipt: async (data: IReceipt): Promise<ApiResponse | undefined> => {
+    SaveReceipt: async <T extends ApiResponse>(data: IReceipt): Promise<T | undefined> => {
       try {
         const res = await axios.post(apiPath.DASHBOARD_RECEIPT_API, data);
         return res.data;
@@ -145,7 +145,7 @@ export const ApiPost = {
 };
 
 export const ApiGet = {
-  Category: async (): Promise<ApiResponse | undefined> => {
+  Category: async <T extends ApiResponse>(): Promise<T | undefined> => {
     try {
       const res = await axios.get(apiPath.DASHBOARD_CATEGORY_API);
       return res.data;
@@ -153,7 +153,7 @@ export const ApiGet = {
       handleError.throw(error);
     }
   },
-  Tax: async (): Promise<ApiResponse | undefined> => {
+  Tax: async <T extends ApiResponse>(): Promise<T | undefined> => {
     try {
       const res = await axios.get(`${apiPath.DASHBOARD_TAX_API}`);
       return res.data;
@@ -162,7 +162,7 @@ export const ApiGet = {
     }
   },
   Bill: {
-    BillSearch: async (number: number, type: string): Promise<ApiResponse | undefined> => {
+    BillSearch: async <T extends ApiResponse>(number: number, type: string): Promise<T | undefined> => {
       try {
         const res = await axios.get(`${apiPath.DASHBOARD_BILL_API}?searchValue=${number}&type=${type}`);
         return res.data;
@@ -170,7 +170,7 @@ export const ApiGet = {
         handleError.throw(error);
       }
     },
-    LastBill: async (): Promise<ApiResponse | undefined> => {
+    LastBill: async <T extends ApiResponse>(): Promise<T | undefined> => {
       try {
         const res = await axios.get(`${apiPath.DASHBOARD_BILL_API}?last=bill`);
         return res.data;
@@ -178,7 +178,7 @@ export const ApiGet = {
         handleError.throw(error);
       }
     },
-    BillToday: async (): Promise<ApiResponse | undefined> => {
+    BillToday: async <T extends ApiResponse>(): Promise<T | undefined> => {
       try {
         const res = await axios.get(`${apiPath.DASHBOARD_BILL_API}?today=bill&week=bill`);
         return res.data;
@@ -210,7 +210,7 @@ export const ApiGet = {
     },
   },
   Receipt: {
-    ReceiptSearch: async (number: number, type: string): Promise<ApiResponse | undefined> => {
+    ReceiptSearch: async <T extends ApiResponse>(number: number, type: string): Promise<T | undefined> => {
       try {
         const res = await axios.get(`${apiPath.DASHBOARD_RECEIPT_API}?searchValue=${number}&searchType=${type}`);
         return res.data;
@@ -218,7 +218,7 @@ export const ApiGet = {
         handleError.throw(error);
       }
     },
-    LastReceipt: async (): Promise<ApiResponse | undefined> => {
+    LastReceipt: async <T extends ApiResponse>(): Promise<T | undefined> => {
       try {
         const res = await axios.get(`${apiPath.DASHBOARD_RECEIPT_API}?last=receipt`);
         return res.data;
@@ -226,7 +226,7 @@ export const ApiGet = {
         handleError.throw(error);
       }
     },
-    RecentReceipt: async (): Promise<ApiResponse | undefined> => {
+    RecentReceipt: async <T extends ApiResponse>(): Promise<T | undefined> => {
       try {
         const res = await axios.get(`${apiPath.DASHBOARD_RECEIPT_API}?recent=receipt`);
         return res.data;
@@ -266,7 +266,7 @@ export const ApiGet = {
       }
     },
     // returns company access of all users in the company
-    UsersByEmails: async (emails: string[]): Promise<ApiResponse | undefined> => {
+    UsersByEmails: async <T extends ApiResponse>(emails: string[]): Promise<T | undefined> => {
       try {
         const res = await axios.post(apiPath.AUTH_COMPANY_USER_API, { emails });
         return res.data;
@@ -276,7 +276,7 @@ export const ApiGet = {
     },
   },
   printDocument: {
-    PrintBill: async (printType: string, billNumber: number): Promise<ApiResponse | undefined> => {
+    PrintBill: async <T extends ApiResponse>(printType: string, billNumber: number): Promise<T | undefined> => {
       try {
         const res = await axios.get(`${apiPath.PRINT_BILL_API}?printType=${printType}&billNumber=${billNumber}`);
         return res.data;
@@ -284,7 +284,7 @@ export const ApiGet = {
         handleError.throw(error);
       }
     },
-    PrintReceipts: async (printType: string, billNumber: number): Promise<ApiResponse | undefined> => {
+    PrintReceipts: async <T extends ApiResponse>(printType: string, billNumber: number): Promise<T | undefined> => {
       try {
         const res = await axios.get(`${apiPath.PRINT_RECEIPT_API}?printType=${printType}&billNumber=${billNumber}`);
         return res.data;
@@ -297,7 +297,7 @@ export const ApiGet = {
 
 export const ApiPut = {
   User: {
-    updateUserRole: async (email: string, role: RoleType): Promise<ApiResponse | undefined> => {
+    updateUserRole: async <T extends ApiResponse>(email: string, role: RoleType): Promise<T | undefined> => {
       try {
         const res = await axios.put(apiPath.AUTH_USER_EMAIL_API, { email, data: { companyAccess: { role } } });
         return res.data;
@@ -305,10 +305,10 @@ export const ApiPut = {
         handleError.throw(error);
       }
     },
-    updateUserAccess: async (
+    updateUserAccess: async <T extends ApiResponse>(
       email: string,
       access: { login: boolean; canEdit: boolean; canDelete: boolean; canView: boolean },
-    ): Promise<ApiResponse | undefined> => {
+    ): Promise<T | undefined> => {
       try {
         const res = await axios.put(apiPath.AUTH_USER_EMAIL_API, { email, data: { companyAccess: { access } } });
         return res.data;
@@ -316,7 +316,10 @@ export const ApiPut = {
         handleError.throw(error);
       }
     },
-    updateUserAccessLevels: async (email: string, accessLevels: RoleType[]): Promise<ApiResponse | undefined> => {
+    updateUserAccessLevels: async <T extends ApiResponse>(
+      email: string,
+      accessLevels: RoleType[],
+    ): Promise<T | undefined> => {
       try {
         const res = await axios.put(apiPath.AUTH_USER_EMAIL_API, { email, data: { companyAccess: { accessLevels } } });
         return res.data;
@@ -324,7 +327,10 @@ export const ApiPut = {
         handleError.throw(error);
       }
     },
-    removeUserAccessLevel: async (email: string, removeAccessLevel: RoleType): Promise<ApiResponse | undefined> => {
+    removeUserAccessLevel: async <T extends ApiResponse>(
+      email: string,
+      removeAccessLevel: RoleType,
+    ): Promise<T | undefined> => {
       try {
         const res = await axios.put(apiPath.AUTH_USER_EMAIL_API, {
           email,
@@ -335,7 +341,10 @@ export const ApiPut = {
         handleError.throw(error);
       }
     },
-    updateUserSecondaryEmails: async (email: string, secondaryEmails: string[]): Promise<ApiResponse | undefined> => {
+    updateUserSecondaryEmails: async <T extends ApiResponse>(
+      email: string,
+      secondaryEmails: string[],
+    ): Promise<T | undefined> => {
       try {
         const res = await axios.put(apiPath.AUTH_USER_EMAIL_API, { email, data: { secondaryEmails } });
         return res.data;
@@ -343,7 +352,7 @@ export const ApiPut = {
         handleError.throw(error);
       }
     },
-    updateUserMobile: async (email: string, mobile: string[]): Promise<ApiResponse | undefined> => {
+    updateUserMobile: async <T extends ApiResponse>(email: string, mobile: string[]): Promise<T | undefined> => {
       try {
         const res = await axios.put(apiPath.AUTH_USER_EMAIL_API, { email, data: { mobile } });
         return res.data;
@@ -352,15 +361,7 @@ export const ApiPut = {
       }
     },
   },
-  Tax: async (
-    id: string,
-    data: {
-      taxName: string;
-      taxType: string;
-      taxPercentage: number;
-      updatedAt: Date;
-    },
-  ): Promise<ApiResponse | undefined> => {
+  Tax: async <T extends ApiResponse>(id: string, data: Partial<ITax>): Promise<T | undefined> => {
     try {
       const res = await axios.put(`${apiPath.DASHBOARD_TAX_API}?updateTId=${id}`, data);
       return res.data;
@@ -368,7 +369,7 @@ export const ApiPut = {
       handleError.throw(error);
     }
   },
-  Bill: async (id: string, data: IBill): Promise<ApiResponse | undefined> => {
+  Bill: async <T extends ApiResponse>(id: string, data: IBill): Promise<T | undefined> => {
     try {
       const res = await axios.put(`${apiPath.DASHBOARD_BILL_API}?updateBillId=${id}`, data);
       return res.data;
@@ -389,7 +390,7 @@ export const ApiPut = {
 };
 
 export const ApiDelete = {
-  Tax: async (id: string): Promise<ApiResponse | undefined> => {
+  Tax: async <T extends ApiResponse>(id: string): Promise<T | undefined> => {
     try {
       const res = await axios.delete(`${apiPath.DASHBOARD_TAX_API}?deleteTId=${id}`);
       return res.data;

@@ -4,7 +4,7 @@ import { IUser, RoleType } from '@models/userModel';
 import { logoutUtils } from '@utils/auth/logoutUtils';
 import handleError from '@utils/error/handleError';
 import { LocalIndexer } from '@utils/indexing/indexingUtil';
-import { ApiPut } from '@utils/makeApiRequest/makeApiRequest';
+import { ApiPut, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
 import { fetchUserData } from '@utils/user/userFetchUtil/userUtils';
 import mongoose from 'mongoose';
 import { usePathname } from 'next/navigation';
@@ -44,6 +44,16 @@ interface AuthState {
   user: IUser | null;
   updateUser: (data: Partial<IUser>) => void;
   setAuthenticated: (status: boolean) => void;
+}
+
+interface UserUpdateResponse extends ApiResponse {
+  success: boolean;
+  message?: string;
+  data?: {
+    companyAccess?: IUser['companyAccess'];
+    secondaryEmails?: string[];
+    mobile?: string[];
+  };
 }
 
 // Separate Auth Context
@@ -162,8 +172,13 @@ export const UserProvider: FC<UserContextProps> = ({ children }) => {
 
   const updateUserAccess = useCallback(async (email: string, access: NonNullable<IUser['companyAccess']>['access']) => {
     try {
-      const response = await ApiPut.User.updateUserAccess(email, access);
-      if (!response.success) throw new Error(response.message ?? 'Failed to update user access');
+      const response = await ApiPut.User.updateUserAccess<UserUpdateResponse>(email, access);
+      if (!response) {
+        throw new Error('No response from server');
+      }
+      if (!response.success) {
+        throw new Error(response.message ?? 'Failed to update user access');
+      }
 
       setUser(
         (prevUser: IUser) =>
@@ -189,18 +204,17 @@ export const UserProvider: FC<UserContextProps> = ({ children }) => {
 
   const updateUserRole = useCallback(async (email: string, role: RoleType) => {
     try {
-      const response = await ApiPut.User.updateUserRole(email, role);
-      if (!response.success) throw new Error(response.message ?? 'Failed to update user role');
+      const response = await ApiPut.User.updateUserRole<UserUpdateResponse>(email, role);
+      if (!response || !response.success) {
+        throw new Error(response?.message ?? 'Failed to update user role');
+      }
 
       setUser(
         (prevUser: IUser) =>
           ({
             ...prevUser,
             companyAccess: prevUser.companyAccess
-              ? {
-                  ...prevUser.companyAccess,
-                  role,
-                }
+              ? { ...prevUser.companyAccess, role }
               : {
                   companyId: new mongoose.Types.ObjectId(),
                   role,
@@ -216,8 +230,10 @@ export const UserProvider: FC<UserContextProps> = ({ children }) => {
 
   const addUserAccessLevel = useCallback(async (email: string, accessLevels: RoleType[]) => {
     try {
-      const response = await ApiPut.User.updateUserAccessLevels(email, accessLevels);
-      if (!response.success) throw new Error(response.message ?? 'Failed to add user access levels');
+      const response = await ApiPut.User.updateUserAccessLevels<UserUpdateResponse>(email, accessLevels);
+      if (!response || !response.success) {
+        throw new Error(response?.message ?? 'Failed to add user access levels');
+      }
       setUser((prevUser: IUser) => {
         const updatedUser: IUser = { ...prevUser } as IUser;
         if (updatedUser.companyAccess) {
@@ -234,8 +250,10 @@ export const UserProvider: FC<UserContextProps> = ({ children }) => {
 
   const removeUserAccessLevel = useCallback(async (email: string, accessLevel: RoleType) => {
     try {
-      const response = await ApiPut.User.removeUserAccessLevel(email, accessLevel);
-      if (!response.success) throw new Error(response.message ?? 'Failed to remove user access level');
+      const response = await ApiPut.User.removeUserAccessLevel<UserUpdateResponse>(email, accessLevel);
+      if (!response || !response.success) {
+        throw new Error(response?.message ?? 'Failed to remove user access level');
+      }
       setUser((prevUser: IUser) => {
         const updatedUser: IUser = { ...prevUser } as IUser;
         if (updatedUser.companyAccess) {
@@ -252,8 +270,10 @@ export const UserProvider: FC<UserContextProps> = ({ children }) => {
 
   const updateUserSecondaryEmails = useCallback(async (email: string, secondaryEmails: string[]) => {
     try {
-      const response = await ApiPut.User.updateUserSecondaryEmails(email, secondaryEmails);
-      if (!response.success) throw new Error(response.message ?? 'Failed to update secondary emails');
+      const response = await ApiPut.User.updateUserSecondaryEmails<UserUpdateResponse>(email, secondaryEmails);
+      if (!response || !response.success) {
+        throw new Error(response?.message ?? 'Failed to update secondary emails');
+      }
       setUser((prevUser: IUser) => {
         const updatedUser: IUser = { ...prevUser } as IUser;
         updatedUser.secondaryEmails = secondaryEmails;
@@ -266,8 +286,10 @@ export const UserProvider: FC<UserContextProps> = ({ children }) => {
 
   const updateUserMobile = useCallback(async (email: string, mobile: string[]) => {
     try {
-      const response = await ApiPut.User.updateUserMobile(email, mobile);
-      if (!response.success) throw new Error(response.message ?? 'Failed to update user mobile');
+      const response = await ApiPut.User.updateUserMobile<UserUpdateResponse>(email, mobile);
+      if (!response || !response.success) {
+        throw new Error(response?.message ?? 'Failed to update user mobile');
+      }
       setUser((prevUser: IUser) => {
         const updatedUser: IUser = { ...prevUser } as IUser;
         updatedUser.mobile = mobile;

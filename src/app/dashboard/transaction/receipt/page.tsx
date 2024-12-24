@@ -7,9 +7,9 @@ import ReceiptTable from '@dashboard/transaction/receipt/components/ReceiptTable
 import { fetchAllInitialData, validateReceipt } from '@dashboard/transaction/receipt/utils/receiptUtils';
 import { PlusCircleIcon } from '@heroicons/react/24/outline';
 import { CloudArrowUpIcon, MagnifyingGlassIcon } from '@heroicons/react/24/solid';
-import { IBill, IReceipt, ITax } from '@models/klm';
+import { IBill, IReceipt, IReceiptTax, ITax } from '@models/klm';
 import handleError from '@utils/error/handleError';
-import { ApiGet, ApiPost } from '@utils/makeApiRequest/makeApiRequest';
+import { ApiGet, ApiPost, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
 import { getParamsFromQueryString, updateSearchParams } from '@utils/url/urlUtils';
 import { useRouter } from 'next/navigation';
 import React, { JSX, useEffect, useState } from 'react';
@@ -22,6 +22,28 @@ interface AmtTrack {
   paid: number;
   due: number;
   taxAmount: number; // Add this field
+}
+
+interface BillSearchResponse extends ApiResponse {
+  success: boolean;
+  bill: IBill[];
+}
+
+interface ReceiptSearchResponse extends ApiResponse {
+  success: boolean;
+  receipt: IReceipt[];
+}
+
+interface LastReceiptResponse extends ApiResponse {
+  success: boolean;
+  lastReceipt: {
+    receiptNumber: number;
+  };
+}
+
+interface SaveReceiptResponse extends ApiResponse {
+  success: boolean;
+  receipt: IReceipt;
 }
 
 export default function ReceiptPage(): JSX.Element {
@@ -46,7 +68,10 @@ export default function ReceiptPage(): JSX.Element {
 
   // helper function to set amount tracking
   const setAmountTrack = async (bill: IBill): Promise<void> => {
-    const response = await ApiGet.Receipt.ReceiptSearch(bill.billNumber, 'bill');
+    const response = await ApiGet.Receipt.ReceiptSearch<ReceiptSearchResponse>(bill.billNumber, 'bill');
+    if (!response || !response.success) {
+      throw new Error('Failed to fetch receipts');
+    }
     const receipts = response.receipt || [];
     const totalPaidAmount = receipts.reduce((sum: number, receipt: IReceipt) => sum + receipt.amount, 0);
     const totalDiscount = receipts.reduce((sum: number, receipt: IReceipt) => sum + receipt.discount, 0);
@@ -80,38 +105,39 @@ export default function ReceiptPage(): JSX.Element {
   useEffect(() => {
     const { receiptNumber } = getParamsFromQueryString(window.location.search);
     if (receiptNumber) {
-      const fetchReceipt = async (receiptNumber: number): Promise<void> => {
+      const fetchReceiptData = async (receiptNumber: number): Promise<void> => {
         try {
-          const res = await ApiGet.Receipt.ReceiptSearch(receiptNumber, 'receipt');
-          if (res.success && res.receipt.length > 0) {
-            const fetchedReceipt = res.receipt[0];
-            const lastReceipt = await ApiGet.Receipt.LastReceipt();
-            setReceipt({
-              ...fetchedReceipt,
-              amount: 0,
-              discount: 0,
-              paymentMethod: '',
-              tax: [],
-              receiptNumber: (lastReceipt?.lastReceipt?.receiptNumber ?? 0) + 1,
-            });
-            const billNumber = fetchedReceipt?.bill?.billNumber;
-            if (billNumber) {
-              const billRes = await ApiGet.Bill.BillSearch(billNumber, 'bill');
-              if (billRes.success && billRes.bill.length > 0) {
-                const bill = billRes.bill[0];
-                setAmountTrack(bill);
-              } else {
-                throw new Error('Bill not found');
-              }
+          const [receiptRes, lastReceiptRes] = await Promise.all([
+            ApiGet.Receipt.ReceiptSearch<ReceiptSearchResponse>(receiptNumber, 'receipt'),
+            ApiGet.Receipt.LastReceipt<LastReceiptResponse>(),
+          ]);
+
+          if (!receiptRes?.success || !lastReceiptRes?.success) {
+            throw new Error('Failed to fetch receipt data');
+          }
+
+          const fetchedReceipt = receiptRes.receipt[0] as IReceipt;
+          setReceipt({
+            ...fetchedReceipt,
+            amount: 0,
+            discount: 0,
+            paymentMethod: 'advance',
+            tax: [] as IReceiptTax[],
+            receiptNumber: (lastReceiptRes.lastReceipt?.receiptNumber ?? 0) + 1,
+          } as IReceipt);
+
+          if (fetchedReceipt?.bill?.billNumber) {
+            const billRes = await ApiGet.Bill.BillSearch<BillSearchResponse>(fetchedReceipt.bill.billNumber, 'bill');
+            if (!billRes?.success || !billRes.bill?.length) {
+              throw new Error('Bill not found');
             }
-          } else {
-            throw new Error('Receipt not found');
+            await setAmountTrack(billRes.bill[0]);
           }
         } catch (error) {
           handleError.toast(error);
         }
       };
-      fetchReceipt(parseInt(receiptNumber));
+      fetchReceiptData(parseInt(receiptNumber));
     }
   }, [router]);
 
@@ -127,7 +153,10 @@ export default function ReceiptPage(): JSX.Element {
             });
           }
 
-          const lastReceipt = await ApiGet.Receipt.LastReceipt();
+          const lastReceipt = await ApiGet.Receipt.LastReceipt<LastReceiptResponse>();
+          if (!lastReceipt) {
+            throw new Error('Failed to fetch last receipt number');
+          }
           const newReceiptNumber = (lastReceipt?.lastReceipt?.receiptNumber ?? 0) + 1;
 
           if (billNumber && receiptNumber) {
@@ -232,18 +261,13 @@ export default function ReceiptPage(): JSX.Element {
 
   const fetchBill = async (billNumber: string): Promise<IBill | null> => {
     try {
-      const billRes = await ApiGet.Bill.BillSearch(parseInt(billNumber), 'bill');
-      if (billRes.success && billRes.bill.length > 0) {
-        const bill = billRes.bill[0];
-        if (bill.dueAmount <= 0) {
-          toast.error('No due amount for this bill');
-          return null;
-        }
-        setAmountTrack(bill);
-        return bill;
-      } else {
+      const billRes = await ApiGet.Bill.BillSearch<BillSearchResponse>(parseInt(billNumber), 'bill');
+      if (!billRes || !billRes.success || !billRes.bill?.length) {
         throw new Error('Bill not found');
       }
+      const bill = billRes.bill[0];
+      await setAmountTrack(bill);
+      return bill;
     } catch (error) {
       handleError.toast(error);
       return null;
@@ -252,12 +276,11 @@ export default function ReceiptPage(): JSX.Element {
 
   const fetchReceipt = async (receiptNumber: string): Promise<IReceipt | null> => {
     try {
-      const receiptRes = await ApiGet.Receipt.ReceiptSearch(parseInt(receiptNumber), 'receipt');
-      if (receiptRes.success && receiptRes.receipt.length > 0) {
-        return receiptRes.receipt[0];
-      } else {
+      const receiptRes = await ApiGet.Receipt.ReceiptSearch<ReceiptSearchResponse>(parseInt(receiptNumber), 'receipt');
+      if (!receiptRes || !receiptRes.success || !receiptRes.receipt?.length) {
         throw new Error('Receipt not found');
       }
+      return receiptRes.receipt[0];
     } catch (error) {
       handleError.toast(error);
       return null;
@@ -270,7 +293,11 @@ export default function ReceiptPage(): JSX.Element {
       const inputValue = parseInt((event.target as HTMLFormElement).billSearch.value);
       const typeBillOrMobile = (event.target as HTMLFormElement).selectBill.value;
 
-      const res = await ApiGet.Bill.BillSearch(inputValue, typeBillOrMobile);
+      const res = await ApiGet.Bill.BillSearch<BillSearchResponse>(inputValue, typeBillOrMobile);
+
+      if (!res) {
+        throw new Error('No response from server');
+      }
 
       if (res.success) {
         setSearchBill(res.bill);
@@ -285,7 +312,11 @@ export default function ReceiptPage(): JSX.Element {
 
   const receiptSearch = async (inputValue: number, typeReceiptOrBillOrMobile: string): Promise<void> => {
     try {
-      const res = await ApiGet.Receipt.ReceiptSearch(inputValue, typeReceiptOrBillOrMobile);
+      const res = await ApiGet.Receipt.ReceiptSearch<ReceiptSearchResponse>(inputValue, typeReceiptOrBillOrMobile);
+
+      if (!res) {
+        throw new Error('No response from server');
+      }
 
       if (res.success) {
         setSearchReceipt(res.receipt);
@@ -315,7 +346,10 @@ export default function ReceiptPage(): JSX.Element {
 
       validateReceipt(receipt, amtTrack);
 
-      const res = await ApiPost.Receipt.SaveReceipt(receipt);
+      const res = await ApiPost.Receipt.SaveReceipt<SaveReceiptResponse>(receipt);
+      if (!res) {
+        throw new Error('No response from server');
+      }
       if (res.success) {
         toast.success('Receipt saved');
         setReceipt(undefined);
@@ -331,7 +365,10 @@ export default function ReceiptPage(): JSX.Element {
 
   const createNewReceipt = async (): Promise<void> => {
     setSearchBill(undefined);
-    const lastReceipt = await ApiGet.Receipt.LastReceipt();
+    const lastReceipt = await ApiGet.Receipt.LastReceipt<LastReceiptResponse>();
+    if (!lastReceipt) {
+      throw new Error('Failed to fetch last receipt number');
+    }
     setReceipt({
       ...receipt,
       receiptNumber: (lastReceipt?.lastReceipt?.receiptNumber ?? 0) + 1,
@@ -351,7 +388,7 @@ export default function ReceiptPage(): JSX.Element {
     try {
       const selectedBill = searchBill?.find((bill) => bill._id.toString() === billId);
       if (selectedBill) {
-        const lastReceipt = await ApiGet.Receipt.LastReceipt();
+        const lastReceipt = await ApiGet.Receipt.LastReceipt<LastReceiptResponse>();
         setReceipt({
           ...receipt,
           receiptNumber: (lastReceipt?.lastReceipt?.receiptNumber ?? 0) + 1,

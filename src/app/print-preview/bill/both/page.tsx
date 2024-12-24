@@ -8,10 +8,16 @@ import { getStyle } from '@data/printStyles';
 import { IBill } from '@models/klm';
 import klm from '@public/klm.png';
 import handleError from '@utils/error/handleError';
-import { ApiGet } from '@utils/makeApiRequest/makeApiRequest';
+import { ApiGet, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
 import { getSearchParam } from '@utils/url/urlUtils';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+
+interface PrintBillResponse extends ApiResponse {
+  success: boolean;
+  message: string;
+  bill: IBill;
+}
 
 const BothBillPage: React.FC = () => {
   const [bill, setBill] = useState<IBill>();
@@ -32,14 +38,13 @@ const BothBillPage: React.FC = () => {
       setBackUrl(`/dashboard/work-manage/bill?billNumber=${billNumber}`);
 
       try {
-        const response = await ApiGet.printDocument.PrintBill(type, billNumber);
-        if (response?.success) {
-          setBill(response.bill);
-          toast.success(<b>{response.message} fetched successfully</b>);
-          setIsDataLoaded(true);
-        } else {
-          toast.error(response?.message || 'Failed to fetch data');
+        const response = await ApiGet.printDocument.PrintBill<PrintBillResponse>(type, billNumber);
+        if (!response || !response.success) {
+          throw new Error(response?.message || 'Failed to fetch data');
         }
+        setBill(response.bill);
+        toast.success(<b>{response.message} fetched successfully</b>);
+        setIsDataLoaded(true);
       } catch (error) {
         handleError.toast(error);
       }

@@ -7,7 +7,7 @@ import { PlusCircleIcon } from '@heroicons/react/24/outline';
 import { ICategory, IDimensionTypes, IDimensions, IStyle, IStyleProcess } from '@models/klm';
 import { userConfirmation } from '@utils/confirmation/confirmationUtil';
 import handleError from '@utils/error/handleError';
-import { ApiGet, ApiPost } from '@utils/makeApiRequest/makeApiRequest';
+import { ApiGet, ApiPost, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
 import React, { useEffect, useRef, useState, type JSX } from 'react';
 import toast from 'react-hot-toast';
 
@@ -20,6 +20,19 @@ interface IIds {
   dimensionId: string;
 }
 
+interface CategoryResponse extends ApiResponse {
+  categories?: ICategory[];
+  data?: ICategory;
+}
+
+// Helper function to handle response messages with proper type checking
+const getApiMessage = (res: CategoryResponse | undefined, successMsg: string, errorMsg: string): string => {
+  if (!res?.success || !res?.message) {
+    throw new Error(errorMsg);
+  }
+  return res.message;
+};
+
 // CategoryPage component handles the display and management of categories, processes, dimensions, and styles.
 export default function CategoryPage(): JSX.Element {
   const [category, setCategory] = useState<ICategory[]>([]);
@@ -30,8 +43,12 @@ export default function CategoryPage(): JSX.Element {
   // Fetches the category data from the API and updates the state with the retrieved categories.
   const GetCategory = async (): Promise<void> => {
     try {
-      const res = await ApiGet.Category();
-      setCategory(res.categories);
+      const res = await ApiGet.Category<CategoryResponse>();
+      if (res?.success && res.categories) {
+        setCategory(res.categories);
+      } else {
+        throw new Error(res?.message ?? 'Failed to fetch categories');
+      }
     } catch (error) {
       handleError.log(error);
     } finally {
@@ -73,13 +90,15 @@ export default function CategoryPage(): JSX.Element {
     // Asynchronously saves a new category by making a POST request to the API.
     const saveCategory = async (): Promise<string> => {
       try {
-        const res = await ApiPost.Category('addCategory', { categoryName: category, description: description });
-        if (res.success) {
-          setCategory((prevCategory) => [...prevCategory, res.data]);
-          return res.message;
-        } else {
-          throw new Error(res.message);
+        const res = await ApiPost.Category<CategoryResponse>('addCategory', {
+          categoryName: category,
+          description: description,
+        });
+        if (res?.success && res.data) {
+          setCategory((prevCategory) => [...prevCategory, res.data!]);
+          return res.message ?? 'Category added successfully';
         }
+        throw new Error(res?.message ?? 'Failed to add category');
       } catch (error) {
         handleError.throw(error);
         return 'An error occurred while adding the category';
@@ -98,34 +117,30 @@ export default function CategoryPage(): JSX.Element {
 
     // Asynchronously saves a new process to a category.
     const saveProcess = async (): Promise<string> => {
-      try {
-        const res = await ApiPost.Category('addProcess', {
-          categoryId: ids?.catId,
-          styleProcessName: styleProcess,
-        });
-        if (res.success) {
-          setCategory(
-            (prevCategory) =>
-              prevCategory.map((cat) => {
-                if (cat._id.toString() === ids?.catId) {
-                  return {
-                    ...(cat as ICategory),
-                    styleProcess: cat.styleProcess ? [...cat.styleProcess, res.data] : [res.data],
-                  } as ICategory;
-                }
-                return cat as ICategory;
-              }) as ICategory[],
-          );
-          closeModal('addProcess');
-          return res.message;
-        } else {
-          throw new Error(res.message);
-        }
-      } catch (error) {
-        handleError.throw(error);
-        return 'An error occurred while adding the process';
+      const res = await ApiPost.Category<CategoryResponse>('addProcess', {
+        categoryId: ids?.catId,
+        styleProcessName: styleProcess,
+      });
+
+      if (res?.success && res.data) {
+        setCategory(
+          (prevCategory) =>
+            prevCategory.map((cat) => {
+              if (cat._id.toString() === ids?.catId) {
+                return {
+                  ...(cat as ICategory),
+                  styleProcess: cat.styleProcess ? [...cat.styleProcess, res.data!] : [res.data!],
+                } as ICategory;
+              }
+              return cat as ICategory;
+            }) as ICategory[],
+        );
+        closeModal('addProcess');
+        return getApiMessage(res, 'Process added successfully', 'Failed to add process');
       }
+      throw new Error(res?.message ?? 'Failed to add process');
     };
+
     await configureToastPromise(saveProcess(), 'Adding Process...');
   };
 
@@ -141,10 +156,14 @@ export default function CategoryPage(): JSX.Element {
     // Asynchronously saves a new dimension type for a category.
     const saveDimension = async (): Promise<string> => {
       try {
-        const res = await ApiPost.Category('addDimensionTypes', {
+        const res = await ApiPost.Category<CategoryResponse>('addDimensionTypes', {
           categoryId: ids.catId,
           dimensionTypeName: dimensionType,
         });
+
+        if (!res) {
+          throw new Error('No response received');
+        }
 
         if (res.success) {
           setCategory(
@@ -153,14 +172,14 @@ export default function CategoryPage(): JSX.Element {
                 if (cat._id.toString() === ids.catId) {
                   return {
                     ...(cat as ICategory),
-                    dimensionTypes: cat.dimensionTypes ? [...cat.dimensionTypes, res.data] : [res.data],
+                    dimensionTypes: cat.dimensionTypes ? [...cat.dimensionTypes, res.data!] : [res.data!],
                   } as ICategory;
                 }
                 return cat as ICategory;
               }) as ICategory[],
           );
           closeModal('addDimensionTypes');
-          return res.message;
+          return getApiMessage(res, 'Dimension type added successfully', 'Failed to add dimension type');
         } else {
           throw new Error(res.message);
         }
@@ -184,11 +203,15 @@ export default function CategoryPage(): JSX.Element {
     // Asynchronously saves a new dimension to a category.
     const saveDimension = async (): Promise<string> => {
       try {
-        const res = await ApiPost.Category('addDimension', {
+        const res = await ApiPost.Category<CategoryResponse>('addDimension', {
           categoryId: ids.catId,
           dimensionTypeId: ids.dimensionTypeId,
           dimensionName: dimension,
         });
+
+        if (!res) {
+          throw new Error('No response received');
+        }
         if (res.success) {
           setCategory(
             (prevCategory) =>
@@ -201,8 +224,8 @@ export default function CategoryPage(): JSX.Element {
                         return {
                           ...(dimensionTypes as IDimensionTypes),
                           dimensions: dimensionTypes.dimensions
-                            ? [...(dimensionTypes.dimensions as IDimensions[]), res.data]
-                            : [res.data],
+                            ? [...(dimensionTypes.dimensions as IDimensions[]), res.data!]
+                            : [res.data!],
                         };
                       }
                       return dimensionTypes;
@@ -213,7 +236,7 @@ export default function CategoryPage(): JSX.Element {
               }) as ICategory[],
           );
           closeModal('addDimension');
-          return res.message;
+          return getApiMessage(res, 'Dimension added successfully', 'Failed to add dimension');
         } else {
           throw new Error(res.message);
         }
@@ -235,11 +258,15 @@ export default function CategoryPage(): JSX.Element {
 
     const UpdateDimension = async (): Promise<string> => {
       try {
-        const res = await ApiPost.Category('editDimensionType', {
+        const res = await ApiPost.Category<CategoryResponse>('editDimensionType', {
           categoryId: ids.catId,
           dimensionTypeId: ids.dimensionTypeId,
           dimensionTypeName: dimensionTypeName,
         });
+
+        if (!res) {
+          throw new Error('No response received');
+        }
         if (res.success) {
           setCategory(
             (prevCategory) =>
@@ -262,7 +289,7 @@ export default function CategoryPage(): JSX.Element {
               }) as ICategory[],
           );
           closeModal('editDimensionType');
-          return res.message;
+          return getApiMessage(res, 'Dimension type updated successfully', 'Failed to update dimension type');
         } else {
           throw new Error(res.message);
         }
@@ -286,11 +313,15 @@ export default function CategoryPage(): JSX.Element {
     // Asynchronously saves a new style to a category and updates the state.
     const saveStyle = async (): Promise<string> => {
       try {
-        const res = await ApiPost.Category('addStyle', {
+        const res = await ApiPost.Category<CategoryResponse>('addStyle', {
           categoryId: ids.catId,
           styleProcessId: ids.styleProcessId,
           styleName: catStyle,
         });
+
+        if (!res) {
+          throw new Error('No response received');
+        }
 
         if (res.success) {
           setCategory(
@@ -303,7 +334,7 @@ export default function CategoryPage(): JSX.Element {
                       if ((styleProcess as IStyleProcess)?._id.toString() === ids.styleProcessId) {
                         return {
                           ...(styleProcess as IStyleProcess),
-                          styles: styleProcess.styles ? [...(styleProcess.styles as IStyle[]), res.data] : [res.data],
+                          styles: styleProcess.styles ? [...(styleProcess.styles as IStyle[]), res.data!] : [res.data!],
                         };
                       }
                       return styleProcess;
@@ -314,7 +345,7 @@ export default function CategoryPage(): JSX.Element {
               }) as ICategory[],
           );
           closeModal('addStyle');
-          return res.message;
+          return getApiMessage(res, 'Style added successfully', 'Failed to add style');
         } else {
           throw new Error(res.message);
         }
@@ -340,12 +371,16 @@ export default function CategoryPage(): JSX.Element {
       // Deletes a category by its ID.
       const deleteCategory = async (): Promise<string> => {
         try {
-          const res = await ApiPost.Category('delCategory', {
+          const res = await ApiPost.Category<CategoryResponse>('delCategory', {
             categoryId: id,
           });
+
+          if (!res) {
+            throw new Error('No response received');
+          }
           if (res.success) {
             setCategory(category.filter((cat) => cat._id.toString() !== id));
-            return res.message;
+            return getApiMessage(res, 'Category deleted successfully', 'Failed to delete category');
           } else {
             throw new Error(res.message);
           }
@@ -372,10 +407,14 @@ export default function CategoryPage(): JSX.Element {
       // Deletes a style process from a category.
       const deleteProcess = async (): Promise<string> => {
         try {
-          const res = await ApiPost.Category('delProcess', {
+          const res = await ApiPost.Category<CategoryResponse>('delProcess', {
             categoryId: id,
             styleProcessId: styleProcessId,
           });
+
+          if (!res) {
+            throw new Error('No response received');
+          }
           if (res.success) {
             setCategory(
               category.map((cat) => {
@@ -390,7 +429,7 @@ export default function CategoryPage(): JSX.Element {
                 return cat as ICategory;
               }),
             );
-            return res.message;
+            return getApiMessage(res, 'Process deleted successfully', 'Failed to delete process');
           } else {
             throw new Error(res.message);
           }
@@ -416,10 +455,14 @@ export default function CategoryPage(): JSX.Element {
       // Deletes a dimension type from a category.
       const deleteDimensionType = async (): Promise<string> => {
         try {
-          const res = await ApiPost.Category('delDimensionType', {
+          const res = await ApiPost.Category<CategoryResponse>('delDimensionType', {
             categoryId: id,
             dimensionTypeId: dimensionTypeId,
           });
+
+          if (!res) {
+            throw new Error('No response received');
+          }
           if (res.success) {
             setCategory(
               category.map((cat) => {
@@ -435,7 +478,7 @@ export default function CategoryPage(): JSX.Element {
                 return cat as ICategory;
               }),
             );
-            return res.message;
+            return getApiMessage(res, 'Dimension type deleted successfully', 'Failed to delete dimension type');
           } else {
             throw new Error(res.message);
           }
@@ -462,11 +505,15 @@ export default function CategoryPage(): JSX.Element {
       // Deletes a style from a category's style process.
       const deleteStyle = async (): Promise<string> => {
         try {
-          const res = await ApiPost.Category('delStyle', {
+          const res = await ApiPost.Category<CategoryResponse>('delStyle', {
             categoryId: id,
             styleProcessId: styleProcessId,
             styleId: styleId,
           });
+
+          if (!res) {
+            throw new Error('No response received');
+          }
           if (res.success) {
             setCategory(
               category.map((cat) => {
@@ -489,7 +536,7 @@ export default function CategoryPage(): JSX.Element {
                 return cat as ICategory;
               }),
             );
-            return res.message;
+            return getApiMessage(res, 'Style deleted successfully', 'Failed to delete style');
           } else {
             throw new Error(res.message);
           }
@@ -516,11 +563,15 @@ export default function CategoryPage(): JSX.Element {
       // Deletes a dimension from a category.
       const deleteDimension = async (): Promise<string> => {
         try {
-          const res = await ApiPost.Category('delDimension', {
+          const res = await ApiPost.Category<CategoryResponse>('delDimension', {
             categoryId: id,
             dimensionTypeId: dimensionTypeId,
             dimensionId: dimensionId,
           });
+
+          if (!res) {
+            throw new Error('No response received');
+          }
           if (res.success) {
             setCategory(
               category.map((cat) => {
@@ -545,7 +596,7 @@ export default function CategoryPage(): JSX.Element {
                 return cat as ICategory;
               }),
             );
-            return res.message;
+            return getApiMessage(res, 'Dimension deleted successfully', 'Failed to delete dimension');
           } else {
             throw new Error(res.message);
           }
@@ -571,11 +622,15 @@ export default function CategoryPage(): JSX.Element {
     // Updates the category with the provided details.
     const UpdateCategory = async (): Promise<string> => {
       try {
-        const res = await ApiPost.Category('editCategory', {
+        const res = await ApiPost.Category<CategoryResponse>('editCategory', {
           categoryId: ids.catId,
           categoryName: category,
           description: description,
         });
+
+        if (!res) {
+          throw new Error('No response received');
+        }
         if (res.success) {
           setCategory((prevCategory) =>
             prevCategory.map((cat: ICategory) => {
@@ -590,7 +645,7 @@ export default function CategoryPage(): JSX.Element {
             }),
           );
           closeModal('editCategory');
-          return res.message;
+          return getApiMessage(res, 'Category updated successfully', 'Failed to update category');
         } else {
           throw new Error(res.message);
         }
@@ -614,11 +669,15 @@ export default function CategoryPage(): JSX.Element {
     // Updates the style process of a category by making an API call and updating the state.
     const UpdateProcess = async (): Promise<string> => {
       try {
-        const res = await ApiPost.Category('editProcess', {
+        const res = await ApiPost.Category<CategoryResponse>('editProcess', {
           categoryId: ids.catId,
           styleProcessId: ids.styleProcessId,
           styleProcessName: processName,
         });
+
+        if (!res) {
+          throw new Error('No response received');
+        }
         if (res.success) {
           setCategory(
             (prevCategory) =>
@@ -641,7 +700,7 @@ export default function CategoryPage(): JSX.Element {
               }) as ICategory[],
           );
           closeModal('editProcess');
-          return res.message;
+          return getApiMessage(res, 'Process updated successfully', 'Failed to update process');
         } else {
           throw new Error(res.message);
         }
@@ -665,12 +724,16 @@ export default function CategoryPage(): JSX.Element {
     // Updates the styles of a category by making an API call and updating the state.
     const UpdateStyles = async (): Promise<string> => {
       try {
-        const res = await ApiPost.Category('editStyle', {
+        const res = await ApiPost.Category<CategoryResponse>('editStyle', {
           categoryId: ids.catId,
           styleProcessId: ids.styleProcessId,
           styleId: ids.styleId,
           styleName: styleName,
         });
+
+        if (!res) {
+          throw new Error('No response received');
+        }
         if (res.success) {
           setCategory(
             (prevCategory) =>
@@ -703,7 +766,7 @@ export default function CategoryPage(): JSX.Element {
                 return cat as ICategory;
               }) as ICategory[],
           );
-          return res.message;
+          return getApiMessage(res, 'Style updated successfully', 'Failed to update style');
         } else {
           throw new Error(res.message);
         }
@@ -728,12 +791,16 @@ export default function CategoryPage(): JSX.Element {
 
     const UpdateDimension = async (): Promise<string> => {
       try {
-        const res = await ApiPost.Category('editDimension', {
+        const res = await ApiPost.Category<CategoryResponse>('editDimension', {
           categoryId: ids.catId,
           dimensionTypeId: ids.dimensionTypeId,
           dimensionId: ids.dimensionId,
           dimensionName: dimension,
         });
+
+        if (!res) {
+          throw new Error('No response received');
+        }
         if (res.success) {
           setCategory(
             (prevCategory) =>
@@ -766,7 +833,7 @@ export default function CategoryPage(): JSX.Element {
               }) as ICategory[],
           );
           closeModal('editDimension');
-          return res.message;
+          return getApiMessage(res, 'Dimension updated successfully', 'Failed to update dimension');
         } else {
           throw new Error(res.message);
         }

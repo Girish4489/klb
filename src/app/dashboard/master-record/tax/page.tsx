@@ -4,9 +4,14 @@ import { CloudArrowUpIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/
 import { ITax } from '@models/klm';
 import { userConfirmation } from '@utils/confirmation/confirmationUtil';
 import handleError from '@utils/error/handleError';
-import { ApiDelete, ApiGet, ApiPost, ApiPut } from '@utils/makeApiRequest/makeApiRequest';
+import { ApiDelete, ApiGet, ApiPost, ApiPut, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
 import React, { JSX, useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+
+interface TaxResponse extends ApiResponse {
+  taxes?: ITax[];
+  data?: ITax;
+}
 
 interface InputFieldProps {
   label: string;
@@ -72,11 +77,11 @@ export default function TaxPage(): JSX.Element {
   useEffect(() => {
     (async (): Promise<void> => {
       try {
-        const taxResponse = await ApiGet.Tax();
-        if (taxResponse.success) {
+        const taxResponse = await ApiGet.Tax<TaxResponse>();
+        if (taxResponse?.success && taxResponse.taxes) {
           setTaxes(taxResponse.taxes);
         } else {
-          throw new Error(taxResponse.message);
+          throw new Error(taxResponse?.message ?? 'Failed to fetch taxes');
         }
       } catch (error) {
         handleError.toastAndLog(error);
@@ -110,25 +115,21 @@ export default function TaxPage(): JSX.Element {
     e.preventDefault();
     const { taxName, taxType, taxPercentage } = formData;
 
-    const save = async () => {
-      try {
-        const tax = await ApiPost.Tax({
-          taxName,
-          taxType,
-          taxPercentage: parseFloat(taxPercentage),
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        } as ITax);
-        if (tax.success) {
-          setTaxes([...taxes, tax.data]);
-          setFormData({ taxName: '', taxType: 'Percentage', taxPercentage: '' });
-          return tax.message;
-        } else {
-          throw new Error(tax.message);
-        }
-      } catch (error) {
-        handleError.toastAndLog(error);
+    const save = async (): Promise<string> => {
+      const tax = await ApiPost.Tax<TaxResponse>({
+        taxName,
+        taxType,
+        taxPercentage: parseFloat(taxPercentage),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as ITax);
+
+      if (tax?.success && tax.data) {
+        setTaxes([...taxes, tax.data]);
+        setFormData({ taxName: '', taxType: 'Percentage', taxPercentage: '' });
+        return tax.message ?? 'Tax saved successfully';
       }
+      throw new Error(tax?.message ?? 'Failed to save tax');
     };
 
     await configureToastPromise(save(), 'Saving tax...');
@@ -142,18 +143,13 @@ export default function TaxPage(): JSX.Element {
       });
       if (!confirmed) return;
 
-      const deleteTax = async () => {
-        try {
-          const res = await ApiDelete.Tax(_id);
-          if (res.success) {
-            setTaxes(taxes.filter((tax) => tax._id.toString() !== _id));
-            return res.message;
-          } else {
-            throw new Error(res.message);
-          }
-        } catch (error) {
-          handleError.toastAndLog(error);
+      const deleteTax = async (): Promise<string> => {
+        const res = await ApiDelete.Tax<TaxResponse>(_id);
+        if (res?.success) {
+          setTaxes(taxes.filter((tax) => tax._id.toString() !== _id));
+          return res.message ?? 'Tax deleted successfully';
         }
+        throw new Error(res?.message ?? 'Failed to delete tax');
       };
 
       await configureToastPromise(deleteTax(), 'Deleting tax...');
@@ -179,28 +175,23 @@ export default function TaxPage(): JSX.Element {
     e.preventDefault();
     const { taxName, taxType, taxPercentage, id } = editFormData;
 
-    const editTax = async () => {
-      try {
-        const res = await ApiPut.Tax(id, {
-          taxName,
-          taxType,
-          taxPercentage: parseFloat(taxPercentage),
-          updatedAt: new Date(),
-        });
+    const editTax = async (): Promise<string> => {
+      const res = await ApiPut.Tax<TaxResponse>(id, {
+        taxName,
+        taxType,
+        taxPercentage: parseFloat(taxPercentage),
+        updatedAt: new Date(),
+      });
 
-        if (res.success) {
-          setTaxes(taxes.map((tax) => (tax._id.toString() === id ? { ...res.data } : tax)));
-          const editModal = document.getElementById('taxEdit_modal') as HTMLDialogElement;
-          if (editModal) {
-            editModal.close();
-          }
-          return res.message;
-        } else {
-          throw new Error(res.message);
+      if (res && res?.success && res.data) {
+        setTaxes(taxes.map((tax) => (tax._id.toString() === id ? res.data! : tax)));
+        const editModal = document.getElementById('taxEdit_modal') as HTMLDialogElement;
+        if (editModal) {
+          editModal.close();
         }
-      } catch (error) {
-        handleError.throw(error);
+        return res.message ?? 'Tax updated successfully';
       }
+      throw new Error(res?.message ?? 'Failed to update tax');
     };
 
     await configureToastPromise(editTax(), 'Updating tax...');

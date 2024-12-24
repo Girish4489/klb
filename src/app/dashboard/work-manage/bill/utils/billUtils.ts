@@ -1,9 +1,22 @@
 import { IBill, ICategory, IColor } from '@models/klm';
 import handleError from '@utils/error/handleError';
-import { ApiGet } from '@utils/makeApiRequest/makeApiRequest';
+import { ApiGet, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
 import { setSearchParam } from '@utils/url/urlUtils';
 import { Types } from 'mongoose';
 import { Dispatch, FormEvent, SetStateAction } from 'react';
+
+interface CategoryResponse extends ApiResponse {
+  categories: ICategory[];
+}
+
+interface BillSearchResponse extends ApiResponse {
+  bill: IBill[];
+}
+
+interface BillTodayResponse extends ApiResponse {
+  todayBill: IBill[];
+  weekBill: IBill[];
+}
 
 export async function fetchInitialData(
   setCategory: Dispatch<SetStateAction<ICategory[]>>,
@@ -11,7 +24,14 @@ export async function fetchInitialData(
   setThisWeekBill: Dispatch<SetStateAction<IBill[]>>,
 ): Promise<void> {
   try {
-    const [catResponse, billResponse] = await Promise.all([ApiGet.Category(), ApiGet.Bill.BillToday()]);
+    const [catResponse, billResponse] = await Promise.all([
+      ApiGet.Category<CategoryResponse>(),
+      ApiGet.Bill.BillToday<BillTodayResponse>(),
+    ]);
+
+    if (!catResponse || !billResponse) {
+      throw new Error('Failed to fetch data');
+    }
 
     if (catResponse.success) {
       setCategory(catResponse.categories);
@@ -79,7 +99,10 @@ export async function billSearch(
     const inputValue: number = (event.target as HTMLFormElement).billSearch.value;
     const typeBillOrMobile: string = (event.target as HTMLFormElement).selectBill.value;
 
-    const res = await ApiGet.Bill.BillSearch(inputValue, typeBillOrMobile);
+    const res = await ApiGet.Bill.BillSearch<BillSearchResponse>(inputValue, typeBillOrMobile);
+    if (!res) {
+      throw new Error('No response from server');
+    }
 
     if (res.success === true) {
       setSearchBill(res.bill);
@@ -154,7 +177,10 @@ export const handleSearch = async (
     const inputValue: number = (event.target as HTMLFormElement).billSearch.value;
     const typeBillOrMobile: string = (event.target as HTMLFormElement).selectBill.value;
 
-    const res = await ApiGet.Bill.BillSearch(inputValue, typeBillOrMobile);
+    const res = await ApiGet.Bill.BillSearch<BillSearchResponse>(inputValue, typeBillOrMobile);
+    if (!res) {
+      throw new Error('No response from server');
+    }
 
     if (res.success === true) {
       setSearchBill(res.bill);

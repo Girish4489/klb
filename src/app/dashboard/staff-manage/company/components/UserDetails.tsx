@@ -7,7 +7,7 @@ import { ObjectId } from '@models/companyModel';
 import { RoleType } from '@models/userModel';
 import { userConfirmation } from '@utils/confirmation/confirmationUtil';
 import handleError from '@utils/error/handleError';
-import { ApiGet, ApiPut } from '@utils/makeApiRequest/makeApiRequest';
+import { ApiGet, ApiPut, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
 import { fetchUserByEmail } from '@utils/user/userFetchByEmailUtil/userByEmailUtil';
 import { FC, FormEvent, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -17,6 +17,11 @@ interface UserDetailsProps {
     userId: ObjectId;
     email: string;
   }[];
+}
+
+interface UsersByEmailsResponse extends ApiResponse {
+  success: boolean;
+  data: companyUserDetail[];
 }
 
 export interface companyUserDetail {
@@ -58,29 +63,37 @@ const UserDetails: FC<UserDetailsProps> = ({ users }) => {
   const fetchUsersByEmails = async (emails: string[]): Promise<void> => {
     try {
       setLoading(true);
-      const res = await ApiGet.Company.UsersByEmails(emails);
-      if (!res.data) throw new Error('No users found');
-      if (res.data.length !== emails.length) throw new Error('Some users not found');
-      if (res.success && res.data.length > 0) {
-        const usersWithDefaults = res.data.map((user: companyUserDetail) => {
-          return {
-            email: user.email,
-            companyAccess: {
-              companyId: user.companyAccess.companyId || '',
-              role: user.companyAccess.role || 'guest',
-              access: user.companyAccess.access || { login: false, canEdit: false, canDelete: false, canView: false },
-              accessLevels: user.companyAccess.accessLevels || [],
-            },
-          };
-        });
-        setUserDetails(usersWithDefaults);
-      } else {
+      const res = await ApiGet.Company.UsersByEmails<UsersByEmailsResponse>(emails);
+      if (!res || !res.success) {
         throw new Error('Failed to fetch users');
       }
-      setLoading(false);
+
+      if (!res.data || res.data.length === 0) {
+        throw new Error('No users found');
+      }
+
+      if (res.data.length !== emails.length) {
+        throw new Error('Some users not found');
+      }
+
+      const usersWithDefaults = res.data.map((user: companyUserDetail) => ({
+        email: user.email,
+        companyAccess: {
+          companyId: user.companyAccess.companyId || '',
+          role: user.companyAccess.role || 'guest',
+          access: user.companyAccess.access || {
+            login: false,
+            canEdit: false,
+            canDelete: false,
+            canView: false,
+          },
+          accessLevels: user.companyAccess.accessLevels || [],
+        },
+      }));
+
+      setUserDetails(usersWithDefaults);
     } catch (error) {
       handleError.toast(error);
-      setLoading(false);
     } finally {
       setLoading(false);
     }

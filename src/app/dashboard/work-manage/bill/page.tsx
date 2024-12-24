@@ -27,10 +27,18 @@ import { PlusCircleIcon } from '@heroicons/react/24/outline';
 import { IBill, ICategory } from '@models/klm';
 import { userConfirmation } from '@utils/confirmation/confirmationUtil';
 import handleError from '@utils/error/handleError';
-import { ApiGet, ApiPost, ApiPut } from '@utils/makeApiRequest/makeApiRequest';
+import { ApiGet, ApiPost, ApiPut, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
 import { getSearchParam } from '@utils/url/urlUtils';
 import React, { JSX, useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
+
+interface BillResponse extends ApiResponse {
+  bill?: IBill[];
+  lastBill?: { billNumber: number };
+  today?: IBill;
+  todayBill?: IBill[];
+  weekBill?: IBill[];
+}
 
 export default function BillPage(): JSX.Element {
   const [loading, setLoading] = useState<boolean>(true);
@@ -58,13 +66,13 @@ export default function BillPage(): JSX.Element {
     if (billNumber) {
       (async (): Promise<void> => {
         try {
-          const res = await ApiGet.Bill.BillSearch(parseInt(billNumber), 'bill');
-          if (res.success && res.bill.length > 0) {
+          const res = await ApiGet.Bill.BillSearch<BillResponse>(parseInt(billNumber), 'bill');
+          if (res?.success && res.bill && res.bill.length > 0) {
             setNewBill(false);
             setBill(res.bill[0]);
             if (orderNumber) checkOrderInUrl(orderNumber);
           } else {
-            throw new Error(res.message);
+            throw new Error(res?.message ?? 'Bill not found');
           }
         } catch (error) {
           handleError.toastAndLog(error);
@@ -90,13 +98,13 @@ export default function BillPage(): JSX.Element {
         if (billNumber === bill?.billNumber?.toString()) {
           toast.success('Bill already loaded');
         } else {
-          const res = await ApiGet.Bill.BillSearch(parseInt(billNumber), 'bill');
-          if (res.success && res.bill.length > 0) {
+          const res = await ApiGet.Bill.BillSearch<BillResponse>(parseInt(billNumber), 'bill');
+          if (res?.success && res.bill && res.bill.length > 0) {
             toast.success('Bill found');
             setNewBill(false);
             setBill(res.bill[0]);
           } else {
-            throw new Error(res.message);
+            throw new Error(res?.message ?? 'Bill not found');
           }
         }
 
@@ -106,7 +114,7 @@ export default function BillPage(): JSX.Element {
         handleError.toastAndLog(error);
       }
     })();
-  }, [barcode]);
+  }, [barcode, bill?.billNumber]);
 
   const formattedTodayBill = useMemo(() => todayBill, [todayBill]);
   const formattedThisWeekBill = useMemo(() => thisWeekBill, [thisWeekBill]);
@@ -119,7 +127,7 @@ export default function BillPage(): JSX.Element {
     setNewBill(true);
     setSearchBill(undefined);
     setBill(undefined);
-    const lastBill = await ApiGet.Bill.LastBill();
+    const lastBill = await ApiGet.Bill.LastBill<BillResponse>();
     setBill(createInitialBill(lastBill?.lastBill?.billNumber ?? 0) as IBill);
   }
 
@@ -264,14 +272,14 @@ export default function BillPage(): JSX.Element {
       });
 
       // Type assertion here since we know the bill has all required fields
-      const res = await ApiPost.Bill(updatedBill as IBill);
-      if (res.success) {
-        setTodayBill([...todayBill, res.today]);
-        setBill(res.bill);
+      const res = await ApiPost.Bill<BillResponse>(updatedBill as IBill);
+      if (res?.success) {
+        setTodayBill([...todayBill, res.today!]);
+        setBill(res.bill![0]);
         setNewBill(false);
         toast.success(res.message);
       } else {
-        throw new Error(res.message);
+        throw new Error(res?.message ?? 'Failed to save bill');
       }
     } catch (error) {
       handleError.toast(error);
@@ -297,13 +305,13 @@ export default function BillPage(): JSX.Element {
       await validateBill(bill);
       if (!(bill ?? {})._id) throw new Error('No bill ID found to update');
 
-      const res = await ApiPut.Bill(bill?._id?.toString() ?? '', bill as IBill);
-      if (res.success === true) {
-        setTodayBill([...todayBill, res.today]);
-        setBill(res.bill);
+      const res = await ApiPut.Bill<BillResponse>(bill?._id?.toString() ?? '', bill as IBill);
+      if (res?.success) {
+        setTodayBill([...todayBill, res.today!]);
+        setBill(res.bill![0]);
         toast.success(res.message);
       } else {
-        throw new Error(res.message);
+        throw new Error(res?.message ?? 'Failed to update bill');
       }
     } catch (error) {
       handleError.toast(error);

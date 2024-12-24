@@ -20,6 +20,12 @@ interface ICustomerTableRow extends TableRow {
   actions?: JSX.Element;
 }
 
+interface CustomerApiResponse {
+  success: boolean;
+  message: string;
+  data?: ICustomer;
+}
+
 export default function CustomerDetails(): JSX.Element {
   const [customer, setCustomer] = useState<ICustomer[]>([]);
   const [loading, setLoading] = useState(false);
@@ -130,14 +136,14 @@ export default function CustomerDetails(): JSX.Element {
 
   const handleEditCustomer = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
-    const updateCustomer = async () => {
+    const updateCustomer = async (): Promise<string> => {
       if (!editCustomer) throw new Error('Customer not found');
       const updatedCustomer = {
         ...editCustomer,
         updatedAt: new Date(),
         phone: parseInt(editCustomer.phone?.toString() || '0', 10),
       } as ICustomer;
-      const res = await axios.post('/api/dashboard/report/customer-details', {
+      const res = await axios.post<CustomerApiResponse>('/api/dashboard/report/customer-details', {
         type: 'updateCustomer',
         customerId: editCustomer?._id,
         customer: updatedCustomer,
@@ -186,8 +192,8 @@ export default function CustomerDetails(): JSX.Element {
     });
     if (!confirmation) return;
     if (confirmation) {
-      const deleteCustomer = async () => {
-        const res = await axios.post(`/api/dashboard/report/customer-details`, {
+      const deleteCustomer = async (): Promise<string> => {
+        const res = await axios.post<CustomerApiResponse>(`/api/dashboard/report/customer-details`, {
           type: 'deleteCustomer',
           customerId: customerId,
         });
