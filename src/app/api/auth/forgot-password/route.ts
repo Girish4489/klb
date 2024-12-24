@@ -11,27 +11,48 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const reqBody = await request.json();
     const { email } = reqBody;
 
-    // fetch user password by email
-    const user = await User.findOne({ email }).select(
-      '-password -username -theme -profileImage -forgotPasswordToken -forgotPasswordTokenExpiry -verifyToken -verifyTokenExpiry',
-    );
-
-    if (!user || user.email !== email) {
-      throw new Error('User not found \n Invalid email address \n Please signup');
+    const user = await User.findOne({ email }).select('-password');
+    if (!user) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Account not found',
+          error: 'Please check your email or sign up',
+        },
+        { status: 404 },
+      );
     }
 
     if (!user.isVerified) {
-      throw new Error('Email not verified \n Verify from signup page');
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Email not verified',
+          error: 'Please verify your email first through the signup page',
+        },
+        { status: 400 },
+      );
     }
 
-    // send email
-    await sendEmail({
+    const mailResponse = await sendEmail({
       email,
       emailType: 'RESET',
       userId: user._id.toString(),
     });
+
+    if (!mailResponse.success) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Failed to send reset email',
+          error: mailResponse.error,
+        },
+        { status: 500 },
+      );
+    }
+
     return NextResponse.json({
-      message: 'Check mail to reset password',
+      message: 'Password reset link sent to your email',
       success: true,
     });
   } catch (error) {

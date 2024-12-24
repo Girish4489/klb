@@ -1,5 +1,4 @@
 import User from '@models/userModel';
-import handleError from '@utils/error/handleError';
 import { token } from '@utils/token/token';
 import nodemailer from 'nodemailer';
 
@@ -56,17 +55,73 @@ const generateEmailContent = (
   };
 };
 
-export const sendEmail = async ({
-  email,
-  emailType,
-  userId,
-}: SendEmailParams): Promise<nodemailer.SentMessageInfo | undefined> => {
-  try {
-    const tokenData = { id: userId, email };
-    const emailToken = await token.create(tokenData, '30m');
-    const decodedToken = await token.verify(emailToken);
-    const tokenExpiryTime = decodedToken?.exp || 0;
+export interface MailResponse {
+  success: boolean;
+  message: string;
+  error?: string;
+  sentMessageInfo?: nodemailer.SentMessageInfo;
+}
 
+export const sendEmail = async ({ email, emailType, userId }: SendEmailParams): Promise<MailResponse> => {
+  try {
+    if (!userId || !email) {
+      console.error('Missing required fields:', { userId, email });
+      return {
+        success: false,
+        message: 'Missing required fields',
+        error: 'User ID and email are required',
+      };
+    }
+
+    const user = await User.findById(userId).select('username email isVerified isAdmin isCompanyMember lastLogin');
+    if (!user) {
+      return {
+        success: false,
+        message: 'User not found',
+        error: 'Invalid user ID',
+      };
+    }
+
+    const tokenData = {
+      id: userId,
+      email,
+      username: user.username,
+      isVerified: user.isVerified,
+      isAdmin: user.isAdmin,
+      isCompanyMember: user.isCompanyMember,
+      lastLogin: user.lastLogin,
+    };
+
+    let emailToken;
+    try {
+      emailToken = await token.create(tokenData, '30m');
+    } catch (tokenError) {
+      console.error('Token creation failed:', tokenError);
+      return {
+        success: false,
+        message: 'Failed to create verification token',
+        error: tokenError instanceof Error ? tokenError.message : 'Token creation failed',
+      };
+    }
+
+    if (!emailToken) {
+      return {
+        success: false,
+        message: 'Token creation failed',
+        error: 'Unable to generate verification token',
+      };
+    }
+
+    const decodedToken = await token.verify(emailToken);
+    if (!decodedToken) {
+      return {
+        success: false,
+        message: 'Token verification failed',
+        error: 'Invalid token generated',
+      };
+    }
+
+    const tokenExpiryTime = decodedToken?.exp || 0;
     const updateUser =
       emailType === 'VERIFY'
         ? { verifyToken: emailToken, verifyTokenExpiry: new Date(tokenExpiryTime * 1000) }
@@ -84,8 +139,18 @@ export const sendEmail = async ({
       html,
     };
 
-    return await transporter.sendMail(mailOptions);
+    const info = await transporter.sendMail(mailOptions);
+    return {
+      success: true,
+      message: `${emailType === 'VERIFY' ? 'Verification' : 'Reset password'} email sent successfully`,
+      sentMessageInfo: info,
+    };
   } catch (error) {
-    handleError.log(error);
+    console.error('Mail service error:', error);
+    return {
+      success: false,
+      message: 'Failed to send email',
+      error: error instanceof Error ? error.message : 'Unknown mail service error',
+    };
   }
 };

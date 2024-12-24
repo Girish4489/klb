@@ -19,33 +19,32 @@ interface DecodedToken extends UserTokenPayload {
 
 const TOKEN_SECRET = new TextEncoder().encode(process.env.TOKEN_SECRET!);
 
-async function createAuthToken(user: Partial<IUser>, expiresIn: string | number = '1d'): Promise<string> {
-  if (!user._id) {
-    console.error('Cannot create token: Missing user ID');
-    throw new Error('Invalid user data');
+async function createAuthToken(data: UserTokenPayload, expiresIn: string = '30m'): Promise<string> {
+  try {
+    if (!data.id || !data.email) {
+      throw new Error('Invalid token data: missing required fields');
+    }
+
+    // Convert time strings to seconds
+    const timeMap: { [key: string]: number } = {
+      '30m': 30 * 60,
+      '1h': 60 * 60,
+      '1d': 24 * 60 * 60,
+    };
+
+    const expTime = timeMap[expiresIn] || 30 * 60; // default to 30 minutes
+
+    const jwt = await new SignJWT({ ...data })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setIssuedAt()
+      .setExpirationTime(Math.floor(Date.now() / 1000) + expTime)
+      .sign(TOKEN_SECRET);
+
+    return jwt;
+  } catch (error) {
+    console.error('Token creation error:', error);
+    throw new Error('Failed to create token');
   }
-
-  const tokenData: UserTokenPayload = {
-    id: user._id.toString(),
-    username: user.username ?? '',
-    email: user.email?.replace(/\.$/, '') ?? '',
-    isVerified: user.isVerified ?? false,
-    isAdmin: user.isAdmin ?? false,
-    isCompanyMember: user.isCompanyMember ?? false,
-    companyAccess: user.companyAccess,
-    lastLogin: user.lastLogin ?? new Date(),
-  };
-
-  // Convert expiresIn to seconds if it's a string
-  const expTime = typeof expiresIn === 'string' ? (expiresIn === '1d' ? 24 * 60 * 60 : parseInt(expiresIn)) : expiresIn;
-
-  const jwt = await new SignJWT({ ...tokenData })
-    .setProtectedHeader({ alg: 'HS256' })
-    .setIssuedAt()
-    .setExpirationTime(Math.floor(Date.now() / 1000) + expTime)
-    .sign(TOKEN_SECRET);
-
-  return jwt;
 }
 
 async function verifyAuthToken(token: string): Promise<DecodedToken | null> {
