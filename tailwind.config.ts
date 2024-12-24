@@ -1,3 +1,4 @@
+import daisyui from 'daisyui';
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
@@ -28,8 +29,7 @@ const config: Config = {
       },
     },
   },
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  plugins: [require('daisyui')],
+  plugins: [daisyui],
   daisyui: {
     themes: [
       'light',
