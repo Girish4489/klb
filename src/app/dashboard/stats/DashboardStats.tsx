@@ -1,4 +1,3 @@
-import { getComputedStyleValue } from '@utils/Styles';
 import axios from 'axios';
 import { ArcElement, BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Tooltip } from 'chart.js';
 import { JSX, useEffect, useState } from 'react';
@@ -66,13 +65,13 @@ const DashboardStats = ({ refresh }: DashboardStatsProps): JSX.Element => {
           stats.totalBillsCount,
         ],
         backgroundColor: [
-          getComputedStyleValue('bg-success', 'background-color'),
-          getComputedStyleValue('bg-secondary', 'background-color'),
-          getComputedStyleValue('bg-error', 'background-color'),
-          getComputedStyleValue('bg-success', 'background-color'),
-          getComputedStyleValue('bg-warning', 'background-color'),
-          getComputedStyleValue('bg-info', 'background-color'),
-          getComputedStyleValue('bg-primary', 'background-color'),
+          'var(--color-success)',
+          'var(--color-secondary)',
+          'var(--color-error)',
+          'var(--color-success)',
+          'var(--color-warning)',
+          'var(--color-info)',
+          'var(--color-primary)',
         ],
       },
     ],
@@ -85,10 +84,10 @@ const DashboardStats = ({ refresh }: DashboardStatsProps): JSX.Element => {
         label: 'Amount',
         data: [stats.grandTotalAmount, stats.paidAmount, stats.dueAmount, stats.discountAmount],
         backgroundColor: [
-          getComputedStyleValue('bg-primary', 'background-color'),
-          getComputedStyleValue('bg-success', 'background-color'),
-          getComputedStyleValue('bg-warning', 'background-color'),
-          getComputedStyleValue('bg-secondary', 'background-color'),
+          'var(--color-primary)',
+          'var(--color-success)',
+          'var(--color-warning)',
+          'var(--color-secondary)',
         ],
       },
     ],
