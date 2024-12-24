@@ -37,11 +37,14 @@ export const CompanyProvider: React.FC<CompanyContextProps> = ({ children }) => 
     try {
       // if the role is guest then no need to fetch company data
       if (role === 'guest') return null;
-      const companyData: ICompany = await fetchCompanyData(userId, role);
-      setCompany(companyData);
+      const companyData = await fetchCompanyData(userId, role);
 
-      // Persist company data in local storage
-      localStorage.setItem('company', JSON.stringify(companyData));
+      // Only set and store if we received company data
+      if (companyData) {
+        setCompany(companyData);
+        // Persist company data in local storage
+        localStorage.setItem('company', JSON.stringify(companyData));
+      }
     } catch (error) {
       handleError.toast(error);
     }
