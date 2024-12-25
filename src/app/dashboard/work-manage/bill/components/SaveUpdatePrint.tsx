@@ -38,10 +38,10 @@ const PaymentStatus: React.FC<{ bill: IBill }> = ({ bill }) => {
         <b>Status:</b>
         <p>{bill.paymentStatus}</p>
       </div>
-      <div tabIndex={0} className="card dropdown-content compact z-20 w-72 min-w-52 max-w-96 pt-2 shadow">
-        <div tabIndex={0} className="card-body rounded-box bg-base-300 ring-1 ring-primary">
+      <div tabIndex={0} className="card dropdown-content compact z-20 w-72 min-w-52 max-w-96 pt-2 shadow-sm">
+        <div tabIndex={0} className="card-body rounded-box bg-base-300 ring-primary ring-1">
           <h2 className="card-title select-none">Payment Details</h2>
-          <table className="w-full table-auto rounded-box bg-base-100 shadow-inner shadow-base-300 ring-1 ring-secondary">
+          <table className="rounded-box bg-base-100 shadow-base-300 ring-secondary w-full table-auto shadow-inner ring-1">
             <tbody className="">
               <tr className="text-primary">
                 <td className="px-2 py-1">
@@ -100,7 +100,7 @@ const SaveUpdatePrint: React.FC<SaveUpdatePrintProps> = ({
   handleUpdateBill,
 }) => {
   return (
-    <div className="rounded-box bg-neutral p-2 shadow-inner ring-2 ring-info">
+    <div className="rounded-box bg-neutral ring-info p-2 shadow-inner ring-2">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <span className="flex gap-2">
           {newBill ? (

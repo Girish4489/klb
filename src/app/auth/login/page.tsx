@@ -104,16 +104,16 @@ export default function LoginPage(): JSX.Element {
           {/* Info Section */}
           <div className="flex select-none flex-col justify-center gap-4 lg:w-1/2">
             <div className="text-center">
-              <h1 className="bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-5xl font-bold text-transparent">
+              <h1 className="bg-linear-to-r from-primary via-accent to-secondary bg-clip-text text-5xl font-bold text-transparent">
                 Welcome Back!
               </h1>
-              <p className="mt-4 text-pretty text-base-content/70">
+              <p className="text-base-content/70 mt-4 text-pretty">
                 Sign in to your account to manage your fashion business and access all features.
               </p>
             </div>
-            <div className="mt-4 space-y-4 rounded-box bg-base-200/50 p-6 backdrop-blur-sm">
+            <div className="rounded-box bg-base-200/50 backdrop-blur-xs mt-4 space-y-4 p-6">
               <h2 className="text-lg font-semibold">Access your:</h2>
-              <ul className="ml-6 list-disc space-y-2 text-base-content/70">
+              <ul className="text-base-content/70 ml-6 list-disc space-y-2">
                 <li>Business Dashboard</li>
                 <li>Inventory Management</li>
                 <li>Sales Reports</li>
@@ -136,7 +136,7 @@ export default function LoginPage(): JSX.Element {
                   type="email"
                   name="email"
                   placeholder="Enter your email"
-                  className="input input-bordered bg-base-100/50 backdrop-blur-sm"
+                  className="input input-bordered bg-base-100/50 backdrop-blur-xs"
                   required
                 />
               </div>
@@ -153,7 +153,7 @@ export default function LoginPage(): JSX.Element {
                     type={showPassword ? 'text' : 'password'}
                     name="password"
                     placeholder="Enter your password"
-                    className="input input-bordered w-full bg-base-100/50 pr-10 backdrop-blur-sm"
+                    className="input input-bordered bg-base-100/50 backdrop-blur-xs w-full pr-10"
                     required
                   />
                   <label className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer">
@@ -169,7 +169,7 @@ export default function LoginPage(): JSX.Element {
 
               <button
                 type="submit"
-                className="btn btn-primary btn-block bg-gradient-to-r from-primary via-accent to-secondary text-primary-content transition-all hover:scale-[1.02]"
+                className="btn btn-primary btn-block bg-linear-to-r from-primary via-accent to-secondary text-primary-content transition-all hover:scale-[1.02]"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -184,8 +184,8 @@ export default function LoginPage(): JSX.Element {
             <div className="divider my-8">OR</div>
 
             {/* Forgot Password Section */}
-            <div className="space-y-4 rounded-box bg-base-200/50 p-4 backdrop-blur-sm">
-              <details className="collapse collapse-plus bg-base-100/50">
+            <div className="rounded-box bg-base-200/50 backdrop-blur-xs space-y-4 p-4">
+              <details className="collapse-plus bg-base-100/50 collapse">
                 <summary className="collapse-title text-sm font-medium">Forgot your password?</summary>
                 <div className="collapse-content">
                   <form className="mt-4 space-y-4" onSubmit={handleForgotPassword}>
@@ -205,9 +205,9 @@ export default function LoginPage(): JSX.Element {
             </div>
 
             <div className="mt-6 text-center">
-              <p className="text-sm text-base-content/70">
+              <p className="text-base-content/70 text-sm">
                 Don&apos;t have an account?{' '}
-                <Link href="/auth/signup" className="link link-primary font-semibold hover:link-accent">
+                <Link href="/auth/signup" className="link link-primary hover:link-accent font-semibold">
                   Sign up
                 </Link>
               </p>

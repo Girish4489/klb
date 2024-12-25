@@ -42,7 +42,7 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, company, is
                       priority
                     />
                   </span>
-                  <hr className="divider divider-horizontal m-0 w-0.5 rounded-box bg-black" />
+                  <hr className="divider divider-horizontal rounded-box m-0 w-0.5 bg-black" />
                 </div>
                 <div className="item-center flex grow flex-col justify-between">
                   <span className="field">
@@ -61,7 +61,7 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, company, is
                         : ''}
                     </h3>
                   </span>
-                  <hr className="divider divider-horizontal m-0 w-0.5 rounded-box bg-black" />
+                  <hr className="divider divider-horizontal rounded-box m-0 w-0.5 bg-black" />
                 </div>
                 <div className="header-col flex flex-col justify-start text-center">
                   <h2 id="text-center">Barcode</h2>
@@ -80,12 +80,12 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, company, is
                 </div>
               </div>
             </div>
-            <hr className="m-auto my-1.5 w-[95%] rounded-box border-2 border-black" />
+            <hr className="rounded-box m-auto my-1.5 w-[95%] border-2 border-black" />
             {/* <span className="py-1" /> */}
             <span>
               {bill?.order.map((order, orderIndex) => (
                 <span className="orders flex flex-col" key={orderIndex}>
-                  <div className="table m-auto flex w-[96%] break-inside-avoid break-after-auto flex-col gap-0.5 rounded border border-black p-1 text-center">
+                  <div className="m-auto flex table w-[96%] break-inside-avoid break-after-auto flex-col gap-0.5 rounded-sm border border-black p-1 text-center">
                     <span className="flex flex-row items-center justify-between gap-8">
                       <span className="flex flex-row items-center gap-8">
                         <h1>{orderIndex + 1}.</h1>
@@ -116,7 +116,7 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, company, is
                         <p>{order.color?.hex ? order.color.hex : 'NA'}</p> */}
                       </span>
                     </span>
-                    <hr className="m-auto my-0.5 w-[100%] rounded-box border border-dashed border-black" />
+                    <hr className="rounded-box m-auto my-0.5 w-[100%] border border-dashed border-black" />
                     {order.styleProcess.length > 0 && (
                       <span className="flex w-full flex-col items-center gap-1">
                         {/* <h1>Styles:</h1> */}
@@ -125,7 +125,7 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, company, is
                             <span
                               key={styleIndex}
                               // className="item-center process-box grow-1 flex flex-col justify-start"
-                              className="item-center font-base flex w-fit flex-col justify-start rounded-box border border-black px-2 py-0.5"
+                              className="item-center font-base rounded-box flex w-fit flex-col justify-start border border-black px-2 py-0.5"
                             >
                               <span className="flex w-fit flex-row items-center justify-around gap-8">
                                 <h1>
@@ -138,7 +138,7 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, company, is
                           ))}
                         </span>
                         {order.styleProcess.length > 0 && (
-                          <hr className="m-auto my-0.5 w-[100%] rounded-box border border-black" />
+                          <hr className="rounded-box m-auto my-0.5 w-[100%] border border-black" />
                         )}
                       </span>
                     )}
@@ -146,7 +146,7 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, company, is
                       {order.orderNotes && (
                         <span className="flex items-center gap-2">
                           <h1>Notes:</h1>
-                          <p className="text-pretty rounded-box border border-black px-2 py-0.5 text-base font-extrabold">
+                          <p className="rounded-box text-pretty border border-black px-2 py-0.5 text-base font-extrabold">
                             {(order.orderNotes ?? '').split('\n')}
                           </p>
                         </span>
@@ -154,7 +154,7 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, company, is
                       {order.measurement && (
                         <span className="flex grow items-center gap-2">
                           <h1>Measurement:</h1>
-                          <p className="text-pretty rounded-box border border-black px-2 py-0.5 text-base font-extrabold">
+                          <p className="rounded-box text-pretty border border-black px-2 py-0.5 text-base font-extrabold">
                             {(order.measurement ?? '').split('\n').map((line, index) => (
                               <React.Fragment key={index}>
                                 {line}
@@ -169,13 +169,13 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, company, is
                       <span className="flex w-full flex-col items-center gap-1">
                         {/* <h1>Dimensions:</h1> */}
                         {order.dimension.length > 0 && (
-                          <hr className="m-auto my-0.5 w-[100%] rounded-box border border-black" />
+                          <hr className="rounded-box m-auto my-0.5 w-[100%] border border-black" />
                         )}
                         <span className="flex w-full items-start gap-8">
                           {order.dimension.map((dimension, dimensionIndex) => (
                             <span
                               key={dimensionIndex}
-                              className="item-center flex w-fit flex-col items-center justify-start rounded-box border border-black"
+                              className="item-center rounded-box flex w-fit flex-col items-center justify-start border border-black"
                             >
                               <span className="flex flex-row items-center justify-around gap-0.5 text-base">
                                 <h1 className="px-1 py-0.5 text-base">
@@ -194,7 +194,7 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, company, is
                     )}
                   </div>
                   {orderIndex < bill.order.length - 1 && (
-                    <hr className="m-auto my-1.5 w-[95%] rounded-box border-2 border-black" />
+                    <hr className="rounded-box m-auto my-1.5 w-[95%] border-2 border-black" />
                   )}
                 </span>
               ))}
@@ -203,7 +203,7 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, company, is
           <span
             className={`fixed bottom-0 m-auto w-full grow gap-2 bg-white text-center ${type === 'Both' ? 'hidden' : ''}`}
           >
-            <hr className="m-auto my-1 w-[96%] rounded-box border-2 border-black" />
+            <hr className="rounded-box m-auto my-1 w-[96%] border-2 border-black" />
             <span className="padding-4 border-1 rounded-20 m-auto flex w-[96%] flex-row items-center justify-between gap-4 border-solid bg-white">
               <span className="field">
                 <h2>Bill By:</h2>

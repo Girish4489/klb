@@ -270,7 +270,7 @@ export default function CustomerDetails(): JSX.Element {
   return (
     <div className="flex h-full flex-col gap-4 p-4">
       {/* Filter Section */}
-      <div className="flex flex-wrap items-center gap-4 rounded-lg bg-base-200 p-4 shadow">
+      <div className="bg-base-200 flex flex-wrap items-center gap-4 rounded-lg p-4 shadow-sm">
         <div className="join">
           <input
             type="radio"
@@ -376,7 +376,7 @@ export default function CustomerDetails(): JSX.Element {
         <dialog id="CustomerEditModal" className="modal">
           <div className="modal-box min-w-fit p-0">
             {editCustomer && (
-              <form onSubmit={handleEditCustomer} className="w-full rounded-box border border-base-300 p-4">
+              <form onSubmit={handleEditCustomer} className="rounded-box border-base-300 w-full border p-4">
                 <h2 className="my-2 text-center text-2xl font-bold">Update Customer</h2>
                 <div className="mb-2 flex flex-col md:flex-row md:justify-between md:gap-1">
                   {/* First Column */}

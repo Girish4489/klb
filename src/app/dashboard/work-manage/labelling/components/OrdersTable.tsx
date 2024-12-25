@@ -7,8 +7,8 @@ const OrdersTable: React.FC<{ bill: IBill; selectedOrders: number[]; handleOrder
   selectedOrders,
   handleOrderSelect,
 }) => (
-  <div className="flex-grow overflow-auto rounded-box border border-neutral">
-    <table className="table table-zebra table-pin-rows w-full table-auto">
+  <div className="rounded-box border-neutral grow overflow-auto border">
+    <table className="table-zebra table-pin-rows table w-full table-auto">
       <caption className="px-1 py-2 font-bold">Orders</caption>
       <thead>
         <tr className="text-center">

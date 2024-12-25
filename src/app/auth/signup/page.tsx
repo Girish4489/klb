@@ -96,16 +96,16 @@ export default function SignupPage(): JSX.Element {
         {/* Info Section */}
         <div className="flex select-none flex-col justify-center gap-4 lg:w-1/2">
           <div className="text-center">
-            <h1 className="bg-gradient-to-r from-secondary via-primary to-accent bg-clip-text text-5xl font-bold text-transparent">
+            <h1 className="bg-linear-to-r from-secondary via-primary to-accent bg-clip-text text-5xl font-bold text-transparent">
               Create Account
             </h1>
-            <p className="mt-4 text-pretty text-base-content/70">
+            <p className="text-base-content/70 mt-4 text-pretty">
               Join Kalamandir to manage your fashion business better. Get started with a free account today.
             </p>
           </div>
-          <div className="mt-4 space-y-4 rounded-box bg-base-200/50 p-6 backdrop-blur-sm">
+          <div className="rounded-box bg-base-200/50 backdrop-blur-xs mt-4 space-y-4 p-6">
             <h2 className="text-lg font-semibold">What you&apos;ll get:</h2>
-            <ul className="ml-6 list-disc space-y-2 text-base-content/70">
+            <ul className="text-base-content/70 ml-6 list-disc space-y-2">
               <li>Real-time inventory tracking</li>
               <li>Sales analytics dashboard</li>
               <li>Customer relationship tools</li>
@@ -130,7 +130,7 @@ export default function SignupPage(): JSX.Element {
                 id="username"
                 autoComplete="username"
                 placeholder="Enter your username"
-                className="input input-bordered bg-base-100/50 backdrop-blur-sm"
+                className="input input-bordered bg-base-100/50 backdrop-blur-xs"
                 onFocus={(e) => e.target.select()}
                 required
               />
@@ -149,7 +149,7 @@ export default function SignupPage(): JSX.Element {
                 id="email"
                 autoComplete="email"
                 placeholder="Enter your email"
-                className="input input-bordered bg-base-100/50 backdrop-blur-sm"
+                className="input input-bordered bg-base-100/50 backdrop-blur-xs"
                 onFocus={(e) => e.target.select()}
                 required
               />
@@ -169,7 +169,7 @@ export default function SignupPage(): JSX.Element {
                   id="password"
                   autoComplete="new-password"
                   placeholder="Create a password"
-                  className="input input-bordered w-full bg-base-100/50 pr-10 backdrop-blur-sm"
+                  className="input input-bordered bg-base-100/50 backdrop-blur-xs w-full pr-10"
                   required
                 />
                 <label className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer">
@@ -188,7 +188,7 @@ export default function SignupPage(): JSX.Element {
 
             <button
               type="submit"
-              className="btn btn-secondary btn-block bg-gradient-to-r from-secondary via-primary to-accent text-secondary-content transition-all hover:scale-[1.02]"
+              className="btn btn-secondary btn-block bg-linear-to-r from-secondary via-primary to-accent text-secondary-content transition-all hover:scale-[1.02]"
               disabled={isLoading}
             >
               {isLoading ? (
@@ -203,8 +203,8 @@ export default function SignupPage(): JSX.Element {
           <div className="divider my-8">OR</div>
 
           {/* Account verification section */}
-          <div className="space-y-4 rounded-box bg-base-200/50 p-4 backdrop-blur-sm">
-            <details className="collapse collapse-plus bg-base-100/50">
+          <div className="rounded-box bg-base-200/50 backdrop-blur-xs space-y-4 p-4">
+            <details className="collapse-plus bg-base-100/50 collapse">
               <summary className="collapse-title text-sm font-medium">Need to verify your account?</summary>
               <div className="collapse-content">
                 <form className="mt-4 space-y-4" onSubmit={handleResendVerification}>
@@ -226,9 +226,9 @@ export default function SignupPage(): JSX.Element {
           </div>
 
           <div className="mt-6 text-center">
-            <p className="text-sm text-base-content/70">
+            <p className="text-base-content/70 text-sm">
               Already have an account?{' '}
-              <Link href="/auth/login" className="link link-secondary font-semibold hover:link-accent">
+              <Link href="/auth/login" className="link link-secondary hover:link-accent font-semibold">
                 Sign in
               </Link>
             </p>

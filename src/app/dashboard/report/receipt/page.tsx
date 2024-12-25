@@ -93,9 +93,9 @@ export default function Receipt(): JSX.Element {
   const ReceiptTable = ({ caption, receipts }: { caption: string; receipts: IReceipt[] }): JSX.Element => {
     return (
       <div
-        className={`table-row overflow-auto rounded-box border-2 border-base-300 bg-base-100 ${receipts.length === 0 && 'min-h-24'}`}
+        className={`rounded-box border-base-300 bg-base-100 table-row overflow-auto border-2 ${receipts.length === 0 && 'min-h-24'}`}
       >
-        <table className="table table-zebra table-pin-rows h-fit">
+        <table className="table-zebra table-pin-rows table h-fit">
           <caption className="table-caption px-1 py-2 font-bold">{caption}</caption>
           {receipts.length === 0 ? (
             <tbody>
@@ -170,7 +170,7 @@ export default function Receipt(): JSX.Element {
     <div className="flex flex-col gap-4 p-2">
       <h1 className="text-center text-3xl font-bold">Receipts</h1>
       <div className="flex flex-col gap-1">
-        <div className="flex gap-4 rounded-box bg-base-300 px-2 py-2">
+        <div className="rounded-box bg-base-300 flex gap-4 px-2 py-2">
           <label
             className="input input-sm label-text input-bordered input-primary flex grow items-center gap-2"
             htmlFor="fromDate"

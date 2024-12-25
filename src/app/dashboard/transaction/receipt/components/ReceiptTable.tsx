@@ -13,8 +13,8 @@ const ReceiptTable: React.FC<ReceiptTableProps> = ({ receipts, caption }) => {
   const router = useRouter();
 
   return (
-    <div className="overflow-x-auto rounded-box">
-      <table className="table table-zebra w-full">
+    <div className="rounded-box overflow-x-auto">
+      <table className="table-zebra table w-full">
         <caption className="text-lg font-bold">{caption}</caption>
         <thead>
           <tr className="text-center">
@@ -51,7 +51,7 @@ const ReceiptTable: React.FC<ReceiptTableProps> = ({ receipts, caption }) => {
                 <td>
                   {receipt.receiptBy?.name && (
                     <span className="badge badge-accent badge-outline items-center justify-around gap-2 py-3 font-bold">
-                      <UserIcon className="h-4 w-4 text-accent" />
+                      <UserIcon className="text-accent h-4 w-4" />
                       <span>{receipt.receiptBy?.name}</span>
                     </span>
                   )}

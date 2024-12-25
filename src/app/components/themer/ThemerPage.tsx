@@ -70,9 +70,9 @@ export default function ThemerPage({
   };
 
   return (
-    <div className="flex flex-col items-center  rounded-box border border-base-100 p-2 shadow-2xl">
+    <div className="rounded-box border-base-100 flex  flex-col items-center border p-2 shadow-2xl">
       <form onSubmit={handleThemeChange} className="flex w-full flex-col items-end gap-3 max-sm:items-center">
-        <div className="grid w-full grid-cols-2 gap-4 rounded-box sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+        <div className="rounded-box grid w-full grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
           {themes.map((themeOption) => (
             <div
               key={themeOption}
@@ -80,12 +80,12 @@ export default function ThemerPage({
                 setSelectedTheme(themeOption);
                 setTheme(themeOption);
               }}
-              className="overflow-hidden rounded-lg border-2 border-base-content/10 hover:border-base-content/60"
+              className="border-base-content/10 hover:border-base-content/60 overflow-hidden rounded-lg border-2"
             >
-              <div className={`w-full cursor-pointer bg-base-100 font-sans text-base-content`} data-theme={themeOption}>
-                <div className="grid grid-cols-4 grid-rows-4 rounded-box">
-                  <div className="indicator col-span-4 col-start-1 row-span-1 row-start-1 w-full rounded-box shadow-xl">
-                    <span className="flex w-full flex-row items-center justify-around rounded-b bg-primary/40">
+              <div className={`bg-base-100 text-base-content w-full cursor-pointer font-sans`} data-theme={themeOption}>
+                <div className="rounded-box grid grid-cols-4 grid-rows-4">
+                  <div className="indicator rounded-box col-span-4 col-start-1 row-span-1 row-start-1 w-full shadow-xl">
+                    <span className="bg-primary/40 flex w-full flex-row items-center justify-around rounded-b">
                       {user.preferences?.theme === themeOption && (
                         <span className="badge indicator-item badge-success indicator-center indicator-middle">
                           Applied
@@ -102,44 +102,44 @@ export default function ThemerPage({
                   </div>
 
                   <div
-                    className="tooltip tooltip-right col-span-1 col-start-1 row-span-1 row-start-2 border-r border-error-content bg-base-100"
+                    className="tooltip tooltip-right border-error-content bg-base-100 col-span-1 col-start-1 row-span-1 row-start-2 border-r"
                     data-tip="base 100"
                   ></div>
                   <div
-                    className="tooltip tooltip-right col-span-1 col-start-1 row-span-1 row-start-3 border-r border-error-content bg-base-200"
+                    className="tooltip tooltip-right border-error-content bg-base-200 col-span-1 col-start-1 row-span-1 row-start-3 border-r"
                     data-tip="base 200"
                   ></div>
                   <div
-                    className="tooltip tooltip-right col-span-1 col-start-1 row-span-1 row-start-4 border-r border-error-content bg-base-300"
+                    className="tooltip tooltip-right border-error-content bg-base-300 col-span-1 col-start-1 row-span-1 row-start-4 border-r"
                     data-tip="base 300"
                   ></div>
                   <div className="tooltip tooltip-top col-span-3 col-start-2 row-span-3 row-start-2 flex flex-col items-center gap-1 p-2">
                     <div className="font-bold">{themeOption}</div>
                     <div className="flex flex-wrap gap-1">
-                      <div className="flex aspect-square w-5 items-center justify-center rounded bg-primary lg:w-6">
+                      <div className="bg-primary flex aspect-square w-5 items-center justify-center rounded-sm lg:w-6">
                         <div
-                          className="tooltip tooltip-top text-sm font-bold text-primary-content"
+                          className="tooltip tooltip-top text-primary-content text-sm font-bold"
                           data-tip={'Primary'}
                         >
                           A
                         </div>
                       </div>
-                      <div className="flex aspect-square w-5 items-center justify-center rounded bg-secondary lg:w-6">
+                      <div className="bg-secondary flex aspect-square w-5 items-center justify-center rounded-sm lg:w-6">
                         <div
-                          className="tooltip tooltip-top text-sm font-bold text-secondary-content"
+                          className="tooltip tooltip-top text-secondary-content text-sm font-bold"
                           data-tip={'secondary'}
                         >
                           A
                         </div>
                       </div>
-                      <div className="flex aspect-square w-5 items-center justify-center rounded bg-accent lg:w-6">
-                        <div className="tooltip tooltip-top text-sm font-bold text-accent-content" data-tip={'accent'}>
+                      <div className="bg-accent flex aspect-square w-5 items-center justify-center rounded-sm lg:w-6">
+                        <div className="tooltip tooltip-top text-accent-content text-sm font-bold" data-tip={'accent'}>
                           A
                         </div>
                       </div>
-                      <div className="flex aspect-square w-5 items-center justify-center rounded bg-neutral lg:w-6">
+                      <div className="bg-neutral flex aspect-square w-5 items-center justify-center rounded-sm lg:w-6">
                         <div
-                          className="tooltip tooltip-top text-sm font-bold text-neutral-content"
+                          className="tooltip tooltip-top text-neutral-content text-sm font-bold"
                           data-tip={'nuetral'}
                         >
                           A

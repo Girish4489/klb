@@ -72,7 +72,7 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, company
                       priority
                     />
                   </span>
-                  <hr className="divider divider-horizontal m-0 w-0.5 rounded-box bg-black" />
+                  <hr className="divider divider-horizontal rounded-box m-0 w-0.5 bg-black" />
                 </div>
                 <span className="flex grow flex-col items-center justify-center">
                   <h2 id="header" className="text-xl font-bold">
@@ -83,7 +83,7 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, company
                       '1st Floor, Muddurandappa Complex Opp/BH Road, Gowribidanur - 561208'}
                   </address>
                 </span>
-                <hr className="divider-horizontal w-0.5 rounded bg-black" />
+                <hr className="divider-horizontal w-0.5 rounded-sm bg-black" />
                 <div className="item-center flex flex-col justify-between gap-1">
                   {company?.contactDetails?.phones?.length ? (
                     company.contactDetails.phones.map((phone, index) => (
@@ -127,7 +127,7 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, company
                   </span>
                 </div>
               </div>
-              <hr className="m-auto my-1 w-[98%] border-spacing-x-4 rounded-box border border-l-4 border-r-8 border-dashed border-zinc-500" />
+              <hr className="rounded-box m-auto my-1 w-[98%] border-spacing-x-4 border border-l-4 border-r-8 border-dashed border-zinc-500" />
               <div className="flex flex-row justify-between">
                 <div className="customer-details grow">
                   <span className="field">
@@ -159,7 +159,7 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, company
                     <h3></h3>
                   </span>
                 </div>
-                <hr className="divider-horizontal w-0.5 rounded bg-black" />
+                <hr className="divider-horizontal w-0.5 rounded-sm bg-black" />
                 <div className="header-col flex flex-col justify-start text-center">
                   <h2 id="text-center">QR Code</h2>
                   {bill.billNumber && bill.billNumber.toString().length > 0 && (
@@ -177,12 +177,12 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, company
                 </div>
               </div>
             </div>
-            <hr className="m-auto my-1.5 w-[95%] rounded-box border-2 border-black" />
+            <hr className="rounded-box m-auto my-1.5 w-[95%] border-2 border-black" />
             {/* <span className="py-1" /> */}
             <span>
               {bill?.order.map((order, orderIndex) => (
                 <span className="orders flex flex-col gap-4" key={orderIndex}>
-                  <div className="table m-auto flex w-[96%] break-inside-avoid break-after-auto flex-col gap-1 rounded border border-black p-1 text-center">
+                  <div className="m-auto flex table w-[96%] break-inside-avoid break-after-auto flex-col gap-1 rounded-sm border border-black p-1 text-center">
                     <span className="flex flex-row items-center justify-between gap-8">
                       <span className="flex flex-row items-center gap-8">
                         <h1>{orderIndex + 1}.</h1>
@@ -226,7 +226,7 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, company
                             <span
                               key={styleIndex}
                               // className="item-center process-box grow-1 flex flex-col justify-start"
-                              className="item-center flex w-fit flex-col justify-start rounded-box border border-black px-2 py-1 font-normal"
+                              className="item-center rounded-box flex w-fit flex-col justify-start border border-black px-2 py-1 font-normal"
                             >
                               <span className="flex w-fit flex-row items-center justify-around gap-8">
                                 <h1>
@@ -271,7 +271,7 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, company
                             <span
                               key={dimensionIndex}
                               // className="item-center process-box grow-1 flex flex-col justify-start"
-                              className="item-center flex w-fit flex-col items-center justify-start rounded-box border border-black px-2 py-1"
+                              className="item-center rounded-box flex w-fit flex-col items-center justify-start border border-black px-2 py-1"
                             >
                               <span className="flex flex-row items-center justify-around gap-8">
                                 <h1>
@@ -290,14 +290,14 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, company
                       </span>
                     )}
                   </div>
-                  {orderIndex < bill.order.length - 1 && <span className="py-[1]" />}
+                  {orderIndex < bill.order.length - 1 && <span className="py-1" />}
                 </span>
               ))}
             </span>
           </span>
           <span className={`fixed bottom-0 m-auto flex w-full shrink flex-col gap-2 bg-white text-center`}>
             <div className="m-auto w-[95%]">
-              <hr className="m-auto my-1 rounded-box border-2 border-black" />
+              <hr className="rounded-box m-auto my-1 border-2 border-black" />
               <span className="flex gap-4">
                 <div className="header-col process-box flex flex-col justify-start text-center">
                   {bill.billNumber && bill.billNumber.toString().length > 0 && (

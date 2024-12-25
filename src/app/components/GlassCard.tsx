@@ -14,10 +14,10 @@ export default function GlassCard({ children, className = '', variant = 'primary
 
   return (
     <div
-      className={`group relative overflow-hidden rounded-lg border border-white/10 bg-white/5 shadow-2xl backdrop-blur-xl transition-all duration-300 hover:shadow-primary/20 ${className}`}
+      className={`hover:shadow-primary/20 group relative overflow-hidden rounded-lg border border-white/10 bg-white/5 shadow-2xl backdrop-blur-xl transition-all duration-300 ${className}`}
     >
       <div
-        className={`absolute inset-0 bg-gradient-to-br ${gradientMap[variant]} opacity-80 transition-opacity duration-300 group-hover:opacity-100`}
+        className={`bg-linear-to-br absolute inset-0 ${gradientMap[variant]} opacity-80 transition-opacity duration-300 group-hover:opacity-100`}
       />
       <div className="relative z-10">{children}</div>
     </div>

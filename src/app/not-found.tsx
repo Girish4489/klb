@@ -77,7 +77,7 @@ const NotFound: React.FC = () => {
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-gradient-to-bl from-base-300 via-neutral to-base-100"
+      className="bg-linear-to-bl from-base-300 via-neutral to-base-100 relative flex min-h-screen flex-col items-center justify-center overflow-hidden"
     >
       <motion.div
         animate={{
@@ -118,7 +118,7 @@ const NotFound: React.FC = () => {
               width: `${particle.size}px`,
               height: `${particle.size}px`,
               opacity: 0.6,
-              filter: 'blur(1px)',
+              filter: 'blur-sm(1px)',
             }}
           />
         ))}
@@ -126,12 +126,12 @@ const NotFound: React.FC = () => {
 
       <motion.div
         variants={itemVariants}
-        className="absolute inset-0 bg-gradient-to-t from-transparent to-base-300/20 backdrop-blur-[2px]"
+        className="bg-linear-to-t to-base-300/20 absolute inset-0 from-transparent backdrop-blur-[2px]"
       />
 
       <motion.div
         whileHover={{ scale: 1.02 }}
-        className="z-10 flex flex-col items-center justify-center gap-8 rounded-box border-2 border-primary/30 bg-base-300/40 p-12 backdrop-blur-md"
+        className="rounded-box border-primary/30 bg-base-300/40 z-10 flex flex-col items-center justify-center gap-8 border-2 p-12 backdrop-blur-md"
       >
         <motion.div
           variants={itemVariants}
@@ -158,12 +158,12 @@ const NotFound: React.FC = () => {
           <motion.h1
             animate={{ backgroundPosition: ['0%', '100%', '0%'] }}
             transition={{ duration: 10, repeat: Infinity }}
-            className="bg-gradient-to-r from-primary via-secondary to-accent bg-[length:500%] bg-clip-text text-8xl font-black text-transparent drop-shadow-lg"
+            className="bg-linear-to-r from-primary via-secondary to-accent bg-[length:500%] bg-clip-text text-8xl font-black text-transparent drop-shadow-lg"
           >
             404
           </motion.h1>
           <motion.div variants={itemVariants} className="space-y-2">
-            <p className="text-3xl font-bold text-warning">Oops! Page Not Found</p>
+            <p className="text-warning text-3xl font-bold">Oops! Page Not Found</p>
             <p className="text-info-content/80">Looks like you&apos;ve ventured into uncharted territory...</p>
           </motion.div>
         </motion.div>
@@ -171,13 +171,13 @@ const NotFound: React.FC = () => {
         <motion.div variants={itemVariants} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
           <Link
             href="/"
-            className="group btn btn-wide relative overflow-hidden bg-gradient-to-r from-primary via-secondary to-accent text-primary-content"
+            className="btn btn-wide bg-linear-to-r from-primary via-secondary to-accent text-primary-content group relative overflow-hidden"
           >
             <motion.span
               initial={{ x: '-100%' }}
               whileHover={{ x: '100%' }}
               transition={{ duration: 0.5 }}
-              className="absolute inset-0 bg-base-100 mix-blend-overlay"
+              className="bg-base-100 absolute inset-0 mix-blend-overlay"
             />
             <span className="relative">Return to Safety</span>
           </Link>

@@ -12,7 +12,7 @@ const TaxModal: React.FC<TaxModalProps> = ({ taxList, selectedTaxes, onTaxToggle
     <div className="modal-box">
       <h3 className="text-center text-lg font-bold">Tax</h3>
       <div className="tax-table">
-        <table className="table table-zebra">
+        <table className="table-zebra table">
           <thead>
             <tr className="text-center">
               <th>Sn</th>

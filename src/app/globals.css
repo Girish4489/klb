@@ -1,8 +1,26 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
+@import 'tailwindcss';
+@config '../../tailwind.config.ts';
+@plugin "daisyui";
 /* globals.css */
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}
 
 @font-face {
   font-family: 'Roboto';
@@ -91,101 +109,28 @@
 body {
   font-family: 'Roboto', sans-serif;
   font-weight: 400;
-  @apply scrollbar;
-}
-
-/* Default width */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-  scroll-behavior: smooth;
-}
-
-/* Mobile width */
-@media (max-width: 640px) {
-  ::-webkit-scrollbar {
-    width: 3px;
-    height: 3px;
-    scroll-behavior: smooth;
-  }
-}
-
-/* Default track */
-::-webkit-scrollbar-track {
-  background: var(--daisyui-colors-base-200);
-  --tw-bg-opacity: 0.2;
-  background-color: var(--fallback-p, oklch(var(--p) / var(--tw-bg-opacity)));
-  border-radius: 5px;
-}
-
-::-webkit-scrollbar-track:hover {
-  --tw-bg-opacity: 0.2;
-  background-color: var(--fallback-s, oklch(var(--s) / var(--tw-bg-opacity)));
-  border-radius: 5px;
-}
-
-/* Default handle (thumb) */
-::-webkit-scrollbar-thumb {
-  background: var(--daisyui-colors-primary);
-  border-radius: 4px;
-  --tw-bg-opacity: 0.8;
-  background-color: var(--fallback-p, oklch(var(--p) / var(--tw-bg-opacity)));
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: var(--daisyui-colors-primary-focus);
-  --tw-bg-opacity: 0.8;
-  background-color: var(--fallback-s, oklch(var(--s) / var(--tw-bg-opacity)));
-  cursor: pointer;
-}
-
-::-webkit-scrollbar-thumb:active {
-  background: var(--daisyui-colors-primary-active);
-}
-
-/* Beautiful Scrollbar Styles */
-.scrollbar::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-.scrollbar::-webkit-scrollbar-track {
-  background: var(--daisyui-colors-base-200);
-}
-
-.scrollbar::-webkit-scrollbar-thumb {
-  background: var(--daisyui-colors-primary);
-  border-radius: 4px;
-}
-
-.scrollbar::-webkit-scrollbar-thumb:hover {
-  background: var(--daisyui-colors-primary-focus);
-}
-
-.scrollbar::-webkit-scrollbar-thumb:active {
-  background: var(--daisyui-colors-primary-active);
 }
 
 /* HTML: <div class="grid-lines"></div> */
 .grid-lines-dashed {
-  --s: 80px; /* control the size of the grid */
-  --n: 4; /* control the granularity */
-  --t: 2px; /* the thickness */
-  --g: 10px; /* the gap between dashes */
+  --s: 80px;
+  /* control the size of the grid */
+  --n: 4;
+  /* control the granularity */
+  --t: 2px;
+  /* the thickness */
+  --g: 10px;
+  /* the gap between dashes */
 
   --c: #556270 25%, #0000 0;
   background:
-    conic-gradient(at var(--g) var(--t), var(--c)) calc((var(--s) / var(--n) - var(--g) + var(--t)) / 2) 0 /
-      calc(var(--s) / var(--n)) var(--s),
-    conic-gradient(from 180deg at var(--t) var(--g), var(--c)) 0 calc((var(--s) / var(--n) - var(--g) + var(--t)) / 2) /
-      var(--s) calc(var(--s) / var(--n));
+    conic-gradient(at var(--g) var(--t), var(--c)) calc((var(--s) / var(--n) - var(--g) + var(--t)) / 2) 0 / calc(var(--s) / var(--n)) var(--s),
+    conic-gradient(from 180deg at var(--t) var(--g), var(--c)) 0 calc((var(--s) / var(--n) - var(--g) + var(--t)) / 2) / var(--s) calc(var(--s) / var(--n));
   /* you probably don't need to set any size in your case */
   width: calc(round(down, 100%, var(--s)) + var(--t));
   height: calc(4 * var(--s) + var(--t));
 }
+
 @supports not (opacity: round(1, 1)) {
   .grid-lines {
     width: 100%;
@@ -194,14 +139,17 @@ body {
 
 /* HTML: <div class="grid-lines"></div> */
 .grid-lines-solid {
-  --s: 80px; /* control the size of the grid */
-  --t: 2px; /* the thickness */
+  --s: 80px;
+  /* control the size of the grid */
+  --t: 2px;
+  /* the thickness */
 
   background: conic-gradient(from 90deg at var(--t) var(--t), #0000 25%, #556270 0) 0 0 / var(--s) var(--s);
   /* you probably don't need to set any size in your case */
   width: calc(round(down, 100%, var(--s)) + var(--t));
   height: calc(4 * var(--s) + var(--t));
 }
+
 @supports not (opacity: round(1, 1)) {
   .grid-lines {
     width: 100%;
@@ -210,8 +158,10 @@ body {
 
 /* HTML: <div class="rounded-dashes"></div> */
 .rounded-dashes-horizontal {
-  --s: 2px; /* control the size */
-  --c: #774f38; /* the color */
+  --s: 2px;
+  /* control the size */
+  --c: #774f38;
+  /* the color */
 
   height: var(--s);
   width: 100%;
@@ -223,8 +173,10 @@ body {
 
 /* HTML: <div class="rounded-dashes"></div> */
 .rounded-dashes-vertical {
-  --s: 15px; /* control the size */
-  --c: #774f38; /* the color */
+  --s: 15px;
+  /* control the size */
+  --c: #774f38;
+  /* the color */
 
   width: var(--s);
   min-height: 300px;
@@ -236,29 +188,33 @@ body {
 
 /* HTML: <div class="zig-zag-line"></div> */
 .zig-zag-line-vertical {
-  --a: 90deg; /* control the angle */
-  --s: 100px; /* size of the zig-zag */
-  --b: 35px; /* control the thickness */
+  --a: 90deg;
+  /* control the angle */
+  --s: 100px;
+  /* size of the zig-zag */
+  --b: 35px;
+  /* control the thickness */
 
   background: #bf4d28;
   width: calc(var(--b) + var(--s) / (2 * tan(var(--a) / 2)));
   min-height: 250px;
-  --_g: 100% var(--s) repeat-y
-    conic-gradient(from calc(90deg - var(--a) / 2) at left, #0000, #000 1deg calc(var(--a) - 1deg), #0000 var(--a));
+  --_g: 100% var(--s) repeat-y conic-gradient(from calc(90deg - var(--a) / 2) at left, #0000, #000 1deg calc(var(--a) - 1deg), #0000 var(--a));
   mask:
     var(--b) 50% / var(--_g) exclude,
     0 50% / var(--_g);
 }
 
 .zig-zag-line-horizontal {
-  --a: 118deg; /* control the angle */
-  --s: 12px; /* size of the zig-zag */
-  --b: 2px; /* control the thickness */
+  --a: 118deg;
+  /* control the angle */
+  --s: 12px;
+  /* size of the zig-zag */
+  --b: 2px;
+  /* control the thickness */
 
   height: calc(var(--b) + var(--s) / (2 * tan(var(--a) / 2)));
   width: 100%;
-  --_g: var(--s) repeat-x
-    conic-gradient(from calc(var(--a) / -2) at bottom, #0000, #000 1deg calc(var(--a) - 1deg), #0000 var(--a));
+  --_g: var(--s) repeat-x conic-gradient(from calc(var(--a) / -2) at bottom, #0000, #000 1deg calc(var(--a) - 1deg), #0000 var(--a));
   mask:
     50% calc(-1 * var(--b)) / var(--_g) exclude,
     50% / var(--_g);
@@ -274,9 +230,11 @@ body {
   0% {
     transform: translateY(0px);
   }
+
   50% {
     transform: translateY(-10px);
   }
+
   100% {
     transform: translateY(0px);
   }
@@ -286,9 +244,11 @@ body {
   0% {
     box-shadow: 0 0 0 0 rgba(var(--primary-rgb), 0.4);
   }
+
   70% {
     box-shadow: 0 0 0 10px rgba(var(--primary-rgb), 0);
   }
+
   100% {
     box-shadow: 0 0 0 0 rgba(var(--primary-rgb), 0);
   }
@@ -298,16 +258,19 @@ body {
   0% {
     background-position: -200% 0;
   }
+
   100% {
     background-position: 200% 0;
   }
 }
 
 @keyframes bounce {
+
   0%,
   100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-10px);
   }
@@ -318,6 +281,7 @@ body {
     transform: translateY(100%);
     opacity: 0;
   }
+
   100% {
     transform: translateY(0);
     opacity: 1;

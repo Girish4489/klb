@@ -200,7 +200,7 @@ export default function TaxPage(): JSX.Element {
   return (
     <div className="flex flex-col gap-2">
       <h1 className="text-center font-bold">Tax</h1>
-      <div className="flex flex-col flex-wrap gap-1 rounded-box bg-base-200 p-2">
+      <div className="rounded-box bg-base-200 flex flex-col flex-wrap gap-1 p-2">
         <h3 className="text-center font-medium">Add Tax</h3>
         <form onSubmit={saveTax} className="flex flex-wrap gap-2">
           <InputField
@@ -274,9 +274,9 @@ export default function TaxPage(): JSX.Element {
           </div>
         </div>
       </dialog>
-      <div className="table flex w-full shrink flex-col">
-        <div className="table-row overflow-auto rounded-box border border-base-300 max-sm:max-w-sm">
-          <table className="table table-zebra table-pin-rows">
+      <div className="flex table w-full shrink flex-col">
+        <div className="rounded-box border-base-300 table-row overflow-auto border max-sm:max-w-sm">
+          <table className="table-zebra table-pin-rows table">
             <caption className="table-caption text-center font-bold">Taxes</caption>
             {taxes.length === 0 ? (
               <tbody>

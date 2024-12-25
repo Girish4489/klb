@@ -12,11 +12,11 @@ interface SearchFormProps {
 const SearchBillForm: FC<SearchFormProps> = ({ onSearch, searchResults, onRowClick }) => {
   const renderSearchBillDropdown = (bills: IBill[]): JSX.Element => (
     <div
-      className={`card-body m-0 max-h-96 w-full overflow-x-auto rounded-box border-2 border-base-300 bg-base-100 p-1 ring-1 ring-primary ${
+      className={`card-body rounded-box border-base-300 bg-base-100 ring-primary m-0 max-h-96 w-full overflow-x-auto border-2 p-1 ring-1 ${
         bills.length === 0 && 'min-h-24 min-w-24 max-w-24'
       }`}
     >
-      <table className="table table-zebra table-pin-rows w-full rounded-box bg-base-200">
+      <table className="table-zebra table-pin-rows rounded-box bg-base-200 table w-full">
         <caption className="rounded-t-box bg-neutral p-1 font-bold">Bills</caption>
         <thead>
           <tr className="rounded-t-box bg-base-300 text-center">
@@ -66,12 +66,12 @@ const SearchBillForm: FC<SearchFormProps> = ({ onSearch, searchResults, onRowCli
   );
 
   return (
-    <form onSubmit={onSearch} className="join flex flex-wrap items-center justify-between max-sm:flex-col">
+    <form onSubmit={onSearch} className="join">
       <label
         htmlFor="billSearch"
-        className="input input-sm join-item label-text input-bordered input-primary flex items-center gap-2 bg-accent/5"
+        className="input input-sm join-item label-text input-bordered input-primary bg-accent/5 flex items-center gap-2"
       >
-        <MagnifyingGlassIcon className="join-item h-5 w-5 text-info" />
+        <MagnifyingGlassIcon className="join-item text-info h-5 w-5" />
         <input
           name="billSearch"
           id="billSearch"
@@ -96,7 +96,7 @@ const SearchBillForm: FC<SearchFormProps> = ({ onSearch, searchResults, onRowCli
         {searchResults && (
           <div
             tabIndex={0}
-            className="card dropdown-content card-compact z-[50] w-auto bg-base-300 shadow-inner shadow-base-300"
+            className="card dropdown-content card-compact bg-base-300 shadow-base-300 z-50 w-auto shadow-inner"
           >
             {renderSearchBillDropdown(searchResults)}
           </div>

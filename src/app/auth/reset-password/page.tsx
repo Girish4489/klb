@@ -69,16 +69,16 @@ function ResetPasswordContent(): JSX.Element {
         {/* Info Section */}
         <div className="flex select-none flex-col justify-center gap-4 lg:w-1/2">
           <div className="text-center">
-            <h1 className="bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-5xl font-bold text-transparent">
+            <h1 className="bg-linear-to-r from-primary via-accent to-secondary bg-clip-text text-5xl font-bold text-transparent">
               Reset Password
             </h1>
-            <p className="mt-4 text-pretty text-base-content/70">
+            <p className="text-base-content/70 mt-4 text-pretty">
               Create a new password for your account to regain access to your fashion business management tools.
             </p>
           </div>
-          <div className="mt-4 space-y-4 rounded-box bg-base-200/50 p-6 backdrop-blur-sm">
+          <div className="rounded-box bg-base-200/50 backdrop-blur-xs mt-4 space-y-4 p-6">
             <h2 className="text-lg font-semibold">Password Requirements:</h2>
-            <ul className="ml-6 list-disc space-y-2 text-base-content/70">
+            <ul className="text-base-content/70 ml-6 list-disc space-y-2">
               <li>At least 6 characters long</li>
               <li>Include numbers and letters</li>
               <li>Avoid common passwords</li>
@@ -102,7 +102,7 @@ function ResetPasswordContent(): JSX.Element {
                   type={showPassword ? 'text' : 'password'}
                   name="password"
                   placeholder="Enter new password"
-                  className="input input-bordered w-full bg-base-100/50 pr-10 backdrop-blur-sm"
+                  className="input input-bordered bg-base-100/50 backdrop-blur-xs w-full pr-10"
                   required
                 />
                 <label className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer">
@@ -127,14 +127,14 @@ function ResetPasswordContent(): JSX.Element {
                 type={showPassword ? 'text' : 'password'}
                 name="retypepassword"
                 placeholder="Confirm new password"
-                className="input input-bordered bg-base-100/50 backdrop-blur-sm"
+                className="input input-bordered bg-base-100/50 backdrop-blur-xs"
                 required
               />
             </div>
 
             <button
               type="submit"
-              className="btn btn-primary btn-block bg-gradient-to-r from-primary via-accent to-secondary text-primary-content transition-all hover:scale-[1.02]"
+              className="btn btn-primary btn-block bg-linear-to-r from-primary via-accent to-secondary text-primary-content transition-all hover:scale-[1.02]"
               disabled={isLoading}
             >
               {isLoading ? <span className="loading loading-spinner loading-sm" /> : <KeyIcon className="h-5 w-5" />}
@@ -143,9 +143,9 @@ function ResetPasswordContent(): JSX.Element {
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-sm text-base-content/70">
+            <p className="text-base-content/70 text-sm">
               Remember your password?{' '}
-              <Link href={constants.AUTH_LOGIN_PAGE} className="link link-primary font-semibold hover:link-accent">
+              <Link href={constants.AUTH_LOGIN_PAGE} className="link link-primary hover:link-accent font-semibold">
                 Sign in
               </Link>
             </p>

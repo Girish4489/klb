@@ -235,18 +235,18 @@ const UserDetails: FC<UserDetailsProps> = ({ users }) => {
   };
 
   return (
-    <div className="flex flex-col gap-2 rounded-box border border-base-content/60 bg-base-300 p-2">
+    <div className="rounded-box border-base-content/60 bg-base-300 flex flex-col gap-2 border p-2">
       <h2 className="mx-auto text-lg font-bold">Users</h2>
       {loading ? (
         <span className="mx-auto flex w-full flex-col items-center gap-3">
-          <span className="loading loading-spinner text-pretty text-primary"></span>Loading...
+          <span className="loading loading-spinner text-primary text-pretty"></span>Loading...
         </span>
       ) : (
         <div className="flex flex-wrap items-center gap-2">
           {userDetails.map((companyUser, index) => (
             <div
               key={`${companyUser.email}-${index}`}
-              className="flex grow flex-col gap-2 rounded-box border border-primary/40 bg-base-100 p-3"
+              className="rounded-box border-primary/40 bg-base-100 flex grow flex-col gap-2 border p-3"
             >
               <div className="flex grow items-center justify-between gap-2">
                 <span className="flex grow gap-2">Email: {companyUser.email ?? 'NA'}</span>
@@ -257,7 +257,7 @@ const UserDetails: FC<UserDetailsProps> = ({ users }) => {
                       className="btn btn-warning btn-sm"
                       onClick={() => handleDeleteUser(companyUser.email)}
                     >
-                      <TrashIcon className="h-5 w-5 text-warning-content" />
+                      <TrashIcon className="text-warning-content h-5 w-5" />
                       Trash
                     </button>
                   )}
@@ -268,19 +268,19 @@ const UserDetails: FC<UserDetailsProps> = ({ users }) => {
                   >
                     {editingUser === companyUser.email ? (
                       <>
-                        <XCircleIcon className="h-5 w-5 text-warning-content" />
+                        <XCircleIcon className="text-warning-content h-5 w-5" />
                         Cancel
                       </>
                     ) : (
                       <>
-                        <PencilSquareIcon className="h-5 w-5 text-info-content" />
+                        <PencilSquareIcon className="text-info-content h-5 w-5" />
                         Edit
                       </>
                     )}
                   </button>
                 </div>
               </div>
-              <hr className="h-1 border-primary" />
+              <hr className="border-primary h-1" />
               <div className="flex grow items-center justify-between px-2">
                 <label htmlFor={`role-${companyUser.email}`}>Role:</label>
                 <select
@@ -394,7 +394,7 @@ const UserDetails: FC<UserDetailsProps> = ({ users }) => {
                           onClick={() => handleDeleteAccessLevel(companyUser.email, level)}
                           disabled={editingUser !== companyUser.email}
                         >
-                          <TrashIcon className="h-5 w-5 text-error-content" />
+                          <TrashIcon className="text-error-content h-5 w-5" />
                         </button>
                       )}
                     </div>

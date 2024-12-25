@@ -15,7 +15,7 @@ import toast from 'react-hot-toast';
 const LoadingSkeleton = (): JSX.Element => (
   <div className="flex flex-col items-center gap-4">
     <div className="avatar placeholder">
-      <div className="bg-neutral-focus w-24 rounded-full text-neutral-content">
+      <div className="bg-neutral-focus text-neutral-content w-24 rounded-full">
         <span className="loading loading-spinner loading-lg"></span>
       </div>
     </div>
@@ -136,14 +136,14 @@ export default function SettingsProfile({
   }, []);
 
   return (
-    <div className="card flex flex-col items-center gap-4 lg:card-side">
+    <div className="card lg:card-side flex flex-col items-center gap-4">
       {isLoading ? (
         <LoadingSkeleton />
       ) : (
         <>
           <div className="avatar indicator card-side lg:pt-4">
             <span className="badge indicator-item badge-secondary select-none lg:mt-4">edit..</span>
-            <div className="h-24 w-24 rounded-full ring ring-primary hover:scale-105 hover:ring-offset-2  hover:ring-offset-accent">
+            <div className="ring-3 ring-primary hover:ring-offset-accent h-24 w-24 rounded-full hover:scale-105  hover:ring-offset-2">
               <Image
                 src={getProfileImageSrc(user.profileImage)}
                 alt="Profile picture"
@@ -157,9 +157,9 @@ export default function SettingsProfile({
 
           <Modal id="profile_modal">
             <h3 className="text-lg font-bold">Change Profile!</h3>
-            <div className="card flex w-full items-center justify-between py-2 align-middle lg:card-side max-sm:pt-5 lg:items-center">
+            <div className="card lg:card-side flex w-full items-center justify-between py-2 align-middle max-sm:pt-5 lg:items-center">
               <div className="avatar h-full w-full flex-col items-center justify-center gap-2">
-                <div className="mask w-48 rounded-badge ring ring-primary ring-offset-1 ring-offset-base-100 transition-transform duration-300 ease-in-out hover:scale-105">
+                <div className="mask rounded-badge ring-3 ring-primary ring-offset-base-100 w-48 ring-offset-1 transition-transform duration-300 ease-in-out hover:scale-105">
                   <Image
                     src={
                       user.profileImage &&
@@ -176,7 +176,7 @@ export default function SettingsProfile({
                 </div>
                 {user.profileImage?.__filename !== 'USER_PROFILE_404_ERROR' && user.profileImage?.data && (
                   <span className="btn btn-warning btn-sm" onClick={removeProfilePhoto}>
-                    <TrashIcon className="h-5 w-5 text-warning-content" />
+                    <TrashIcon className="text-warning-content h-5 w-5" />
                     Remove Profile Image
                   </span>
                 )}
@@ -212,7 +212,7 @@ export default function SettingsProfile({
               </div>
             </div>
           </Modal>
-          <div className="card-body my-4 rounded-box border border-base-100 p-4 shadow-2xl">
+          <div className="card-body rounded-box border-base-100 my-4 border p-4 shadow-2xl">
             <BadgeItem label="Username" content={user.username} />
             <BadgeItem label="Email" content={user.email} />
             <BadgeItem
@@ -230,7 +230,7 @@ export default function SettingsProfile({
             <BadgeItem label="Last Login" content={dates.lastLogin} />
             <span className="badge w-full select-none justify-between gap-2 p-5">
               <h1 className="font-bold">Logout:</h1>
-              <LogoutButton className="btn-error btn-sm px-6 ring-2 ring-warning hover:font-semibold" />
+              <LogoutButton className="btn-error btn-sm ring-warning px-6 ring-2 hover:font-semibold" />
             </span>
           </div>
         </>

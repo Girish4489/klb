@@ -128,7 +128,7 @@ const ReceiptHeader: React.FC<ReceiptHeaderProps> = ({ receipt, setReceipt, amtT
               id="taxOptions"
               onClick={() => (document.getElementById('receipt_tax_modal') as HTMLDialogElement)?.showModal()}
             >
-              <PlusCircleIcon className="h-5 w-5 text-primary-content" />
+              <PlusCircleIcon className="text-primary-content h-5 w-5" />
               Add Tax
             </button>
           </label>

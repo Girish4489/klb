@@ -415,7 +415,7 @@ export default function ReceiptPage(): JSX.Element {
 
   return (
     <div className="flex grow flex-col gap-1">
-      <span className="flex min-w-fit flex-row flex-wrap items-center justify-between gap-2 rounded-box bg-accent/10 px-3 py-1.5 backdrop-blur-xl max-sm:flex-col">
+      <span className="rounded-box bg-accent/10 flex min-w-fit flex-row flex-wrap items-center justify-between gap-2 px-3 py-1.5 backdrop-blur-xl max-sm:flex-col">
         <span className="select-disabled rounded-box">
           <button className="btn btn-primary btn-sm" disabled onClick={createNewReceipt}>
             <PlusCircleIcon className="h-5 w-5" />
@@ -429,8 +429,8 @@ export default function ReceiptPage(): JSX.Element {
         />
         <SearchForm onSearch={billSearch} searchResults={searchBill} onRowClick={searchRowClicked} />
       </span>
-      <div className="flex grow flex-col gap-1 rounded p-1">
-        <div className="flex flex-col gap-1 rounded-box bg-base-200 p-2">
+      <div className="flex grow flex-col gap-1 rounded-sm p-1">
+        <div className="rounded-box bg-base-200 flex flex-col gap-1 p-2">
           <h1 className="text-center font-bold">Receipt</h1>
           <ReceiptHeader
             receipt={receipt}
@@ -447,16 +447,13 @@ export default function ReceiptPage(): JSX.Element {
         {/* Receipts details table */}
         <div className="flex grow flex-col gap-2 p-2">
           <div className="flex flex-col gap-1">
-            <div className="flex justify-center gap-2 rounded-box bg-base-300/80 py-2">
-              <form
-                onSubmit={handleReceiptSearch}
-                className="join flex flex-wrap items-center justify-between max-sm:flex-col"
-              >
+            <div className="rounded-box bg-base-300/80 flex justify-center gap-2 py-2">
+              <form onSubmit={handleReceiptSearch} className="join">
                 <label
                   htmlFor="receiptSearch"
-                  className="input input-sm join-item label-text input-bordered input-primary flex items-center gap-2 bg-accent/5"
+                  className="input input-sm join-item label-text input-bordered input-primary bg-accent/5 flex items-center gap-2"
                 >
-                  <MagnifyingGlassIcon className="join-item h-5 w-5 text-info" />
+                  <MagnifyingGlassIcon className="join-item text-info h-5 w-5" />
                   <input
                     name="receiptSearch"
                     id="receiptSearch"

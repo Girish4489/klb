@@ -50,7 +50,7 @@ const AddCompanyButton = (): JSX.Element => {
         className="btn btn-info btn-sm"
         onClick={() => (document.getElementById('add_new_company_modal') as HTMLDialogElement)?.showModal()}
       >
-        <PlusCircleIcon className="h-5 w-5 text-info-content" />
+        <PlusCircleIcon className="text-info-content h-5 w-5" />
         Add New Company
       </button>
       <Modal id="add_new_company_modal">
@@ -95,7 +95,7 @@ const AddCompanyButton = (): JSX.Element => {
             />
           </label>
           <button className="btn btn-primary btn-sm" onClick={handleAddCompany}>
-            <CloudArrowUpIcon className="h-5 w-5 text-primary-content" />
+            <CloudArrowUpIcon className="text-primary-content h-5 w-5" />
             Save
           </button>
         </Form>

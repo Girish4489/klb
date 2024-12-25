@@ -139,10 +139,10 @@ const BarcodeScanner: React.FC<{
         <QrCodeIcon className="h-5 w-5" />
       </button>
       <dialog id={scanModalId} className="modal">
-        <div className="modal-box w-4/6 max-w-5xl border border-primary/70 bg-base-300">
+        <div className="modal-box border-primary/70 bg-base-300 w-4/6 max-w-5xl border">
           <div className="flex flex-col gap-2">
             <h3 className="text-lg font-bold">Scan Qr Code!</h3>
-            <div className="flex w-full grow flex-col gap-2 rounded-box border border-primary/50 bg-neutral px-2 py-3">
+            <div className="rounded-box border-primary/50 bg-neutral flex w-full grow flex-col gap-2 border px-2 py-3">
               <select
                 id={`readerTypeSelect_${scannerId}`}
                 name={`readerType_${scannerId}`}
@@ -175,7 +175,7 @@ const BarcodeScanner: React.FC<{
                 <video
                   ref={videoRef}
                   style={{ height: 'auto' }}
-                  className="z-10 w-full grow rounded-box ring-2 ring-secondary"
+                  className="rounded-box ring-secondary z-10 w-full grow ring-2"
                 />
               )}
             </div>
@@ -185,7 +185,7 @@ const BarcodeScanner: React.FC<{
           </div>
           <div className="modal-action">
             <button className="btn btn-circle btn-sm absolute right-2 top-2 p-1" onClick={handleClose}>
-              <XMarkIcon className="h-6 w-6 text-base-content" />
+              <XMarkIcon className="text-base-content h-6 w-6" />
             </button>
             <button className="btn btn-error btn-sm" onClick={handleClose}>
               Close

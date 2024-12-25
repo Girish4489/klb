@@ -101,12 +101,12 @@ export default function DashboardClient(): JSX.Element {
                 alt={company.name}
                 width={128}
                 height={128}
-                className="rounded-full object-contain ring-2 ring-primary/50 drop-shadow-2xl"
+                className="ring-primary/50 rounded-full object-contain ring-2 drop-shadow-2xl"
               />
             </div>
           ) : (
-            <div className="rounded-full bg-gradient-to-r from-primary to-secondary p-8">
-              <UserIcon className="animate-float h-16 w-16 text-primary-content" />
+            <div className="bg-linear-to-r from-primary to-secondary rounded-full p-8">
+              <UserIcon className="animate-float text-primary-content h-16 w-16" />
             </div>
           )}
 
@@ -120,13 +120,13 @@ export default function DashboardClient(): JSX.Element {
               >
                 <div className="flex items-center justify-center gap-3">
                   <span
-                    className={`bg-gradient-to-r ${timeTheme.gradient} bg-clip-text text-xl font-light text-transparent`}
+                    className={`bg-linear-to-r ${timeTheme.gradient} bg-clip-text text-xl font-light text-transparent`}
                   >
                     {greeting} {timeTheme.message}
                   </span>
                   <span className="text-2xl">{timeTheme.icon}</span>
                 </div>
-                <h1 className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-4xl font-bold capitalize text-transparent">
+                <h1 className="bg-linear-to-r from-primary via-secondary to-accent bg-clip-text text-4xl font-bold capitalize text-transparent">
                   {user?.username || 'Guest'}
                 </h1>
               </motion.div>
@@ -142,9 +142,9 @@ export default function DashboardClient(): JSX.Element {
             className="card bg-base-100/30 backdrop-blur-md"
           >
             <div className="card-body p-6">
-              <SparklesIcon className="mx-auto h-6 w-6 animate-bounce text-warning" />
+              <SparklesIcon className="text-warning mx-auto h-6 w-6 animate-bounce" />
               <h2 className="card-title justify-center text-2xl">{company.name}</h2>
-              <p className="text-center text-base-content/70">Loading your workspace...</p>
+              <p className="text-base-content/70 text-center">Loading your workspace...</p>
             </div>
           </motion.div>
         )}
@@ -156,7 +156,7 @@ export default function DashboardClient(): JSX.Element {
           className="flex items-center gap-3"
         >
           <div className="loading loading-ring loading-lg text-primary" />
-          <span className="animate-pulse text-base-content/70">Preparing your dashboard...</span>
+          <span className="text-base-content/70 animate-pulse">Preparing your dashboard...</span>
         </motion.div>
       </motion.div>
     </div>
@@ -174,28 +174,28 @@ export default function DashboardClient(): JSX.Element {
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5 }}
-          className="card w-full max-w-md bg-base-100/60 shadow-xl backdrop-blur-md"
+          className="card bg-base-100/60 w-full max-w-md shadow-xl backdrop-blur-md"
         >
           <div className="card-body items-center gap-6 text-center">
             <motion.div
               whileHover={{ rotate: 360 }}
               transition={{ duration: 0.8 }}
-              className="rounded-full bg-gradient-to-r from-primary to-secondary p-6"
+              className="bg-linear-to-r from-primary to-secondary rounded-full p-6"
             >
-              <ShieldCheckIcon className="h-12 w-12 text-primary-content" />
+              <ShieldCheckIcon className="text-primary-content h-12 w-12" />
             </motion.div>
 
             <motion.div className="space-y-6">
               <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3 }}>
                 <div className="mb-4 flex items-center justify-center gap-3">
                   <span
-                    className={`bg-gradient-to-r ${timeTheme.gradient} bg-clip-text text-xl font-light text-transparent`}
+                    className={`bg-linear-to-r ${timeTheme.gradient} bg-clip-text text-xl font-light text-transparent`}
                   >
                     {greeting} {timeTheme.message}
                   </span>
                   <span className="text-2xl">{timeTheme.icon}</span>
                 </div>
-                <h1 className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-3xl font-bold capitalize text-transparent">
+                <h1 className="bg-linear-to-r from-primary via-secondary to-accent bg-clip-text text-3xl font-bold capitalize text-transparent">
                   {user?.username || 'Guest'}
                 </h1>
               </motion.div>
@@ -243,15 +243,15 @@ export default function DashboardClient(): JSX.Element {
   return (
     <div>
       <div className="flex flex-col gap-1 pb-2">
-        <span className="flex items-center justify-between gap-2 rounded-box bg-neutral px-4 py-0.5">
-          <h1 className="grow text-center text-neutral-content">Dashboard</h1>
+        <span className="rounded-box bg-neutral flex items-center justify-between gap-2 px-4 py-0.5">
+          <h1 className="text-neutral-content grow text-center">Dashboard</h1>
           <div className="dropdown dropdown-end">
             <label tabIndex={0} className="btn btn-primary btn-xs">
               Show/Hide Tables
             </label>
             <ul
               tabIndex={0}
-              className="menu dropdown-content menu-sm z-[1] w-52 rounded-box bg-gradient-to-bl from-base-100 to-base-300 p-2 shadow ring-2 ring-secondary"
+              className="menu dropdown-content menu-sm z-1 rounded-box bg-linear-to-bl from-base-100 to-base-300 ring-secondary w-52 p-2 shadow-sm ring-2"
             >
               <li>
                 <label className="label cursor-pointer">
@@ -325,34 +325,34 @@ export default function DashboardClient(): JSX.Element {
             Refresh
           </button>
         </span>
-        <span className="flex flex-wrap gap-2 rounded-box">
+        <span className="rounded-box flex flex-wrap gap-2">
           {visibleComponents.dashboardStats && (
-            <span className="grow rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
+            <span className="rounded-box border-primary shadow-primary grow border p-2 shadow-inner transition-shadow">
               <DashboardStats refresh={refresh} />
             </span>
           )}
           {visibleComponents.dueDateTable && (
-            <span className="grow rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
+            <span className="rounded-box border-primary shadow-primary grow border p-2 shadow-inner transition-shadow">
               <DueDateTable refresh={refresh} />
             </span>
           )}
           {visibleComponents.allBills && (
-            <span className="grow rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
+            <span className="rounded-box border-primary shadow-primary grow border p-2 shadow-inner transition-shadow">
               <AllBills refresh={refresh} />
             </span>
           )}
           {visibleComponents.dueBills && (
-            <span className="grow rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
+            <span className="rounded-box border-primary shadow-primary grow border p-2 shadow-inner transition-shadow">
               <DueBills refresh={refresh} />
             </span>
           )}
           {visibleComponents.completedOrders && (
-            <span className="grow rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
+            <span className="rounded-box border-primary shadow-primary grow border p-2 shadow-inner transition-shadow">
               <CompletedOrders refresh={refresh} />
             </span>
           )}
           {visibleComponents.unpaidBills && (
-            <span className="grow rounded-box border border-primary p-2 shadow-inner shadow-primary transition-shadow">
+            <span className="rounded-box border-primary shadow-primary grow border p-2 shadow-inner transition-shadow">
               <UnpaidBills refresh={refresh} />
             </span>
           )}

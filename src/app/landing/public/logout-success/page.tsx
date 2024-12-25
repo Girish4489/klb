@@ -15,32 +15,32 @@ export default function LogoutSuccess(): JSX.Element {
               <div className="animate-bounce">
                 <div className="relative">
                   <div className="absolute inset-0 animate-ping">
-                    <ShieldCheckIcon className="h-16 w-16 text-success opacity-40" />
+                    <ShieldCheckIcon className="text-success h-16 w-16 opacity-40" />
                   </div>
-                  <ShieldCheckIcon className="relative h-16 w-16 text-success" />
+                  <ShieldCheckIcon className="text-success relative h-16 w-16" />
                 </div>
               </div>
-              <h1 className="mt-8 bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-4xl font-bold text-transparent md:text-5xl">
+              <h1 className="bg-linear-to-r from-primary via-accent to-secondary mt-8 bg-clip-text text-4xl font-bold text-transparent md:text-5xl">
                 Logged Out Successfully!
               </h1>
               <div className="mt-8 flex w-full flex-col gap-4">
                 <Link
                   href={constants.LANDING_PUBLIC_HOME_PAGE}
-                  className="btn btn-lg w-full animate-pulse bg-gradient-to-r from-primary via-accent to-secondary transition-all duration-300 hover:scale-105 hover:animate-none"
+                  className="btn btn-lg bg-linear-to-r from-primary via-accent to-secondary w-full animate-pulse transition-all duration-300 hover:scale-105 hover:animate-none"
                 >
                   <HomeIcon className="h-6 w-6" />
                   Go to Home
                 </Link>
                 <Link
                   href={constants.AUTH_LOGIN_PAGE}
-                  className="btn btn-lg w-full bg-gradient-to-r from-secondary to-accent transition-transform hover:scale-105"
+                  className="btn btn-lg bg-linear-to-r from-secondary to-accent w-full transition-transform hover:scale-105"
                 >
                   <ShieldCheckIcon className="h-6 w-6" />
                   Login Again
                 </Link>
                 <Link
                   href={constants.AUTH_SIGNUP_PAGE}
-                  className="btn btn-lg w-full bg-gradient-to-r from-accent to-primary transition-transform hover:scale-105"
+                  className="btn btn-lg bg-linear-to-r from-accent to-primary w-full transition-transform hover:scale-105"
                 >
                   <IdentificationIcon className="h-6 w-6" />
                   Sign Up

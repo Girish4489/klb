@@ -11,18 +11,18 @@ const Notifications = ({ notifications }: { notifications: INotification[] }): J
         {/* Notifications icon */}
         {notifications.length > 1 ? (
           <div className="indicator">
-            <BellSlashIcon className="h-6 w-6 text-primary" />
+            <BellSlashIcon className="text-primary h-6 w-6" />
           </div>
         ) : (
           <div className="indicator">
-            <BellIcon className="h-6 w-6 text-primary" />
+            <BellIcon className="text-primary h-6 w-6" />
             {unreadCount > 0 && <span className="badge indicator-item badge-sm">{unreadCount}</span>}
           </div>
         )}
       </div>
       <div
         tabIndex={0}
-        className="card dropdown-content card-compact z-[1] mt-3 w-52 bg-base-100 shadow ring-1 ring-primary"
+        className="card dropdown-content card-compact z-1 bg-base-100 ring-primary mt-3 w-52 shadow-sm ring-1"
       >
         <div className="card-body">
           <span className="text-lg font-bold">{notifications.length} Notifications</span>

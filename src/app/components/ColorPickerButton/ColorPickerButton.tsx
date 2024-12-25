@@ -59,7 +59,7 @@ function ColorPickerButton({
   return (
     <React.Fragment>
       <button
-        className="flex w-fit grow flex-col rounded-box border border-base-content/50 bg-base-100 p-2 max-sm:w-full"
+        className="rounded-box border-base-content/50 bg-base-100 flex w-fit grow flex-col border p-2 max-sm:w-full"
         onClick={handleButtonClick}
       >
         <span className="label label-text flex w-full flex-row items-center justify-around gap-2 font-medium">
@@ -73,10 +73,10 @@ function ColorPickerButton({
               : ''}
           </span>
         </span>
-        <div className="badge badge-lg h-8 w-full border-info" style={{ backgroundColor: selectedColor?.hex }}></div>
+        <div className="badge badge-lg border-info h-8 w-full" style={{ backgroundColor: selectedColor?.hex }}></div>
       </button>
 
-      <dialog id={modalId} className="modal w-full border border-base-100">
+      <dialog id={modalId} className="modal border-base-100 w-full border">
         <div className="box-bordered modal-box w-5/6 min-w-24 max-w-full">
           <div className="flex flex-col gap-2">
             <div className="flex flex-col gap-1">
@@ -101,7 +101,7 @@ function ColorPickerButton({
                   <button
                     key={color.name}
                     className={`btn btn-sm m-1 h-11 grow flex-wrap justify-between text-wrap max-sm:h-fit ${
-                      selectedColor?.name === color.name ? 'border-2 border-info' : ''
+                      selectedColor?.name === color.name ? 'border-info border-2' : ''
                     }`}
                     onClick={() => handleColorSelect(color)}
                   >
@@ -121,7 +121,7 @@ function ColorPickerButton({
                   <button
                     key={color.name}
                     className={`btn btn-sm m-1 h-11 grow flex-wrap justify-between text-wrap max-sm:h-fit ${
-                      selectedColor?.name === color.name ? 'border-2 border-info' : ''
+                      selectedColor?.name === color.name ? 'border-info border-2' : ''
                     }`}
                     onClick={() => handleColorSelect(color)}
                   >

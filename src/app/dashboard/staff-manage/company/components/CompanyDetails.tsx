@@ -148,7 +148,7 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ company, isEditing, set
     editingIndex: number | null,
     setEditingIndex: (index: number | null) => void,
   ): JSX.Element => (
-    <div className="flex flex-col gap-2 rounded-box border border-primary/40 p-2">
+    <div className="rounded-box border-primary/40 flex flex-col gap-2 border p-2">
       {company && company.contactDetails && company.contactDetails[type].length === 0 && (
         <span>
           {label}: No {label} Added Yet!
@@ -157,10 +157,10 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ company, isEditing, set
       {company && company.contactDetails && company.contactDetails[type].length > 0 && (
         <div className="flex flex-col gap-2">
           {label}:
-          <hr className="h-1 border-primary" />
+          <hr className="border-primary h-1" />
           <div className="flex flex-row flex-wrap gap-2">
             {company.contactDetails[type].map((item, index) => (
-              <span key={index} className="badge flex h-full grow items-center gap-2 bg-primary/30 py-1.5">
+              <span key={index} className="badge bg-primary/30 flex h-full grow items-center gap-2 py-1.5">
                 <span>{`${index + 1}).`}</span>
                 <span className="grow">{item}</span>
                 {isEditing && (
@@ -181,7 +181,7 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ company, isEditing, set
                       className="btn btn-error btn-sm"
                       onClick={() => handleDeleteContactDetail(type, index)}
                     >
-                      <TrashIcon className="h-4 w-4 text-error-content" />
+                      <TrashIcon className="text-error-content h-4 w-4" />
                     </button>
                   </>
                 )}
@@ -207,8 +207,8 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ company, isEditing, set
   );
 
   return (
-    <div className="flex flex-col rounded-box border border-base-content/60 bg-base-300 p-2">
-      <span className="badge badge-ghost flex h-full w-full items-center justify-between p-1 hover:badge-neutral">
+    <div className="rounded-box border-base-content/60 bg-base-300 flex flex-col border p-2">
+      <span className="badge badge-ghost hover:badge-neutral flex h-full w-full items-center justify-between p-1">
         <p className="w-full text-center font-bold">{company.name ? company.name.toUpperCase() : ''}</p>
         <button
           className={`btn btn-sm ${isEditing ? 'btn-warning' : 'btn-info'}`}
@@ -216,19 +216,19 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ company, isEditing, set
         >
           {isEditing ? (
             <>
-              <XCircleIcon className="h-4 w-4 text-warning-content" />
+              <XCircleIcon className="text-warning-content h-4 w-4" />
               Cancel
             </>
           ) : (
             <>
-              <PencilSquareIcon className="h-4 w-4 text-info-content" />
+              <PencilSquareIcon className="text-info-content h-4 w-4" />
               Edit
             </>
           )}
         </button>
       </span>
       <div className="flex flex-col flex-wrap justify-center gap-2 p-4">
-        <div className="flex items-center gap-2 rounded-box border border-primary/40 p-2 shadow-2xl drop-shadow-2xl">
+        <div className="rounded-box border-primary/40 flex items-center gap-2 border p-2 shadow-2xl drop-shadow-2xl">
           Name:
           <span className="grow">{company.name}</span>
           {isEditing && (
@@ -241,12 +241,12 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ company, isEditing, set
                 (document.getElementById('field_modal') as HTMLDialogElement)?.showModal();
               }}
             >
-              <PencilSquareIcon className="h-4 w-4 text-warning-content" />
+              <PencilSquareIcon className="text-warning-content h-4 w-4" />
               Edit
             </button>
           )}
         </div>
-        <div className="flex items-center gap-2 rounded-box border border-primary/40 p-2">
+        <div className="rounded-box border-primary/40 flex items-center gap-2 border p-2">
           GST:
           <span className="grow">{company.gstNumber}</span>
           {isEditing && (
@@ -259,12 +259,12 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ company, isEditing, set
                 (document.getElementById('field_modal') as HTMLDialogElement)?.showModal();
               }}
             >
-              <PencilSquareIcon className="h-4 w-4 text-warning-content" />
+              <PencilSquareIcon className="text-warning-content h-4 w-4" />
               Edit
             </button>
           )}
         </div>
-        <div className="flex items-center gap-2 rounded-box border border-primary/40 p-2">
+        <div className="rounded-box border-primary/40 flex items-center gap-2 border p-2">
           Address:
           <span className="grow">{company.contactDetails?.address || 'No address available'}</span>
           {isEditing && (
@@ -277,7 +277,7 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ company, isEditing, set
                 (document.getElementById('field_modal') as HTMLDialogElement)?.showModal();
               }}
             >
-              <PencilSquareIcon className="h-4 w-4 text-warning-content" />
+              <PencilSquareIcon className="text-warning-content h-4 w-4" />
               Edit
             </button>
           )}
@@ -285,7 +285,7 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ company, isEditing, set
         {renderContactDetails('phones', 'Phones', newPhone, setNewPhone, editingPhoneIndex, setEditingPhoneIndex)}
         {renderContactDetails('emails', 'Emails', newEmail, setNewEmail, editingEmailIndex, setEditingEmailIndex)}
         {(company.logos?.small || company.logos?.medium || company.logos?.large || isEditing) && (
-          <div className="flex flex-col gap-2 rounded-box border border-primary/40 p-2">
+          <div className="rounded-box border-primary/40 flex flex-col gap-2 border p-2">
             <h3 className="text-base font-semibold">Company Logos</h3>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               {(['small', 'medium', 'large'] as const)
@@ -293,14 +293,14 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ company, isEditing, set
                 .map((size) => (
                   <div
                     key={size}
-                    className="flex flex-col items-center gap-2 rounded-box border border-primary/20 bg-neutral/60 p-2"
+                    className="rounded-box border-primary/20 bg-neutral/60 flex flex-col items-center gap-2 border p-2"
                   >
                     <span className="text-sm font-semibold capitalize">{size} Logo</span>
                     {company.logos?.[size] ? (
                       <div className="relative">
                         <ImagePreview src={company.logos[size]} alt={`${size} logo`} />
                         {isEditing && (
-                          <div className="absolute bottom-0 left-0 right-0 flex w-full justify-center gap-2 bg-base-300/90 p-1">
+                          <div className="bg-base-300/90 absolute bottom-0 left-0 right-0 flex w-full justify-center gap-2 p-1">
                             <button
                               className="btn btn-info btn-xs"
                               onClick={() => {
@@ -339,7 +339,7 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ company, isEditing, set
             </div>
           </div>
         )}
-        <div className="flex flex-col items-center gap-2 rounded-box border border-primary/40 p-2">
+        <div className="rounded-box border-primary/40 flex flex-col items-center gap-2 border p-2">
           <p className="w-full grow">Created At: {formatDNT(company.createdAt)}</p>
           <p className="w-full grow">Updated At: {formatDNT(company.updatedAt)}</p>
         </div>

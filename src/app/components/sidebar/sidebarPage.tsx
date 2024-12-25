@@ -99,16 +99,16 @@ export default function SidebarPage({
 
   return (
     <React.Fragment>
-      <div className="flex min-h-full flex-col bg-base-300 pr-px">
-        <span className="menu-title sticky top-0 z-10 h-11 rounded-b-box bg-gradient-to-t from-base-100 via-base-300 to-base-200 ring-1">
-          <h1 className="flex w-full select-none items-center justify-center bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text py-1 text-center text-base font-bold text-transparent">
+      <div className="bg-base-300 flex min-h-full flex-col pr-px">
+        <span className="bg-linear-to-t menu-title rounded-b-box from-base-100 via-base-300 to-base-200 sticky top-0 z-10 h-11 ring-1">
+          <h1 className="bg-linear-to-r from-primary via-secondary to-accent flex w-full select-none items-center justify-center bg-clip-text py-1 text-center text-base font-bold text-transparent">
             Kalamandir
           </h1>
         </span>
-        <ul className="menu menu-sm min-w-72 flex-grow overflow-y-auto rounded-box rounded-b-box bg-gradient-to-tr from-base-300 via-base-200 to-base-300 text-base-content shadow-xl ring-1 ring-neutral xl:menu-vertical lg:min-w-max">
+        <ul className="bg-linear-to-tr menu menu-sm rounded-box rounded-b-box from-base-300 via-base-200 to-base-300 text-base-content ring-neutral xl:menu-vertical w-[216px] min-w-72 grow overflow-y-auto shadow-xl ring-1 lg:min-w-max">
           <li>
             <Link href="/dashboard" className={currentPathname === '/dashboard' ? 'active' : ''}>
-              <HomeIcon className="h-5 w-5 text-secondary" />
+              <HomeIcon className="text-secondary h-5 w-5" />
               Dashboard
             </Link>
           </li>
@@ -121,7 +121,7 @@ export default function SidebarPage({
           <li>
             {isCompanyMember ? (
               <Link href="/dashboard/settings" className="tooltip flex max-sm:flex-row" data-tip="Settings">
-                <Cog6ToothIcon className="h-5 w-5 text-secondary" />
+                <Cog6ToothIcon className="text-secondary h-5 w-5" />
                 Settings
               </Link>
             ) : (
@@ -130,7 +130,7 @@ export default function SidebarPage({
                 data-tip="Settings"
                 onClick={() => toast.error('Need to have company access')}
               >
-                <Cog6ToothIcon className="h-5 w-5 text-secondary" />
+                <Cog6ToothIcon className="text-secondary h-5 w-5" />
                 Settings
               </div>
             )}

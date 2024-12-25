@@ -155,7 +155,7 @@ const LabellingPage: FC = () => {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="sticky top-0 z-[2] flex flex-row flex-wrap items-center justify-between gap-x-2 gap-y-3 rounded-box bg-neutral px-3 py-1">
+      <div className="z-2 rounded-box bg-neutral sticky top-0 flex flex-row flex-wrap items-center justify-between gap-x-2 gap-y-3 px-3 py-1">
         <BarcodeScannerPage
           onScanComplete={setBarcode}
           scannerId="labellingScanner"
@@ -180,15 +180,15 @@ const LabellingPage: FC = () => {
       </div>
       {bill && <OrdersTable bill={bill} selectedOrders={selectedOrders} handleOrderSelect={handleOrderSelect} />}
       {bill && (
-        <div className="sticky bottom-0 z-[2] flex justify-between rounded-box bg-neutral px-3 py-1">
+        <div className="z-2 rounded-box bg-neutral sticky bottom-0 flex justify-between px-3 py-1">
           {selectedOrders.length === bill?.order.length ? (
             <button className="btn btn-error btn-sm" onClick={handleSelectAll}>
-              <MinusCircleIcon className="h-5 w-5 text-error-content" />
+              <MinusCircleIcon className="text-error-content h-5 w-5" />
               Deselect All
             </button>
           ) : (
             <button className="btn btn-info btn-sm" onClick={handleSelectAll}>
-              <CheckCircleIcon className="h-5 w-5 text-info-content" />
+              <CheckCircleIcon className="text-info-content h-5 w-5" />
               Select All
             </button>
           )}
@@ -196,7 +196,7 @@ const LabellingPage: FC = () => {
             className={`btn btn-info btn-sm ${selectedOrders.length === 0 ? 'btn-neutral cursor-not-allowed opacity-60' : ''}`}
             onClick={handlePrintPreview}
           >
-            <PrinterIcon className="h-5 w-5 text-info-content" />
+            <PrinterIcon className="text-info-content h-5 w-5" />
             Print Preview
           </button>
         </div>

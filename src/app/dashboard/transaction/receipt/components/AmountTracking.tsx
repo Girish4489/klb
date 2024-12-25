@@ -23,30 +23,30 @@ const AmountTracking: React.FC<AmountTrackingProps> = ({
   const isOverPaymentCritical = overpaymentAmount > 5;
 
   return (
-    <div className="grid grid-cols-2 gap-4 rounded-lg bg-base-200 p-4">
+    <div className="bg-base-200 grid grid-cols-2 gap-4 rounded-lg p-4">
       {/* Original Bill Section */}
-      <div className="space-y-2 rounded-lg bg-base-100 p-3 ring-1 ring-primary/20">
-        <h3 className="text-sm font-bold text-primary">Original Bill</h3>
+      <div className="bg-base-100 ring-primary/20 space-y-2 rounded-lg p-3 ring-1">
+        <h3 className="text-primary text-sm font-bold">Original Bill</h3>
         <div className="grid grid-cols-2 gap-1 text-sm">
           <span className="text-base-content">Bill Amount:</span>
           <span className="text-right font-semibold">{amtTrack.total.toFixed(2)}</span>
           <span className="text-base-content">Previous Tax:</span>
-          <span className="text-right font-semibold text-accent">+ {amtTrack.taxAmount.toFixed(2)}</span>
+          <span className="text-accent text-right font-semibold">+ {amtTrack.taxAmount.toFixed(2)}</span>
           <span className="text-base-content">Previous Discount:</span>
-          <span className="text-right font-semibold text-secondary">- {amtTrack.discount.toFixed(2)}</span>
+          <span className="text-secondary text-right font-semibold">- {amtTrack.discount.toFixed(2)}</span>
           <span className="text-base-content">Grand Total:</span>
-          <span className="text-right font-bold text-primary">{amtTrack.grand.toFixed(2)}</span>
+          <span className="text-primary text-right font-bold">{amtTrack.grand.toFixed(2)}</span>
         </div>
       </div>
 
       {/* Payment Status Section */}
-      <div className="space-y-2 rounded-lg bg-base-100 p-3 ring-1 ring-secondary/20">
-        <h3 className="text-sm font-bold text-secondary">Payment Status</h3>
+      <div className="bg-base-100 ring-secondary/20 space-y-2 rounded-lg p-3 ring-1">
+        <h3 className="text-secondary text-sm font-bold">Payment Status</h3>
         <div className="grid grid-cols-2 gap-1 text-sm">
           <span className="text-base-content">Already Paid:</span>
-          <span className="text-right font-semibold text-success">{amtTrack.paid.toFixed(2)}</span>
+          <span className="text-success text-right font-semibold">{amtTrack.paid.toFixed(2)}</span>
           <span className="text-base-content">Current Due:</span>
-          <span className="text-right font-semibold text-warning">{amtTrack.due.toFixed(2)}</span>
+          <span className="text-warning text-right font-semibold">{amtTrack.due.toFixed(2)}</span>
         </div>
 
         {/* Current Payment Details */}
@@ -57,14 +57,14 @@ const AmountTracking: React.FC<AmountTrackingProps> = ({
               <span className="text-base-content">Current Amount:</span>
               <span className="text-right">{currentAmount.toFixed(2)}</span>
               <span className="text-base-content">Current Discount:</span>
-              <span className="text-right text-secondary">- {currentDiscount.toFixed(2)}</span>
+              <span className="text-secondary text-right">- {currentDiscount.toFixed(2)}</span>
               <span className="text-base-content">Net Payment:</span>
               <span className={`text-right font-bold ${isOverPaid ? 'text-error' : ''}`}>
                 {netPayment.toFixed(2)}
                 {isOverPaid && <div className="badge badge-error badge-sm ml-2 gap-1">Overpaid</div>}
               </span>
               <span className="text-base-content">Current Tax:</span>
-              <span className="text-right text-accent">+ {currentTax.toFixed(2)}</span>
+              <span className="text-accent text-right">+ {currentTax.toFixed(2)}</span>
               <span className="text-base-content">Total with Tax:</span>
               <span className="text-right font-bold">{(netPayment + currentTax).toFixed(2)}</span>
               <span className="text-base-content">Remaining Due:</span>

@@ -12,14 +12,14 @@ const calculateRunningTotal = (orders: IBill['order'], upToIndex: number): numbe
 
 const ItemsTrack: React.FC<ItemsTrackProps> = ({ bill }) => {
   return (
-    <div className="flex h-full flex-col rounded-box bg-base-300 shadow-lg ring-2 ring-primary">
-      <div className="border-b border-base-300 p-2">
+    <div className="rounded-box bg-base-300 ring-primary flex h-full flex-col shadow-lg ring-2">
+      <div className="border-base-300 border-b p-2">
         <h2 className="text-center font-bold">Items Track</h2>
       </div>
 
       <div className="flex-1 overflow-y-auto">
         <table className="table-compact table w-full">
-          <thead className="sticky top-0 z-10 bg-base-200">
+          <thead className="bg-base-200 sticky top-0 z-10">
             <tr>
               <th className="w-12 text-center">No</th>
               <th className="text-center">Amount</th>
@@ -29,7 +29,7 @@ const ItemsTrack: React.FC<ItemsTrackProps> = ({ bill }) => {
           <tbody>
             {bill?.order?.length === 0 ? (
               <tr>
-                <td colSpan={3} className="text-center text-base-content/60">
+                <td colSpan={3} className="text-base-content/60 text-center">
                   No items to track
                 </td>
               </tr>
@@ -47,8 +47,8 @@ const ItemsTrack: React.FC<ItemsTrackProps> = ({ bill }) => {
       </div>
 
       {bill.order?.length > 0 && (
-        <div className="border-t border-base-300 p-2">
-          <div className="rounded-lg bg-primary px-2 py-1 text-primary-content">
+        <div className="border-base-300 border-t p-2">
+          <div className="bg-primary text-primary-content rounded-lg px-2 py-1">
             <div className="flex items-center justify-between">
               <span>Total:</span>
               <span className="font-bold">{calculateTotalAmount(bill.order)}</span>

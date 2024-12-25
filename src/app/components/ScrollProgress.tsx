@@ -29,10 +29,10 @@ export default function ScrollProgress(): JSX.Element {
 
   return (
     <div
-      className={`fixed left-0 top-0 z-[100] w-full bg-base-300 bg-opacity-20 ${scrollProgress > 1 ? 'block h-0.5 md:h-[3px] lg:h-1' : 'hidden h-0'}`}
+      className={`z-100 bg-base-300 fixed left-0 top-0 w-full bg-opacity-20 ${scrollProgress > 1 ? 'block h-0.5 md:h-[3px] lg:h-1' : 'hidden h-0'}`}
     >
       <div
-        className="h-full rounded-br-lg bg-gradient-to-r from-primary via-accent to-secondary transition-all duration-150 "
+        className="bg-linear-to-r from-primary via-accent to-secondary h-full rounded-br-lg transition-all duration-150 "
         style={{ width: `${scrollProgress}%` }}
       />
     </div>

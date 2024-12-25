@@ -29,7 +29,7 @@ interface InputFieldProps {
 const InputField: FC<InputFieldProps> = ({ icon: Icon, type, name, value, onChange, placeholder, autoComplete }) => (
   <div className="flex flex-col max-sm:w-full max-sm:flex-row max-sm:justify-between">
     <label htmlFor={name} className="input input-sm input-primary flex max-w-xs items-center gap-2">
-      <Icon className="h-6 w-6 text-primary" />
+      <Icon className="text-primary h-6 w-6" />
       <input
         type={type}
         name={name}
@@ -57,7 +57,7 @@ interface TextAreaFieldProps {
 const TextAreaField: FC<TextAreaFieldProps> = ({ icon: Icon, name, value, onChange, placeholder, autoComplete }) => (
   <div className="flex max-sm:w-full max-sm:justify-between">
     <label htmlFor={name} className="label label-text">
-      <Icon className="h-6 w-6 text-primary" />
+      <Icon className="text-primary h-6 w-6" />
     </label>
     <textarea
       name={name}
@@ -110,13 +110,13 @@ export default function NewCustomerPage(): JSX.Element {
     };
 
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center bg-base-100">
+    <div className="bg-base-100 flex h-full w-full flex-col items-center justify-center">
       <form
         onSubmit={handleCustomerSave}
-        className="w-full gap-2 rounded-box border-2 border-base-300 bg-base-200 p-4 md:w-fit"
+        className="rounded-box border-base-300 bg-base-200 w-full gap-2 border-2 p-4 md:w-fit"
       >
         <span className="flex w-full justify-around">
-          <h2 className="w-fit self-center py-2 text-center align-middle text-2xl font-bold text-base-content">
+          <h2 className="text-base-content w-fit self-center py-2 text-center align-middle text-2xl font-bold">
             New Customer
           </h2>
         </span>

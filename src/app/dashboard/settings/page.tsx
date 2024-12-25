@@ -70,8 +70,8 @@ export default function SettingsPage(): JSX.Element {
 
   return (
     <div className=" max-sm:m-2 md:m-5">
-      <div className="join join-vertical w-full bg-base-200">
-        <div className="collapse join-item collapse-arrow border border-base-300">
+      <div className="join join-vertical bg-base-200 w-full">
+        <div className="join-item collapse-arrow border-base-300 collapse border">
           <input type="checkbox" name="collapse" defaultChecked />
           <div className="collapse-title text-xl font-medium">User Profile</div>
           <div className="collapse-content">
@@ -80,7 +80,7 @@ export default function SettingsPage(): JSX.Element {
         </div>
 
         {/* Theme Settings */}
-        <div className="collapse join-item collapse-arrow border border-base-300">
+        <div className="join-item collapse-arrow border-base-300 collapse border">
           <input type="checkbox" name="collapse" defaultChecked />
           <div id="themeBlock" className="collapse-title text-xl font-medium">
             Theme
@@ -91,7 +91,7 @@ export default function SettingsPage(): JSX.Element {
         </div>
 
         {/* Font Settings */}
-        <div id="font" className="collapse join-item collapse-arrow border border-base-300">
+        <div id="font" className="join-item collapse-arrow border-base-300 collapse border">
           <input type="checkbox" name="collapse" defaultChecked />
           <div className="collapse-title text-xl font-medium">Font Settings</div>
           <div className="collapse-content m-2">
@@ -136,7 +136,7 @@ export default function SettingsPage(): JSX.Element {
                     updateFontPreferences({ name: 'Roboto', weight: 400 });
                   } else {
                     toast('Already in default mode', {
-                      icon: <InformationCircleIcon className="h-5 w-5 text-info" />,
+                      icon: <InformationCircleIcon className="text-info h-5 w-5" />,
                     });
                   }
                 }}
@@ -147,14 +147,14 @@ export default function SettingsPage(): JSX.Element {
           </div>
         </div>
 
-        <div className="collapse join-item collapse-arrow border border-base-300">
+        <div className="join-item collapse-arrow border-base-300 collapse border">
           <input type="checkbox" name="collapse" defaultChecked />
           <div className="collapse-title text-xl font-medium">Notification</div>
           <div className="collapse-content">
             <p>hello</p>
           </div>
         </div>
-        <div className="collapse join-item collapse-arrow border border-base-300">
+        <div className="join-item collapse-arrow border-base-300 collapse border">
           <input type="checkbox" name="collapse" defaultChecked />
           <div className="collapse-title text-xl font-medium">Preferences</div>
           <div className="collapse-content">

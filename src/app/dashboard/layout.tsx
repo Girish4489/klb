@@ -53,10 +53,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }): 
       />
       <div className="drawer-content flex h-screen flex-col">
         {/* Navbar */}
-        <div className="navbar sticky top-0 z-10 flex min-h-10 w-full items-center gap-x-2 rounded-b-box bg-opacity-60 bg-gradient-to-t from-base-100 to-base-300 px-2 py-0.5 shadow-lg ring-1 ring-info backdrop-blur-md">
+        <div className="navbar rounded-b-box bg-linear-to-t from-base-100 to-base-300 ring-info sticky top-0 z-10 flex min-h-10 w-full items-center gap-x-2 bg-opacity-60 px-2 py-0.5 shadow-lg ring-1 backdrop-blur-md">
           <div className="flex-none">
             <button className="btn btn-square btn-ghost btn-sm lg:hidden" onClick={toggleSidebar}>
-              <Bars3BottomLeftIcon className="h-6 w-6 text-base-content" />
+              <Bars3BottomLeftIcon className="text-base-content h-6 w-6" />
             </button>
           </div>
           <div className="flex-1">
@@ -70,7 +70,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }): 
           </div>
         </div>
         {/* Page content */}
-        <div className="flex-grow overflow-y-auto px-0 py-2">{children}</div>
+        <div className="grow overflow-y-auto px-0 py-2">{children}</div>
       </div>
       <div className="drawer-side">
         <label htmlFor="my-drawer-2" aria-label="close sidebar" className="drawer-overlay"></label>

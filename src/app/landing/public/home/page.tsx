@@ -194,11 +194,11 @@ export default function Home(): JSX.Element {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-base-100 to-base-300">
+    <div className="bg-linear-to-br from-base-100 to-base-300 min-h-screen">
       <NavbarWithProgress />
 
       {/* Enhanced Hero Section */}
-      <div className="hero min-h-screen bg-gradient-to-br from-primary/5 via-transparent to-accent/5">
+      <div className="hero bg-linear-to-br from-primary/5 to-accent/5 min-h-screen via-transparent">
         <motion.div
           className="hero-content flex-col gap-12 lg:flex-row-reverse"
           initial={{ opacity: 0 }}
@@ -211,7 +211,7 @@ export default function Home(): JSX.Element {
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <div className="carousel h-[300px] w-full overflow-hidden rounded-lg shadow-2xl hover:ring-2 hover:ring-success sm:h-[400px] md:h-[450px] lg:h-[500px]">
+            <div className="carousel hover:ring-success h-[300px] w-full overflow-hidden rounded-lg shadow-2xl hover:ring-2 sm:h-[400px] md:h-[450px] lg:h-[500px]">
               {!imagesLoaded[`hero-0`] && <div className="skeleton h-full w-full"></div>}
               {heroImages.map((image, index) => (
                 <div key={index} id={`slide${index}`} className="carousel-item relative h-full w-full">
@@ -264,7 +264,7 @@ export default function Home(): JSX.Element {
             </p>
             <Link
               href={constants.AUTH_SIGNUP_PAGE}
-              className="btn btn-accent btn-lg bg-gradient-to-bl from-primary to-accent"
+              className="btn btn-accent btn-lg bg-linear-to-bl from-primary to-accent"
             >
               Get Started
             </Link>
@@ -273,7 +273,7 @@ export default function Home(): JSX.Element {
       </div>
 
       {/* Enhanced Stats Section */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 py-20">
+      <div className="bg-linear-to-r from-primary/10 via-secondary/10 to-accent/10 relative overflow-hidden py-20">
         <motion.div
           variants={stagger}
           initial="initial"
@@ -291,14 +291,14 @@ export default function Home(): JSX.Element {
                 whileTap={{ scale: 0.95 }}
               >
                 <motion.div
-                  className="text-4xl font-bold text-primary"
+                  className="text-primary text-4xl font-bold"
                   initial={{ opacity: 0, scale: 0.5 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                 >
                   {stat.value}
                 </motion.div>
-                <div className="mt-2 text-base-content/70 transition-colors duration-300 group-hover:text-primary">
+                <div className="text-base-content/70 group-hover:text-primary mt-2 transition-colors duration-300">
                   {stat.label}
                 </div>
               </motion.div>
@@ -309,7 +309,7 @@ export default function Home(): JSX.Element {
 
       {/* Enhanced Features Cards */}
       <div className="relative px-4 py-24">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-base-300/50 to-transparent"></div>
+        <div className="bg-linear-to-b via-base-300/50 absolute inset-0 from-transparent to-transparent"></div>
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -317,7 +317,7 @@ export default function Home(): JSX.Element {
           className="relative"
         >
           <h2 className="mb-16 text-center text-5xl font-bold">
-            <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
               Why Choose Us?
             </span>
           </h2>
@@ -333,10 +333,10 @@ export default function Home(): JSX.Element {
               >
                 <div className="card-body items-center text-center">
                   <motion.div
-                    className="mb-4 rounded-full bg-gradient-to-br from-secondary via-primary to-accent p-6 hover:ring-2 hover:ring-success hover:lg:ring-4"
+                    className="bg-linear-to-br from-secondary via-primary to-accent hover:ring-success mb-4 rounded-full p-6 hover:ring-2 lg:hover:ring-4"
                     variants={bounce}
                   >
-                    <feature.icon className="h-16 w-16 text-primary-content" />
+                    <feature.icon className="text-primary-content h-16 w-16" />
                   </motion.div>
                   <h3 className="card-title text-2xl">{feature.title}</h3>
                   <p className="text-base-content/70">{feature.desc}</p>
@@ -348,7 +348,7 @@ export default function Home(): JSX.Element {
       </div>
 
       {/* Enhanced Benefits Section */}
-      <div className="bg-gradient-to-b from-base-200 to-base-300 px-4 py-24">
+      <div className="bg-linear-to-b from-base-200 to-base-300 px-4 py-24">
         <div className="mx-auto max-w-7xl">
           <motion.div
             variants={stagger}
@@ -365,14 +365,14 @@ export default function Home(): JSX.Element {
                   scale: 1.05,
                   boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
                 }}
-                className="group rounded-xl bg-base-100 p-6 shadow-xl"
+                className="bg-base-100 group rounded-xl p-6 shadow-xl"
               >
                 <motion.div
                   whileHover={{ rotate: 360 }}
                   transition={{ duration: 0.6 }}
-                  className="mx-auto mb-4 w-fit rounded-full bg-primary/10 p-4"
+                  className="bg-primary/10 mx-auto mb-4 w-fit rounded-full p-4"
                 >
-                  <benefit.icon className="h-8 w-8 text-primary" />
+                  <benefit.icon className="text-primary h-8 w-8" />
                 </motion.div>
                 <h3 className="mb-2 text-xl font-semibold">{benefit.title}</h3>
                 <p className="text-base-content/70">{benefit.description}</p>
@@ -383,7 +383,7 @@ export default function Home(): JSX.Element {
       </div>
 
       {/* Enhanced Testimonials */}
-      <div className="relative bg-gradient-to-tr from-primary/5 via-base-200 to-accent/5 px-4 py-24">
+      <div className="bg-linear-to-tr from-primary/5 via-base-200 to-accent/5 relative px-4 py-24">
         <div className="bg-grid-pattern absolute inset-0 opacity-5"></div>
         <motion.div
           initial={{ opacity: 0 }}
@@ -391,7 +391,7 @@ export default function Home(): JSX.Element {
           transition={{ duration: 0.8 }}
           className="relative"
         >
-          <h2 className="mb-16 bg-gradient-to-r from-primary to-accent bg-clip-text text-center text-4xl font-bold text-transparent">
+          <h2 className="bg-linear-to-r from-primary to-accent mb-16 bg-clip-text text-center text-4xl font-bold text-transparent">
             Loved by Fashion Retailers
           </h2>
           <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 md:grid-cols-3">
@@ -407,21 +407,21 @@ export default function Home(): JSX.Element {
                 <div className="card-body">
                   <div className="flex items-center gap-4">
                     <div className="avatar">
-                      <div className="w-16 rounded-full ring ring-primary ring-offset-2 ring-offset-base-100">
+                      <div className="ring-3 ring-primary ring-offset-base-100 w-16 rounded-full ring-offset-2">
                         <Image src={testimonial.avatar} alt={testimonial.name} width={64} height={64} />
                       </div>
                     </div>
                     <div>
                       <h3 className="font-bold">{testimonial.name}</h3>
-                      <p className="text-sm text-base-content/70">{testimonial.role}</p>
+                      <p className="text-base-content/70 text-sm">{testimonial.role}</p>
                     </div>
                   </div>
                   <div className="mt-4 flex gap-1">
                     {[...Array(testimonial.rating)].map((_, i) => (
-                      <StarIcon key={i} className="h-5 w-5 text-warning" />
+                      <StarIcon key={i} className="text-warning h-5 w-5" />
                     ))}
                   </div>
-                  <p className="mt-4 text-base-content/80">{testimonial.content}</p>
+                  <p className="text-base-content/80 mt-4">{testimonial.content}</p>
                 </div>
               </motion.div>
             ))}
@@ -430,10 +430,10 @@ export default function Home(): JSX.Element {
       </div>
 
       {/* Enhanced Pricing Cards */}
-      <div className="bg-gradient-to-b from-base-300 to-base-200 px-4 py-24">
+      <div className="bg-linear-to-b from-base-300 to-base-200 px-4 py-24">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
           <h2 className="mb-16 text-center text-5xl font-bold">
-            <span className="bg-gradient-to-r from-secondary via-primary to-accent bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-secondary via-primary to-accent bg-clip-text text-transparent">
               Simple, Transparent Pricing
             </span>
           </h2>
@@ -445,7 +445,7 @@ export default function Home(): JSX.Element {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: i * 0.2 }}
                 whileHover={{ scale: 1.03 }}
-                className={`card bg-base-100 shadow-xl ${plan.recommended ? 'border-2 border-primary' : ''}`}
+                className={`card bg-base-100 shadow-xl ${plan.recommended ? 'border-primary border-2' : ''}`}
               >
                 <div className="card-body">
                   {plan.recommended && <div className="badge badge-primary absolute right-4 top-4">Recommended</div>}
@@ -457,7 +457,7 @@ export default function Home(): JSX.Element {
                   <ul className="space-y-2">
                     {plan.features.map((feature, i) => (
                       <li key={i} className="flex items-center gap-2">
-                        <svg className="h-5 w-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="text-success h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
                         {feature}
@@ -480,12 +480,12 @@ export default function Home(): JSX.Element {
       </div>
 
       {/* Enhanced Footer */}
-      <footer className="relative bg-gradient-to-t from-base-300 to-base-200">
+      <footer className="bg-linear-to-t from-base-300 to-base-200 relative">
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 1 }}
-          className="footer footer-center relative p-10 text-base-content"
+          className="footer footer-center text-base-content relative p-10"
         >
           <div>
             {/* <p className="font-bold">Kalamandir Industries Ltd.</p> */}
@@ -513,7 +513,7 @@ export default function Home(): JSX.Element {
       {showScrollButton && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-8 right-8 z-50 flex items-center justify-center rounded-full bg-primary p-3 text-primary-content shadow-lg transition-transform duration-300 hover:scale-110"
+          className="bg-primary text-primary-content fixed bottom-8 right-8 z-50 flex items-center justify-center rounded-full p-3 shadow-lg transition-transform duration-300 hover:scale-110"
         >
           <ArrowUpIcon className="h-6 w-6" />
         </button>

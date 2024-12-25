@@ -12,10 +12,10 @@ export function ThemeToggle(): JSX.Element {
         type="checkbox"
         checked={currentTheme === Theme.Dark}
         onChange={toggleTheme}
-        className="theme-controller toggle col-span-2 col-start-1 row-start-1 h-full w-14 items-center rounded-full bg-base-content"
+        className="theme-controller toggle bg-base-content col-span-2 col-start-1 row-start-1 h-full w-14 items-center rounded-full"
       />
-      <SunIcon className={`col-start-1 row-start-1 h-5 w-5 items-center p-px text-base-100`} />
-      <MoonIcon className="col-start-2 row-start-1 h-5 w-5 items-center p-px text-base-100" />
+      <SunIcon className={`text-base-100 col-start-1 row-start-1 h-5 w-5 items-center p-px`} />
+      <MoonIcon className="text-base-100 col-start-2 row-start-1 h-5 w-5 items-center p-px" />
     </label>
   );
 }

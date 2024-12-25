@@ -882,22 +882,22 @@ export default function CategoryPage(): JSX.Element {
       />
       <span className="container w-full overflow-y-auto">
         {/* category header for adding */}
-        <div className="w-full rounded-box border-2 border-base-300 p-2 shadow-lg">
+        <div className="rounded-box border-base-300 w-full border-2 p-2 shadow-lg">
           <div className="flex items-center gap-2 max-sm:justify-between">
             <h2 className="label text-center font-bold">Category</h2>
             <button className="btn btn-primary btn-sm" onClick={() => openModal('addCategory')}>
-              <PlusCircleIcon className="h-6 w-6 text-primary-content max-sm:hidden" />
+              <PlusCircleIcon className="text-primary-content h-6 w-6 max-sm:hidden" />
               <span className="hidden max-sm:flex">Add</span>
             </button>
           </div>
-          <p className="text-start text-sm text-warning max-sm:text-center">
+          <p className="text-warning text-start text-sm max-sm:text-center">
             Note: General users can view this page for informational purposes. Edits are reserved for authorized
             personnel.
           </p>
         </div>
         {/* category list */}
-        <div className="flex grow flex-col items-center gap-2 rounded-box border border-base-300 p-2 shadow-2xl">
-          <h1 className="m-1 w-max border-b border-base-content text-center text-base font-bold">Categories</h1>
+        <div className="rounded-box border-base-300 flex grow flex-col items-center gap-2 border p-2 shadow-2xl">
+          <h1 className="border-base-content m-1 w-max border-b text-center text-base font-bold">Categories</h1>
           <div className="flex h-auto w-full flex-col">
             <div className="flex flex-col items-start justify-between gap-2 max-sm:items-center">
               {category.map((cat: ICategory, catIndex: number) => (

@@ -14,9 +14,9 @@ const IncreaseDecreaseSection: React.FC<IncreaseDecreaseSectionProps> = ({
   handleRemoveOrder,
 }) => {
   return (
-    <div className="mx-2 flex h-fit flex-row gap-2 rounded-box bg-accent/15 px-2 py-1">
+    <div className="rounded-box bg-accent/15 mx-2 flex h-fit flex-row gap-2 px-2 py-1">
       <button className="btn btn-primary btn-xs select-none font-extrabold" onClick={handleNewOrder}>
-        <PlusCircleIcon className="h-5 w-5 text-primary-content" />
+        <PlusCircleIcon className="text-primary-content h-5 w-5" />
         Add
       </button>
       {(bill?.order?.length ?? 0) > 0 && (
@@ -24,7 +24,7 @@ const IncreaseDecreaseSection: React.FC<IncreaseDecreaseSectionProps> = ({
           className="btn btn-secondary btn-xs select-none font-extrabold"
           onClick={handleRemoveOrder((bill?.order?.length ?? 0) - 1)}
         >
-          <MinusCircleIcon className="h-5 w-5 text-secondary-content" />
+          <MinusCircleIcon className="text-secondary-content h-5 w-5" />
           Remove
         </button>
       )}

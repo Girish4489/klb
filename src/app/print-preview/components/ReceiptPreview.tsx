@@ -144,7 +144,7 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({
               </div>
               <hr className="my-1 w-[90%] border border-dashed border-black/60" />
             </div>
-            <table className="w-full rounded-box text-slate-600">
+            <table className="rounded-box w-full text-slate-600">
               <tbody className="rounded-box p-1">
                 <tr className="bg-gray-200 text-left">
                   <th className="p-1 text-left">Bill No:</th>
@@ -287,7 +287,7 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({
                 </tr>
               </tbody>
             </table>
-            <span className="mb-1 flex items-center justify-around rounded-box border border-dashed border-black/50 px-2 py-1 shadow-md">
+            <span className="rounded-box mb-1 flex items-center justify-around border border-dashed border-black/50 px-2 py-1 shadow-md">
               <div className="flex">
                 <QrGenerator
                   content={`billNumber=${highlightedReceipt?.bill?.billNumber ?? ''}&receiptNumber=${highlightReceiptNumber ?? ''}`}

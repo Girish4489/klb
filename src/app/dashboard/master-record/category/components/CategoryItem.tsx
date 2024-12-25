@@ -46,9 +46,9 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
 }) => {
   return (
     <span className="w-full">
-      <div className="w-full rounded-box border border-base-300 bg-base-200">
+      <div className="rounded-box border-base-300 bg-base-200 w-full border">
         <div className="flex w-full flex-row justify-between p-2 max-sm:w-full max-sm:max-w-full max-sm:flex-wrap max-sm:gap-2 max-sm:p-0">
-          <div className="flex w-full flex-col items-center gap-2 rounded-box border border-base-200 bg-base-300 p-2 max-sm:flex-col max-sm:items-start max-sm:p-2">
+          <div className="rounded-box border-base-200 bg-base-300 flex w-full flex-col items-center gap-2 border p-2 max-sm:flex-col max-sm:items-start max-sm:p-2">
             <div className="flex w-full flex-row px-2">
               <span className="w-wax flex grow flex-row items-center gap-2 max-sm:w-full">
                 <div className="badge badge-success badge-md flex flex-row flex-wrap gap-1 rounded-lg font-bold max-sm:flex-col">
@@ -69,20 +69,20 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
                     openModal('editCategory');
                   }}
                 >
-                  <PencilSquareIcon className="h-6 w-6 text-secondary-content" />
+                  <PencilSquareIcon className="text-secondary-content h-6 w-6" />
                 </CustomButton>
                 <button
                   className="btn btn-error btn-sm tooltip tooltip-left px-1"
                   data-tip="Delete Category"
                   onClick={DelCategory(category._id.toString())}
                 >
-                  <TrashIcon className="h-6 w-6 text-error-content" />
+                  <TrashIcon className="text-error-content h-6 w-6" />
                 </button>
               </div>
             </div>
             <div className="mx-2 flex w-full flex-col gap-1 max-sm:m-0">
               {/* Styles */}
-              <details className="collapse collapse-arrow border border-base-100 bg-base-200 shadow">
+              <details className="collapse-arrow border-base-100 bg-base-200 collapse border shadow-sm">
                 <summary className="collapse-title text-xl font-medium">
                   <div className="flex flex-row items-center justify-between gap-2">
                     <p className="label-text w-max">Styles</p>
@@ -94,16 +94,16 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
                         openModal('addProcess');
                       }}
                     >
-                      <PlusCircleIcon className="h-6 w-6 text-primary-content max-sm:hidden" />
+                      <PlusCircleIcon className="text-primary-content h-6 w-6 max-sm:hidden" />
                       <span className="hidden max-sm:flex">Add</span>
                     </CustomButton>
                   </div>
                 </summary>
-                <div className="collapse-content flex flex-col gap-1 bg-base-100 pt-2">
+                <div className="collapse-content bg-base-100 flex flex-col gap-1 pt-2">
                   <p className="label label-text-alt w-max">Style Process:</p>
                   {category.styleProcess?.map((styleProcess: IStyleProcess, styleProcessIndex: number) => (
                     <div key={styleProcessIndex}>
-                      <details className="collapse collapse-arrow border-2 border-base-300 bg-base-200">
+                      <details className="collapse-arrow border-base-300 bg-base-200 collapse border-2">
                         <summary className="collapse-title text-xl font-medium">
                           <div className="flex flex-row items-center justify-between">
                             <p className="label label-text">{styleProcess.styleProcessName}</p>
@@ -116,7 +116,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
                                   openModal('addStyle');
                                 }}
                               >
-                                <PlusCircleIcon className="h-6 w-6 text-primary-content" />
+                                <PlusCircleIcon className="text-primary-content h-6 w-6" />
                               </CustomButton>
                               <CustomButton
                                 className="btn btn-secondary btn-sm tooltip tooltip-left px-1"
@@ -126,20 +126,20 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
                                   openModal('editProcess');
                                 }}
                               >
-                                <PencilSquareIcon className="h-6 w-6 text-secondary-content" />
+                                <PencilSquareIcon className="text-secondary-content h-6 w-6" />
                               </CustomButton>
                               <button
                                 className="btn btn-error btn-sm tooltip tooltip-left px-1"
                                 data-tip="Delete Process"
                                 onClick={DelProcess(category._id.toString(), styleProcess._id.toString())}
                               >
-                                <TrashIcon className="h-6 w-6 text-error-content" />
+                                <TrashIcon className="text-error-content h-6 w-6" />
                               </button>
                             </span>
                           </div>
                         </summary>
                         <div className="collapse-content transform transition-all">
-                          <div className="m-1 flex max-h-56 flex-col gap-2 overflow-auto rounded-box bg-base-300 p-2">
+                          <div className="rounded-box bg-base-300 m-1 flex max-h-56 flex-col gap-2 overflow-auto p-2">
                             <p className="label label-text-alt w-max">Styles:</p>
                             {styleProcess.styles.map((style: IStyle, styleIndex: number) => (
                               <div key={styleIndex} className="flex flex-row items-center justify-between">
@@ -157,7 +157,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
                                       openModal('editStyle');
                                     }}
                                   >
-                                    <PencilSquareIcon className="h-6 w-6 text-secondary-content" />
+                                    <PencilSquareIcon className="text-secondary-content h-6 w-6" />
                                   </CustomButton>
                                   <button
                                     className="btn btn-error btn-sm tooltip tooltip-left px-1"
@@ -168,7 +168,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
                                       style._id.toString(),
                                     )}
                                   >
-                                    <TrashIcon className="h-6 w-6 text-error-content" />
+                                    <TrashIcon className="text-error-content h-6 w-6" />
                                   </button>
                                 </span>
                               </div>
@@ -181,7 +181,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
                 </div>
               </details>
               {/* Dimensions */}
-              <details className="collapse collapse-arrow border border-base-100 bg-base-200 shadow">
+              <details className="collapse-arrow border-base-100 bg-base-200 collapse border shadow-sm">
                 <summary className="collapse-title text-xl font-medium">
                   <div className="flex flex-row items-center justify-between gap-2">
                     <p className="label-text w-max">Dimensions</p>
@@ -193,16 +193,16 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
                         openModal('addDimensionTypes');
                       }}
                     >
-                      <PlusCircleIcon className="h-6 w-6 text-primary-content max-sm:hidden" />
+                      <PlusCircleIcon className="text-primary-content h-6 w-6 max-sm:hidden" />
                       <span className="hidden max-sm:flex">Add</span>
                     </CustomButton>
                   </div>
                 </summary>
-                <div className="collapse-content flex flex-col gap-1 bg-base-100 pt-2">
+                <div className="collapse-content bg-base-100 flex flex-col gap-1 pt-2">
                   <p className="label label-text-alt w-max">Dimension Types:</p>
                   {category.dimensionTypes?.map((DimensionType: IDimensionTypes, typIndex: number) => (
                     <div key={typIndex}>
-                      <details className="collapse collapse-arrow border-2 border-base-300 bg-base-200">
+                      <details className="collapse-arrow border-base-300 bg-base-200 collapse border-2">
                         <summary className="collapse-title text-xl font-medium">
                           <div className="flex flex-row items-center justify-between">
                             <p className="label label-text">{DimensionType.dimensionTypeName}</p>
@@ -215,7 +215,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
                                   openModal('addDimension');
                                 }}
                               >
-                                <PlusCircleIcon className="h-6 w-6 text-primary-content" />
+                                <PlusCircleIcon className="text-primary-content h-6 w-6" />
                               </CustomButton>
                               <CustomButton
                                 className="btn btn-secondary btn-sm tooltip tooltip-left px-1"
@@ -225,20 +225,20 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
                                   openModal('editDimensionType');
                                 }}
                               >
-                                <PencilSquareIcon className="h-6 w-6 text-secondary-content" />
+                                <PencilSquareIcon className="text-secondary-content h-6 w-6" />
                               </CustomButton>
                               <button
                                 className="btn btn-error btn-sm tooltip tooltip-left px-1"
                                 data-tip="Delete Type"
                                 onClick={DelDimensionType(category._id.toString(), DimensionType._id.toString())}
                               >
-                                <TrashIcon className="h-6 w-6 text-error-content" />
+                                <TrashIcon className="text-error-content h-6 w-6" />
                               </button>
                             </span>
                           </div>
                         </summary>
                         <div className="collapse-content transform transition-all">
-                          <div className="m-1 flex max-h-56 flex-col gap-2 overflow-auto rounded-box bg-base-300 p-2">
+                          <div className="rounded-box bg-base-300 m-1 flex max-h-56 flex-col gap-2 overflow-auto p-2">
                             <p className="label label-text-alt w-max">Dimensions:</p>
                             {DimensionType.dimensions?.map((dimension: IDimensions, dimensionIndex: number) => (
                               <div key={dimensionIndex} className="flex flex-row items-center justify-between">
@@ -258,7 +258,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
                                       openModal('editDimension');
                                     }}
                                   >
-                                    <PencilSquareIcon className="h-6 w-6 text-secondary-content" />
+                                    <PencilSquareIcon className="text-secondary-content h-6 w-6" />
                                   </CustomButton>
                                   <button
                                     className="btn btn-error btn-sm tooltip tooltip-left px-1"
@@ -269,7 +269,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
                                       dimension._id.toString(),
                                     )}
                                   >
-                                    <TrashIcon className="h-6 w-6 text-error-content" />
+                                    <TrashIcon className="text-error-content h-6 w-6" />
                                   </button>
                                 </span>
                               </div>

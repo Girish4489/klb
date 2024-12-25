@@ -60,17 +60,17 @@ function VerifyEmailPageWrapper(): JSX.Element {
         {/* Info Section */}
         <div className="flex select-none flex-col justify-center gap-4 lg:w-1/2">
           <div className="text-center">
-            <h1 className="bg-gradient-to-r from-accent via-primary to-secondary bg-clip-text text-5xl font-bold text-transparent">
+            <h1 className="bg-linear-to-r from-accent via-primary to-secondary bg-clip-text text-5xl font-bold text-transparent">
               Verify Your Email
             </h1>
-            <p className="mt-4 text-pretty text-base-content/70">
+            <p className="text-base-content/70 mt-4 text-pretty">
               We&apos;re verifying your email address to ensure the security of your account. This helps protect your
               business data.
             </p>
           </div>
-          <div className="mt-4 space-y-4 rounded-box bg-base-200/50 p-6 backdrop-blur-sm">
+          <div className="rounded-box bg-base-200/50 backdrop-blur-xs mt-4 space-y-4 p-6">
             <h2 className="text-lg font-semibold">Next Steps:</h2>
-            <ul className="ml-6 list-disc space-y-2 text-base-content/70">
+            <ul className="text-base-content/70 ml-6 list-disc space-y-2">
               <li>Verification in progress</li>
               <li>Automatic redirect to login</li>
               <li>Access your dashboard</li>
@@ -81,12 +81,12 @@ function VerifyEmailPageWrapper(): JSX.Element {
 
         {/* Status Section */}
         <div className="lg:w-1/2">
-          <div className="rounded-box bg-base-100/50 p-8 text-center backdrop-blur-sm">
+          <div className="rounded-box bg-base-100/50 backdrop-blur-xs p-8 text-center">
             <div className="mb-6 flex justify-center">
               {isVerified ? (
-                <ShieldCheckIcon className="h-16 w-16 animate-bounce text-success" />
+                <ShieldCheckIcon className="text-success h-16 w-16 animate-bounce" />
               ) : (
-                <EnvelopeIcon className="h-16 w-16 animate-pulse text-accent" />
+                <EnvelopeIcon className="text-accent h-16 w-16 animate-pulse" />
               )}
             </div>
 
@@ -103,7 +103,7 @@ function VerifyEmailPageWrapper(): JSX.Element {
                     className={`btn btn-accent btn-block ${
                       isVerifying || !token
                         ? 'btn-disabled'
-                        : 'bg-gradient-to-r from-accent via-primary to-secondary text-primary-content transition-all hover:scale-[1.02]'
+                        : 'bg-linear-to-r from-accent via-primary to-secondary text-primary-content transition-all hover:scale-[1.02]'
                     }`}
                   >
                     {isVerifying ? (

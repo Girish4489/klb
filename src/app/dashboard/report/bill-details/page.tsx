@@ -64,9 +64,9 @@ export default function BillDetails(): JSX.Element {
   const BillTable = ({ caption, bills }: { caption: string; bills: IBillDetails[] }): JSX.Element => {
     return (
       <div
-        className={`table-row overflow-auto rounded-box border-2 border-base-300 bg-base-100 ${bills.length === 0 && 'min-h-24'}`}
+        className={`rounded-box border-base-300 bg-base-100 table-row overflow-auto border-2 ${bills.length === 0 && 'min-h-24'}`}
       >
-        <table className="table table-zebra table-pin-rows h-fit">
+        <table className="table-zebra table-pin-rows table h-fit">
           <caption className="table-caption px-1 py-2 font-bold">{caption}</caption>
           {bills.length === 0 ? (
             <tbody>
@@ -191,7 +191,7 @@ export default function BillDetails(): JSX.Element {
   return (
     <div className="flex grow flex-col">
       <h1 className="text-center font-semibold">Bill Details</h1>
-      <span className="backdrop-blur-sm-lg flex flex-wrap items-center gap-2 rounded-box bg-base-300 p-2 shadow">
+      <span className="backdrop-blur-sm-lg rounded-box bg-base-300 flex flex-wrap items-center gap-2 p-2 shadow-sm">
         {/* Date inputs */}
         <label className="input input-sm label-text input-bordered input-primary flex grow items-center gap-2">
           From Date:

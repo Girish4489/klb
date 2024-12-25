@@ -19,7 +19,7 @@ import { toast } from 'react-hot-toast';
 
 const LoadingSkeleton = (): JSX.Element => (
   <div className="avatar placeholder">
-    <div className="bg-neutral-focus w-12 rounded-full text-neutral-content">
+    <div className="bg-neutral-focus text-neutral-content w-12 rounded-full">
       <span className="loading loading-spinner loading-sm"></span>
     </div>
   </div>
@@ -49,7 +49,7 @@ const HeaderProfilePage = ({ user, isLoading }: { user: IUser | null; isLoading:
     <span className="my-auto flex items-center pt-1.5">
       <div className="dropdown dropdown-end">
         <div tabIndex={0} role="button" className="avatar btn btn-circle btn-ghost btn-sm my-auto grow">
-          <div className="h-8 w-8 rounded-full ring-2 ring-primary">
+          <div className="ring-primary h-8 w-8 rounded-full ring-2">
             <Image
               src={profileImageSrc}
               alt="Profile"
@@ -63,10 +63,10 @@ const HeaderProfilePage = ({ user, isLoading }: { user: IUser | null; isLoading:
         </div>
         <ul
           tabIndex={0}
-          className="menu dropdown-content menu-sm z-50 w-auto gap-y-1 rounded-box bg-base-200 p-2 shadow ring-1 ring-primary"
+          className="menu dropdown-content menu-sm rounded-box bg-base-200 ring-primary z-50 w-auto gap-y-1 p-2 shadow-sm ring-1"
         >
           <span className="flex w-full justify-around">
-            <div className="transform rounded-full ring-2 ring-primary hover:scale-105">
+            <div className="ring-primary transform rounded-full ring-2 hover:scale-105">
               <Image
                 src={profileImageSrc}
                 alt="profile image"
@@ -78,25 +78,40 @@ const HeaderProfilePage = ({ user, isLoading }: { user: IUser | null; isLoading:
               />
             </div>
           </span>
-          <ProfileItem icon={<UserIcon className="h-5 w-5 text-primary" />} label={user.username} tooltip="Username">
+          <ProfileItem
+            icon={<UserIcon className="text-primary h-5 w-5" />}
+            label={user.username}
+            liClass="grow w-full"
+            tooltip="Username"
+          >
             {!user.isCompanyMember && <span className="badge badge-primary">New</span>}
           </ProfileItem>
-          <ProfileItem icon={<EnvelopeIcon className="h-5 w-5 text-primary" />} label={user.email} tooltip="Email" />
+          <ProfileItem icon={<EnvelopeIcon className="text-primary h-5 w-5" />} label={user.email} tooltip="Email" />
           <ProfileItem
-            icon={<CheckBadgeIcon className="h-5 w-5 text-primary" />}
+            icon={<CheckBadgeIcon className="text-primary h-5 w-5" />}
             label="Verified"
             tooltip="Verified"
             liClass="flex"
           >
             <StatusIcon isTrue={user.isVerified} />
           </ProfileItem>
-          <ProfileItem icon={<UserCircleIcon className="h-5 w-5 text-primary" />} label="Admin" tooltip="Admin">
+          <ProfileItem
+            icon={<UserCircleIcon className="text-primary h-5 w-5" />}
+            label="Admin"
+            liClass="grow w-full"
+            tooltip="Admin"
+          >
             <StatusIcon isTrue={user.isAdmin} />
           </ProfileItem>
-          <ProfileItem icon={<SwatchIcon className="h-5 w-5 text-primary" />} label="Theme" tooltip="Theme">
+          <ProfileItem
+            icon={<SwatchIcon className="text-primary h-5 w-5" />}
+            label="Theme"
+            liClass="grow w-full"
+            tooltip="Theme"
+          >
             <Link
               href="/dashboard/settings#themeBlock"
-              className="tooltip tooltip-top flex flex-row gap-2 rounded-box bg-primary pl-2 pr-1 font-medium text-primary-content"
+              className="tooltip tooltip-top rounded-box bg-primary text-primary-content flex flex-row gap-2 pl-2 pr-1 font-medium"
               data-tip="edit theme"
             >
               {(user.preferences?.theme ?? 'default').charAt(0).toUpperCase() +
@@ -107,14 +122,15 @@ const HeaderProfilePage = ({ user, isLoading }: { user: IUser | null; isLoading:
             </Link>
           </ProfileItem>
           <ProfileItem
-            icon={<Cog6ToothIcon className="h-5 w-5 text-primary" />}
+            icon={<Cog6ToothIcon className="text-primary h-5 w-5" />}
             label="Settings"
             tooltip="Settings"
             link="/dashboard/settings"
+            liClass="grow w-full"
             enable={user.isCompanyMember ?? true}
           />
           <li
-            className="tooltip tooltip-left flex text-warning hover:rounded-lg hover:bg-error hover:font-medium hover:text-warning-content"
+            className="tooltip tooltip-left text-warning hover:bg-error hover:text-warning-content flex hover:rounded-lg hover:font-medium"
             data-tip="Logout"
           >
             <LogoutButton variant="error" className="btn-sm" />
@@ -177,9 +193,9 @@ const StatusIcon = ({ isTrue }: { isTrue: boolean }): JSX.Element => (
     data-tip={isTrue ? 'Verified' : 'Not Verified'}
   >
     {isTrue ? (
-      <CheckBadgeIcon className="h-5 w-5 text-success" />
+      <CheckBadgeIcon className="text-success h-5 w-5" />
     ) : (
-      <ExclamationCircleIcon className="h-5 w-5 text-error" />
+      <ExclamationCircleIcon className="text-error h-5 w-5" />
     )}
   </span>
 );
