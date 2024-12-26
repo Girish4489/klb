@@ -320,105 +320,114 @@ export default function BillPage(): JSX.Element {
 
   return (
     <div className="flex h-[calc(100vh-4rem)] flex-col gap-2 px-2">
-      {/* Header Area */}
-      <div className="flex flex-col space-y-2">
-        {/* Top Bar with New/Search */}
-        <div className="bg-base-200 rounded-lg p-2 shadow-sm">
-          <div className="flex items-center justify-between">
-            <button className="btn btn-primary btn-sm" onClick={createNewBill}>
-              <PlusCircleIcon className="h-5 w-5" />
-              New Bill
-            </button>
-            <div className="flex gap-2">
-              <BarcodeScannerPage
-                onScanComplete={setBarcode}
-                scannerId="billHeaderScanner"
-                scanModalId="billHeaderScanner_modal"
-              />
-              {bill && (
-                <BillDetailsDropdownClear
-                  bill={bill}
-                  clearBill={() => clearBill(setBill)}
-                  link={`/dashboard/work-manage/bill?billNumber=${bill.billNumber}`}
-                  linkDisabled={false}
+      <div className="flex min-h-full flex-1 grow flex-col">
+        {/* Fixed Header Area - No Scroll */}
+        <div className="flex flex-col space-y-2">
+          {/* Top Bar with New/Search */}
+          <div className="bg-base-200 rounded-lg p-2 shadow-sm">
+            <div className="flex items-center justify-between">
+              <button className="btn btn-primary btn-sm" onClick={createNewBill}>
+                <PlusCircleIcon className="h-5 w-5" />
+                New Bill
+              </button>
+              <div className="flex gap-2">
+                <BarcodeScannerPage
+                  onScanComplete={setBarcode}
+                  scannerId="billHeaderScanner"
+                  scanModalId="billHeaderScanner_modal"
                 />
-              )}
-              <SearchBillForm
-                onSearch={(e) => billSearch(e, setBill, setSearchBill)}
-                searchResults={searchBill}
-                onRowClick={(billId) =>
-                  searchRowClicked(billId, searchBill, setBill, setSearchBill, updateUrlWithBillNumber, setNewBill)
-                }
-              />
+                {bill && (
+                  <BillDetailsDropdownClear
+                    bill={bill}
+                    clearBill={() => clearBill(setBill)}
+                    link={`/dashboard/work-manage/bill?billNumber=${bill.billNumber}`}
+                    linkDisabled={false}
+                  />
+                )}
+                <SearchBillForm
+                  onSearch={(e) => billSearch(e, setBill, setSearchBill)}
+                  searchResults={searchBill}
+                  onRowClick={(billId) =>
+                    searchRowClicked(billId, searchBill, setBill, setSearchBill, updateUrlWithBillNumber, setNewBill)
+                  }
+                />
+              </div>
             </div>
           </div>
+
+          {/* Bill Header */}
+          {bill && (
+            <div className="bg-base-200 rounded-lg p-2 shadow-sm">
+              <BillHeader bill={bill} setBill={setBill} />
+            </div>
+          )}
         </div>
 
-        {/* Bill Header */}
+        {/* Main Work Area */}
         {bill && (
-          <div className="bg-base-200 rounded-lg p-2 shadow-sm">
-            <BillHeader bill={bill} setBill={setBill} />
+          <div className="flex min-h-0 flex-1 flex-col gap-2">
+            {/* Add/Remove Order Controls - Fixed */}
+            <div className="rounded-lg py-1">
+              <IncreaseDecreaseSection
+                bill={bill}
+                handleNewOrder={handleNewOrder}
+                handleRemoveOrder={handleRemoveOrder}
+              />
+            </div>
+
+            {/* Orders and Tracking Area - Scrollable Content */}
+            <div className="flex min-h-0 flex-1 gap-2 lg:flex-row">
+              {/* Left: Orders Section */}
+              <div className="flex min-h-0 flex-1 flex-col rounded-lg">
+                {/* Orders Content - Scrollable */}
+                <div className="flex-1 overflow-y-auto p-1 pr-2">
+                  <div className="space-y-2">
+                    {bill?.order?.map((order, orderIndex) => (
+                      <OrderDetails
+                        key={orderIndex}
+                        order={order}
+                        orderIndex={orderIndex}
+                        bill={bill}
+                        setBill={setBill}
+                        category={category}
+                        handleRemoveOrder={handleRemoveOrder}
+                        handleDimensionChange={handleDimensionChange}
+                        handleStyleProcessChange={handleStyleProcessChange}
+                        handleColorSelect={(color) => handleColorSelect(color, orderIndex, setBill)}
+                      />
+                    ))}
+                  </div>
+                </div>
+                {/* Save/Update/Print Bar - Fixed at bottom */}
+                <div className="bg-base-100 p-0.5">
+                  <SaveUpdatePrint
+                    newBill={newBill}
+                    bill={bill}
+                    printType={printType}
+                    setPrintType={setPrintType}
+                    handleSaveBill={handleSaveBill}
+                    handleUpdateBill={handleUpdateBill}
+                  />
+                </div>
+              </div>
+
+              {/* Right: Items Track */}
+              <div className="w-full rounded-lg lg:w-80">
+                <ItemsTrack bill={bill} />
+              </div>
+            </div>
           </div>
         )}
       </div>
-
-      {/* Main Work Area */}
+      {/* Bottom Tables */}
       {bill && (
-        <div className="flex flex-1 flex-col space-y-2">
-          {/* Add/Remove Order Controls */}
-          <div className="rounded-lg py-1">
-            <IncreaseDecreaseSection
-              bill={bill}
-              handleNewOrder={handleNewOrder}
-              handleRemoveOrder={handleRemoveOrder}
-            />
-          </div>
-
-          {/* Orders and Tracking Area */}
-          <div className="grid flex-1 grid-cols-[1fr_auto] gap-2">
-            {/* Left: Orders Section */}
-            <div className="flex flex-col gap-1 rounded-lg">
-              <div className="flex-1 overflow-y-auto p-1">
-                {/* Orders Content */}
-                <div className="space-y-2">
-                  {bill?.order?.map((order, orderIndex) => (
-                    <OrderDetails
-                      key={orderIndex}
-                      order={order}
-                      orderIndex={orderIndex}
-                      bill={bill}
-                      setBill={setBill}
-                      category={category}
-                      handleRemoveOrder={handleRemoveOrder}
-                      handleDimensionChange={handleDimensionChange}
-                      handleStyleProcessChange={handleStyleProcessChange}
-                      handleColorSelect={(color) => handleColorSelect(color, orderIndex, setBill)}
-                    />
-                  ))}
-                </div>
-              </div>
-              {/* Save/Update/Print Bar */}
-              <SaveUpdatePrint
-                newBill={newBill}
-                bill={bill}
-                printType={printType}
-                setPrintType={setPrintType}
-                handleSaveBill={handleSaveBill}
-                handleUpdateBill={handleUpdateBill}
-              />
-            </div>
-
-            {/* Right: Items Track */}
-            <div className="w-80 rounded-lg">
-              <ItemsTrack bill={bill} />
-            </div>
-          </div>
-
-          {/* Bottom Tables out of view */}
-          <div className="bg-base-100 grid grid-rows-2 gap-2 px-0.5">
+        <div className="bg-base-100 grid grid-rows-2 gap-2 px-0.5">
+          {formattedTodayBill.length > 0 && (
             <BillTable caption="Today's Bills" bills={formattedTodayBill as unknown as IBill[]} />
+          )}
+          {formattedThisWeekBill.length > 0 && (
             <BillTable caption="This Week's Bills" bills={formattedThisWeekBill as unknown as IBill[]} />
-          </div>
+          )}
         </div>
       )}
     </div>

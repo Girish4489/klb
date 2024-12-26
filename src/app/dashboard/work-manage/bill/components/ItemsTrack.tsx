@@ -44,7 +44,7 @@ const ItemsTrack: React.FC<ItemsTrackProps> = ({ bill }) => {
       </div>
 
       {bill.order?.length > 0 && (
-        <div className="border-base-300 border-t p-2">
+        <div className="border-base-300 rounded-box bg-base-100 sticky bottom-0 mx-0.5 border-t p-2">
           <div className="bg-primary text-primary-content rounded-lg px-2 py-1">
             <div className="flex items-center justify-between">
               <span>Total:</span>

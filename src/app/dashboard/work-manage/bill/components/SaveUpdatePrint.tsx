@@ -100,7 +100,7 @@ const SaveUpdatePrint: React.FC<SaveUpdatePrintProps> = ({
   handleUpdateBill,
 }) => {
   return (
-    <div className="rounded-box ring-info p-2 shadow-inner ring-2">
+    <div className="rounded-box ring-info z-10 w-full p-2 shadow-inner ring-2">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <span className="flex gap-2">
           {newBill ? (

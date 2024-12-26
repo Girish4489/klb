@@ -10,11 +10,11 @@ interface BillTableProps {
 
 const BillTable: React.FC<BillTableProps> = ({ caption, bills }) => {
   return (
-    <div className={`rounded-box bg-base-100 max-h-96 overflow-x-auto ring-2 ${bills.length === 0 && 'min-h-24'}`}>
+    <div
+      className={`rounded-box bg-base-100 ring-neutral/40 max-h-96 overflow-x-auto ring-2 ${bills.length === 0 && 'min-h-24'}`}
+    >
       <table className="table-zebra table-pin-rows table">
-        <caption className="bg-linear-to-b from-base-300 to-base-100 text-base-content px-1 py-2 font-bold">
-          {caption}
-        </caption>
+        <caption className="text-base-content px-1 py-2 font-bold">{caption}</caption>
         {bills.length === 0 ? (
           <tbody>
             <tr>
