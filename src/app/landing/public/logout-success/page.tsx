@@ -26,21 +26,21 @@ export default function LogoutSuccess(): JSX.Element {
               <div className="mt-8 flex w-full flex-col gap-4">
                 <Link
                   href={constants.LANDING_PUBLIC_HOME_PAGE}
-                  className="btn btn-lg bg-linear-to-r from-primary via-accent to-secondary w-full animate-pulse transition-all duration-300 hover:scale-105 hover:animate-none"
+                  className="btn btn-lg btn-primary w-full animate-pulse transition-all duration-300 hover:scale-105 hover:animate-none"
                 >
                   <HomeIcon className="h-6 w-6" />
                   Go to Home
                 </Link>
                 <Link
                   href={constants.AUTH_LOGIN_PAGE}
-                  className="btn btn-lg bg-linear-to-r from-secondary to-accent w-full transition-transform hover:scale-105"
+                  className="btn btn-lg btn-secondary w-full transition-transform hover:scale-105"
                 >
                   <ShieldCheckIcon className="h-6 w-6" />
                   Login Again
                 </Link>
                 <Link
                   href={constants.AUTH_SIGNUP_PAGE}
-                  className="btn btn-lg bg-linear-to-r from-accent to-primary w-full transition-transform hover:scale-105"
+                  className="btn btn-lg btn-accent w-full transition-transform hover:scale-105"
                 >
                   <IdentificationIcon className="h-6 w-6" />
                   Sign Up

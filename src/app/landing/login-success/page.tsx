@@ -53,7 +53,7 @@ export default function LoginSuccess(): JSX.Element {
                 <Link
                   href={constants.DASHBOARD_PAGE}
                   prefetch={true}
-                  className="btn btn-primary btn-lg bg-linear-to-r from-primary via-accent to-secondary w-full animate-pulse transition-all duration-300 hover:scale-105 hover:animate-none"
+                  className="btn btn-primary btn-lg w-full animate-pulse transition-all duration-300 hover:scale-105 hover:animate-none"
                 >
                   <HomeIcon className="h-6 w-6" />
                   Go to Dashboard
