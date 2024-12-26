@@ -91,7 +91,7 @@ function ResetPasswordContent(): JSX.Element {
         <div className="lg:w-1/2">
           <form className="space-y-6" onSubmit={resetUserPassword}>
             <div className="form-control">
-              <label className="label">
+              <label className="label" htmlFor="new-password">
                 <span className="label-text flex items-center gap-2">
                   <KeyIcon className="h-4 w-4" />
                   New Password
@@ -101,6 +101,7 @@ function ResetPasswordContent(): JSX.Element {
                 <input
                   type={showPassword ? 'text' : 'password'}
                   name="password"
+                  id="new-password"
                   placeholder="Enter new password"
                   className="input input-bordered bg-base-100/50 backdrop-blur-xs w-full pr-10"
                   required
@@ -109,7 +110,7 @@ function ResetPasswordContent(): JSX.Element {
                   <input
                     type="checkbox"
                     onChange={() => setShowPassword(!showPassword)}
-                    className="checkbox-primary checkbox checkbox-xs"
+                    className="checkbox-primary checkbox checkbox-sm"
                     checked={showPassword}
                   />
                 </label>
@@ -117,7 +118,7 @@ function ResetPasswordContent(): JSX.Element {
             </div>
 
             <div className="form-control">
-              <label className="label">
+              <label className="label" htmlFor="retype-new-password">
                 <span className="label-text flex items-center gap-2">
                   <LockClosedIcon className="h-4 w-4" />
                   Confirm Password
@@ -126,17 +127,14 @@ function ResetPasswordContent(): JSX.Element {
               <input
                 type={showPassword ? 'text' : 'password'}
                 name="retypepassword"
+                id="retype-new-password"
                 placeholder="Confirm new password"
-                className="input input-bordered bg-base-100/50 backdrop-blur-xs"
+                className="input input-bordered bg-base-100/50 backdrop-blur-xs w-full"
                 required
               />
             </div>
 
-            <button
-              type="submit"
-              className="btn btn-primary btn-block bg-linear-to-r from-primary via-accent to-secondary text-primary-content transition-all hover:scale-[1.02]"
-              disabled={isLoading}
-            >
+            <button type="submit" className="btn btn-primary btn-block btn-soft" disabled={isLoading}>
               {isLoading ? <span className="loading loading-spinner loading-sm" /> : <KeyIcon className="h-5 w-5" />}
               Reset Password
             </button>

@@ -117,7 +117,7 @@ export default function SignupPage(): JSX.Element {
         {/* Form Section */}
         <div className="lg:w-1/2">
           <form className="space-y-6" onSubmit={handleSignup}>
-            <div className="form-control">
+            <div className="form-control w-full">
               <label className="label" htmlFor="username">
                 <span className="label-text flex items-center gap-2">
                   <UserIcon className="h-4 w-4" />
@@ -130,13 +130,13 @@ export default function SignupPage(): JSX.Element {
                 id="username"
                 autoComplete="username"
                 placeholder="Enter your username"
-                className="input input-bordered bg-base-100/50 backdrop-blur-xs"
+                className="input input-bordered bg-base-100/50 backdrop-blur-xs w-full grow"
                 onFocus={(e) => e.target.select()}
                 required
               />
             </div>
 
-            <div className="form-control">
+            <div className="form-control w-full">
               <label className="label" htmlFor="email">
                 <span className="label-text flex items-center gap-2">
                   <EnvelopeIcon className="h-4 w-4" />
@@ -149,7 +149,7 @@ export default function SignupPage(): JSX.Element {
                 id="email"
                 autoComplete="email"
                 placeholder="Enter your email"
-                className="input input-bordered bg-base-100/50 backdrop-blur-xs"
+                className="input input-bordered bg-base-100/50 backdrop-blur-xs w-full grow"
                 onFocus={(e) => e.target.select()}
                 required
               />
@@ -176,7 +176,7 @@ export default function SignupPage(): JSX.Element {
                   <input
                     type="checkbox"
                     onChange={handleShowPassword}
-                    className="checkbox-secondary checkbox checkbox-xs"
+                    className="checkbox-secondary checkbox checkbox-sm"
                     checked={showPassword}
                   />
                 </label>
@@ -186,11 +186,7 @@ export default function SignupPage(): JSX.Element {
               </label>
             </div>
 
-            <button
-              type="submit"
-              className="btn btn-secondary btn-block bg-linear-to-r from-secondary via-primary to-accent text-secondary-content transition-all hover:scale-[1.02]"
-              disabled={isLoading}
-            >
+            <button type="submit" className="btn btn-secondary btn-block btn-soft" disabled={isLoading}>
               {isLoading ? (
                 <span className="loading loading-spinner loading-sm" />
               ) : (
@@ -213,7 +209,7 @@ export default function SignupPage(): JSX.Element {
                       type="email"
                       name="resendEmail"
                       placeholder="Enter your email"
-                      className="input input-sm input-bordered"
+                      className="input input-sm input-bordered w-full"
                       required
                     />
                   </div>

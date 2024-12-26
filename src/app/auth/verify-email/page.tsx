@@ -100,11 +100,7 @@ function VerifyEmailPageWrapper(): JSX.Element {
                   <button
                     onClick={handleVerification}
                     disabled={isVerifying || !token}
-                    className={`btn btn-accent btn-block ${
-                      isVerifying || !token
-                        ? 'btn-disabled'
-                        : 'bg-linear-to-r from-accent via-primary to-secondary text-primary-content transition-all hover:scale-[1.02]'
-                    }`}
+                    className={`btn btn-accent btn-block ${isVerifying || !token ? 'btn-disabled' : 'btn-soft'}`}
                   >
                     {isVerifying ? (
                       <span className="loading loading-spinner loading-sm" />

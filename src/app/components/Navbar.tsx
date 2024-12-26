@@ -18,11 +18,11 @@ function NavbarContent(): JSX.Element {
       </div>
       <div className="navbar-end gap-2">
         <ThemeToggle />
-        <Link href={constants.AUTH_LOGIN_PAGE} className="btn btn-outline btn-secondary btn-sm">
+        <Link href={constants.AUTH_LOGIN_PAGE} className="btn btn-soft btn-secondary btn-sm">
           <ShieldCheckIcon className="h-5 w-5" />
           Login
         </Link>
-        <Link href={constants.AUTH_SIGNUP_PAGE} className="btn btn-outline btn-primary btn-sm">
+        <Link href={constants.AUTH_SIGNUP_PAGE} className="btn btn-soft btn-primary btn-sm">
           <IdentificationIcon className="h-5 w-5" />
           Sign Up
         </Link>

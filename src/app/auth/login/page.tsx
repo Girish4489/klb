@@ -125,8 +125,8 @@ export default function LoginPage(): JSX.Element {
           {/* Form Section */}
           <div className="lg:w-1/2">
             <form className="space-y-6" onSubmit={handleLogin}>
-              <div className="form-control">
-                <label className="label">
+              <div className="form-control w-full">
+                <label className="label" htmlFor="email">
                   <span className="label-text flex items-center gap-2">
                     <EnvelopeIcon className="h-4 w-4" />
                     Email
@@ -134,15 +134,16 @@ export default function LoginPage(): JSX.Element {
                 </label>
                 <input
                   type="email"
+                  id="email"
                   name="email"
                   placeholder="Enter your email"
-                  className="input input-bordered bg-base-100/50 backdrop-blur-xs"
+                  className="input input-bordered bg-base-100/50 backdrop-blur-xs w-full grow"
                   required
                 />
               </div>
 
               <div className="form-control">
-                <label className="label">
+                <label className="label" htmlFor="password">
                   <span className="label-text flex items-center gap-2">
                     <KeyIcon className="h-4 w-4" />
                     Password
@@ -152,6 +153,7 @@ export default function LoginPage(): JSX.Element {
                   <input
                     type={showPassword ? 'text' : 'password'}
                     name="password"
+                    id="password"
                     placeholder="Enter your password"
                     className="input input-bordered bg-base-100/50 backdrop-blur-xs w-full pr-10"
                     required
@@ -160,18 +162,14 @@ export default function LoginPage(): JSX.Element {
                     <input
                       type="checkbox"
                       onChange={() => setShowPassword(!showPassword)}
-                      className="checkbox-primary checkbox checkbox-xs"
+                      className="checkbox-primary checkbox checkbox-sm"
                       checked={showPassword}
                     />
                   </label>
                 </div>
               </div>
 
-              <button
-                type="submit"
-                className="btn btn-primary btn-block bg-linear-to-r from-primary via-accent to-secondary text-primary-content transition-all hover:scale-[1.02]"
-                disabled={isLoading}
-              >
+              <button type="submit" className="btn btn-primary btn-soft btn-block" disabled={isLoading}>
                 {isLoading ? (
                   <span className="loading loading-spinner loading-sm" />
                 ) : (

@@ -262,10 +262,7 @@ export default function Home(): JSX.Element {
               Transform your fashion retail business with our comprehensive management platform. Streamline inventory,
               boost sales, and delight customers.
             </p>
-            <Link
-              href={constants.AUTH_SIGNUP_PAGE}
-              className="btn btn-accent btn-lg bg-linear-to-bl from-primary to-accent"
-            >
+            <Link href={constants.AUTH_SIGNUP_PAGE} className="btn btn-accent btn-lg">
               Get Started
             </Link>
           </motion.div>

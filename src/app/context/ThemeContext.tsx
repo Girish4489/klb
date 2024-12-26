@@ -70,7 +70,13 @@ export const ThemeProvider: FC<{ children: ReactNode }> = ({ children }) => {
       }
     },
     toggleTheme: () => {
-      setTheme((prevTheme) => (prevTheme === Theme.Dark ? Theme.Light : Theme.Dark));
+      setTheme((prevTheme) => {
+        const newTheme = prevTheme === Theme.Dark ? Theme.Light : Theme.Dark;
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('theme', newTheme);
+        }
+        return newTheme;
+      });
     },
     listenToSystemTheme: () => {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
