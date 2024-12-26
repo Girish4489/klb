@@ -100,7 +100,7 @@ const SaveUpdatePrint: React.FC<SaveUpdatePrintProps> = ({
   handleUpdateBill,
 }) => {
   return (
-    <div className="rounded-box bg-neutral ring-info p-2 shadow-inner ring-2">
+    <div className="rounded-box ring-info p-2 shadow-inner ring-2">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <span className="flex gap-2">
           {newBill ? (
@@ -114,7 +114,7 @@ const SaveUpdatePrint: React.FC<SaveUpdatePrintProps> = ({
                 <CloudArrowUpIcon className="h-5 w-5" />
                 Update
               </button>
-              <span className="join">
+              <div className="join">
                 <select
                   name="printType"
                   aria-label="Print Type"
@@ -137,7 +137,7 @@ const SaveUpdatePrint: React.FC<SaveUpdatePrintProps> = ({
                   <PrinterIcon className="h-5 w-5" />
                   Print
                 </Link>
-              </span>
+              </div>
             </>
           )}
         </span>

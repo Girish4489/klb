@@ -99,6 +99,10 @@ export async function billSearch(
     const inputValue: number = (event.target as HTMLFormElement).billSearch.value;
     const typeBillOrMobile: string = (event.target as HTMLFormElement).selectBill.value;
 
+    if (!inputValue || typeBillOrMobile) {
+      throw new Error('Please provide valid details');
+    }
+
     const res = await ApiGet.Bill.BillSearch<BillSearchResponse>(inputValue, typeBillOrMobile);
     if (!res) {
       throw new Error('No response from server');

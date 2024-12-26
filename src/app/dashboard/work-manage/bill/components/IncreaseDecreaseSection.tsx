@@ -8,28 +8,42 @@ interface IncreaseDecreaseSectionProps {
   handleRemoveOrder: (orderIndex: number) => React.MouseEventHandler<HTMLButtonElement> | undefined;
 }
 
-const IncreaseDecreaseSection: React.FC<IncreaseDecreaseSectionProps> = ({
-  bill,
-  handleNewOrder,
-  handleRemoveOrder,
-}) => {
-  return (
-    <div className="rounded-box bg-accent/15 mx-2 flex h-fit flex-row gap-2 px-2 py-1">
-      <button className="btn btn-primary btn-xs select-none font-extrabold" onClick={handleNewOrder}>
-        <PlusCircleIcon className="text-primary-content h-5 w-5" />
-        Add
-      </button>
-      {(bill?.order?.length ?? 0) > 0 && (
+const IncreaseDecreaseSection: React.FC<IncreaseDecreaseSectionProps> = React.memo(
+  ({ bill, handleNewOrder, handleRemoveOrder }) => {
+    const orderCount = bill?.order?.length ?? 0;
+    const canRemove = orderCount > 0;
+
+    return (
+      <div
+        className="rounded-box bg-accent/15 mx-2 flex h-fit flex-row gap-2 p-2"
+        role="toolbar"
+        aria-label="Order management"
+      >
         <button
-          className="btn btn-secondary btn-xs select-none font-extrabold"
-          onClick={handleRemoveOrder((bill?.order?.length ?? 0) - 1)}
+          className="btn btn-primary btn-outline btn-xs select-none font-extrabold"
+          onClick={handleNewOrder}
+          aria-label="Add new order"
+          type="button"
         >
-          <MinusCircleIcon className="text-secondary-content h-5 w-5" />
-          Remove
+          <PlusCircleIcon className="h-5 w-5" aria-hidden="true" />
+          Add
         </button>
-      )}
-    </div>
-  );
-};
+        {canRemove && (
+          <button
+            className="btn btn-secondary btn-outline btn-xs select-none font-extrabold"
+            onClick={handleRemoveOrder(orderCount - 1)}
+            aria-label="Remove last order"
+            type="button"
+          >
+            <MinusCircleIcon className="h-5 w-5" aria-hidden="true" />
+            Remove
+          </button>
+        )}
+      </div>
+    );
+  },
+);
+
+IncreaseDecreaseSection.displayName = 'IncreaseDecreaseSection';
 
 export default IncreaseDecreaseSection;

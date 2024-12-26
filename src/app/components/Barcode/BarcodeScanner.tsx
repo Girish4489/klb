@@ -184,10 +184,10 @@ const BarcodeScanner: React.FC<{
             </button>
           </div>
           <div className="modal-action">
-            <button className="btn btn-circle btn-sm absolute right-2 top-2 p-1" onClick={handleClose}>
-              <XMarkIcon className="text-base-content h-6 w-6" />
+            <button className="btn btn-circle btn-soft btn-sm absolute right-2 top-2 p-1" onClick={handleClose}>
+              <XMarkIcon className="h-6 w-6" />
             </button>
-            <button className="btn btn-error btn-sm" onClick={handleClose}>
+            <button className="btn btn-error btn-soft btn-sm" onClick={handleClose}>
               Close
             </button>
           </div>

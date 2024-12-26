@@ -12,13 +12,10 @@ const calculateRunningTotal = (orders: IBill['order'], upToIndex: number): numbe
 
 const ItemsTrack: React.FC<ItemsTrackProps> = ({ bill }) => {
   return (
-    <div className="rounded-box bg-base-300 ring-primary flex h-full flex-col shadow-lg ring-2">
-      <div className="border-base-300 border-b p-2">
-        <h2 className="text-center font-bold">Items Track</h2>
-      </div>
-
+    <div className="rounded-box ring-primary flex h-full flex-col shadow-lg ring-2">
       <div className="flex-1 overflow-y-auto">
-        <table className="table-compact table w-full">
+        <table className="table-compact table-zebra table w-full">
+          <caption className="table-caption text-center font-bold">Items Track</caption>
           <thead className="bg-base-200 sticky top-0 z-10">
             <tr>
               <th className="w-12 text-center">No</th>

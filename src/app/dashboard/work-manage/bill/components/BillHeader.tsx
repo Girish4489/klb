@@ -9,7 +9,7 @@ export interface BillHeaderProps {
 
 const BillHeader: React.FC<BillHeaderProps> = ({ bill, setBill }) => {
   return (
-    <div className="flex w-full flex-wrap gap-x-1 gap-y-2 p-2">
+    <div className="flex w-full flex-wrap gap-x-2 gap-y-2 p-2">
       <InputField
         label="Bill No"
         id="billNo"

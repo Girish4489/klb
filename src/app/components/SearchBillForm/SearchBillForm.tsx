@@ -69,9 +69,9 @@ const SearchBillForm: FC<SearchFormProps> = ({ onSearch, searchResults, onRowCli
     <form onSubmit={onSearch} className="join">
       <label
         htmlFor="billSearch"
-        className="input input-sm join-item label-text input-bordered input-primary bg-accent/5 flex items-center gap-2"
+        className="input input-sm join-item label-text input-bordered input-primary bg-accent/5 flex items-center gap-2 lg:rounded-l-full"
       >
-        <MagnifyingGlassIcon className="join-item text-info h-5 w-5" />
+        <MagnifyingGlassIcon className="join-item text-primary h-5 w-5" />
         <input
           name="billSearch"
           id="billSearch"
@@ -84,13 +84,13 @@ const SearchBillForm: FC<SearchFormProps> = ({ onSearch, searchResults, onRowCli
       <select
         name="selectBill"
         aria-label="Search-bill"
-        className="join-item select select-bordered select-primary select-sm"
+        className="join-item select select-bordered select-primary select-sm lg:min-w-28"
       >
         <option value={'bill'}>Bill No</option>
         <option value={'mobile'}>Mobile</option>
       </select>
       <span className="dropdown dropdown-end dropdown-bottom w-fit">
-        <button tabIndex={0} role="button" className="btn btn-primary btn-sm rounded-l-none">
+        <button tabIndex={0} role="button" className="btn btn-primary btn-sm rounded-r-full">
           <MagnifyingGlassIcon className="join-item h-5 w-5" />
         </button>
         {searchResults && (

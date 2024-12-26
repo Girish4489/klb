@@ -319,7 +319,7 @@ export default function BillPage(): JSX.Element {
   }
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] flex-col gap-2">
+    <div className="flex h-[calc(100vh-4rem)] flex-col gap-2 px-2">
       {/* Header Area */}
       <div className="flex flex-col space-y-2">
         {/* Top Bar with New/Search */}
@@ -366,7 +366,7 @@ export default function BillPage(): JSX.Element {
       {bill && (
         <div className="flex flex-1 flex-col space-y-2">
           {/* Add/Remove Order Controls */}
-          <div className="bg-base-200 rounded-lg p-2">
+          <div className="rounded-lg py-1">
             <IncreaseDecreaseSection
               bill={bill}
               handleNewOrder={handleNewOrder}
@@ -375,10 +375,10 @@ export default function BillPage(): JSX.Element {
           </div>
 
           {/* Orders and Tracking Area */}
-          <div className="grid flex-1 grid-cols-[1fr_auto] gap-2 px-1">
+          <div className="grid flex-1 grid-cols-[1fr_auto] gap-2">
             {/* Left: Orders Section */}
-            <div className="bg-base-300 flex flex-col gap-1 rounded-lg">
-              <div className="bg-base-100 flex-1 overflow-y-auto p-1">
+            <div className="flex flex-col gap-1 rounded-lg">
+              <div className="flex-1 overflow-y-auto p-1">
                 {/* Orders Content */}
                 <div className="space-y-2">
                   {bill?.order?.map((order, orderIndex) => (
@@ -409,12 +409,12 @@ export default function BillPage(): JSX.Element {
             </div>
 
             {/* Right: Items Track */}
-            <div className="bg-base-100 w-80 rounded-lg">
+            <div className="w-80 rounded-lg">
               <ItemsTrack bill={bill} />
             </div>
           </div>
 
-          {/* Bottom Tables */}
+          {/* Bottom Tables out of view */}
           <div className="bg-base-100 grid grid-rows-2 gap-2 px-0.5">
             <BillTable caption="Today's Bills" bills={formattedTodayBill as unknown as IBill[]} />
             <BillTable caption="This Week's Bills" bills={formattedThisWeekBill as unknown as IBill[]} />

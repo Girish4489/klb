@@ -97,8 +97,8 @@ const CheckboxInput: React.FC<CheckboxInputFieldProps> = ({
   labelClass,
   checkboxClass,
 }) => (
-  <div className={`rounded-box flex select-none items-center max-sm:w-full max-sm:justify-between ${className}`}>
-    <label htmlFor={id} className={`btn btn-sm flex h-full items-center gap-2 ${labelClass}`}>
+  <div className={`max-sm:w-full max-sm:justify-between ${className}`}>
+    <label htmlFor={id} className={`fieldset-label btn btn-sm ${labelClass}`}>
       {label}
       <input
         type="checkbox"

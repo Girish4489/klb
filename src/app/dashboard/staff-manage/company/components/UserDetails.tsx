@@ -383,14 +383,14 @@ const UserDetails: FC<UserDetailsProps> = ({ users }) => {
                   {companyUser.companyAccess.accessLevels.map((level, index) => (
                     <div
                       key={index}
-                      className="badge badge-primary badge-outline flex h-full justify-between gap-2 px-2 py-0.5"
+                      className="badge badge-primary badge-outline flex h-full justify-between gap-2 px-2 py-1"
                     >
                       <p className="px-2">
                         {level.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/^./, (str) => str.toUpperCase())}
                       </p>
                       {editingUser === companyUser.email && (
                         <button
-                          className="btn btn-error btn-sm py-0.5"
+                          className="btn btn-error btn-xs"
                           onClick={() => handleDeleteAccessLevel(companyUser.email, level)}
                           disabled={editingUser !== companyUser.email}
                         >

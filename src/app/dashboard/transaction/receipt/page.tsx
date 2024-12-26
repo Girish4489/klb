@@ -293,6 +293,10 @@ export default function ReceiptPage(): JSX.Element {
       const inputValue = parseInt((event.target as HTMLFormElement).billSearch.value);
       const typeBillOrMobile = (event.target as HTMLFormElement).selectBill.value;
 
+      if (!inputValue || typeBillOrMobile) {
+        throw new Error('Please provide valid details');
+      }
+
       const res = await ApiGet.Bill.BillSearch<BillSearchResponse>(inputValue, typeBillOrMobile);
 
       if (!res) {
