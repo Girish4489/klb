@@ -325,12 +325,12 @@ export default function BillPage(): JSX.Element {
         <div className="flex flex-col space-y-2">
           {/* Top Bar with New/Search */}
           <div className="bg-base-200 rounded-lg p-2 shadow-sm">
-            <div className="flex items-center justify-between">
-              <button className="btn btn-primary btn-sm" onClick={createNewBill}>
+            <div className="flex flex-wrap-reverse items-center justify-between gap-2">
+              <button className="btn btn-primary btn-sm max-sm:w-full" onClick={createNewBill}>
                 <PlusCircleIcon className="h-5 w-5" />
                 New Bill
               </button>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap-reverse justify-between gap-2">
                 <BarcodeScannerPage
                   onScanComplete={setBarcode}
                   scannerId="billHeaderScanner"
@@ -412,9 +412,11 @@ export default function BillPage(): JSX.Element {
               </div>
 
               {/* Right: Items Track */}
-              <div className="w-full rounded-lg lg:w-80">
-                <ItemsTrack bill={bill} />
-              </div>
+              {bill.order?.length > 0 && (
+                <div className="w-full rounded-lg lg:w-80">
+                  <ItemsTrack bill={bill} />
+                </div>
+              )}
             </div>
           </div>
         )}

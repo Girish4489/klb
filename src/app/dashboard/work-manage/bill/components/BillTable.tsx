@@ -25,10 +25,10 @@ const BillTable: React.FC<BillTableProps> = ({ caption, bills }) => {
           </tbody>
         ) : (
           <>
-            <thead>
-              <tr className="bg-base-300 text-base-content text-center">
+            <thead className="">
+              <tr className="bg-base-300 text-base-content z-0 text-center">
                 <th>Slno</th>
-                <th>BillNumber</th>
+                <th>Bill No</th>
                 <th>Mobile</th>
                 <th>Date</th>
                 <th>Due Date</th>
@@ -46,7 +46,7 @@ const BillTable: React.FC<BillTableProps> = ({ caption, bills }) => {
                   <td>{bill?.dueDate ? formatD(bill?.dueDate) : ''}</td>
                   <td className="font-bold">
                     {bill?.urgent && <span className={'badge badge-error'}>U</span>}
-                    {bill?.urgent && bill.trail && <span> | </span>}
+                    {bill?.urgent && bill.trail && <span className="max-sm:divider max-sm:my-0 lg:p-1" />}
                     {bill?.trail && <span className={'badge badge-success'}>T</span>}
                   </td>
                   <td>

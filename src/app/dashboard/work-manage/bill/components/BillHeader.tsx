@@ -18,8 +18,8 @@ const BillHeader: React.FC<BillHeaderProps> = ({ bill, setBill }) => {
         readOnly
         onChange={() => {}}
         autoComplete="off"
-        className="min-w-10"
-        labelClass="input-primary"
+        className="min-w-10 max-sm:grow"
+        labelClass="input-primary max-sm:grow"
         inputClass="grow"
       />
       <InputField
@@ -30,8 +30,8 @@ const BillHeader: React.FC<BillHeaderProps> = ({ bill, setBill }) => {
         onChange={(e) =>
           setBill((prevBill) => (prevBill ? ({ ...prevBill, date: new Date(e.target.value) } as IBill) : prevBill))
         }
-        className="min-w-16"
-        labelClass="input-primary"
+        className="min-w-16 max-sm:grow"
+        labelClass="input-primary max-sm:grow"
         dateClass="grow"
       />
       <InputField
@@ -42,8 +42,8 @@ const BillHeader: React.FC<BillHeaderProps> = ({ bill, setBill }) => {
         onChange={(e) =>
           setBill((prevBill) => (prevBill ? ({ ...prevBill, dueDate: new Date(e.target.value) } as IBill) : prevBill))
         }
-        className="min-w-16"
-        labelClass="input-primary"
+        className="min-w-16 max-sm:grow"
+        labelClass="input-primary max-sm:grow"
         dateClass="grow"
       />
       <InputField
@@ -62,8 +62,8 @@ const BillHeader: React.FC<BillHeaderProps> = ({ bill, setBill }) => {
               : prevBill,
           )
         }
-        className=""
-        labelClass="input-primary"
+        className="max-sm:grow"
+        labelClass="input-primary max-sm:grow"
         inputClass="grow"
       />
       <InputField
@@ -76,8 +76,8 @@ const BillHeader: React.FC<BillHeaderProps> = ({ bill, setBill }) => {
         onChange={(e) =>
           setBill((prevBill) => (prevBill ? ({ ...prevBill, name: e.target.value } as IBill) : prevBill))
         }
-        className="min-w-16"
-        labelClass="input-primary"
+        className="min-w-16 max-sm:grow"
+        labelClass="input-primary max-sm:grow"
         inputClass="grow"
       />
       <InputField
@@ -90,8 +90,8 @@ const BillHeader: React.FC<BillHeaderProps> = ({ bill, setBill }) => {
         onChange={(e) =>
           setBill((prevBill) => (prevBill ? ({ ...prevBill, email: e.target.value } as IBill) : prevBill))
         }
-        className="min-w-16"
-        labelClass="input-primary"
+        className="min-w-16 max-sm:grow"
+        labelClass="input-primary max-sm:grow"
         inputClass="grow"
       />
       <InputField
@@ -105,8 +105,8 @@ const BillHeader: React.FC<BillHeaderProps> = ({ bill, setBill }) => {
           )
         }
         className="min-w-16"
-        labelClass="btn-neutral"
-        checkboxClass="checkbox-primary grow"
+        labelClass="btn-neutral flex max-sm:justify-between"
+        checkboxClass="checkbox-primary lg:grow"
       />
       <InputField
         label="Trail"
@@ -119,8 +119,8 @@ const BillHeader: React.FC<BillHeaderProps> = ({ bill, setBill }) => {
           )
         }
         className="min-w-16"
-        labelClass="btn-neutral"
-        checkboxClass="checkbox-primary grow"
+        labelClass="btn-neutral flex max-sm:justify-between"
+        checkboxClass="checkbox-primary lg:grow"
       />
     </div>
   );
