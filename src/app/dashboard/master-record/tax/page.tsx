@@ -1,4 +1,5 @@
 'use client';
+import { Modal } from '@/app/components/Modal/Modal';
 import { PlusCircleIcon } from '@heroicons/react/24/outline';
 import { CloudArrowUpIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { ITax } from '@models/klm';
@@ -23,21 +24,18 @@ interface InputFieldProps {
 }
 
 const InputField: React.FC<InputFieldProps> = ({ label, id, type = 'text', value, placeholder, onChange }) => (
-  <div className="flex grow flex-wrap items-center gap-1 max-sm:justify-between">
-    <label htmlFor={id} className="input input-sm input-primary flex grow items-center gap-2 max-sm:text-nowrap">
-      {label}:
-      <input
-        type={type}
-        id={id}
-        name={id}
-        value={value}
-        placeholder={placeholder}
-        onChange={onChange}
-        className="grow"
-        autoComplete="off"
-      />
-    </label>
-  </div>
+  <label htmlFor={id} className="input input-sm input-primary flex grow items-center gap-2 max-sm:text-nowrap">
+    {label}:
+    <input
+      type={type}
+      id={id}
+      name={id}
+      value={value}
+      placeholder={placeholder}
+      onChange={onChange}
+      autoComplete="off"
+    />
+  </label>
 );
 
 interface SelectFieldProps {
@@ -49,24 +47,16 @@ interface SelectFieldProps {
 }
 
 const SelectField: React.FC<SelectFieldProps> = ({ label, id, options, value, onChange }) => (
-  <div className="flex grow flex-wrap items-center gap-1 max-sm:justify-between max-sm:text-nowrap">
-    <label htmlFor={id} className="max-sm:text-nowrap">
-      {label}
-    </label>
-    <select
-      id={id}
-      name={id}
-      value={value}
-      onChange={onChange}
-      className="select select-bordered select-primary select-sm grow"
-    >
+  <label htmlFor={id} className="select select-bordered select-primary select-sm grow">
+    <span className="label text-nowrap">{label}</span>
+    <select id={id} name={id} value={value} onChange={onChange}>
       {options.map((option) => (
         <option key={option} value={option}>
           {option}
         </option>
       ))}
     </select>
-  </div>
+  </label>
 );
 
 export default function TaxPage(): JSX.Element {
@@ -140,6 +130,7 @@ export default function TaxPage(): JSX.Element {
       const confirmed = await userConfirmation({
         header: 'Confirm Deletion',
         message: 'Are you sure you want to delete this tax?',
+        type: 'error',
       });
       if (!confirmed) return;
 
@@ -198,84 +189,69 @@ export default function TaxPage(): JSX.Element {
   };
 
   return (
-    <div className="flex flex-col gap-2">
-      <h1 className="text-center font-bold">Tax</h1>
-      <div className="rounded-box bg-base-200 flex flex-col flex-wrap gap-1 p-2">
-        <h3 className="text-center font-medium">Add Tax</h3>
-        <form onSubmit={saveTax} className="flex flex-wrap gap-2">
+    <div className="flex flex-col gap-2 px-1">
+      <h1 className="badge badge-soft badge-success self-center text-center font-bold">Tax</h1>
+      <form onSubmit={saveTax} className="rounded-box bg-base-200 flex flex-wrap gap-2 px-2 py-3">
+        <InputField
+          label="Tax Name"
+          id="taxName"
+          value={formData.taxName}
+          placeholder="Enter tax name"
+          onChange={handleInputChange}
+        />
+        <SelectField
+          label="Tax Type"
+          id="taxType"
+          options={['Percentage', 'Fixed']}
+          value={formData.taxType}
+          onChange={handleInputChange}
+        />
+        <InputField
+          label={formData.taxType === 'Percentage' ? 'Tax Percentage' : 'Tax Fixed'}
+          id="taxPercentage"
+          type="number"
+          value={formData.taxPercentage}
+          placeholder={formData.taxType === 'Percentage' ? 'Enter tax percentage' : 'Enter tax fixed amount'}
+          onChange={handleInputChange}
+        />
+        <button className="btn btn-primary btn-sm grow">
+          <PlusCircleIcon className="h-5 w-5" />
+          Add
+        </button>
+      </form>
+      <Modal id="taxEdit_modal" isBackdrop={true}>
+        <h3 className="text-center text-lg font-bold">Edit Tax</h3>
+        <form onSubmit={handleEdit} className="m-2 flex flex-wrap gap-2 p-2">
           <InputField
             label="Tax Name"
             id="taxName"
-            value={formData.taxName}
+            value={editFormData.taxName}
             placeholder="Enter tax name"
-            onChange={handleInputChange}
+            onChange={handleEditInputChange}
           />
           <SelectField
             label="Tax Type"
             id="taxType"
             options={['Percentage', 'Fixed']}
-            value={formData.taxType}
-            onChange={handleInputChange}
+            value={editFormData.taxType}
+            onChange={handleEditInputChange}
           />
           <InputField
-            label={formData.taxType === 'Percentage' ? 'Tax Percentage' : 'Tax Fixed'}
+            label={editFormData.taxType === 'Percentage' ? 'Tax Percentage' : 'Tax Fixed'}
             id="taxPercentage"
             type="number"
-            value={formData.taxPercentage}
-            placeholder={formData.taxType === 'Percentage' ? 'Enter tax percentage' : 'Enter tax fixed amount'}
-            onChange={handleInputChange}
+            value={editFormData.taxPercentage}
+            placeholder={editFormData.taxType === 'Percentage' ? 'Enter tax percentage' : 'Enter tax fixed amount'}
+            onChange={handleEditInputChange}
           />
-          <div className="flex grow flex-wrap items-center gap-1 pr-3 max-sm:justify-end">
-            <button className="btn btn-primary btn-sm grow">
-              <PlusCircleIcon className="h-5 w-5" />
-              Add
-            </button>
-          </div>
+          <button type="submit" className="btn btn-primary btn-sm w-full grow">
+            <CloudArrowUpIcon className="h-5 w-5" />
+            Update
+          </button>
         </form>
-      </div>
-      <dialog id="taxEdit_modal" className="modal">
-        <div className="modal-box">
-          <h3 className="text-center text-lg font-bold">Edit Tax</h3>
-          <form onSubmit={handleEdit} className="form-control m-2 flex-wrap gap-2 p-2">
-            <InputField
-              label="Tax Name"
-              id="taxName"
-              value={editFormData.taxName}
-              placeholder="Enter tax name"
-              onChange={handleEditInputChange}
-            />
-            <SelectField
-              label="Tax Type"
-              id="taxType"
-              options={['Percentage', 'Fixed']}
-              value={editFormData.taxType}
-              onChange={handleEditInputChange}
-            />
-            <InputField
-              label={editFormData.taxType === 'Percentage' ? 'Tax Percentage' : 'Tax Fixed'}
-              id="taxPercentage"
-              type="number"
-              value={editFormData.taxPercentage}
-              placeholder={editFormData.taxType === 'Percentage' ? 'Enter tax percentage' : 'Enter tax fixed amount'}
-              onChange={handleEditInputChange}
-            />
-            <div className="flex w-full flex-wrap items-center justify-center gap-1">
-              <button type="submit" className="btn btn-primary btn-sm grow">
-                <CloudArrowUpIcon className="h-5 w-5" />
-                Update
-              </button>
-            </div>
-          </form>
-          <div className="modal-action">
-            <form method="dialog">
-              <button className="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">✕</button>
-              <button className="btn btn-sm">Close</button>
-            </form>
-          </div>
-        </div>
-      </dialog>
-      <div className="flex table w-full shrink flex-col">
-        <div className="rounded-box border-base-300 table-row overflow-auto border max-sm:max-w-sm">
+      </Modal>
+      <div className="flex w-full flex-col">
+        <div className="rounded-box border-base-300 overflow-auto border">
           <table className="table-zebra table-pin-rows table">
             <caption className="table-caption text-center font-bold">Taxes</caption>
             {taxes.length === 0 ? (
@@ -305,10 +281,7 @@ export default function TaxPage(): JSX.Element {
                       <td>{tax.taxType}</td>
                       <td>{tax.taxPercentage}</td>
                       <td className="flex items-center justify-center gap-1 max-sm:flex-col">
-                        <button
-                          className="btn btn-warning btn-sm"
-                          onClick={() => openEditDialog(tax, tax._id.toString())}
-                        >
+                        <button className="btn btn-info btn-sm" onClick={() => openEditDialog(tax, tax._id.toString())}>
                           <PencilSquareIcon className="h-4 w-4" />
                           Edit
                         </button>
