@@ -84,8 +84,8 @@ importers:
         specifier: 15.0.2
         version: 15.0.2
       '@next/eslint-plugin-next':
-        specifier: ^15.1.2
-        version: 15.1.2
+        specifier: ^15.1.3
+        version: 15.1.3
       '@tailwindcss/postcss':
         specifier: 4.0.0-beta.8
         version: 4.0.0-beta.8
@@ -117,8 +117,8 @@ importers:
         specifier: ^8.18.2
         version: 8.18.2(eslint@9.17.0(jiti@2.4.2))(typescript@5.4.2)
       daisyui:
-        specifier: 5.0.0-alpha.56
-        version: 5.0.0-alpha.56
+        specifier: 5.0.0-alpha.58
+        version: 5.0.0-alpha.58
       eslint:
         specifier: ^9.17.0
         version: 9.17.0(jiti@2.4.2)
@@ -132,8 +132,8 @@ importers:
         specifier: ^9.1.7
         version: 9.1.7
       lint-staged:
-        specifier: ^15.2.11
-        version: 15.2.11
+        specifier: ^15.3.0
+        version: 15.3.0
       postcss:
         specifier: ^8.4.49
         version: 8.4.49
@@ -381,9 +381,9 @@ packages:
     resolution:
       { integrity: sha512-t9Xy32pjNOvVn2AS+Utt6VmyrshbpfUMhIjFO60gI58deSo/KgLOp31XZ4O+kY/Is8WAGYwA5gR7kOb1eORDBA== }
 
-  '@next/eslint-plugin-next@15.1.2':
+  '@next/eslint-plugin-next@15.1.3':
     resolution:
-      { integrity: sha512-sgfw3+WdaYOGPKCvM1L+UucBmRfh8V2Ygefp7ELON0+0vY7uohQwXXnVWg3rY7mXDKharQR3o7uedpfvnU2hlQ== }
+      { integrity: sha512-oeP1vnc5Cq9UoOb8SYHAEPbCXMzOgG70l+Zfd+Ie00R25FOm+CCVNrcIubJvB1tvBgakXE37MmqSycksXVPRqg== }
 
   '@next/swc-darwin-arm64@15.0.3':
     resolution:
@@ -844,9 +844,9 @@ packages:
       { integrity: sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA== }
     engines: { node: '>=10' }
 
-  chalk@5.3.0:
+  chalk@5.4.1:
     resolution:
-      { integrity: sha512-dLitG79d+GV1Nb/VYcCDFivJeK1hiukt9QjRNVOsUtTy1rR1YJsmpGGTZ3qJos+uw7WmWF4wUwBd9jxjocFC2w== }
+      { integrity: sha512-zgVZuo2WcZgfUEmsn6eO3kINexW8RAE4maiQ8QNs8CtpPCSyMiYsULR3HQYkm3w8FIA3SberyMJMSldGsW+U3w== }
     engines: { node: ^12.17.0 || ^14.13 || >=16.0.0 }
 
   chart.js@4.4.7:
@@ -921,9 +921,9 @@ packages:
     resolution:
       { integrity: sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw== }
 
-  daisyui@5.0.0-alpha.56:
+  daisyui@5.0.0-alpha.58:
     resolution:
-      { integrity: sha512-HZOHoIN48FwjvZH+b/dNnjzLe9llxcTjTHJYjXH7DA4sTnh73TmSebw4IkUM0cvJeWv8eZ6KwWoAGO7TiuW53g== }
+      { integrity: sha512-Ort973WlOMlSDgltV0RjZ28guzkCC7Muwzqh5mgYx5ITWqj0cT1OJjYnLRSAweCiWTMi/RCRHpH+HXXe0ZMg5A== }
 
   debug@4.4.0:
     resolution:
@@ -1377,9 +1377,9 @@ packages:
       { integrity: sha512-/vlFKAoH5Cgt3Ie+JLhRbwOsCQePABiU3tJ1egGvyQ+33R/vcwM2Zl2QR/LzjsBeItPt3oSVXapn+m4nQDvpzw== }
     engines: { node: '>=14' }
 
-  lint-staged@15.2.11:
+  lint-staged@15.3.0:
     resolution:
-      { integrity: sha512-Ev6ivCTYRTGs9ychvpVw35m/bcNDuBN+mnTeObCL5h+boS5WzBEC6LHI4I9F/++sZm1m+J2LEiy0gxL/R9TBqQ== }
+      { integrity: sha512-vHFahytLoF2enJklgtOtCtIjZrKD/LoxlaUusd5nh7dWv/dkKQJY74ndFSzxCdv7g0ueGg1ORgTSt4Y9LPZn9A== }
     engines: { node: '>=18.12.0' }
     hasBin: true
 
@@ -2158,7 +2158,7 @@ snapshots:
 
   '@next/env@15.0.3': {}
 
-  '@next/eslint-plugin-next@15.1.2':
+  '@next/eslint-plugin-next@15.1.3':
     dependencies:
       fast-glob: 3.3.1
 
@@ -2495,7 +2495,7 @@ snapshots:
       ansi-styles: 4.3.0
       supports-color: 7.2.0
 
-  chalk@5.3.0: {}
+  chalk@5.4.1: {}
 
   chart.js@4.4.7:
     dependencies:
@@ -2554,7 +2554,7 @@ snapshots:
 
   csstype@3.1.3: {}
 
-  daisyui@5.0.0-alpha.56: {}
+  daisyui@5.0.0-alpha.58: {}
 
   debug@4.4.0:
     dependencies:
@@ -2886,9 +2886,9 @@ snapshots:
 
   lilconfig@3.1.3: {}
 
-  lint-staged@15.2.11:
+  lint-staged@15.3.0:
     dependencies:
-      chalk: 5.3.0
+      chalk: 5.4.1
       commander: 12.1.0
       debug: 4.4.0
       execa: 8.0.1
