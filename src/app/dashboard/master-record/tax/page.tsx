@@ -269,7 +269,7 @@ export default function TaxPage(): JSX.Element {
                     <th>Sn</th>
                     <th>Tax Name</th>
                     <th>Tax Type</th>
-                    <th>Tax Percentage</th>
+                    <th>Value</th>
                     <th>Action</th>
                   </tr>
                 </thead>
