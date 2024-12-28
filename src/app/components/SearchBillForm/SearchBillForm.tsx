@@ -1,7 +1,7 @@
-import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
+import { CalendarIcon, CurrencyRupeeIcon, MagnifyingGlassIcon, PhoneIcon, UserIcon } from '@heroicons/react/24/solid';
 import { IBill } from '@models/klm';
 import { formatD } from '@utils/format/dateUtils';
-import { FC, FormEvent, JSX } from 'react';
+import { FC, FormEvent, JSX, useRef } from 'react';
 
 interface SearchFormProps {
   onSearch: (event: FormEvent<HTMLFormElement>) => void;
@@ -10,63 +10,72 @@ interface SearchFormProps {
 }
 
 const SearchBillForm: FC<SearchFormProps> = ({ onSearch, searchResults, onRowClick }) => {
-  const renderSearchBillDropdown = (bills: IBill[]): JSX.Element => (
-    <div
-      className={`card-body rounded-box border-base-300 bg-base-100 ring-primary m-0 max-h-96 w-full overflow-x-auto border-2 p-1 ring-1 ${
-        bills.length === 0 && 'min-h-24 min-w-24 max-w-24'
-      }`}
-    >
-      <table className="table-zebra table-pin-rows rounded-box bg-base-200 table w-full">
-        <caption className="rounded-t-box bg-neutral p-1 font-bold">Bills</caption>
-        <thead>
-          <tr className="rounded-t-box bg-base-300 text-center">
-            <th>Slno</th>
-            <th>Bill No</th>
-            <th>Mobile</th>
-            <th>Date</th>
-            <th>Due Date</th>
-            <th>U|T</th>
-            <th>Total</th>
-            {/* <th>Grand</th> */}
-            <th>Bill by</th>
-          </tr>
-        </thead>
-        <tbody>
-          {bills.length === 0 ? (
-            <tr>
-              <td colSpan={8} className="text-warning">
-                No bills
-              </td>
-            </tr>
-          ) : (
-            bills.map((bill, index) => (
-              <tr
-                key={index}
-                className="hover text-center hover:cursor-pointer"
-                onClick={onRowClick(bill._id.toString())}
-              >
-                <td>{index + 1}</td>
-                <td>{bill.billNumber}</td>
-                <td>{bill.mobile}</td>
-                <td>{bill.date ? formatD(bill.date) : ''}</td>
-                <td>{bill.dueDate ? formatD(bill.dueDate) : ''}</td>
-                <td className="w-fit items-center font-bold">
-                  {bill.urgent && <span className="text-error">U</span>}
-                  {bill.urgent && bill.trail && <span>|</span>}
-                  {bill.trail && <span className="text-success">T</span>}
-                </td>
-                <td>{bill.totalAmount}</td>
-                <td>{bill.billBy?.name}</td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-    </div>
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const handleSearch = (e: React.MouseEvent<HTMLButtonElement>): void => {
+    e.preventDefault();
+    if (formRef.current) {
+      const event = new SubmitEvent('submit', {
+        bubbles: true,
+        cancelable: true,
+      });
+      Object.defineProperty(event, 'target', { value: formRef.current });
+      onSearch(event as unknown as FormEvent<HTMLFormElement>);
+    }
+  };
+
+  const renderSearchList = (bills: IBill[]): JSX.Element => (
+    <ul className="bg-base-200 rounded-box ring-primary flex max-h-[80vh] w-96 flex-col overflow-y-auto p-2 ring">
+      <li className="p-4 pb-2 text-center text-xs tracking-wide opacity-60">Search Results</li>
+      <div className="divider my-0"></div>
+      {bills.length === 0 ? (
+        <li className="text-warning list-row">No bills found</li>
+      ) : (
+        bills.map((bill, index) => (
+          <li key={bill._id.toString()}>
+            {index > 0 && <div className="divider my-0"></div>}
+            <div
+              className="hover:bg-neutral rounded-selector grid items-center gap-y-1 p-2 hover:cursor-pointer"
+              onClick={onRowClick(bill._id.toString())}
+            >
+              <div className="row-span-4 items-center bg-opacity-60 text-center text-4xl font-thin tabular-nums">
+                {bill.billNumber}
+              </div>
+              <div className="badge badge-secondary badge-soft col-start-2 w-full bg-opacity-70 text-sm">
+                <PhoneIcon className="h-4 w-4" />
+                {bill.mobile}
+              </div>
+              <div className="col-start-3 flex grow items-center justify-center gap-1">
+                {bill.urgent && <div className="badge badge-error badge-sm">U</div>}
+                {bill.trail && <div className="badge badge-success badge-sm">T</div>}
+              </div>
+              <div className="badge badge-soft badge-secondary col-start-4 w-full text-sm">
+                <CurrencyRupeeIcon className="h-4 w-4" />
+                {bill.totalAmount}
+              </div>
+              <div className="badge badge-soft badge-secondary col-span-3 col-start-2 row-start-2 h-full w-full text-sm">
+                <CalendarIcon className="h-4 w-4" />
+                <span className="text-wrap">{bill.date ? formatD(bill.date) : '-'}</span>
+              </div>
+              <div className="badge badge-soft badge-secondary col-span-3 col-start-2 row-start-3 h-full w-full text-sm">
+                <CalendarIcon className="h-4 w-4" />
+                <span className="text-wrap">{bill.dueDate ? formatD(bill.dueDate) : '-'}</span>
+              </div>
+              {bill.billBy?._id && (
+                <div className="badge badge-soft badge-secondary col-span-3 col-start-2 row-start-4 text-sm">
+                  <UserIcon className="h-4 w-4" />
+                  {bill.billBy?.name}
+                </div>
+              )}
+            </div>
+          </li>
+        ))
+      )}
+    </ul>
   );
 
   return (
-    <form onSubmit={onSearch} className="join">
+    <form ref={formRef} className="join">
       <label
         htmlFor="billSearch"
         className="input input-sm join-item label-text input-bordered input-primary bg-accent/5 flex items-center gap-2 lg:rounded-l-full"
@@ -86,22 +95,31 @@ const SearchBillForm: FC<SearchFormProps> = ({ onSearch, searchResults, onRowCli
         aria-label="Search-bill"
         className="join-item select select-bordered select-primary select-sm lg:min-w-28"
       >
-        <option value={'bill'}>Bill No</option>
-        <option value={'mobile'}>Mobile</option>
+        <option value="bill">Bill No</option>
+        <option value="mobile">Mobile</option>
       </select>
-      <span className="dropdown dropdown-end dropdown-bottom w-fit">
-        <button tabIndex={0} role="button" className="btn btn-primary btn-sm rounded-r-full">
-          <MagnifyingGlassIcon className="join-item h-5 w-5" />
-        </button>
+      <div className="dropdown dropdown-open dropdown-end">
+        <div className="flex">
+          <button
+            type="button"
+            className="btn btn-primary btn-sm rounded-r-full"
+            onClick={handleSearch}
+            data-popover-target="search-results"
+          >
+            <MagnifyingGlassIcon className="join-item h-5 w-5" />
+          </button>
+        </div>
         {searchResults && (
           <div
-            tabIndex={0}
-            className="card dropdown-content card-compact bg-base-300 shadow-base-300 z-50 w-auto shadow-inner"
+            id="search-results"
+            className="dropdown-content z-[5] mt-2"
+            data-popover="search-results"
+            data-popover-placement="bottom-end"
           >
-            {renderSearchBillDropdown(searchResults)}
+            {renderSearchList(searchResults)}
           </div>
         )}
-      </span>
+      </div>
     </form>
   );
 };

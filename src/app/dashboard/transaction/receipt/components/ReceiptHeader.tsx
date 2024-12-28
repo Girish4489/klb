@@ -4,6 +4,7 @@ import TaxModal from '@dashboard/transaction/receipt/components/TaxModal';
 import { PlusCircleIcon } from '@heroicons/react/24/outline';
 import { IReceipt, IReceiptTax, ITax } from '@models/klm';
 import React from 'react';
+import toast from 'react-hot-toast';
 import AmountTracking from './AmountTracking';
 
 interface ReceiptHeaderProps {
@@ -33,7 +34,7 @@ const ReceiptHeader: React.FC<ReceiptHeaderProps> = ({ receipt, setReceipt, amtT
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex flex-row flex-wrap items-center gap-1 p-1">
+      <div className="flex flex-row flex-wrap items-center gap-2 p-1 max-sm:flex-col max-sm:*:w-full">
         <InputField
           label="Receipt No"
           id="receiptNo"
@@ -119,24 +120,8 @@ const ReceiptHeader: React.FC<ReceiptHeaderProps> = ({ receipt, setReceipt, amtT
           }}
           placeholder="Discount"
         />
-        <TaxModal taxList={tax ?? []} selectedTaxes={receipt?.tax ?? []} setReceipt={setReceipt} />
-        <div className="flex flex-row items-center justify-between gap-4 px-2">
-          <label htmlFor="taxOptions">
-            <button
-              className="btn btn-primary btn-sm text-nowrap"
-              name="taxOptions"
-              id="taxOptions"
-              onClick={() => (document.getElementById('receipt_tax_modal') as HTMLDialogElement)?.showModal()}
-            >
-              <PlusCircleIcon className="text-primary-content h-5 w-5" />
-              Add Tax
-            </button>
-          </label>
-        </div>
-        <div className="flex grow flex-row flex-wrap items-center max-sm:w-full max-sm:justify-between">
-          <label className="label label-text" htmlFor="paymentMethod">
-            Payment Method
-          </label>
+        <label className="select select-bordered select-primary select-sm grow" htmlFor="paymentMethod">
+          <span className="label text-nowrap">Payment Method</span>
           <select
             name="paymentMethod"
             id="paymentMethod"
@@ -144,7 +129,6 @@ const ReceiptHeader: React.FC<ReceiptHeaderProps> = ({ receipt, setReceipt, amtT
             onChange={(e) => {
               setReceipt({ ...receipt, paymentMethod: e.target.value } as IReceipt);
             }}
-            className="select select-bordered select-primary select-sm grow"
           >
             <option value="" disabled>
               Select
@@ -154,7 +138,21 @@ const ReceiptHeader: React.FC<ReceiptHeaderProps> = ({ receipt, setReceipt, amtT
             <option value="UPI">UPI</option>
             <option value="Card">Card</option>
           </select>
-        </div>
+        </label>
+        <TaxModal taxList={tax ?? []} selectedTaxes={receipt?.tax ?? []} setReceipt={setReceipt} />
+        <button
+          className="btn btn-primary btn-sm text-nowrap"
+          onClick={() => {
+            if (!tax?.length) {
+              toast.error('Please configure taxes before adding them to the receipt');
+              return;
+            }
+            (document.getElementById('receipt_tax_modal') as HTMLDialogElement)?.showModal();
+          }}
+        >
+          <PlusCircleIcon className="text-primary-content h-5 w-5" />
+          Add Tax
+        </button>
       </div>
 
       <AmountTracking

@@ -1,3 +1,4 @@
+import { Modal } from '@/app/components/Modal/Modal';
 import { IReceipt, IReceiptTax, ITax } from '@models/klm';
 import React from 'react';
 import toast from 'react-hot-toast';
@@ -28,26 +29,6 @@ const TaxModal: React.FC<TaxModalProps> = ({ taxList, selectedTaxes = [], setRec
     } as IReceipt; // Cast to IReceipt to maintain type safety
   };
 
-  const handleTaxChange = (tax: ITax, checked: boolean): void => {
-    setReceipt((prev) => {
-      if (!prev) return prev;
-
-      const updatedTaxes = checked
-        ? [
-            ...(prev.tax || []),
-            {
-              _id: tax._id,
-              taxName: tax.taxName,
-              taxType: tax.taxType as 'Percentage' | 'Fixed',
-              taxPercentage: tax.taxPercentage,
-            },
-          ]
-        : (prev.tax || []).filter((t) => t._id.toString() !== tax._id.toString());
-
-      return updateReceiptWithTaxes(prev, updatedTaxes);
-    });
-  };
-
   const handleRowClick = (taxId: string): void => {
     setReceipt((prev) => {
       if (!prev) return prev;
@@ -75,54 +56,42 @@ const TaxModal: React.FC<TaxModalProps> = ({ taxList, selectedTaxes = [], setRec
   };
 
   return (
-    <dialog id="receipt_tax_modal" className="modal">
-      <div className="modal-box">
-        <h3 className="text-center text-lg font-bold">Tax</h3>
-        <div className="tax-table">
-          <table className="table-zebra table">
-            <thead>
-              <tr className="text-center">
-                <th>Sn</th>
-                <th>Checkbox</th>
-                <th>Tax Name</th>
-                <th>Percentage/Amount</th>
+    <Modal id="receipt_tax_modal">
+      <div className="tax-table">
+        <table className="table-zebra rounded-box table">
+          <caption className="bg-neutral/5 table-caption">Tax</caption>
+          <thead>
+            <tr className="bg-neutral/20 text-center">
+              <th>Sn</th>
+              <th>Selected</th>
+              <th>Tax Name</th>
+              <th>Percentage/Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {taxList.map((tax, taxIndex) => (
+              <tr
+                key={tax._id.toString()}
+                className="hover hover:bg-neutral/10 cursor-pointer text-center"
+                onClick={() => handleRowClick(tax._id.toString())}
+              >
+                <td>{taxIndex + 1}</td>
+                <td>
+                  <input
+                    type="checkbox"
+                    className="checkbox-primary checkbox checkbox-sm"
+                    checked={selectedTaxes.some((t) => t._id === tax._id)}
+                    readOnly
+                  />
+                </td>
+                <td>{tax.taxName}</td>
+                <td>{tax.taxType === 'Percentage' ? `${tax.taxPercentage}%` : `${tax.taxPercentage}`}</td>
               </tr>
-            </thead>
-            <tbody>
-              {taxList.map((tax, taxIndex) => (
-                <tr
-                  key={tax._id.toString()}
-                  className="hover cursor-pointer text-center"
-                  onClick={() => handleRowClick(tax._id.toString())}
-                >
-                  <td>{taxIndex + 1}</td>
-                  <td>
-                    <label htmlFor={tax.taxName} className="flex items-center justify-center">
-                      <input
-                        type="checkbox"
-                        className="checkbox-primary checkbox checkbox-sm"
-                        name={tax.taxName}
-                        id={tax.taxName}
-                        checked={selectedTaxes.some((t) => t._id === tax._id)}
-                        onChange={(e) => handleTaxChange(tax, e.target.checked)}
-                      />
-                    </label>
-                  </td>
-                  <td>{tax.taxName}</td>
-                  <td>{tax.taxType === 'Percentage' ? `${tax.taxPercentage}%` : `${tax.taxPercentage}`}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div className="modal-action">
-          <form method="dialog">
-            <button className="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">✕</button>
-            <button className="btn btn-sm">Close</button>
-          </form>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </div>
-    </dialog>
+    </Modal>
   );
 };
 

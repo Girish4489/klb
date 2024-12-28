@@ -3,13 +3,13 @@ import React from 'react';
 interface InputFieldProps {
   label: string;
   id: string;
-  type?: string;
   value: string;
+  type?: string;
   placeholder?: string;
   inputClassName?: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   required?: boolean;
   readOnly?: boolean;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -23,23 +23,21 @@ const InputField: React.FC<InputFieldProps> = ({
   required = false,
   readOnly = false,
 }) => (
-  <div className="flex grow flex-wrap items-center gap-1 max-sm:justify-between">
-    <label htmlFor={id} className="input input-sm input-primary flex grow items-center gap-2 max-sm:text-nowrap">
-      {label}:
-      <input
-        type={type}
-        id={id}
-        name={id}
-        value={value}
-        placeholder={placeholder}
-        className={`grow ${inputClassName}`}
-        onChange={onChange}
-        autoComplete="off"
-        required={required}
-        readOnly={readOnly}
-      />
-    </label>
-  </div>
+  <label htmlFor={id} className="input input-sm input-primary max-sm:text-nowrap">
+    <span className="label">{label}</span>
+    <input
+      type={type}
+      id={id}
+      name={id}
+      value={value}
+      placeholder={placeholder}
+      className={`${inputClassName}`}
+      onChange={onChange}
+      autoComplete="off"
+      required={required}
+      readOnly={readOnly}
+    />
+  </label>
 );
 
 export default InputField;
