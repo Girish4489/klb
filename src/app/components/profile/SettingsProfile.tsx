@@ -143,7 +143,10 @@ export default function SettingsProfile({
         <>
           <div className="avatar indicator card-side lg:pt-4">
             <span className="badge indicator-item badge-secondary select-none lg:mt-4">edit..</span>
-            <div className="ring-3 ring-primary hover:ring-offset-accent h-24 w-24 rounded-full hover:scale-105  hover:ring-offset-2">
+            <div
+              id="settingsProfile"
+              className="ring-3 ring-primary hover:ring-offset-accent h-24 w-24 rounded-full hover:scale-105  hover:ring-offset-2"
+            >
               <Image
                 src={getProfileImageSrc(user.profileImage)}
                 alt="Profile picture"

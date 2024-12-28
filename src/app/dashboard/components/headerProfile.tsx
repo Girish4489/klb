@@ -5,7 +5,6 @@ import {
   Cog6ToothIcon,
   EnvelopeIcon,
   ExclamationCircleIcon,
-  PencilSquareIcon,
   SwatchIcon,
   UserCircleIcon,
   UserIcon,
@@ -66,7 +65,10 @@ const HeaderProfilePage = ({ user, isLoading }: { user: IUser | null; isLoading:
           className="menu dropdown-content menu-sm rounded-box bg-base-200 ring-primary z-50 w-auto gap-y-1 p-2 shadow-sm ring-1"
         >
           <span className="flex w-full justify-around">
-            <div className="ring-primary transform rounded-full ring-2 hover:scale-105">
+            <Link
+              href="/dashboard/settings#settingsProfile"
+              className="ring-primary transform rounded-full ring-2 hover:scale-105"
+            >
               <Image
                 src={profileImageSrc}
                 alt="profile image"
@@ -76,7 +78,7 @@ const HeaderProfilePage = ({ user, isLoading }: { user: IUser | null; isLoading:
                 style={{ imageRendering: 'auto' }}
                 priority
               />
-            </div>
+            </Link>
           </span>
           <ProfileItem
             icon={<UserIcon className="text-primary h-5 w-5" />}
@@ -106,20 +108,14 @@ const HeaderProfilePage = ({ user, isLoading }: { user: IUser | null; isLoading:
           <ProfileItem
             icon={<SwatchIcon className="text-primary h-5 w-5" />}
             label="Theme"
+            link="/dashboard/settings#themeBlock"
             liClass="grow w-full"
             tooltip="Theme"
           >
-            <Link
-              href="/dashboard/settings#themeBlock"
-              className="tooltip tooltip-top rounded-box bg-primary text-primary-content flex flex-row gap-2 pl-2 pr-1 font-medium"
-              data-tip="edit theme"
-            >
+            <span className="badge badge-soft badge-secondary badge-sm">
               {(user.preferences?.theme ?? 'default').charAt(0).toUpperCase() +
                 (user.preferences?.theme ?? 'default').slice(1)}
-              <span className="badge badge-secondary">
-                <PencilSquareIcon className="h-5 w-5" />
-              </span>
-            </Link>
+            </span>
           </ProfileItem>
           <ProfileItem
             icon={<Cog6ToothIcon className="text-primary h-5 w-5" />}
@@ -160,28 +156,31 @@ const ProfileItem = ({
 }): JSX.Element => (
   <li className={`tooltip tooltip-left ${liClass}`} data-tip={tooltip}>
     {link && enable ? (
-      <Link href={link as Route} className={`flex items-center`}>
-        {icon}
-        <span className="justify-between">
+      <Link href={link as Route} className="flex w-full items-center justify-between gap-2">
+        <span className="flex items-center gap-2">
+          {icon}
           {label}
-          {children}
         </span>
+        {children}
       </Link>
     ) : link ? (
-      <div className="flex cursor-pointer items-center" onClick={() => toast.error('Need to have company access')}>
-        {icon}
-        <span className="flex grow justify-between">
+      <div
+        className="flex w-full cursor-pointer items-center justify-between gap-2"
+        onClick={() => toast.error('Need to have company access')}
+      >
+        <span className="flex items-center gap-2">
+          {icon}
           {label}
-          {children}
         </span>
+        {children}
       </div>
     ) : (
-      <div className="flex items-center">
-        {icon}
-        <span className="flex grow justify-between">
+      <div className="flex w-full items-center justify-between gap-2">
+        <span className="flex items-center gap-2">
+          {icon}
           {label}
-          {children}
         </span>
+        {children}
       </div>
     )}
   </li>

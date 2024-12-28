@@ -1,6 +1,7 @@
 'use client';
 import navigationData, { NavItem, SubNavItem } from '@data/navigationData';
-import { Cog6ToothIcon, HomeIcon } from '@heroicons/react/24/solid';
+import { Cog6ToothIcon, HomeIcon } from '@heroicons/react/24/outline';
+import { Cog6ToothIcon as Cog6ToothIconSolid, HomeIcon as HomeIconSolid } from '@heroicons/react/24/solid';
 import { Route } from 'next';
 
 import Link from 'next/link';
@@ -24,17 +25,22 @@ const SidebarLink = ({
   enable?: boolean;
 }): JSX.Element => (
   <div
-    className={`tooltip flex w-full flex-row p-0 ${isActive ? 'active' : ''} ${!enable ? 'cursor-pointer' : ''}`}
+    className={`tooltip tooltip-bottom rounded-box flex p-0 ${!enable ? 'cursor-pointer' : ''}`}
     data-tip={title}
     onClick={() => !enable && toast.error('Need to have company access')}
   >
     {enable ? (
-      <Link href={href as Route} className="flex grow items-center gap-1 px-4 py-1.5">
+      <Link
+        href={href as Route}
+        className={`rounded-box flex grow items-center gap-2 px-3 py-2 ${isActive ? 'active bg-neutral/60 font-medium' : ''}`}
+      >
         {icon && React.createElement(icon, { className: iconClass })}
         <span className="grow text-left">{title}</span>
       </Link>
     ) : (
-      <span className="flex grow items-center gap-1 px-4 py-1.5">
+      <span
+        className={`rounded-box flex grow items-center gap-1 px-4 py-2 ${isActive ? 'active bg-neutral/60 font-medium' : ''}`}
+      >
         {icon && React.createElement(icon, { className: iconClass })}
         <span className="grow text-left">{title}</span>
       </span>
@@ -63,7 +69,7 @@ const SidebarItem = ({
           {NavIcon && <NavIcon className={nav.iconClass} />}
           {nav.title}
         </summary>
-        <ul className="flex flex-col gap-px">
+        <ul className="flex flex-col gap-1">
           {nav.subNav.map((subNav: SubNavItem, index) => {
             const SubNavIcon = currentPathname === subNav.href ? subNav.iconSolid : subNav.iconOutline;
             return (
@@ -99,18 +105,23 @@ export default function SidebarPage({
 
   return (
     <React.Fragment>
-      <div className="bg-base-300 flex min-h-full flex-col pr-px">
-        <span className="bg-linear-to-t menu-title rounded-b-box from-base-100 via-base-300 to-base-200 sticky top-0 z-10 h-11 ring-1">
-          <h1 className="bg-linear-to-r from-primary via-secondary to-accent flex w-full select-none items-center justify-center bg-clip-text py-1 text-center text-base font-bold text-transparent">
+      <div className="bg-base-100 border-base-200 flex min-h-full w-72 flex-col border-r">
+        <div className="bg-base-100 sticky top-0 z-20 px-4 py-3 shadow-sm">
+          <h1 className="from-primary via-secondary to-accent bg-gradient-to-r bg-clip-text text-center text-xl font-bold text-transparent">
             Kalamandir
           </h1>
-        </span>
-        <ul className="bg-linear-to-tr menu menu-sm rounded-box rounded-b-box from-base-300 via-base-200 to-base-300 text-base-content ring-neutral xl:menu-vertical w-[216px] min-w-72 grow overflow-y-auto shadow-xl ring-1 lg:min-w-max">
+        </div>
+
+        <ul className="menu menu-md w-full flex-1 gap-1 px-2 py-3">
           <li>
-            <Link href="/dashboard" className={currentPathname === '/dashboard' ? 'active' : ''}>
-              <HomeIcon className="text-secondary h-5 w-5" />
-              Dashboard
-            </Link>
+            <SidebarLink
+              href="/dashboard"
+              title="Dashboard"
+              isActive={currentPathname === '/dashboard'}
+              icon={currentPathname === '/dashboard' ? HomeIconSolid : HomeIcon}
+              iconClass="text-secondary h-5 w-5"
+              enable={isCompanyMember}
+            />
           </li>
 
           {isCompanyMember &&
@@ -119,21 +130,14 @@ export default function SidebarPage({
             ))}
 
           <li>
-            {isCompanyMember ? (
-              <Link href="/dashboard/settings" className="tooltip flex max-sm:flex-row" data-tip="Settings">
-                <Cog6ToothIcon className="text-secondary h-5 w-5" />
-                Settings
-              </Link>
-            ) : (
-              <div
-                className="tooltip flex cursor-pointer max-sm:flex-row"
-                data-tip="Settings"
-                onClick={() => toast.error('Need to have company access')}
-              >
-                <Cog6ToothIcon className="text-secondary h-5 w-5" />
-                Settings
-              </div>
-            )}
+            <SidebarLink
+              href="/dashboard/settings"
+              title="Settings"
+              isActive={currentPathname === '/dashboard/settings'}
+              icon={currentPathname === '/dashboard/settings' ? Cog6ToothIconSolid : Cog6ToothIcon}
+              iconClass="text-secondary h-5 w-5"
+              enable={isCompanyMember}
+            />
           </li>
         </ul>
       </div>

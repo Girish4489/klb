@@ -11,9 +11,9 @@ interface ModalProps {
 export const Modal: FC<ModalProps> = ({ id, children, isBackdrop = false }) => {
   return (
     <dialog id={id} className="modal">
-      <div className="modal-box border-primary max-h-[90vh] w-11/12 overflow-y-auto border md:w-3/4 lg:w-1/2">
+      <div className="modal-box border-primary max-h-[90vh] w-11/12 max-w-5xl overflow-y-auto border md:w-3/4 lg:w-1/2">
         {children}
-        <form method="dialog" className={`justify-end ${isBackdrop ? 'modal-backdrop' : ''}`}>
+        <form method="dialog" className={`flex justify-end ${isBackdrop ? 'modal-backdrop' : ''}`}>
           <button className="btn btn-sm btn-circle btn-neutral/50 absolute right-2 top-2">
             <XMarkIcon className="h-5 w-5" />
           </button>
