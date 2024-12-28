@@ -1,5 +1,5 @@
 'use client';
-import { Modal } from '@components/Modal/Modal';
+import { Modal, showModel } from '@components/Modal/Modal';
 import LogoutButton from '@components/logout/LogoutButton';
 import { TrashIcon } from '@heroicons/react/24/solid';
 import { IUser } from '@models/userModel';
@@ -9,7 +9,7 @@ import { formatD, formatDNT } from '@utils/format/dateUtils';
 import { ImageProcessor } from '@utils/image/imageUtils';
 import axios from 'axios';
 import Image from 'next/image';
-import { ChangeEvent, FC, FormEvent, JSX, useCallback, useEffect, useState } from 'react';
+import { ChangeEvent, FC, FormEvent, JSX, useCallback, useState } from 'react';
 import toast from 'react-hot-toast';
 
 const LoadingSkeleton = (): JSX.Element => (
@@ -29,7 +29,7 @@ const BadgeItem: FC<{ label: string; content: string | boolean; badgeClass?: str
 }) => (
   <span className="badge w-full justify-between gap-2 p-5">
     <h1 className="font-bold">{label}:</h1>
-    <span className={`badge py-3 ${badgeClass}`}>
+    <span className={`badge badge-soft py-3 ${badgeClass}`}>
       {typeof content === 'boolean' ? (content ? 'Yes' : 'No') : content}
     </span>
   </span>
@@ -51,20 +51,13 @@ export default function SettingsProfile({
 }): JSX.Element {
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [dates, setDates] = useState({
+
+  // Format dates once during render, don't use state or useEffect
+  const dates = {
     createdAt: formatDNT(user.createdAt),
     updatedAt: formatD(user.updatedAt),
     lastLogin: formatD(user.lastLogin),
-  });
-
-  useEffect(() => {
-    setDates({
-      createdAt: formatDNT(user.createdAt),
-      updatedAt: formatD(user.updatedAt),
-      lastLogin: formatD(user.lastLogin),
-    });
-    setIsLoading(false);
-  }, [user]);
+  };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const target = e.target as HTMLInputElement & { files: FileList };
@@ -75,13 +68,6 @@ export default function SettingsProfile({
     const profileImageInput = document.getElementById('profileImage') as HTMLInputElement | null;
     if (profileImageInput) {
       profileImageInput.value = '';
-    }
-  };
-
-  const myModel = (id: string): void => {
-    const element = document.getElementById(id) as HTMLDialogElement | null;
-    if (element) {
-      element.showModal();
     }
   };
 
@@ -132,7 +118,7 @@ export default function SettingsProfile({
   };
 
   const handleImageClick = useCallback(() => {
-    myModel('profile_modal');
+    showModel('settingsProfile_modal');
   }, []);
 
   return (
@@ -141,28 +127,27 @@ export default function SettingsProfile({
         <LoadingSkeleton />
       ) : (
         <>
-          <div className="avatar indicator card-side lg:pt-4">
-            <span className="badge indicator-item badge-secondary select-none lg:mt-4">edit..</span>
-            <div
-              id="settingsProfile"
-              className="ring-3 ring-primary hover:ring-offset-accent h-24 w-24 rounded-full hover:scale-105  hover:ring-offset-2"
-            >
+          <div
+            id="settingsProfile"
+            className="avatar tooltip tooltip-info tooltip-bottom lg:tooltip-right h-fit"
+            data-tip="Click to change profile image"
+          >
+            <div className="ring-primary ring-offset-base-100 h-24 w-24 rounded-full ring ring-offset-2">
               <Image
                 src={getProfileImageSrc(user.profileImage)}
                 alt="Profile picture"
                 className="cursor-pointer rounded-full transition-all duration-500 ease-in-out"
-                width="40"
-                height="40"
+                width="96"
+                height="96"
                 onClick={handleImageClick}
               />
             </div>
           </div>
 
-          <Modal id="profile_modal">
-            <h3 className="text-lg font-bold">Change Profile!</h3>
+          <Modal id="settingsProfile_modal" title="Update Profile Picture" isBackdrop={true}>
             <div className="card lg:card-side flex w-full items-center justify-between py-2 align-middle max-sm:pt-5 lg:items-center">
               <div className="avatar h-full w-full flex-col items-center justify-center gap-2">
-                <div className="mask rounded-badge ring-3 ring-primary ring-offset-base-100 w-48 ring-offset-1 transition-transform duration-300 ease-in-out hover:scale-105">
+                <div className="mask mask-squircle w-48">
                   <Image
                     src={
                       user.profileImage &&
@@ -172,7 +157,7 @@ export default function SettingsProfile({
                         : '/klm.webp'
                     }
                     alt="Landscape picture"
-                    className="h-48 w-48 cursor-pointer transition-transform duration-300 ease-in-out"
+                    className="h-48 w-48 cursor-pointer"
                     width="192"
                     height="192"
                   />
@@ -216,24 +201,24 @@ export default function SettingsProfile({
             </div>
           </Modal>
           <div className="card-body rounded-box border-base-100 my-4 border p-4 shadow-2xl">
-            <BadgeItem label="Username" content={user.username} />
-            <BadgeItem label="Email" content={user.email} />
+            <BadgeItem label="Username" content={user.username} badgeClass="badge-primary" />
+            <BadgeItem label="Email" content={user.email} badgeClass="badge-primary" />
             <BadgeItem
               label="Verified"
               content={user.isVerified}
-              badgeClass={user.isVerified ? 'badge-success' : 'badge-error'}
+              badgeClass={`${user.isVerified ? 'badge-success' : 'badge-error'}`}
             />
             <BadgeItem
               label="Admin"
               content={user.isAdmin}
-              badgeClass={user.isAdmin ? 'badge-success' : 'badge-error'}
+              badgeClass={`${user.isAdmin ? 'badge-success' : 'badge-error'}`}
             />
-            <BadgeItem label="Created" content={dates.createdAt} />
-            <BadgeItem label="Updated" content={dates.updatedAt} />
-            <BadgeItem label="Last Login" content={dates.lastLogin} />
+            <BadgeItem label="Created" content={dates.createdAt} badgeClass="badge-primary" />
+            <BadgeItem label="Updated" content={dates.updatedAt} badgeClass="badge-primary" />
+            <BadgeItem label="Last Login" content={dates.lastLogin} badgeClass="badge-primary" />
             <span className="badge w-full select-none justify-between gap-2 p-5">
               <h1 className="font-bold">Logout:</h1>
-              <LogoutButton className="btn-error btn-sm ring-warning px-6 ring-2 hover:font-semibold" />
+              <LogoutButton className="btn-error btn-sm btn-soft rounded-box px-6" />
             </span>
           </div>
         </>

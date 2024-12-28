@@ -1,91 +1,86 @@
-/**
- * Formats a given date into a localized string based on the specified options.
- *
- * @param dateString - The date to be formatted.
- * @returns A string representing the formatted date in 'en-IN' locale.
- *
- * The formatted date includes:
- * - Day: Numeric
- * - Month: Short (e.g., Jan, Feb)
- * - Year: Numeric
- * - Hour: Numeric (12-hour format)
- * - Minute: Numeric
- * - Hour12: true (AM/PM)
- */
-const formatDate = (dateString: Date): string => {
-  const options: Intl.DateTimeFormatOptions = {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-    hour12: true,
-  };
+const formatD = (dateString: Date | string | undefined): string => {
+  if (!dateString) return 'N/A';
+  const d = new Date(dateString);
+  const day = d.getDate().toString().padStart(2, '0');
+  const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getMonth()];
+  const year = d.getFullYear();
+  const hours = d.getHours();
+  const minutes = d.getMinutes().toString().padStart(2, '0');
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const formattedHours = (hours % 12 || 12).toString().padStart(2, '0');
 
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-IN', options);
+  return `${day}-${month}-${year}, ${formattedHours}:${minutes} ${ampm}`;
 };
 
-/**
- * Formats a given date to a string with no time component.
- * The formatted date string will be in the format "dd-MMM-yyyy" (e.g., "01-Jan-2023").
- *
- * @param dateString - The date to format. It should be a valid Date object.
- * @returns The formatted date string in "dd-MMM-yyyy" format.
- */
-const formatDateNoTime = (dateString: Date): string => {
-  const options: Intl.DateTimeFormatOptions = {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  };
-
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-IN', options);
+const formatDNT = (dateString: Date | string | undefined): string => {
+  if (!dateString) return 'N/A';
+  const d = new Date(dateString);
+  const day = d.getDate().toString().padStart(2, '0');
+  const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getMonth()];
+  const year = d.getFullYear();
+  return `${day}-${month}-${year}`;
 };
 
-/**
- * Formats a given date into a string with the format 'DD/MM/YYYY, hh:mm AM/PM'.
- * The date is formatted using the 'en-IN' locale.
- *
- * @param dateString - The date to format.
- * @returns The formatted date string with slashes and time in 12-hour format.
- *
- * @example
- * ```typescript
- * const formattedDate = formatDateSlash(new Date('2023-10-05T14:48:00'));
- * console.log(formattedDate); // Output: "05/10/2023, 02:48 PM"
- * ```
- */
-const formatDateSlash = (dateString: Date): string => {
-  const options: Intl.DateTimeFormatOptions = {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-    hour12: true,
-  };
+const formatDS = (dateString: Date | string | undefined): string => {
+  if (!dateString) return 'N/A';
+  const d = new Date(dateString);
+  const day = d.getDate().toString().padStart(2, '0');
+  const month = (d.getMonth() + 1).toString().padStart(2, '0');
+  const year = d.getFullYear();
+  const hours = d.getHours();
+  const minutes = d.getMinutes().toString().padStart(2, '0');
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const formattedHours = (hours % 12 || 12).toString().padStart(2, '0');
 
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-IN', options).replace(/-/g, '/');
+  return `${day}/${month}/${year}, ${formattedHours}:${minutes} ${ampm}`;
 };
 
-/**
- * Formats a given date into a string with the format "DD/MM/YYYY".
- *
- * @param dateString - The date to be formatted.
- * @returns A string representing the formatted date in "DD/MM/YYYY" format.
- */
-const formatDateSlashNoTime = (dateString: Date): string => {
-  const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: '2-digit', year: 'numeric' };
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-IN', options).replace(/-/g, '/');
+const formatDSNT = (dateString: Date | string | undefined): string => {
+  if (!dateString) return 'N/A';
+  const d = new Date(dateString);
+  const day = d.getDate().toString().padStart(2, '0');
+  const month = (d.getMonth() + 1).toString().padStart(2, '0');
+  const year = d.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
+const formatDMY = (dateString: Date | string | undefined): string => {
+  if (!dateString) return 'N/A';
+  const d = new Date(dateString);
+  const day = d.getDate().toString().padStart(2, '0');
+  const month = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ][d.getMonth()];
+  const year = d.getFullYear();
+  return `${day} ${month} ${year}`;
+};
+
+const formatTime = (dateString: Date | string | undefined): string => {
+  if (!dateString) return 'N/A';
+  const d = new Date(dateString);
+  const hours = d.getHours();
+  const minutes = d.getMinutes().toString().padStart(2, '0');
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const formattedHours = (hours % 12 || 12).toString().padStart(2, '0');
+  return `${formattedHours}:${minutes} ${ampm}`;
 };
 
 export {
-  formatDate as formatD,
-  formatDateNoTime as formatDNT,
-  formatDateSlash as formatDS,
-  formatDateSlashNoTime as formatDSNT,
+  formatD, // "28/12/2024"
+  formatDMY, // "28-Dec-2024, 02:30 PM"
+  formatDNT, // "28-Dec-2024"
+  formatDS, // "28/12/2024, 02:30 PM"
+  formatDSNT, // "28 December 2024"
+  formatTime,
 };

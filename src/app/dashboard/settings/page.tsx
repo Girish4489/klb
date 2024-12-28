@@ -1,18 +1,13 @@
 'use client';
-import SettingsProfile from '@components/profile/SettingsProfile';
+import SettingsFont from '@/app/dashboard/settings/components/SettingsFont';
+import SettingsProfile from '@/app/dashboard/settings/components/SettingsProfile';
 import ThemerPage from '@components/themer/ThemerPage';
 import { useUser } from '@context/userContext';
-import { InformationCircleIcon } from '@heroicons/react/24/solid';
 import { IUser } from '@models/userModel';
 import handleError from '@utils/error/handleError';
 import { ApiPost, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
-import { JSX, useEffect, useState } from 'react';
+import { JSX } from 'react';
 import toast from 'react-hot-toast';
-
-interface Fonts {
-  name: string;
-  weight: number;
-}
 
 interface PreferencesResponse extends ApiResponse {
   preferences?: IUser['preferences'];
@@ -24,18 +19,6 @@ export default function SettingsPage(): JSX.Element {
     updateUser: (user: Partial<IUser>) => void;
     setUser: React.Dispatch<React.SetStateAction<IUser>>;
   };
-  const [fonts, setFonts] = useState<Fonts>({ name: 'Roboto', weight: 400 });
-
-  useEffect(() => {
-    if (user.preferences?.fonts) {
-      setFonts(user.preferences.fonts);
-    }
-  }, [user.preferences?.fonts]);
-
-  useEffect(() => {
-    document.body.style.fontFamily = fonts.name;
-    document.body.style.fontWeight = fonts.weight.toString();
-  }, [fonts]);
 
   const updatePreferences = async (updatedPreferences: Partial<IUser['preferences']>): Promise<void> => {
     await toast
@@ -62,105 +45,44 @@ export default function SettingsPage(): JSX.Element {
       .catch(handleError.toastAndLog);
   };
 
-  const updateFontPreferences = async (updatedFonts: Fonts): Promise<void> => {
-    await updatePreferences({
-      fonts: updatedFonts,
-    });
+  interface CollapseComponentProps {
+    title: string;
+    children: React.ReactNode;
+    defaultChecked?: boolean;
+  }
+
+  const CollapseComponent = ({ title, children, defaultChecked = true }: CollapseComponentProps): JSX.Element => {
+    return (
+      <div className="join-item collapse-arrow border-base-300 collapse border">
+        <input type="checkbox" name="collapse" defaultChecked={defaultChecked} />
+        <div className="collapse-title bg-base-300/40 pb-2 font-medium">{title}</div>
+        <div className="collapse-content">{children}</div>
+      </div>
+    );
   };
 
   return (
-    <div className=" max-sm:m-2 md:m-5">
-      <div className="join join-vertical bg-base-200 w-full">
-        <div className="join-item collapse-arrow border-base-300 collapse border">
-          <input type="checkbox" name="collapse" defaultChecked />
-          <div className="collapse-title text-xl font-medium">User Profile</div>
-          <div className="collapse-content">
-            <SettingsProfile user={user} updateUserAction={updateUser} />
-          </div>
-        </div>
+    <div className="max-sm:m-2 md:m-5">
+      <div className="join join-vertical **:rounded-box w-full gap-3">
+        <CollapseComponent title="User Profile">
+          <SettingsProfile user={user} updateUserAction={updateUser} />
+        </CollapseComponent>
 
-        {/* Theme Settings */}
-        <div className="join-item collapse-arrow border-base-300 collapse border">
-          <input type="checkbox" name="collapse" defaultChecked />
-          <div id="themeBlock" className="collapse-title text-xl font-medium">
-            Theme
-          </div>
-          <div className="collapse-content m-2">
-            <ThemerPage user={user} setUserAction={setUser} />
-          </div>
-        </div>
+        <CollapseComponent title="Theme">
+          <ThemerPage user={user} setUserAction={setUser} />
+        </CollapseComponent>
 
-        {/* Font Settings */}
-        <div id="font" className="join-item collapse-arrow border-base-300 collapse border">
-          <input type="checkbox" name="collapse" defaultChecked />
-          <div className="collapse-title text-xl font-medium">Font Settings</div>
-          <div className="collapse-content m-2">
-            <div className="flex flex-col gap-4">
-              <div className="flex flex-wrap items-center justify-between">
-                <label htmlFor="fontNameSelect" className="label grow">
-                  Select Font
-                </label>
-                <select
-                  id="fontNameSelect"
-                  name="fontNameSelect"
-                  value={fonts.name}
-                  onChange={(e) => updateFontPreferences({ name: e.target.value, weight: fonts.weight })}
-                  className="select select-bordered select-primary select-sm min-w-40"
-                >
-                  <option value="Roboto">Roboto</option>
-                  {/* Add other font options here */}
-                </select>
-              </div>
-              <div className="flex flex-wrap items-center justify-between">
-                <label htmlFor="fontWeightSelect" className="label grow">
-                  Select Weight
-                </label>
-                <select
-                  id="fontWeightSelect"
-                  name="fontWeightSelect"
-                  value={fonts.weight}
-                  onChange={(e) => updateFontPreferences({ name: fonts.name, weight: parseInt(e.target.value) })}
-                  className="select select-bordered select-primary select-sm min-w-40"
-                >
-                  {[100, 300, 400, 500, 700, 900].map((weight) => (
-                    <option key={weight} value={weight}>
-                      {weight}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <button
-                className="btn btn-warning btn-sm"
-                onClick={() => {
-                  if (fonts.name !== 'Roboto' || fonts.weight !== 400) {
-                    updateFontPreferences({ name: 'Roboto', weight: 400 });
-                  } else {
-                    toast('Already in default mode', {
-                      icon: <InformationCircleIcon className="text-info h-5 w-5" />,
-                    });
-                  }
-                }}
-              >
-                Reset to Default
-              </button>
-            </div>
-          </div>
-        </div>
+        <CollapseComponent title="Font Settings">
+          <SettingsFont user={user} updatePreferences={updatePreferences} />
+        </CollapseComponent>
 
-        <div className="join-item collapse-arrow border-base-300 collapse border">
-          <input type="checkbox" name="collapse" defaultChecked />
-          <div className="collapse-title text-xl font-medium">Notification</div>
-          <div className="collapse-content">
-            <p>hello</p>
-          </div>
-        </div>
-        <div className="join-item collapse-arrow border-base-300 collapse border">
-          <input type="checkbox" name="collapse" defaultChecked />
-          <div className="collapse-title text-xl font-medium">Preferences</div>
-          <div className="collapse-content">
-            <p>hello</p>
-          </div>
-        </div>
+        <CollapseComponent title="Notification">
+          <p>hello</p>
+        </CollapseComponent>
+
+        <CollapseComponent title="Preferences">
+          <p>hello</p>
+        </CollapseComponent>
       </div>
     </div>
   );
