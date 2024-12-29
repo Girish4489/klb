@@ -6,8 +6,8 @@ import { useUser } from '@context/userContext';
 import { IUser } from '@models/userModel';
 import handleError from '@utils/error/handleError';
 import { ApiPost, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
+import { toast } from '@utils/toast/toast';
 import { JSX } from 'react';
-import toast from 'react-hot-toast';
 
 interface PreferencesResponse extends ApiResponse {
   preferences?: IUser['preferences'];

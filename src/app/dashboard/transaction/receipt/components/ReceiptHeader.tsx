@@ -5,8 +5,8 @@ import TaxModal from '@dashboard/transaction/receipt/components/TaxModal';
 import { calculateTotalTax } from '@dashboard/transaction/receipt/utils/receiptUtils';
 import { PlusCircleIcon } from '@heroicons/react/24/outline';
 import { IReceipt, ITax } from '@models/klm';
+import { toast } from '@utils/toast/toast';
 import React from 'react';
-import toast from 'react-hot-toast';
 
 interface ReceiptHeaderProps {
   receipt: IReceipt | undefined;

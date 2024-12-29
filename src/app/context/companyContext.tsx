@@ -5,9 +5,9 @@ import { fetchCompanyData } from '@utils/company/companyFetchUtils';
 import { userConfirmation } from '@utils/confirmation/confirmationUtil';
 import handleError from '@utils/error/handleError';
 import { ApiPut, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
+import { toast } from '@utils/toast/toast';
 import mongoose from 'mongoose';
 import React, { ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import toast from 'react-hot-toast';
 
 interface CompanyContextProps {
   children: ReactNode;

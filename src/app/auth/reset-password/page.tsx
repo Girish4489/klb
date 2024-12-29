@@ -4,10 +4,10 @@ import constants from '@constants/constants';
 import { KeyIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 import handleError from '@utils/error/handleError';
 import { ApiPost, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
+import { toast } from '@utils/toast/toast';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { JSX, Suspense, useEffect, useState } from 'react';
-import { toast } from 'react-hot-toast';
 
 interface ResetPasswordResponse extends ApiResponse {
   email?: string;

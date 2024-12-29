@@ -8,8 +8,8 @@ import { ICategory, IDimensionTypes, IDimensions, IStyle, IStyleProcess } from '
 import { userConfirmation } from '@utils/confirmation/confirmationUtil';
 import handleError from '@utils/error/handleError';
 import { ApiGet, ApiPost, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
+import { toast } from '@utils/toast/toast';
 import React, { useEffect, useRef, useState, type JSX } from 'react';
-import toast from 'react-hot-toast';
 
 // The `IIds` interface represents the identifiers for a category, style process, style, dimension type, and dimension.
 interface IIds {

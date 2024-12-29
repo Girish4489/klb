@@ -2,8 +2,8 @@
 import { InformationCircleIcon } from '@heroicons/react/24/solid';
 import { IUser } from '@models/userModel';
 import { fontWeightMap, type FontWeight } from '@utils/fonts/fontConfig';
+import { toast } from '@utils/toast/toast';
 import { JSX, useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
 
 interface Fonts {
   name: string;
@@ -80,7 +80,7 @@ export default function SettingsFont({
           if (fonts.name !== 'Roboto' || fonts.weight !== 400) {
             updateFontPreferences({ name: 'Roboto', weight: 400 });
           } else {
-            toast('Already in default mode', {
+            toast.info('Already in default mode', {
               icon: <InformationCircleIcon className="text-info h-5 w-5" />,
             });
           }

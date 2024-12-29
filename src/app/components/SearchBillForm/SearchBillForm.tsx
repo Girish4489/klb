@@ -132,7 +132,7 @@ const SearchBillForm: FC<SearchFormProps> = ({ onSearch, searchResults, onRowCli
               id="search-results"
               style={{
                 position: 'fixed',
-                zIndex: 9999,
+                zIndex: 100,
                 top: (formRef.current?.getBoundingClientRect()?.bottom ?? 0) + 8,
                 left: (formRef.current?.getBoundingClientRect()?.right ?? 384) - 384,
               }}

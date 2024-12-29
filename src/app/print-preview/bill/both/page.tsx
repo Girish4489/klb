@@ -9,9 +9,9 @@ import { IBill } from '@models/klm';
 import klm from '@public/klm.png';
 import handleError from '@utils/error/handleError';
 import { ApiGet, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
+import { toast } from '@utils/toast/toast';
 import { getSearchParam } from '@utils/url/urlUtils';
 import { useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
 
 interface PrintBillResponse extends ApiResponse {
   success: boolean;
@@ -43,7 +43,7 @@ const BothBillPage: React.FC = () => {
           throw new Error(response?.message || 'Failed to fetch data');
         }
         setBill(response.bill);
-        toast.success(<b>{response.message} fetched successfully</b>);
+        toast.success(`${(<b>{response.message} fetched successfully</b>)}`);
         setIsDataLoaded(true);
       } catch (error) {
         handleError.toast(error);

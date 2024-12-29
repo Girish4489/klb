@@ -6,8 +6,8 @@ import { exportToCSV, exportToPDF } from '@utils/exportUtils/common';
 import { fetchAllData } from '@utils/fetchAllData/fetchAllData';
 import { formatD } from '@utils/format/dateUtils';
 import { ApiGet, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
+import { toast } from '@utils/toast/toast';
 import { JSX, useState } from 'react';
-import toast from 'react-hot-toast';
 import { IBillDetails } from './types';
 
 const PAGE_SIZE = 10; // Number of bills per page
@@ -35,21 +35,24 @@ export default function BillDetails(): JSX.Element {
       toast.error('Invalid date range. fromDate cannot be greater than toDate');
       return;
     }
-    const filter = async (): Promise<string | undefined> => {
+    const filter = async (): Promise<string> => {
       try {
         const data = await fetchBills(fromDate, toDate, 1);
         if (data.success === true) {
           setBills(data.bill);
           setTotalPages(calculateTotalPages(data.totalBills));
           setCurrentPage(1);
-          return data.message;
+          return data.message ?? 'Bills filtered successfully';
         } else {
           throw new Error('An error occurred');
         }
       } catch (error) {
         handleError.throw(error);
       }
+      // Add a return statement to satisfy TypeScript
+      return 'An error occurred';
     };
+
     try {
       toast.promise(filter(), {
         loading: 'Filtering bills...',

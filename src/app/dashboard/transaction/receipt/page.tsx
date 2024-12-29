@@ -10,10 +10,10 @@ import { CloudArrowUpIcon, MagnifyingGlassIcon } from '@heroicons/react/24/solid
 import { IBill, IReceipt, IReceiptTax, ITax } from '@models/klm';
 import handleError from '@utils/error/handleError';
 import { ApiGet, ApiPost, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
+import { toast } from '@utils/toast/toast';
 import { getParamsFromQueryString, updateSearchParams } from '@utils/url/urlUtils';
 import { useRouter } from 'next/navigation';
 import React, { JSX, useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
 
 interface AmtTrack {
   total: number;

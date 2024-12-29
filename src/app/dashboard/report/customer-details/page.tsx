@@ -7,9 +7,9 @@ import { TableRow, exportToCSV, exportToPDF } from '@utils/exportUtils/common';
 import { prepareCustomerExportData } from '@utils/exportUtils/customers';
 import { fetchAllData } from '@utils/fetchAllData/fetchAllData';
 import { formatD } from '@utils/format/dateUtils';
+import { toast } from '@utils/toast/toast';
 import axios from 'axios';
 import React, { JSX, useState } from 'react';
-import toast from 'react-hot-toast';
 
 const formatDateTime = (date: Date | string | undefined): string => {
   if (!date) return '-';

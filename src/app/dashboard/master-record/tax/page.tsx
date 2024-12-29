@@ -6,8 +6,8 @@ import { ITax } from '@models/klm';
 import { userConfirmation } from '@utils/confirmation/confirmationUtil';
 import handleError from '@utils/error/handleError';
 import { ApiDelete, ApiGet, ApiPost, ApiPut, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
+import { toast } from '@utils/toast/toast';
 import React, { JSX, useCallback, useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
 
 interface TaxResponse extends ApiResponse {
   taxes?: ITax[];

@@ -5,9 +5,9 @@ import { CloudArrowUpIcon, PlusCircleIcon } from '@heroicons/react/24/solid';
 import { ICompany } from '@models/companyModel';
 import handleError from '@utils/error/handleError';
 import { ApiPost, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
+import { toast } from '@utils/toast/toast';
 import Form from 'next/form';
 import { JSX, useState } from 'react';
-import toast from 'react-hot-toast';
 
 interface CompanyResponse extends ApiResponse {
   success: boolean;

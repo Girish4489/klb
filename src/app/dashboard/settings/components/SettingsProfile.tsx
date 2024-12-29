@@ -7,10 +7,10 @@ import { userConfirmation } from '@utils/confirmation/confirmationUtil';
 import handleError from '@utils/error/handleError';
 import { formatD, formatDNT } from '@utils/format/dateUtils';
 import { ImageProcessor } from '@utils/image/imageUtils';
+import { toast } from '@utils/toast/toast';
 import axios from 'axios';
 import Image from 'next/image';
 import { ChangeEvent, FC, FormEvent, JSX, useCallback, useState } from 'react';
-import toast from 'react-hot-toast';
 
 const LoadingSkeleton = (): JSX.Element => (
   <div className="flex flex-col items-center gap-4">

@@ -8,10 +8,10 @@ import { CheckCircleIcon, MinusCircleIcon, PrinterIcon } from '@heroicons/react/
 import { IBill } from '@models/klm';
 import handleError from '@utils/error/handleError';
 import { ApiGet, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
+import { toast } from '@utils/toast/toast';
 import { getSearchParam, setSearchParam } from '@utils/url/urlUtils';
 import { useRouter } from 'next/navigation';
 import { FC, useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
 
 interface BillSearchResponse extends ApiResponse {
   bill: IBill[];

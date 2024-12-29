@@ -1,8 +1,8 @@
 import { Modal } from '@/app/components/Modal/Modal';
 import { calculateTotalTax } from '@dashboard/transaction/receipt/utils/receiptUtils';
 import { IReceipt, IReceiptTax, ITax } from '@models/klm';
+import { toast } from '@utils/toast/toast';
 import React from 'react';
-import toast from 'react-hot-toast';
 
 interface TaxModalProps {
   taxList: ITax[];

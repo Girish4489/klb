@@ -8,9 +8,9 @@ import { RoleType } from '@models/userModel';
 import { userConfirmation } from '@utils/confirmation/confirmationUtil';
 import handleError from '@utils/error/handleError';
 import { ApiGet, ApiPut, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
+import { toast } from '@utils/toast/toast';
 import { fetchUserByEmail } from '@utils/user/userFetchByEmailUtil/userByEmailUtil';
 import { FC, FormEvent, useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
 
 interface UserDetailsProps {
   users: {

@@ -1,6 +1,6 @@
 import { IReceipt } from '@models/klm';
 import { ApiGet, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
-import toast from 'react-hot-toast';
+import { toast } from '@utils/toast/toast';
 
 interface BillDetails {
   baseTotal: number; // Add this field

@@ -11,9 +11,9 @@ import {
 } from '@heroicons/react/24/solid';
 import { ICustomer } from '@models/klm';
 import handleError from '@utils/error/handleError';
+import { toast } from '@utils/toast/toast';
 import axios from 'axios';
 import { ChangeEvent, ComponentType, FC, FormEvent, JSX, SVGProps, useState } from 'react';
-import toast from 'react-hot-toast';
 
 interface InputFieldProps {
   label: string;

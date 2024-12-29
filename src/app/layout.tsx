@@ -1,6 +1,7 @@
 'use client';
 import '@/app/globals.css';
 import { SpeedInsightsWrapper } from '@components/SpeedInsights';
+import { ToastContainer } from '@components/Toast/ToastContainer';
 import TopbarLoader from '@components/topbarLoader/page';
 import { ThemeProvider } from '@context/ThemeContext';
 import { CompanyProvider } from '@context/companyContext';
@@ -10,7 +11,6 @@ import { defaultMetadata } from '@utils/metadata';
 import { Analytics } from '@vercel/analytics/react';
 import Head from 'next/head';
 import { JSX, ReactNode } from 'react';
-import { Toaster } from 'react-hot-toast';
 
 export default function RootLayout({ children }: { children: ReactNode }): JSX.Element {
   return (
@@ -40,7 +40,7 @@ export default function RootLayout({ children }: { children: ReactNode }): JSX.E
             <CompanyProvider>
               <body className={roboto.regular.className}>
                 <TopbarLoader />
-                <Toaster />
+                <ToastContainer />
                 {children}
                 <SpeedInsightsWrapper />
                 <Analytics />

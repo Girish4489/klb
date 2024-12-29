@@ -4,10 +4,10 @@ import { Cog6ToothIcon, HomeIcon } from '@heroicons/react/24/outline';
 import { Cog6ToothIcon as Cog6ToothIconSolid, HomeIcon as HomeIconSolid } from '@heroicons/react/24/solid';
 import { Route } from 'next';
 
+import { toast } from '@utils/toast/toast';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React, { JSX } from 'react';
-import toast from 'react-hot-toast';
 
 const SidebarLink = ({
   href,

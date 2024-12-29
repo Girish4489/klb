@@ -2,9 +2,9 @@
 import { Theme, useTheme } from '@context/ThemeContext';
 import { IUser } from '@models/userModel';
 import handleError from '@utils/error/handleError';
+import { toast } from '@utils/toast/toast';
 import axios from 'axios';
 import React, { Dispatch, JSX } from 'react';
-import toast from 'react-hot-toast';
 
 export default function ThemerPage({
   user,

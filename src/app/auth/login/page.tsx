@@ -8,11 +8,11 @@ import { authUtils } from '@utils/auth/authUtils';
 import handleError from '@utils/error/handleError';
 import { ApiPost, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
 import { loginMetadata } from '@utils/metadata';
+import { toast } from '@utils/toast/toast';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { JSX, useState } from 'react';
-import toast from 'react-hot-toast';
 
 interface LoginResponse extends ApiResponse {
   user?: IUser;
@@ -25,25 +25,25 @@ interface ForgotPasswordResponse extends ApiResponse {
 export default function LoginPage(): JSX.Element {
   const { setAuthenticated } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
-    setIsLoading(true);
 
-    try {
-      const formData = new FormData(e.currentTarget);
-      const email = formData.get('email')?.toString().trim();
-      const password = formData.get('password')?.toString().trim();
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get('email')?.toString().trim();
+    const password = formData.get('password')?.toString().trim();
 
-      if (!email || !password) {
-        throw new Error('Please fill in all fields');
-      }
-      if (password.length < 6) {
-        throw new Error('Password should be at least 6 characters');
-      }
+    if (!email || !password) {
+      toast.error('Please fill in all fields');
+      return;
+    }
+    if (password.length < 6) {
+      toast.error('Password should be at least 6 characters');
+      return;
+    }
 
+    const loginPromise = async (): Promise<string> => {
       const response = await ApiPost.Auth.login<LoginResponse>({ email, password });
 
       if (!response) {
@@ -53,17 +53,35 @@ export default function LoginPage(): JSX.Element {
       if (response.success && response.user) {
         setAuthenticated(true);
         authUtils.storeUser(response.user);
-        toast.success('Login successful');
         router.push(constants.LANDING_LOGIN_SUCCESS_PAGE);
-      } else {
-        throw new Error(response.message ?? 'Login failed');
+        return response.message ?? 'Login successful';
       }
-    } catch (error) {
-      handleError.toast(error);
+
+      throw new Error(response.message ?? 'Login failed');
+    };
+
+    try {
+      await toast.promise(loginPromise(), {
+        loading: (
+          <div className="flex items-center gap-2">
+            <span>Signing in to your account...</span>
+          </div>
+        ),
+        success: (message) => (
+          <div className="flex items-center gap-2">
+            <span>{message}</span>
+          </div>
+        ),
+        error: (error) => (
+          <div className="flex items-center gap-2">
+            <span>{error.message}</span>
+          </div>
+        ),
+      });
+    } catch {
+      // No need to catch the error since toast.promise handles it
       setAuthenticated(false);
       authUtils.clearAuth();
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -169,12 +187,8 @@ export default function LoginPage(): JSX.Element {
                 </div>
               </div>
 
-              <button type="submit" className="btn btn-primary btn-soft btn-block" disabled={isLoading}>
-                {isLoading ? (
-                  <span className="loading loading-spinner loading-sm" />
-                ) : (
-                  <ShieldCheckIcon className="h-5 w-5" />
-                )}
+              <button type="submit" className="btn btn-primary btn-soft btn-block">
+                <ShieldCheckIcon className="h-5 w-5" />
                 Sign in
               </button>
             </form>

@@ -3,10 +3,10 @@ import GlassCard from '@components/GlassCard';
 import { EnvelopeIcon, IdentificationIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
 import handleError from '@utils/error/handleError';
 import { ApiPost, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
+import { toast } from '@utils/toast/toast';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { JSX, Suspense, useEffect, useState } from 'react';
-import { toast } from 'react-hot-toast';
 
 interface VerifyEmailResponse extends ApiResponse {
   email?: string;

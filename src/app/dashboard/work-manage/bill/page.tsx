@@ -28,9 +28,9 @@ import { IBill, ICategory } from '@models/klm';
 import { userConfirmation } from '@utils/confirmation/confirmationUtil';
 import handleError from '@utils/error/handleError';
 import { ApiGet, ApiPost, ApiPut, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
+import { toast } from '@utils/toast/toast';
 import { getSearchParam } from '@utils/url/urlUtils';
 import React, { JSX, useEffect, useMemo, useState } from 'react';
-import toast from 'react-hot-toast';
 
 interface BillResponse extends ApiResponse {
   bill?: IBill[];
@@ -277,7 +277,7 @@ export default function BillPage(): JSX.Element {
         setTodayBill([...todayBill, res.today!]);
         setBill(res.bill![0]);
         setNewBill(false);
-        toast.success(res.message);
+        toast.success(res.message ?? 'Bill saved successfully');
       } else {
         throw new Error(res?.message ?? 'Failed to save bill');
       }
@@ -309,7 +309,7 @@ export default function BillPage(): JSX.Element {
       if (res?.success) {
         setTodayBill([...todayBill, res.today!]);
         setBill(res.bill![0]);
-        toast.success(res.message);
+        toast.success(res.message ?? 'Bill updated successfully');
       } else {
         throw new Error(res?.message ?? 'Failed to update bill');
       }

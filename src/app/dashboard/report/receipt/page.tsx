@@ -7,8 +7,8 @@ import handleError from '@utils/error/handleError';
 import { fetchAllData } from '@utils/fetchAllData/fetchAllData';
 import { formatD } from '@utils/format/dateUtils';
 import { ApiGet, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
+import { toast } from '@utils/toast/toast';
 import React, { JSX, useState } from 'react';
-import toast from 'react-hot-toast';
 
 const PAGE_SIZE = 10; // Number of receipts per page
 
@@ -35,7 +35,7 @@ export default function Receipt(): JSX.Element {
       toast.error('Invalid date range. fromDate cannot be greater than toDate');
       return;
     }
-    const filter = async (): Promise<string | undefined> => {
+    const filter = async (): Promise<string> => {
       try {
         setReceipts([]);
         const data = await ApiGet.Receipt.ReceiptFromToDate<ReceiptDateResponse>(fromDate, toDate, 1);
@@ -46,12 +46,13 @@ export default function Receipt(): JSX.Element {
           setReceipts(data.receipt);
           setTotalPages(calculateTotalPages(data.totalReceipts));
           setCurrentPage(1);
-          return data.message;
+          return data.message ?? 'Receipts filtered successfully';
         } else {
           throw new Error('An error occurred');
         }
       } catch (error) {
         handleError.log(error);
+        throw error;
       }
     };
     try {

@@ -1,5 +1,5 @@
+import { toast } from '@utils/toast/toast';
 import { NextResponse } from 'next/server';
-import toast from 'react-hot-toast';
 
 const handleErrorToast = (error: unknown): void => {
   if (error instanceof Error && error.message) {

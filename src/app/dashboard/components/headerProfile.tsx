@@ -10,11 +10,11 @@ import {
   UserIcon,
 } from '@heroicons/react/24/solid';
 import { IUser } from '@models/userModel';
+import { toast } from '@utils/toast/toast';
 import { Route } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { JSX } from 'react';
-import { toast } from 'react-hot-toast';
+import { JSX } from 'react';
 
 const LoadingSkeleton = (): JSX.Element => (
   <div className="avatar placeholder">

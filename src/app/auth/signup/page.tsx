@@ -5,10 +5,10 @@ import { EnvelopeIcon, IdentificationIcon, KeyIcon, UserIcon } from '@heroicons/
 import { IUser } from '@models/userModel';
 import handleError from '@utils/error/handleError';
 import { ApiPost, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
+import { toast } from '@utils/toast/toast';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { JSX } from 'react';
-import { toast } from 'react-hot-toast';
 
 interface SignupResponse extends ApiResponse {
   savedUser?: Partial<IUser>;
