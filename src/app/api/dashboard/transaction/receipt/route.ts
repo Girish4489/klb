@@ -68,7 +68,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (!data.receiptNumber) throw new Error('Receipt number is required');
 
     const totalTaxAmount = Number(
-      data.tax
+      (data.tax || [])
         .reduce(
           (acc, t) => acc + (t.taxType === 'Percentage' ? (data.amount * t.taxPercentage) / 100 : t.taxPercentage),
           0,

@@ -76,7 +76,7 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({
                       alt="Logo"
                     />
                   </figure>
-                  <address className="w-[70%] content-center text-sm font-medium">
+                  <address className="w-[70%] content-center font-medium text-sm">
                     {company?.contactDetails?.address ??
                       '1st Floor, Muddurandappa Complex Opp/BH Road, Gowribidanur - 561208'}
                   </address>
@@ -185,7 +185,7 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({
                   <th>SI No</th>
                   <th>Paid</th>
                   {filteredReceipts.some((receipt) => receipt.discount > 0) && <th>Discount</th>}
-                  {filteredReceipts.some((receipt) => receipt.tax?.length > 0) && <th>Tax</th>}
+                  {filteredReceipts.some((receipt) => receipt.tax && receipt.tax.length > 0) && <th>Tax</th>}
                 </tr>
               </thead>
               <tbody className="rounded-box p-1">
@@ -205,9 +205,9 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({
                     {filteredReceipts.some((receipt) => receipt.discount > 0) && (
                       <td>{receipt?.discount > 0 ? receipt?.discount : ''}</td>
                     )}
-                    {filteredReceipts.some((receipt) => receipt.tax?.length > 0) && (
+                    {filteredReceipts.some((receipt) => receipt.tax?.length ?? 0 > 0) && (
                       <td>
-                        {receipt?.tax?.length > 0
+                        {(receipt?.tax ?? []).length > 0
                           ? receipt?.tax?.map((tax, taxIndex) => (
                               <div key={taxIndex}>
                                 {tax.taxName}: {tax.taxPercentage}%
