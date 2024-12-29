@@ -75,7 +75,7 @@ const CustomerBillPreview: React.FC<CustomerBillPreviewProps> = ({ bill, company
                   <hr className="divider divider-horizontal rounded-box m-0 w-0.5 bg-black" />
                 </div>
                 <span className="flex grow flex-col items-center justify-center">
-                  <h2 id="header" className="text-xl font-bold">
+                  <h2 id="header" className="font-bold text-xl">
                     {company?.name ?? 'Kalamandir Ladies boutique'}
                   </h2>
                   <address className="text-lg">

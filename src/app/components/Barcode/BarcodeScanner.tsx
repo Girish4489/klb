@@ -141,7 +141,7 @@ const BarcodeScanner: React.FC<{
       <dialog id={scanModalId} className="modal">
         <div className="modal-box border-primary/70 bg-base-300 w-4/6 max-w-5xl border">
           <div className="flex flex-col gap-2">
-            <h3 className="text-lg font-bold">Scan Qr Code!</h3>
+            <h3 className="font-bold text-lg">Scan Qr Code!</h3>
             <div className="rounded-box border-primary/50 bg-neutral flex w-full grow flex-col gap-2 border px-2 py-3">
               <select
                 id={`readerTypeSelect_${scannerId}`}

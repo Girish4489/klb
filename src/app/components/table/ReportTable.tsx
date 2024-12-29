@@ -40,7 +40,7 @@ export function ReportTable({ data, columns, caption, loading, onColumnSelectCha
   return (
     <div className="bg-base-100 flex h-[calc(100vh-16rem)] flex-col rounded-lg shadow-lg">
       <div className="bg-base-200 sticky top-0 z-10 flex items-center justify-between p-4">
-        <h3 className="text-xl font-bold">{caption}</h3>
+        <h3 className="font-bold text-xl">{caption}</h3>
         <div className="dropdown dropdown-end">
           <label tabIndex={0} className="btn btn-sm">
             Columns

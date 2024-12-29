@@ -25,7 +25,7 @@ const Notifications = ({ notifications }: { notifications: INotification[] }): J
         className="card dropdown-content card-compact z-1 bg-base-100 ring-primary mt-3 w-52 shadow-sm ring-1"
       >
         <div className="card-body">
-          <span className="text-lg font-bold">{notifications.length} Notifications</span>
+          <span className="font-bold text-lg">{notifications.length} Notifications</span>
           <span className="text-info">View all notifications</span>
           <div className="card-actions">
             <button className="btn btn-primary btn-block">View notifications</button>

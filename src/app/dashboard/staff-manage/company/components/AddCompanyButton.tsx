@@ -54,7 +54,7 @@ const AddCompanyButton = (): JSX.Element => {
         Add New Company
       </button>
       <Modal id="add_new_company_modal">
-        <h2 className="text-lg font-bold">Add New Company</h2>
+        <h2 className="font-bold text-lg">Add New Company</h2>
         <Form action="#" className="flex flex-wrap justify-center gap-2 p-4 max-sm:flex-col">
           <label className="input input-sm input-primary flex items-center gap-2">
             Name:

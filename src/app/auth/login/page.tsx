@@ -104,7 +104,7 @@ export default function LoginPage(): JSX.Element {
           {/* Info Section */}
           <div className="flex select-none flex-col justify-center gap-4 lg:w-1/2">
             <div className="text-center">
-              <h1 className="bg-linear-to-r from-primary via-accent to-secondary bg-clip-text text-5xl font-bold text-transparent">
+              <h1 className="bg-linear-to-r from-primary via-accent to-secondary bg-clip-text font-bold text-5xl text-transparent">
                 Welcome Back!
               </h1>
               <p className="text-base-content/70 mt-4 text-pretty">
@@ -184,7 +184,7 @@ export default function LoginPage(): JSX.Element {
             {/* Forgot Password Section */}
             <div className="rounded-box bg-base-200/50 backdrop-blur-xs space-y-4 p-4">
               <details className="collapse-plus bg-base-100/50 collapse">
-                <summary className="collapse-title text-sm font-medium">Forgot your password?</summary>
+                <summary className="collapse-title font-medium text-sm">Forgot your password?</summary>
                 <div className="collapse-content">
                   <form className="mt-4 space-y-4" onSubmit={handleForgotPassword}>
                     <input

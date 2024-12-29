@@ -21,7 +21,7 @@ export const Modal: FC<ModalProps> = ({ id, children, title = '', isBackdrop = f
     return (
       <dialog id={id} className="modal">
         <div className="modal-box border-primary max-h-[90vh] w-11/12 max-w-5xl overflow-y-auto border md:w-3/4 lg:w-1/2">
-          {title && <h3 className="text-lg font-bold">{title}</h3>}
+          {title && <h3 className="font-bold text-lg">{title}</h3>}
           {children}
           <form method="dialog" className="flex justify-end">
             <button className="btn btn-sm btn-circle btn-neutral/50 absolute right-2 top-2">

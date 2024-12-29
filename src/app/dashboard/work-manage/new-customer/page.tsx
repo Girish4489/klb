@@ -116,7 +116,7 @@ export default function NewCustomerPage(): JSX.Element {
         className="rounded-box border-base-300 bg-base-200 w-full gap-2 border-2 p-4 md:w-fit"
       >
         <span className="flex w-full justify-around">
-          <h2 className="text-base-content w-fit self-center py-2 text-center align-middle text-2xl font-bold">
+          <h2 className="text-base-content w-fit self-center py-2 text-center align-middle font-bold text-2xl">
             New Customer
           </h2>
         </span>

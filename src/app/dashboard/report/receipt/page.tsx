@@ -168,7 +168,7 @@ export default function Receipt(): JSX.Element {
 
   return (
     <div className="flex flex-col gap-4 p-2">
-      <h1 className="text-center text-3xl font-bold">Receipts</h1>
+      <h1 className="text-center font-bold text-3xl">Receipts</h1>
       <div className="flex flex-col gap-1">
         <div className="rounded-box bg-base-300 flex gap-4 px-2 py-2">
           <label

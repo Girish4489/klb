@@ -96,7 +96,7 @@ export default function SignupPage(): JSX.Element {
         {/* Info Section */}
         <div className="flex select-none flex-col justify-center gap-4 lg:w-1/2">
           <div className="text-center">
-            <h1 className="bg-linear-to-r from-secondary via-primary to-accent bg-clip-text text-5xl font-bold text-transparent">
+            <h1 className="bg-linear-to-r from-secondary via-primary to-accent bg-clip-text font-bold text-5xl text-transparent">
               Create Account
             </h1>
             <p className="text-base-content/70 mt-4 text-pretty">
@@ -201,7 +201,7 @@ export default function SignupPage(): JSX.Element {
           {/* Account verification section */}
           <div className="rounded-box bg-base-200/50 backdrop-blur-xs space-y-4 p-4">
             <details className="collapse-plus bg-base-100/50 collapse">
-              <summary className="collapse-title text-sm font-medium">Need to verify your account?</summary>
+              <summary className="collapse-title font-medium text-sm">Need to verify your account?</summary>
               <div className="collapse-content">
                 <form className="mt-4 space-y-4" onSubmit={handleResendVerification}>
                   <div className="form-control">

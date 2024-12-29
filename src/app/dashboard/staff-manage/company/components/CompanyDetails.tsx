@@ -346,7 +346,7 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ company, isEditing, set
       </div>
 
       <Modal id="phones_modal">
-        <h2 className="text-lg font-bold">{editingPhoneIndex !== null ? 'Edit Phone' : 'Add Phone'}</h2>
+        <h2 className="font-bold text-lg">{editingPhoneIndex !== null ? 'Edit Phone' : 'Add Phone'}</h2>
         <form className="flex flex-col gap-2 p-4">
           <FormField
             label="Phone"
@@ -369,7 +369,7 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ company, isEditing, set
       </Modal>
 
       <Modal id="emails_modal">
-        <h2 className="text-lg font-bold">{editingEmailIndex !== null ? 'Edit Email' : 'Add Email'}</h2>
+        <h2 className="font-bold text-lg">{editingEmailIndex !== null ? 'Edit Email' : 'Add Email'}</h2>
         <form className="flex flex-col gap-2 p-4">
           <FormField
             label="Email"
@@ -392,7 +392,7 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ company, isEditing, set
       </Modal>
 
       <Modal id="field_modal">
-        <h2 className="text-lg font-bold">Edit {editingField?.replace('contactDetails.', '').toUpperCase()}</h2>
+        <h2 className="font-bold text-lg">Edit {editingField?.replace('contactDetails.', '').toUpperCase()}</h2>
         <form className="flex flex-col gap-2 p-4">
           <FormField
             label={editingField?.replace('contactDetails.', '').toUpperCase() || ''}
@@ -411,7 +411,7 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ company, isEditing, set
       </Modal>
 
       <Modal id="logo_modal">
-        <h2 className="text-lg font-bold">
+        <h2 className="font-bold text-lg">
           {editingField?.startsWith('logos.') ? `Update ${editingField.split('.')[1]} Logo` : 'Add Logo'}
         </h2>
         <form className="flex flex-col gap-2 p-4">

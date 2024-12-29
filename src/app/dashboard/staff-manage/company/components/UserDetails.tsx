@@ -236,7 +236,7 @@ const UserDetails: FC<UserDetailsProps> = ({ users }) => {
 
   return (
     <div className="rounded-box border-base-content/60 bg-base-300 flex flex-col gap-2 border p-2">
-      <h2 className="mx-auto text-lg font-bold">Users</h2>
+      <h2 className="mx-auto font-bold text-lg">Users</h2>
       {loading ? (
         <span className="mx-auto flex w-full flex-col items-center gap-3">
           <span className="loading loading-spinner text-primary text-pretty"></span>Loading...
@@ -414,7 +414,7 @@ const UserDetails: FC<UserDetailsProps> = ({ users }) => {
       </button>
 
       <Modal id="add_user_modal">
-        <h2 className="text-lg font-bold">Add User</h2>
+        <h2 className="font-bold text-lg">Add User</h2>
         <form className="flex flex-col gap-2 p-4">
           <label className="input input-sm input-primary flex items-center gap-2">
             Email:
@@ -435,7 +435,7 @@ const UserDetails: FC<UserDetailsProps> = ({ users }) => {
       </Modal>
 
       <Modal id="add_access_levels_modal">
-        <h2 className="text-lg font-bold">Add Access Levels</h2>
+        <h2 className="font-bold text-lg">Add Access Levels</h2>
         <form className="flex justify-around gap-2 p-4" onSubmit={handleAddUserRoleAndAccess}>
           <span className="flex flex-col items-center gap-2 p-2">
             <span className="flex flex-wrap">

@@ -107,7 +107,7 @@ export default function SidebarPage({
     <React.Fragment>
       <div className="bg-base-100 border-base-200 flex min-h-full w-72 flex-col border-r">
         <div className="bg-base-100 sticky top-0 z-20 px-4 py-3 shadow-sm">
-          <h1 className="from-primary via-secondary to-accent bg-gradient-to-r bg-clip-text text-center text-xl font-bold text-transparent">
+          <h1 className="from-primary via-secondary to-accent bg-gradient-to-r bg-clip-text text-center font-bold text-xl text-transparent">
             Kalamandir
           </h1>
         </div>

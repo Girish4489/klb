@@ -20,7 +20,7 @@ export default function LogoutSuccess(): JSX.Element {
                   <ShieldCheckIcon className="text-success relative h-16 w-16" />
                 </div>
               </div>
-              <h1 className="bg-linear-to-r from-primary via-accent to-secondary mt-8 bg-clip-text text-4xl font-bold text-transparent md:text-5xl">
+              <h1 className="bg-linear-to-r from-primary via-accent to-secondary mt-8 bg-clip-text font-bold text-4xl text-transparent md:text-5xl">
                 Logged Out Successfully!
               </h1>
               <div className="mt-8 flex w-full flex-col gap-4">

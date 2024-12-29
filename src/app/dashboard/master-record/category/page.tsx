@@ -897,7 +897,7 @@ export default function CategoryPage(): JSX.Element {
         </div>
         {/* category list */}
         <div className="rounded-box border-base-300 flex grow flex-col items-center gap-2 border p-2 shadow-2xl">
-          <h1 className="border-base-content m-1 w-max border-b text-center text-base font-bold">Categories</h1>
+          <h1 className="border-base-content m-1 w-max border-b text-center font-bold text-base">Categories</h1>
           <div className="flex h-auto w-full flex-col">
             <div className="flex flex-col items-start justify-between gap-2 max-sm:items-center">
               {category.map((cat: ICategory, catIndex: number) => (

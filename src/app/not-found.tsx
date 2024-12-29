@@ -158,12 +158,12 @@ const NotFound: React.FC = () => {
           <motion.h1
             animate={{ backgroundPosition: ['0%', '100%', '0%'] }}
             transition={{ duration: 10, repeat: Infinity }}
-            className="bg-linear-to-r from-primary via-secondary to-accent bg-[length:500%] bg-clip-text text-8xl font-black text-transparent drop-shadow-lg"
+            className="bg-linear-to-r from-primary via-secondary to-accent bg-[length:500%] bg-clip-text font-black text-8xl text-transparent drop-shadow-lg"
           >
             404
           </motion.h1>
           <motion.div variants={itemVariants} className="space-y-2">
-            <p className="text-warning text-3xl font-bold">Oops! Page Not Found</p>
+            <p className="text-warning font-bold text-3xl">Oops! Page Not Found</p>
             <p className="text-info-content/80">Looks like you&apos;ve ventured into uncharted territory...</p>
           </motion.div>
         </motion.div>

@@ -51,7 +51,7 @@ export const FormModal: FC<FormModalProps> = ({
   return (
     <dialog id={id} className="modal">
       <div className="modal-box w-fit">
-        <h3 className="text-lg font-bold">{title}</h3>
+        <h3 className="font-bold text-lg">{title}</h3>
         <div className="flex flex-col items-center p-1 pt-4">
           <form onSubmit={handleSubmit} className="form flex w-max flex-col items-start gap-2">
             {fields.map((field) => (

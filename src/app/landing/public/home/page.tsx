@@ -257,7 +257,7 @@ export default function Home(): JSX.Element {
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <h1 className="text-5xl font-bold">Manage Your Fashion Business Better!</h1>
+            <h1 className="font-bold text-5xl">Manage Your Fashion Business Better!</h1>
             <p className="text-pretty py-6 text-xl">
               Transform your fashion retail business with our comprehensive management platform. Streamline inventory,
               boost sales, and delight customers.
@@ -288,7 +288,7 @@ export default function Home(): JSX.Element {
                 whileTap={{ scale: 0.95 }}
               >
                 <motion.div
-                  className="text-primary text-4xl font-bold"
+                  className="text-primary font-bold text-4xl"
                   initial={{ opacity: 0, scale: 0.5 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
@@ -313,7 +313,7 @@ export default function Home(): JSX.Element {
           transition={{ duration: 0.8 }}
           className="relative"
         >
-          <h2 className="mb-16 text-center text-5xl font-bold">
+          <h2 className="mb-16 text-center font-bold text-5xl">
             <span className="bg-linear-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
               Why Choose Us?
             </span>
@@ -388,7 +388,7 @@ export default function Home(): JSX.Element {
           transition={{ duration: 0.8 }}
           className="relative"
         >
-          <h2 className="bg-linear-to-r from-primary to-accent mb-16 bg-clip-text text-center text-4xl font-bold text-transparent">
+          <h2 className="bg-linear-to-r from-primary to-accent mb-16 bg-clip-text text-center font-bold text-4xl text-transparent">
             Loved by Fashion Retailers
           </h2>
           <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 md:grid-cols-3">
@@ -429,7 +429,7 @@ export default function Home(): JSX.Element {
       {/* Enhanced Pricing Cards */}
       <div className="bg-linear-to-b from-base-300 to-base-200 px-4 py-24">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-          <h2 className="mb-16 text-center text-5xl font-bold">
+          <h2 className="mb-16 text-center font-bold text-5xl">
             <span className="bg-linear-to-r from-secondary via-primary to-accent bg-clip-text text-transparent">
               Simple, Transparent Pricing
             </span>
@@ -448,7 +448,7 @@ export default function Home(): JSX.Element {
                   {plan.recommended && <div className="badge badge-primary absolute right-4 top-4">Recommended</div>}
                   <h3 className="card-title text-2xl">{plan.name}</h3>
                   <div className="my-4">
-                    <span className="text-4xl font-bold">{plan.price}</span>
+                    <span className="font-bold text-4xl">{plan.price}</span>
                     {plan.price !== 'Custom' && <span className="text-base-content/70">/month</span>}
                   </div>
                   <ul className="space-y-2">

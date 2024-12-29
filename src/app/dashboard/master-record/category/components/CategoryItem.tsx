@@ -83,7 +83,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
             <div className="mx-2 flex w-full flex-col gap-1 max-sm:m-0">
               {/* Styles */}
               <details className="collapse-arrow border-base-100 bg-base-200 collapse border shadow-sm">
-                <summary className="collapse-title text-xl font-medium">
+                <summary className="collapse-title font-medium text-xl">
                   <div className="flex flex-row items-center justify-between gap-2">
                     <p className="label-text w-max">Styles</p>
                     <CustomButton
@@ -104,7 +104,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
                   {category.styleProcess?.map((styleProcess: IStyleProcess, styleProcessIndex: number) => (
                     <div key={styleProcessIndex}>
                       <details className="collapse-arrow border-base-300 bg-base-200 collapse border-2">
-                        <summary className="collapse-title text-xl font-medium">
+                        <summary className="collapse-title font-medium text-xl">
                           <div className="flex flex-row items-center justify-between">
                             <p className="label label-text">{styleProcess.styleProcessName}</p>
                             <span className="mr-2 flex flex-row gap-1">
@@ -182,7 +182,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
               </details>
               {/* Dimensions */}
               <details className="collapse-arrow border-base-100 bg-base-200 collapse border shadow-sm">
-                <summary className="collapse-title text-xl font-medium">
+                <summary className="collapse-title font-medium text-xl">
                   <div className="flex flex-row items-center justify-between gap-2">
                     <p className="label-text w-max">Dimensions</p>
                     <CustomButton
@@ -203,7 +203,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
                   {category.dimensionTypes?.map((DimensionType: IDimensionTypes, typIndex: number) => (
                     <div key={typIndex}>
                       <details className="collapse-arrow border-base-300 bg-base-200 collapse border-2">
-                        <summary className="collapse-title text-xl font-medium">
+                        <summary className="collapse-title font-medium text-xl">
                           <div className="flex flex-row items-center justify-between">
                             <p className="label label-text">{DimensionType.dimensionTypeName}</p>
                             <span className="mr-2 flex flex-row gap-1">

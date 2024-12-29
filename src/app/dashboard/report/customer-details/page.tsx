@@ -377,7 +377,7 @@ export default function CustomerDetails(): JSX.Element {
           <div className="modal-box min-w-fit p-0">
             {editCustomer && (
               <form onSubmit={handleEditCustomer} className="rounded-box border-base-300 w-full border p-4">
-                <h2 className="my-2 text-center text-2xl font-bold">Update Customer</h2>
+                <h2 className="my-2 text-center font-bold text-2xl">Update Customer</h2>
                 <div className="mb-2 flex flex-col md:flex-row md:justify-between md:gap-1">
                   {/* First Column */}
                   <div className="mb-2 flex flex-col max-sm:w-full max-sm:gap-1">

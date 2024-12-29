@@ -38,7 +38,7 @@ const SearchBillForm: FC<SearchFormProps> = ({ onSearch, searchResults, onRowCli
               className="hover:bg-neutral rounded-selector grid items-center gap-y-1 p-2 hover:cursor-pointer"
               onClick={onRowClick(bill._id.toString())}
             >
-              <div className="row-span-4 items-center bg-opacity-60 text-center text-4xl font-thin tabular-nums">
+              <div className="row-span-4 items-center bg-opacity-60 text-center font-thin text-4xl tabular-nums">
                 {bill.billNumber}
               </div>
               <div className="badge badge-secondary badge-soft col-start-2 w-full bg-opacity-70 text-sm">
@@ -78,7 +78,7 @@ const SearchBillForm: FC<SearchFormProps> = ({ onSearch, searchResults, onRowCli
     <form ref={formRef} className="join">
       <label
         htmlFor="billSearch"
-        className="input input-sm join-item label-text input-bordered input-primary bg-accent/5 flex items-center gap-2 lg:rounded-l-full"
+        className="input input-sm join-item label-text input-bordered input-primary bg-accent/5 flex items-center gap-2 rounded-l-full"
       >
         <MagnifyingGlassIcon className="join-item text-primary h-5 w-5" />
         <input

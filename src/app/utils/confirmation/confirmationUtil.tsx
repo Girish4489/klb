@@ -52,7 +52,7 @@ const ConfirmationContent: FC<{
       </button>
       <div className="flex flex-col items-center gap-4">
         {getIcon()}
-        <h2 className="text-lg font-bold">{header}</h2>
+        <h2 className="font-bold text-lg">{header}</h2>
         <p className="py-2 text-center">{message}</p>
       </div>
       <div className="modal-action mt-8 flex justify-end gap-2">

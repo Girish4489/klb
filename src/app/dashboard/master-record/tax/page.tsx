@@ -220,7 +220,7 @@ export default function TaxPage(): JSX.Element {
         </button>
       </form>
       <Modal id="taxEdit_modal" isBackdrop={true}>
-        <h3 className="text-center text-lg font-bold">Edit Tax</h3>
+        <h3 className="text-center font-bold text-lg">Edit Tax</h3>
         <form onSubmit={handleEdit} className="m-2 flex flex-wrap gap-2 p-2">
           <InputField
             label="Tax Name"

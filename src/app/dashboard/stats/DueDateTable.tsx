@@ -155,7 +155,7 @@ const DueDateTable = ({ refresh }: DueDateTableProps): JSX.Element => {
             <tr className="cursor-pointer select-none text-center">
               <th onClick={() => handleHeaderClick('billNumber')}>
                 <div className="flex items-center justify-between gap-1">
-                  <span className="grow">Bill Number</span> {getSortIcon('billNumber')}
+                  <span className="grow">Bill No</span> {getSortIcon('billNumber')}
                 </div>
               </th>
               <th onClick={() => handleHeaderClick('date')}>

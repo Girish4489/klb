@@ -47,40 +47,40 @@ const PaymentStatus: React.FC<{ bill: IBill }> = ({ bill }) => {
                 <td className="px-2 py-1">
                   <b>Base Total:</b>
                 </td>
-                <td className="px-2 py-1 text-right text-base font-bold">{bill.totalAmount}</td>
+                <td className="px-2 py-1 text-right font-bold text-base">{bill.totalAmount}</td>
               </tr>
               {billDetails.discount > 0 && (
                 <tr className="text-secondary">
                   <td className="px-2 py-1">
                     <b>Discount:</b>
                   </td>
-                  <td className="px-2 py-1 text-right text-base font-bold">- {billDetails.discount}</td>
+                  <td className="px-2 py-1 text-right font-bold text-base">- {billDetails.discount}</td>
                 </tr>
               )}
               <tr className="text-accent">
                 <td className="px-2 py-1">
                   <b>Tax Amount:</b>
                 </td>
-                <td className="px-2 py-1 text-right text-base font-bold">+ {billDetails.taxAmount}</td>
+                <td className="px-2 py-1 text-right font-bold text-base">+ {billDetails.taxAmount}</td>
               </tr>
               <tr className="text-info">
                 <td className="px-2 py-1">
                   <b>Grand Total:</b>
                 </td>
-                <td className="px-2 py-1 text-right text-base font-bold">{billDetails.grandTotal}</td>
+                <td className="px-2 py-1 text-right font-bold text-base">{billDetails.grandTotal}</td>
               </tr>
               <tr className="text-success">
                 <td className="px-2 py-1">
                   <b>Paid Amount:</b>
                 </td>
-                <td className="px-2 py-1 text-right text-base font-bold">{billDetails.paidAmount}</td>
+                <td className="px-2 py-1 text-right font-bold text-base">{billDetails.paidAmount}</td>
               </tr>
               {billDetails.dueAmount > 0 && (
                 <tr className="text-error">
                   <td className="px-2 py-1">
                     <b>Due Amount:</b>
                   </td>
-                  <td className="px-2 py-1 text-right text-base font-bold">{billDetails.dueAmount}</td>
+                  <td className="px-2 py-1 text-right font-bold text-base">{billDetails.dueAmount}</td>
                 </tr>
               )}
             </tbody>

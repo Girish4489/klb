@@ -120,13 +120,13 @@ export default function DashboardClient(): JSX.Element {
               >
                 <div className="flex items-center justify-center gap-3">
                   <span
-                    className={`bg-linear-to-r ${timeTheme.gradient} bg-clip-text text-xl font-light text-transparent`}
+                    className={`bg-linear-to-r ${timeTheme.gradient} bg-clip-text font-light text-xl text-transparent`}
                   >
                     {greeting} {timeTheme.message}
                   </span>
                   <span className="text-2xl">{timeTheme.icon}</span>
                 </div>
-                <h1 className="bg-linear-to-r from-primary via-secondary to-accent bg-clip-text text-4xl font-bold capitalize text-transparent">
+                <h1 className="bg-linear-to-r from-primary via-secondary to-accent bg-clip-text font-bold text-4xl capitalize text-transparent">
                   {user?.username || 'Guest'}
                 </h1>
               </motion.div>
@@ -189,13 +189,13 @@ export default function DashboardClient(): JSX.Element {
               <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3 }}>
                 <div className="mb-4 flex items-center justify-center gap-3">
                   <span
-                    className={`bg-linear-to-r ${timeTheme.gradient} bg-clip-text text-xl font-light text-transparent`}
+                    className={`bg-linear-to-r ${timeTheme.gradient} bg-clip-text font-light text-xl text-transparent`}
                   >
                     {greeting} {timeTheme.message}
                   </span>
                   <span className="text-2xl">{timeTheme.icon}</span>
                 </div>
-                <h1 className="bg-linear-to-r from-primary via-secondary to-accent bg-clip-text text-3xl font-bold capitalize text-transparent">
+                <h1 className="bg-linear-to-r from-primary via-secondary to-accent bg-clip-text font-bold text-3xl capitalize text-transparent">
                   {user?.username || 'Guest'}
                 </h1>
               </motion.div>

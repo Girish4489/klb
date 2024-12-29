@@ -60,7 +60,7 @@ function VerifyEmailPageWrapper(): JSX.Element {
         {/* Info Section */}
         <div className="flex select-none flex-col justify-center gap-4 lg:w-1/2">
           <div className="text-center">
-            <h1 className="bg-linear-to-r from-accent via-primary to-secondary bg-clip-text text-5xl font-bold text-transparent">
+            <h1 className="bg-linear-to-r from-accent via-primary to-secondary bg-clip-text font-bold text-5xl text-transparent">
               Verify Your Email
             </h1>
             <p className="text-base-content/70 mt-4 text-pretty">

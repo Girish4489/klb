@@ -10,7 +10,7 @@ interface TaxModalProps {
 const TaxModal: React.FC<TaxModalProps> = ({ taxList, selectedTaxes, onTaxToggle }) => (
   <dialog id="tax_modal" className="modal">
     <div className="modal-box">
-      <h3 className="text-center text-lg font-bold">Tax</h3>
+      <h3 className="text-center font-bold text-lg">Tax</h3>
       <div className="tax-table">
         <table className="table-zebra table">
           <thead>

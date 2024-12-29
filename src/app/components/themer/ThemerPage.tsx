@@ -118,7 +118,7 @@ export default function ThemerPage({
                     <div className="flex flex-wrap gap-1">
                       <div className="bg-primary flex aspect-square w-5 items-center justify-center rounded-sm lg:w-6">
                         <div
-                          className="tooltip tooltip-top text-primary-content text-sm font-bold"
+                          className="tooltip tooltip-top text-primary-content font-bold text-sm"
                           data-tip={'Primary'}
                         >
                           A
@@ -126,20 +126,20 @@ export default function ThemerPage({
                       </div>
                       <div className="bg-secondary flex aspect-square w-5 items-center justify-center rounded-sm lg:w-6">
                         <div
-                          className="tooltip tooltip-top text-secondary-content text-sm font-bold"
+                          className="tooltip tooltip-top text-secondary-content font-bold text-sm"
                           data-tip={'secondary'}
                         >
                           A
                         </div>
                       </div>
                       <div className="bg-accent flex aspect-square w-5 items-center justify-center rounded-sm lg:w-6">
-                        <div className="tooltip tooltip-top text-accent-content text-sm font-bold" data-tip={'accent'}>
+                        <div className="tooltip tooltip-top text-accent-content font-bold text-sm" data-tip={'accent'}>
                           A
                         </div>
                       </div>
                       <div className="bg-neutral flex aspect-square w-5 items-center justify-center rounded-sm lg:w-6">
                         <div
-                          className="tooltip tooltip-top text-neutral-content text-sm font-bold"
+                          className="tooltip tooltip-top text-neutral-content font-bold text-sm"
                           data-tip={'nuetral'}
                         >
                           A
