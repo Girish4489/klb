@@ -1,4 +1,5 @@
 // @ts-check
+import bundleAnalyzer from '@next/bundle-analyzer';
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
@@ -15,4 +16,12 @@ const nextConfig: NextConfig = {
   },
 };
 
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+});
+
+// Use module.exports for Node.js/Next.js compatibility
+module.exports = process.env.ANALYZE === 'true' ? withBundleAnalyzer(nextConfig) : nextConfig;
+
+// This export is just for TypeScript type checking
 export default nextConfig;

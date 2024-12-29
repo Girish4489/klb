@@ -5,6 +5,7 @@ import TopbarLoader from '@components/topbarLoader/page';
 import { ThemeProvider } from '@context/ThemeContext';
 import { CompanyProvider } from '@context/companyContext';
 import { AuthProvider, UserProvider } from '@context/userContext';
+import { roboto } from '@utils/fonts/fontConfig';
 import { defaultMetadata } from '@utils/metadata';
 import { Analytics } from '@vercel/analytics/react';
 import Head from 'next/head';
@@ -13,7 +14,12 @@ import { Toaster } from 'react-hot-toast';
 
 export default function RootLayout({ children }: { children: ReactNode }): JSX.Element {
   return (
-    <html lang="en">
+    <html
+      lang="en"
+      className={`${Object.values(roboto)
+        .map((font) => font.variable)
+        .join(' ')}`}
+    >
       <Head>
         <title>{defaultMetadata.title as string}</title>
         <meta name="description" content={defaultMetadata.description as string} />
@@ -32,7 +38,7 @@ export default function RootLayout({ children }: { children: ReactNode }): JSX.E
         <AuthProvider>
           <UserProvider>
             <CompanyProvider>
-              <body>
+              <body className={roboto.regular.className}>
                 <TopbarLoader />
                 <Toaster />
                 {children}

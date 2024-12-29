@@ -22,6 +22,14 @@ const config: Config = {
         fadeIn: 'fadeIn 0.5s ease-in-out',
         slideUp: 'slideUp 0.5s ease-out',
       },
+      fontFamily: {
+        thin: ['var(--font-roboto-thin)'],
+        light: ['var(--font-roboto-light)'],
+        regular: ['var(--font-roboto-regular)'],
+        medium: ['var(--font-roboto-medium)'],
+        bold: ['var(--font-roboto-bold)'],
+        black: ['var(--font-roboto-black)'],
+      },
     },
   },
 };

@@ -12,7 +12,6 @@
   color utility to any element that depends on these defaults.
 */
 @layer base {
-
   *,
   ::after,
   ::before,
@@ -22,93 +21,9 @@
   }
 }
 
-@font-face {
-  font-family: 'Roboto';
-  src: url('./../../public/fonts/Roboto/Roboto-Thin.ttf') format('truetype');
-  font-weight: 100;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Roboto';
-  src: url('./../../public/fonts/Roboto/Roboto-ThinItalic.ttf') format('truetype');
-  font-weight: 100;
-  font-style: italic;
-}
-
-@font-face {
-  font-family: 'Roboto';
-  src: url('./../../public/fonts/Roboto/Roboto-Light.ttf') format('truetype');
-  font-weight: 300;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Roboto';
-  src: url('./../../public/fonts/Roboto/Roboto-LightItalic.ttf') format('truetype');
-  font-weight: 300;
-  font-style: italic;
-}
-
-@font-face {
-  font-family: 'Roboto';
-  src: url('./../../public/fonts/Roboto/Roboto-Regular.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Roboto';
-  src: url('./../../public/fonts/Roboto/Roboto-Italic.ttf') format('truetype');
-  font-weight: 400;
-  font-style: italic;
-}
-
-@font-face {
-  font-family: 'Roboto';
-  src: url('./../../public/fonts/Roboto/Roboto-Medium.ttf') format('truetype');
-  font-weight: 500;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Roboto';
-  src: url('./../../public/fonts/Roboto/Roboto-MediumItalic.ttf') format('truetype');
-  font-weight: 500;
-  font-style: italic;
-}
-
-@font-face {
-  font-family: 'Roboto';
-  src: url('./../../public/fonts/Roboto/Roboto-Bold.ttf') format('truetype');
-  font-weight: 700;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Roboto';
-  src: url('./../../public/fonts/Roboto/Roboto-BoldItalic.ttf') format('truetype');
-  font-weight: 700;
-  font-style: italic;
-}
-
-@font-face {
-  font-family: 'Roboto';
-  src: url('./../../public/fonts/Roboto/Roboto-Black.ttf') format('truetype');
-  font-weight: 900;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Roboto';
-  src: url('./../../public/fonts/Roboto/Roboto-BlackItalic.ttf') format('truetype');
-  font-weight: 900;
-  font-style: italic;
-}
-
 body {
-  font-family: 'Roboto', sans-serif;
-  font-weight: 400;
+  /* Remove all @font-face declarations since we're using next/font */
+  font-family: var(--font-roboto-regular), system-ui, sans-serif;
 }
 
 /* HTML: <div class="grid-lines"></div> */
@@ -124,8 +39,10 @@ body {
 
   --c: #556270 25%, #0000 0;
   background:
-    conic-gradient(at var(--g) var(--t), var(--c)) calc((var(--s) / var(--n) - var(--g) + var(--t)) / 2) 0 / calc(var(--s) / var(--n)) var(--s),
-    conic-gradient(from 180deg at var(--t) var(--g), var(--c)) 0 calc((var(--s) / var(--n) - var(--g) + var(--t)) / 2) / var(--s) calc(var(--s) / var(--n));
+    conic-gradient(at var(--g) var(--t), var(--c)) calc((var(--s) / var(--n) - var(--g) + var(--t)) / 2) 0 /
+      calc(var(--s) / var(--n)) var(--s),
+    conic-gradient(from 180deg at var(--t) var(--g), var(--c)) 0 calc((var(--s) / var(--n) - var(--g) + var(--t)) / 2) /
+      var(--s) calc(var(--s) / var(--n));
   /* you probably don't need to set any size in your case */
   width: calc(round(down, 100%, var(--s)) + var(--t));
   height: calc(4 * var(--s) + var(--t));
@@ -198,7 +115,8 @@ body {
   background: #bf4d28;
   width: calc(var(--b) + var(--s) / (2 * tan(var(--a) / 2)));
   min-height: 250px;
-  --_g: 100% var(--s) repeat-y conic-gradient(from calc(90deg - var(--a) / 2) at left, #0000, #000 1deg calc(var(--a) - 1deg), #0000 var(--a));
+  --_g: 100% var(--s) repeat-y
+    conic-gradient(from calc(90deg - var(--a) / 2) at left, #0000, #000 1deg calc(var(--a) - 1deg), #0000 var(--a));
   mask:
     var(--b) 50% / var(--_g) exclude,
     0 50% / var(--_g);
@@ -214,7 +132,8 @@ body {
 
   height: calc(var(--b) + var(--s) / (2 * tan(var(--a) / 2)));
   width: 100%;
-  --_g: var(--s) repeat-x conic-gradient(from calc(var(--a) / -2) at bottom, #0000, #000 1deg calc(var(--a) - 1deg), #0000 var(--a));
+  --_g: var(--s) repeat-x
+    conic-gradient(from calc(var(--a) / -2) at bottom, #0000, #000 1deg calc(var(--a) - 1deg), #0000 var(--a));
   mask:
     50% calc(-1 * var(--b)) / var(--_g) exclude,
     50% / var(--_g);
@@ -265,7 +184,6 @@ body {
 }
 
 @keyframes bounce {
-
   0%,
   100% {
     transform: translateY(0);

@@ -1,6 +1,7 @@
 'use client';
 import { InformationCircleIcon } from '@heroicons/react/24/solid';
 import { IUser } from '@models/userModel';
+import { fontWeightMap, type FontWeight } from '@utils/fonts/fontConfig';
 import { JSX, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -25,8 +26,11 @@ export default function SettingsFont({
   }, [user.preferences?.fonts]);
 
   useEffect(() => {
-    document.body.style.fontFamily = fonts.name;
-    document.body.style.fontWeight = fonts.weight.toString();
+    // Apply font weight using CSS variable
+    const weightName = fontWeightMap[fonts.weight as FontWeight];
+    if (weightName) {
+      document.body.style.fontFamily = `var(--font-roboto-${weightName})`;
+    }
   }, [fonts]);
 
   const updateFontPreferences = async (updatedFonts: Fonts): Promise<void> => {
