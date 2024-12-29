@@ -418,44 +418,63 @@ export default function ReceiptPage(): JSX.Element {
   };
 
   return (
-    <div className="flex grow flex-col gap-1">
-      <span className="rounded-box bg-accent/10 flex min-w-fit flex-row flex-wrap items-center justify-between gap-2 px-3 py-1.5 backdrop-blur-xl max-sm:flex-col">
-        <span className="select-disabled rounded-box">
-          <button className="btn btn-primary btn-sm" disabled onClick={createNewReceipt}>
-            <PlusCircleIcon className="h-5 w-5" />
-            New Receipt
-          </button>
-        </span>
-        <BarcodeScannerPage
-          onScanComplete={setHeaderBarcode}
-          scannerId={'receiptHeaderScanner'}
-          scanModalId="receiptHeaderScanner_modal"
-        />
-        <SearchForm onSearch={billSearch} searchResults={searchBill} onRowClick={searchRowClicked} />
-      </span>
-      <div className="flex grow flex-col gap-1 rounded-sm p-1">
-        <div className="rounded-box bg-base-200 flex flex-col gap-1 p-2">
-          <h1 className="text-center font-bold">Receipt</h1>
-          <ReceiptHeader
-            receipt={receipt}
-            setReceipt={setReceipt}
-            amtTrack={amtTrack}
-            setAmtTrack={setAmtTrack}
-            tax={tax}
+    <div className="flex grow flex-col gap-1 px-2">
+      <div className="rounded-box bg-neutral/50 flex min-w-fit flex-row flex-wrap items-center justify-between gap-2 px-3 py-1.5 backdrop-blur-xl max-sm:flex-col max-sm:flex-wrap-reverse">
+        <button
+          className="btn select-disabled btn-primary btn-sm hover:cursor-not-allowed"
+          disabled
+          onClick={createNewReceipt}
+        >
+          <PlusCircleIcon className="h-5 w-5" />
+          New Receipt
+        </button>
+        <span className="flex flex-row gap-2">
+          <BarcodeScannerPage
+            onScanComplete={setHeaderBarcode}
+            scannerId={'receiptHeaderScanner'}
+            scanModalId="receiptHeaderScanner_modal"
           />
-          <button className="btn btn-primary btn-sm" onClick={saveReceipt}>
-            <CloudArrowUpIcon className="h-5 w-5" />
-            Save
-          </button>
-        </div>
+          {receipt && (
+            <button
+              className="btn btn-error btn-sm"
+              onClick={() => {
+                setReceipt(undefined);
+                resetAmtTrack();
+              }}
+            >
+              Clear Receipt
+            </button>
+          )}
+        </span>
+        <SearchForm onSearch={billSearch} searchResults={searchBill} onRowClick={searchRowClicked} />
+      </div>
+      <div className="flex grow flex-col gap-2 rounded-sm py-2">
+        {receipt && (
+          <div className="rounded-box bg-base-200 flex flex-col gap-1 px-2 py-4">
+            <h1 className="text-center font-bold">
+              <span className="badge badge-soft badge-success">Create Receipt</span>
+            </h1>
+            <ReceiptHeader
+              receipt={receipt}
+              setReceipt={setReceipt}
+              amtTrack={amtTrack}
+              setAmtTrack={setAmtTrack}
+              tax={tax}
+            />
+            <button className="btn btn-primary btn-sm" onClick={saveReceipt}>
+              <CloudArrowUpIcon className="h-5 w-5" />
+              Save
+            </button>
+          </div>
+        )}
         {/* Receipts details table */}
-        <div className="flex grow flex-col gap-2 p-2">
+        <div className="flex grow flex-col gap-2">
           <div className="flex flex-col gap-1">
-            <div className="rounded-box bg-base-300/80 flex justify-center gap-2 py-2">
+            <div className="rounded-box bg-base-300/80 flex flex-wrap justify-center gap-2 p-2">
               <form onSubmit={handleReceiptSearch} className="join">
                 <label
                   htmlFor="receiptSearch"
-                  className="input input-sm join-item label-text input-bordered input-primary bg-accent/5 flex items-center gap-2"
+                  className="input input-sm join-item label-text input-bordered input-primary bg-accent/5 flex items-center gap-2 rounded-l-full"
                 >
                   <MagnifyingGlassIcon className="join-item text-info h-5 w-5" />
                   <input
@@ -476,7 +495,7 @@ export default function ReceiptPage(): JSX.Element {
                   <option value="bill">Bill No</option>
                   <option value="mobile">Mobile</option>
                 </select>
-                <button tabIndex={0} role="button" className="btn btn-primary btn-sm rounded-l-none">
+                <button tabIndex={0} role="button" className="btn btn-primary btn-sm rounded-r-full">
                   <MagnifyingGlassIcon className="join-item h-5 w-5" />
                 </button>
               </form>

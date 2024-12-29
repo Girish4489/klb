@@ -1,11 +1,12 @@
 'use client';
+import AmountTracking from '@dashboard/transaction/receipt/components/AmountTracking';
 import InputField from '@dashboard/transaction/receipt/components/InputField';
 import TaxModal from '@dashboard/transaction/receipt/components/TaxModal';
+import { calculateTotalTax } from '@dashboard/transaction/receipt/utils/receiptUtils';
 import { PlusCircleIcon } from '@heroicons/react/24/outline';
-import { IReceipt, IReceiptTax, ITax } from '@models/klm';
+import { IReceipt, ITax } from '@models/klm';
 import React from 'react';
 import toast from 'react-hot-toast';
-import AmountTracking from './AmountTracking';
 
 interface ReceiptHeaderProps {
   receipt: IReceipt | undefined;
@@ -24,14 +25,7 @@ interface ReceiptHeaderProps {
   tax: ITax[];
 }
 
-const ReceiptHeader: React.FC<ReceiptHeaderProps> = ({ receipt, setReceipt, amtTrack, tax }) => {
-  const calculateTotalTax = (amount: number, taxes: IReceiptTax[]): number => {
-    return taxes.reduce(
-      (acc, t) => acc + (t.taxType === 'Percentage' ? (amount * t.taxPercentage) / 100 : t.taxPercentage),
-      0,
-    );
-  };
-
+const ReceiptHeader: React.FC<ReceiptHeaderProps> = ({ receipt, setReceipt, amtTrack, tax = [] }) => {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-row flex-wrap items-center gap-2 p-1 max-sm:flex-col max-sm:*:w-full">
@@ -102,8 +96,15 @@ const ReceiptHeader: React.FC<ReceiptHeaderProps> = ({ receipt, setReceipt, amtT
           onChange={(e) => {
             const limitedValue = e.target.value.slice(0, 7);
             const parsedValue = limitedValue === '' ? 0 : parseInt(limitedValue);
-            const totalTax = calculateTotalTax(parsedValue, receipt?.tax ?? []);
-            setReceipt({ ...receipt, amount: parsedValue, taxAmount: totalTax } as IReceipt);
+            setReceipt((prev) => {
+              if (!prev) return prev;
+              return {
+                ...prev,
+                amount: parsedValue,
+                tax: prev.tax || [], // Ensure tax array exists
+                taxAmount: calculateTotalTax(parsedValue, prev.tax),
+              } as IReceipt;
+            });
           }}
           placeholder="Amount"
           required

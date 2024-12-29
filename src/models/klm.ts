@@ -119,7 +119,7 @@ interface IReceipt extends Document {
   receiptBy?: { _id: ObjectId; name: string };
   amount: number; // current amount paid/paying
   discount: number;
-  tax: IReceiptTax[];
+  tax?: IReceiptTax[];
   taxAmount: number;
   paymentDate: Date;
   paymentMethod?: string;

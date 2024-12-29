@@ -13,18 +13,20 @@ const ReceiptTable: React.FC<ReceiptTableProps> = ({ receipts, caption }) => {
   const router = useRouter();
 
   return (
-    <div className="rounded-box overflow-x-auto">
-      <table className="table-zebra table w-full">
-        <caption className="text-lg font-bold">{caption}</caption>
+    <div className="rounded-box z-0 overflow-x-auto">
+      <table className="table-zebra -z-0 table w-full">
+        <caption className="font-bold text-lg">
+          <span className="badge badge-soft badge-success">{caption}</span>
+        </caption>
         <thead>
           <tr className="text-center">
             <th>Slno</th>
-            <th>Receipt Number</th>
-            <th>Bill Number</th>
+            <th>Receipt No</th>
+            <th>Bill No</th>
             <th>Mobile</th>
             <th>Date</th>
             <th>Amount</th>
-            <th>Payment Method</th>
+            <th>Method</th>
             <th>Receipt By</th>
             <th>Tax Amount</th>
             <th>Discount</th>

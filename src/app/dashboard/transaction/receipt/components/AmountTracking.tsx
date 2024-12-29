@@ -26,7 +26,7 @@ const AmountTracking: React.FC<AmountTrackingProps> = ({
     <div className="bg-base-200 grid grid-cols-2 gap-4 rounded-lg p-4">
       {/* Original Bill Section */}
       <div className="bg-base-100 ring-primary/20 space-y-2 rounded-lg p-3 ring-1">
-        <h3 className="text-primary text-sm font-bold">Original Bill</h3>
+        <h3 className="text-primary font-bold text-sm">Original Bill</h3>
         <div className="grid grid-cols-2 gap-1 text-sm">
           <span className="text-base-content">Bill Amount:</span>
           <span className="text-right font-semibold">{amtTrack.total.toFixed(2)}</span>
@@ -41,7 +41,7 @@ const AmountTracking: React.FC<AmountTrackingProps> = ({
 
       {/* Payment Status Section */}
       <div className="bg-base-100 ring-secondary/20 space-y-2 rounded-lg p-3 ring-1">
-        <h3 className="text-secondary text-sm font-bold">Payment Status</h3>
+        <h3 className="text-secondary font-bold text-sm">Payment Status</h3>
         <div className="grid grid-cols-2 gap-1 text-sm">
           <span className="text-base-content">Already Paid:</span>
           <span className="text-success text-right font-semibold">{amtTrack.paid.toFixed(2)}</span>

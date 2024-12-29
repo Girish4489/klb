@@ -1,4 +1,4 @@
-import { IReceipt, ITax } from '@models/klm';
+import { IReceipt, IReceiptTax, ITax } from '@models/klm';
 import handleError from '@utils/error/handleError';
 import { ApiGet, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
 import { Dispatch, SetStateAction } from 'react';
@@ -48,8 +48,24 @@ export async function fetchAllInitialData(
   }
 }
 
+export function calculateTotalTax(amount: number, taxes: IReceiptTax[] | undefined = []): number {
+  if (!Array.isArray(taxes)) return 0;
+
+  try {
+    return Number(
+      taxes
+        .filter((t) => t && typeof t.taxPercentage === 'number')
+        .reduce((acc, t) => acc + (t.taxType === 'Percentage' ? (amount * t.taxPercentage) / 100 : t.taxPercentage), 0)
+        .toFixed(2),
+    );
+  } catch (error) {
+    console.error('Tax calculation error:', error);
+    return 0;
+  }
+}
+
 export function validateReceipt(receipt: IReceipt, amtTrack: AmtTrack): void {
-  const { amount, bill, paymentMethod, paymentDate, discount, tax } = receipt;
+  const { amount, bill, paymentMethod, paymentDate, discount } = receipt;
   if (!amount || amount <= 0) throw new Error('Invalid amount');
   if (!bill?.billNumber) throw new Error('Bill number is required');
   if (!paymentMethod) throw new Error('Payment method is required');
@@ -70,11 +86,7 @@ export function validateReceipt(receipt: IReceipt, amtTrack: AmtTrack): void {
   if (discount < 0) throw new Error('Invalid discount');
   if (netPayment <= 0) throw new Error('Net payment must be greater than zero');
 
-  const totalTaxAmount =
-    tax?.reduce(
-      (acc, t) => acc + (t.taxType === 'Percentage' ? (amount * t.taxPercentage) / 100 : t.taxPercentage),
-      0,
-    ) ?? 0;
+  const totalTaxAmount = calculateTotalTax(amount, receipt.tax);
   if (totalTaxAmount < 0) throw new Error('Invalid tax amount');
 
   const remainingDue = amtTrack.due - netPayment;

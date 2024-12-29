@@ -1,4 +1,5 @@
 import { Modal } from '@/app/components/Modal/Modal';
+import { calculateTotalTax } from '@dashboard/transaction/receipt/utils/receiptUtils';
 import { IReceipt, IReceiptTax, ITax } from '@models/klm';
 import React from 'react';
 import toast from 'react-hot-toast';
@@ -10,23 +11,18 @@ interface TaxModalProps {
 }
 
 const TaxModal: React.FC<TaxModalProps> = ({ taxList, selectedTaxes = [], setReceipt }) => {
-  const calculateTotalTax = (amount: number, taxes: IReceiptTax[]): number => {
-    return Number(
-      taxes
-        .reduce((acc, t) => acc + (t.taxType === 'Percentage' ? (amount * t.taxPercentage) / 100 : t.taxPercentage), 0)
-        .toFixed(2),
-    );
-  };
-
   const updateReceiptWithTaxes = (receipt: IReceipt | undefined, updatedTaxes: IReceiptTax[]): IReceipt | undefined => {
     if (!receipt) return receipt;
-    const newTaxAmount = calculateTotalTax(receipt.amount || 0, updatedTaxes);
-    // Create a new receipt with updated tax information while preserving the IReceipt type
+
+    // Ensure we have valid arrays and values
+    const safeUpdatedTaxes = Array.isArray(updatedTaxes) ? updatedTaxes : [];
+    const amount = receipt.amount || 0;
+
     return {
       ...receipt,
-      tax: updatedTaxes,
-      taxAmount: newTaxAmount,
-    } as IReceipt; // Cast to IReceipt to maintain type safety
+      tax: safeUpdatedTaxes,
+      taxAmount: calculateTotalTax(amount, safeUpdatedTaxes),
+    } as IReceipt;
   };
 
   const handleRowClick = (taxId: string): void => {
@@ -46,17 +42,20 @@ const TaxModal: React.FC<TaxModalProps> = ({ taxList, selectedTaxes = [], setRec
         taxPercentage: selectedTax.taxPercentage,
       };
 
-      const isSelected = prev.tax?.some((t) => t._id.toString() === selectedTax._id.toString());
+      // Ensure prev.tax is an array
+      const currentTaxes = Array.isArray(prev.tax) ? prev.tax : [];
+      const isSelected = currentTaxes.some((t) => t._id.toString() === selectedTax._id.toString());
+
       const updatedTaxes = isSelected
-        ? (prev.tax || []).filter((t) => t._id.toString() !== selectedTax._id.toString())
-        : [...(prev.tax || []), receiptTax];
+        ? currentTaxes.filter((t) => t._id.toString() !== selectedTax._id.toString())
+        : [...currentTaxes, receiptTax];
 
       return updateReceiptWithTaxes(prev, updatedTaxes);
     });
   };
 
   return (
-    <Modal id="receipt_tax_modal">
+    <Modal id="receipt_tax_modal" isBackdrop={true} title="Select Taxes">
       <div className="tax-table">
         <table className="table-zebra rounded-box table">
           <caption className="bg-neutral/5 table-caption">Tax</caption>
