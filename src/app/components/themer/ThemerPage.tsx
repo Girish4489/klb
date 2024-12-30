@@ -1,5 +1,6 @@
 'use client';
-import { Theme, useTheme } from '@context/ThemeContext';
+import { Theme } from '@/app/data/themes';
+import { useTheme } from '@context/ThemeContext';
 import { CheckCircleIcon, MagnifyingGlassCircleIcon } from '@heroicons/react/24/solid';
 import { IUser } from '@models/userModel';
 import handleError from '@utils/error/handleError';
