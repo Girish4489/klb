@@ -20,7 +20,7 @@ function VerifyEmailPageWrapper(): JSX.Element {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    const urlToken = searchParams.get('token');
+    const urlToken = searchParams?.get('token');
     setToken(urlToken || '');
   }, [searchParams]);
 

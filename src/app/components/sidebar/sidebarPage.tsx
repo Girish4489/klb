@@ -101,7 +101,7 @@ export default function SidebarPage({
   accessLevels: Array<string>;
   isCompanyMember: boolean;
 }): JSX.Element {
-  const currentPathname = usePathname();
+  const currentPathname = usePathname() ?? '/';
 
   return (
     <div className="bg-base-100 border-base-200 flex min-h-full w-72 flex-col border-r">

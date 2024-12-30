@@ -154,7 +154,7 @@ export const UserProvider: FC<UserContextProps> = ({ children }) => {
             document.body.style.fontWeight = parsedUser.preferences.fonts.weight.toString() ?? '400';
           }
         }
-      } else if (!pathname.startsWith('/auth/')) {
+      } else if (pathname && !pathname.startsWith('/auth/')) {
         await fetchAndSetUser();
       }
     };
