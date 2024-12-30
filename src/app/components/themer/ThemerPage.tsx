@@ -14,7 +14,7 @@ export default function ThemerPage({
   user: IUser;
   setUserAction: Dispatch<React.SetStateAction<IUser>>;
 }): JSX.Element {
-  const { themes, setTheme } = useTheme(); // Removed currentTheme
+  const { themes, setTheme } = useTheme();
   const [selectedTheme, setSelectedTheme] = React.useState<string | null>(null);
 
   const handleThemeChange = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
@@ -59,7 +59,7 @@ export default function ThemerPage({
         loading: 'Applying the selected theme...',
         success: (message: ThemeResponse) => (
           <div>
-            <h3>Theme: {message.theme}</h3>
+            <h3>Theme: {message.theme.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())}</h3>
             <b>{message.message}</b>
           </div>
         ),
