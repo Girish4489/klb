@@ -1,6 +1,9 @@
 @import 'tailwindcss';
 @config '../../tailwind.config.ts';
-@plugin "daisyui";
+@plugin "daisyui" {
+  default: dark;
+  themes: all;
+}
 /* globals.css */
 
 /*

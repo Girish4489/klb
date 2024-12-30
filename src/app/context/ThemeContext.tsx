@@ -1,5 +1,5 @@
 'use client';
-import { DEFAULT_THEME, Theme, themes } from '@/app/data/themes';
+import { DEFAULT_THEME, Theme, themes } from '@data/themes';
 import { FC, ReactNode, createContext, useContext, useEffect, useState } from 'react';
 
 interface ThemeContextInterface {

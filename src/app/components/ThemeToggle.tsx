@@ -1,5 +1,6 @@
 'use client';
-import { Theme, useTheme } from '@/app/context/ThemeContext';
+import { useTheme } from '@/app/context/ThemeContext';
+import { Theme } from '@data/themes';
 import { MoonIcon, SunIcon } from '@heroicons/react/16/solid';
 import { JSX } from 'react';
 

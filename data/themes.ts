@@ -31,7 +31,9 @@ export enum Theme {
   Dim = 'dim',
   Nord = 'nord',
   Sunset = 'sunset',
+  caramellatte = 'caramellatte',
+  silk = 'silk',
+  abyss = 'abyss',
 }
-
 export const themes: ReadonlyArray<Theme> = Object.values(Theme);
 export const DEFAULT_THEME = Theme.Dark;
