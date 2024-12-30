@@ -15,6 +15,7 @@ import { JSX, ReactNode } from 'react';
 export default function RootLayout({ children }: { children: ReactNode }): JSX.Element {
   return (
     <html
+      suppressHydrationWarning
       lang="en"
       className={`${Object.values(roboto)
         .map((font) => font.variable)
@@ -32,6 +33,16 @@ export default function RootLayout({ children }: { children: ReactNode }): JSX.E
         <link rel="manifest" href="/icons/logo/site.webmanifest" />
         <meta name="msapplication-config" content="/icons/logo/browserconfig.xml" />
         <meta name="theme-color" content="#ffffff" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if (localStorage.getItem('theme') === null) {
+                localStorage.setItem('theme', 'dark');
+              }
+              document.documentElement.setAttribute('data-theme', localStorage.getItem('theme'));
+            `,
+          }}
+        />
       </head>
 
       <ThemeProvider>

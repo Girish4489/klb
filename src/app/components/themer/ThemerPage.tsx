@@ -85,6 +85,9 @@ export default function ThemerPage({
                 setSelectedTheme(themeOption);
                 setTheme(themeOption);
               }}
+              data-theme={themeOption}
+              data-set-theme={themeOption}
+              data-act-class="active"
               className={`
                 transform overflow-hidden rounded-lg border-2 transition-all duration-200
                 ${isSelected ? 'ring-primary scale-105 ring-2' : 'hover:scale-102'}

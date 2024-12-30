@@ -1,6 +1,7 @@
 'use client';
 import { DEFAULT_THEME, Theme, themes } from '@data/themes';
 import { FC, ReactNode, createContext, useContext, useEffect, useState } from 'react';
+import { themeChange } from 'theme-change';
 
 interface ThemeContextInterface {
   themes: ReadonlyArray<Theme>;
@@ -15,43 +16,42 @@ const ThemeContext = createContext<ThemeContextInterface | undefined>(undefined)
 export const ThemeProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [theme, setTheme] = useState<Theme>(() => {
     if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('theme');
-      return savedTheme ? (savedTheme as Theme) : DEFAULT_THEME;
+      return (localStorage.getItem('theme') as Theme) || DEFAULT_THEME;
     }
     return DEFAULT_THEME;
   });
+
+  useEffect(() => {
+    themeChange(false); // false parameter to disable auto-loading of theme
+    document.documentElement.setAttribute('data-theme', theme);
+  }, []);
 
   const contextValue: ThemeContextInterface = {
     themes,
     currentTheme: theme,
     setTheme: (newTheme: Theme) => {
       setTheme(newTheme);
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('theme', newTheme);
-      }
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
     },
     toggleTheme: () => {
-      setTheme((prevTheme) => {
-        const newTheme = prevTheme === Theme.Dark ? Theme.Light : Theme.Dark;
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('theme', newTheme);
-        }
-        return newTheme;
-      });
+      const newTheme = theme === Theme.Dark ? Theme.Light : Theme.Dark;
+      setTheme(newTheme);
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
     },
     listenToSystemTheme: () => {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
       const handleChange = (e: MediaQueryListEvent): void => {
-        setTheme(e.matches ? Theme.Dark : Theme.Light);
+        const newTheme = e.matches ? Theme.Dark : Theme.Light;
+        setTheme(newTheme);
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
       };
       mediaQuery.addEventListener('change', handleChange);
       return () => mediaQuery.removeEventListener('change', handleChange);
     },
   };
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
 
   return <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>;
 };

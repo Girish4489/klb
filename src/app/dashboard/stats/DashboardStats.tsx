@@ -1,3 +1,4 @@
+import { Colors } from '@utils/colors';
 import axios from 'axios';
 import { ArcElement, BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Tooltip } from 'chart.js';
 import { JSX, useEffect, useState } from 'react';
@@ -65,14 +66,15 @@ const DashboardStats = ({ refresh }: DashboardStatsProps): JSX.Element => {
           stats.totalBillsCount,
         ],
         backgroundColor: [
-          'var(--color-success)',
-          'var(--color-secondary)',
-          'var(--color-error)',
-          'var(--color-success)',
-          'var(--color-warning)',
-          'var(--color-info)',
-          'var(--color-primary)',
+          Colors.success,
+          Colors.secondary,
+          Colors.error,
+          Colors.success,
+          Colors.warning,
+          Colors.info,
+          Colors.primary,
         ],
+        borderWidth: 0,
       },
     ],
   };
@@ -83,14 +85,42 @@ const DashboardStats = ({ refresh }: DashboardStatsProps): JSX.Element => {
       {
         label: 'Amount',
         data: [stats.grandTotalAmount, stats.paidAmount, stats.dueAmount, stats.discountAmount],
-        backgroundColor: [
-          'var(--color-primary)',
-          'var(--color-success)',
-          'var(--color-warning)',
-          'var(--color-secondary)',
-        ],
+        backgroundColor: [Colors.primary, Colors.success, Colors.warning, Colors.secondary],
+        borderWidth: 0,
       },
     ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        labels: {
+          color: Colors.base,
+          font: {
+            family: "'Roboto', sans-serif",
+          },
+        },
+      },
+    },
+    scales: {
+      y: {
+        ticks: {
+          color: Colors.base,
+        },
+        grid: {
+          color: `${Colors.base}22`,
+        },
+      },
+      x: {
+        ticks: {
+          color: Colors.base,
+        },
+        grid: {
+          color: `${Colors.base}22`,
+        },
+      },
+    },
   };
 
   return (
@@ -98,10 +128,10 @@ const DashboardStats = ({ refresh }: DashboardStatsProps): JSX.Element => {
       {error && <p>{error}</p>}
       <div className="mt-4 flex grow flex-col lg:flex-row lg:space-x-4">
         <div className="flex grow place-items-center items-center">
-          <Bar data={data} options={{ maintainAspectRatio: true }} />
+          <Bar data={data} options={chartOptions} />
         </div>
         <div className="flex w-3/12 flex-1 place-items-center items-center">
-          <Pie data={amountData} options={{ maintainAspectRatio: true }} />
+          <Pie data={amountData} options={chartOptions} />
         </div>
       </div>
     </div>

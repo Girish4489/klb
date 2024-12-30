@@ -73,6 +73,9 @@ importers:
       sharp:
         specifier: ^0.33.5
         version: 0.33.5
+      theme-change:
+        specifier: ^2.5.0
+        version: 2.5.0
       tslib:
         specifier: ^2.8.1
         version: 2.8.1
@@ -2002,6 +2005,10 @@ packages:
     resolution:
       { integrity: sha512-iOiPUo/BGnZ6+54OsWxZidGCsdU8YbE4PSpdPinp7DeMtUJNJBoJ/ouUSTJjHkh1KntHaltHl/gDs2FC4i5+Nw== }
 
+  theme-change@2.5.0:
+    resolution:
+      { integrity: sha512-B/UdsgdHAGhSKHTAQnxg/etN0RaMDpehuJmZIjLMDVJ6DGIliRHGD6pODi1CXLQAN9GV0GSyB3G6yCuK05PkPQ== }
+
   to-regex-range@5.0.1:
     resolution:
       { integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ== }
@@ -3418,6 +3425,8 @@ snapshots:
     dependencies:
       utrie: 1.0.2
     optional: true
+
+  theme-change@2.5.0: {}
 
   to-regex-range@5.0.1:
     dependencies:
