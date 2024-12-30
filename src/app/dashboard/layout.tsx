@@ -53,18 +53,18 @@ export default function DashboardLayout({ children }: { children: ReactNode }): 
       />
       <div className="drawer-content flex h-screen flex-col">
         {/* Navbar */}
-        <div className="navbar rounded-b-box bg-linear-to-t from-base-100 to-base-300 ring-info sticky top-0 z-10 flex min-h-10 w-full items-center gap-x-2 bg-opacity-60 px-2 py-0.5 shadow-lg ring-1 backdrop-blur-md">
+        <div className="navbar bg-base-100 h-12 max-h-12 min-h-12 py-4 shadow-2xl">
           <div className="flex-none">
             <button className="btn btn-square btn-ghost btn-sm lg:hidden" onClick={toggleSidebar}>
               <Bars3BottomLeftIcon className="text-base-content h-6 w-6" />
             </button>
           </div>
           <div className="flex-1">
-            <Link href="/dashboard" className="btn btn-ghost btn-sm text-base-content">
+            <Link href="/dashboard" className="btn btn-ghost btn-sm font-semibold">
               {company?.name ? company.name : 'Kalamandir'}
             </Link>
           </div>
-          <div className="flex flex-row items-center justify-between gap-x-2">
+          <div className="flex flex-row items-center justify-between gap-3">
             <Notifications notifications={user?.notifications || []} />
             <HeaderProfilePage user={user} isLoading={isLoading} />
           </div>

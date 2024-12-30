@@ -7,11 +7,11 @@ const Notifications = ({ notifications }: { notifications: INotification[] }): J
 
   return (
     <div className="dropdown dropdown-end">
-      <div tabIndex={0} role="button" className="btn btn-circle btn-ghost btn-sm">
+      <div tabIndex={0} role="button" className="btn btn-circle btn-ghost">
         {/* Notifications icon */}
         {notifications.length > 1 ? (
           <div className="indicator">
-            <BellSlashIcon className="text-primary h-6 w-6" />
+            <BellSlashIcon className="text-primary h-8 w-8" />
           </div>
         ) : (
           <div className="indicator">

@@ -17,9 +17,9 @@ import Link from 'next/link';
 import { JSX } from 'react';
 
 const LoadingSkeleton = (): JSX.Element => (
-  <div className="avatar placeholder">
-    <div className="bg-neutral-focus text-neutral-content w-12 rounded-full">
-      <span className="loading loading-spinner loading-sm"></span>
+  <div className="dropdown dropdown-end">
+    <div className="avatar btn btn-circle btn-ghost h-10 w-10">
+      <div className="loading loading-spinner text-primary loading-sm rounded-full ring-2"></div>
     </div>
   </div>
 );
@@ -34,10 +34,10 @@ const HeaderProfilePage = ({ user, isLoading }: { user: IUser | null; isLoading:
 
   if (!user) {
     return (
-      <div className="dropdown dropdown-end h-8">
-        <div tabIndex={0} role="button" className="avatar btn btn-circle btn-ghost btn-sm">
-          <div className="w-8 rounded-full">
-            <Image src="/klm.webp" alt="Profile" width="32" height="32" className="rounded-full" priority />
+      <div className="dropdown dropdown-end">
+        <div tabIndex={0} role="button" className="avatar btn btn-circle btn-ghost">
+          <div className="ring-primary w-10 rounded-full ring-2">
+            <Image src="/klm.webp" alt="Profile" width={40} height={40} style={{ imageRendering: 'auto' }} priority />
           </div>
         </div>
       </div>
@@ -45,95 +45,89 @@ const HeaderProfilePage = ({ user, isLoading }: { user: IUser | null; isLoading:
   }
 
   return (
-    <span className="my-auto flex items-center pt-1.5">
-      <div className="dropdown dropdown-end">
-        <div tabIndex={0} role="button" className="avatar btn btn-circle btn-ghost btn-sm my-auto grow">
-          <div className="ring-primary h-8 w-8 rounded-full ring-2">
+    <div className="dropdown dropdown-end">
+      <div tabIndex={0} role="button" className="avatar btn btn-circle btn-ghost">
+        <div className="ring-primary w-10 rounded-full ring-2">
+          <Image
+            src={profileImageSrc}
+            alt="Profile"
+            width={40}
+            height={40}
+            style={{ imageRendering: 'auto' }}
+            priority
+          />
+        </div>
+      </div>
+      <ul
+        tabIndex={0}
+        className="menu dropdown-content menu-sm rounded-box bg-base-200 ring-primary z-50 mt-3 w-auto gap-y-1 p-2 shadow-sm ring-1"
+      >
+        <span className="flex w-full justify-around">
+          <Link
+            href="/dashboard/settings#settingsProfile"
+            className="ring-primary transform rounded-full ring-2 hover:scale-105"
+          >
             <Image
               src={profileImageSrc}
-              alt="Profile"
-              className="w-8"
-              width={32}
-              height={32}
+              alt="profile image"
+              className="cursor-pointer rounded-full"
+              width="70"
+              height="64"
               style={{ imageRendering: 'auto' }}
               priority
             />
-          </div>
-        </div>
-        <ul
-          tabIndex={0}
-          className="menu dropdown-content menu-sm rounded-box bg-base-200 ring-primary z-50 w-auto gap-y-1 p-2 shadow-sm ring-1"
+          </Link>
+        </span>
+        <ProfileItem
+          icon={<UserIcon className="text-primary h-5 w-5" />}
+          label={user.username}
+          liClass="grow w-full"
+          tooltip="Username"
         >
-          <span className="flex w-full justify-around">
-            <Link
-              href="/dashboard/settings#settingsProfile"
-              className="ring-primary transform rounded-full ring-2 hover:scale-105"
-            >
-              <Image
-                src={profileImageSrc}
-                alt="profile image"
-                className="cursor-pointer rounded-full"
-                width="70"
-                height="64"
-                style={{ imageRendering: 'auto' }}
-                priority
-              />
-            </Link>
+          {!user.isCompanyMember && <span className="badge badge-primary">New</span>}
+        </ProfileItem>
+        <ProfileItem icon={<EnvelopeIcon className="text-primary h-5 w-5" />} label={user.email} tooltip="Email" />
+        <ProfileItem
+          icon={<CheckBadgeIcon className="text-primary h-5 w-5" />}
+          label="Verified"
+          tooltip="Verified"
+          liClass="flex"
+        >
+          <StatusIcon isTrue={user.isVerified} />
+        </ProfileItem>
+        <ProfileItem
+          icon={<UserCircleIcon className="text-primary h-5 w-5" />}
+          label="Admin"
+          liClass="grow w-full"
+          tooltip="Admin"
+        >
+          <StatusIcon isTrue={user.isAdmin} />
+        </ProfileItem>
+        <ProfileItem
+          icon={<SwatchIcon className="text-primary h-5 w-5" />}
+          label="Theme"
+          link="/dashboard/settings#themeBlock"
+          liClass="grow w-full"
+          tooltip="Theme"
+        >
+          <span className="badge badge-soft badge-secondary badge-sm">
+            {(user.preferences?.theme ?? 'default').charAt(0).toUpperCase() +
+              (user.preferences?.theme ?? 'default').slice(1)}
           </span>
-          <ProfileItem
-            icon={<UserIcon className="text-primary h-5 w-5" />}
-            label={user.username}
-            liClass="grow w-full"
-            tooltip="Username"
-          >
-            {!user.isCompanyMember && <span className="badge badge-primary">New</span>}
-          </ProfileItem>
-          <ProfileItem icon={<EnvelopeIcon className="text-primary h-5 w-5" />} label={user.email} tooltip="Email" />
-          <ProfileItem
-            icon={<CheckBadgeIcon className="text-primary h-5 w-5" />}
-            label="Verified"
-            tooltip="Verified"
-            liClass="flex"
-          >
-            <StatusIcon isTrue={user.isVerified} />
-          </ProfileItem>
-          <ProfileItem
-            icon={<UserCircleIcon className="text-primary h-5 w-5" />}
-            label="Admin"
-            liClass="grow w-full"
-            tooltip="Admin"
-          >
-            <StatusIcon isTrue={user.isAdmin} />
-          </ProfileItem>
-          <ProfileItem
-            icon={<SwatchIcon className="text-primary h-5 w-5" />}
-            label="Theme"
-            link="/dashboard/settings#themeBlock"
-            liClass="grow w-full"
-            tooltip="Theme"
-          >
-            <span className="badge badge-soft badge-secondary badge-sm">
-              {(user.preferences?.theme ?? 'default').charAt(0).toUpperCase() +
-                (user.preferences?.theme ?? 'default').slice(1)}
-            </span>
-          </ProfileItem>
-          <ProfileItem
-            icon={<Cog6ToothIcon className="text-primary h-5 w-5" />}
-            label="Settings"
-            tooltip="Settings"
-            link="/dashboard/settings"
-            liClass="grow w-full"
-            enable={user.isCompanyMember ?? true}
-          />
-          <li
-            className="tooltip tooltip-left text-warning hover:bg-error hover:text-warning-content flex hover:rounded-lg hover:font-medium"
-            data-tip="Logout"
-          >
-            <LogoutButton variant="error" className="btn-sm" />
-          </li>
-        </ul>
-      </div>
-    </span>
+        </ProfileItem>
+        <ProfileItem
+          icon={<Cog6ToothIcon className="text-primary h-5 w-5" />}
+          label="Settings"
+          tooltip="Settings"
+          link="/dashboard/settings"
+          liClass="grow w-full"
+          enable={user.isCompanyMember ?? true}
+        />
+        <li className="tooltip tooltip-left tooltip-error flex hover:rounded-lg" data-tip="Logout">
+          <LogoutButton variant="error" className="btn-sm font-bold" />
+        </li>
+      </ul>
+    </div>
   );
 };
 
@@ -154,7 +148,7 @@ const ProfileItem = ({
   link?: string;
   enable?: boolean;
 }): JSX.Element => (
-  <li className={`tooltip tooltip-left ${liClass}`} data-tip={tooltip}>
+  <li className={`tooltip tooltip-left tooltip-info ${liClass}`} data-tip={tooltip}>
     {link && enable ? (
       <Link href={link as Route} className="flex w-full items-center justify-between gap-2">
         <span className="flex items-center gap-2">
