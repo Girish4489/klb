@@ -25,7 +25,7 @@ const LoadingSkeleton = (): JSX.Element => (
 );
 
 const HeaderProfilePage = ({ user, isLoading }: { user: IUser | null; isLoading: boolean }): JSX.Element => {
-  const profileImageSrc =
+  const profileImageSrc: string =
     user?.profileImage && user.profileImage.__filename !== 'USER_PROFILE_404_ERROR' && user.profileImage.data
       ? `data:${user.profileImage.contentType};base64,${user.profileImage?.data}`
       : '/klm.webp';
@@ -45,7 +45,7 @@ const HeaderProfilePage = ({ user, isLoading }: { user: IUser | null; isLoading:
   }
 
   return (
-    <div className="dropdown dropdown-end">
+    <div className="dropdown dropdown-end relative">
       <div tabIndex={0} role="button" className="avatar btn btn-circle btn-ghost">
         <div className="ring-primary w-10 rounded-full ring-2">
           <Image
@@ -60,7 +60,7 @@ const HeaderProfilePage = ({ user, isLoading }: { user: IUser | null; isLoading:
       </div>
       <ul
         tabIndex={0}
-        className="menu dropdown-content menu-sm rounded-box bg-base-200 ring-primary z-50 mt-3 w-auto gap-y-1 p-2 shadow-sm ring-1"
+        className="menu dropdown-content menu-sm rounded-box bg-base-200 ring-primary absolute z-[var(--z-dropdown)] mt-3 w-auto gap-y-1 p-2 shadow-sm ring-1"
       >
         <span className="flex w-full justify-around">
           <Link

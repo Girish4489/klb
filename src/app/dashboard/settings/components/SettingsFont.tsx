@@ -1,4 +1,5 @@
 'use client';
+import { userConfirmation } from '@/app/utils/confirmation/confirmationUtil';
 import { InformationCircleIcon } from '@heroicons/react/24/solid';
 import { IUser } from '@models/userModel';
 import { fontWeightMap, type FontWeight } from '@utils/fonts/fontConfig';
@@ -76,9 +77,14 @@ export default function SettingsFont({
       </div>
       <button
         className="btn btn-warning btn-sm"
-        onClick={() => {
+        onClick={async () => {
           if (fonts.name !== 'Roboto' || fonts.weight !== 400) {
-            updateFontPreferences({ name: 'Roboto', weight: 400 });
+            const confirmed = await userConfirmation({
+              header: 'Reset Font Settings',
+              message: 'Are you sure you want to reset font settings to default?',
+            });
+            if (!confirmed) return;
+            await updateFontPreferences({ name: 'Roboto', weight: 400 });
           } else {
             toast.info('Already in default mode', {
               icon: <InformationCircleIcon className="text-info h-5 w-5" />,

@@ -6,7 +6,7 @@ const Notifications = ({ notifications }: { notifications: INotification[] }): J
   const unreadCount = notifications.filter((notification) => !notification.isRead).length;
 
   return (
-    <div className="dropdown dropdown-end">
+    <div className="dropdown dropdown-end relative">
       <div tabIndex={0} role="button" className="btn btn-circle btn-ghost">
         {/* Notifications icon */}
         {notifications.length > 1 ? (
@@ -22,7 +22,7 @@ const Notifications = ({ notifications }: { notifications: INotification[] }): J
       </div>
       <div
         tabIndex={0}
-        className="card dropdown-content card-compact z-1 bg-base-100 ring-primary mt-3 w-52 shadow-sm ring-1"
+        className="card dropdown-content card-compact bg-base-100 ring-primary absolute z-[var(--z-dropdown)] mt-3 w-52 shadow-sm ring-1"
       >
         <div className="card-body">
           <span className="font-bold text-lg">{notifications.length} Notifications</span>

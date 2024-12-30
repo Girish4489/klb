@@ -11,7 +11,9 @@
   If we ever want to remove these styles, we need to add an explicit border
   color utility to any element that depends on these defaults.
 */
+
 @layer base {
+
   *,
   ::after,
   ::before,
@@ -19,6 +21,18 @@
   ::file-selector-button {
     border-color: var(--color-gray-200, currentColor);
   }
+}
+
+:root {
+  --z-base: 0;
+  --z-base-content: 10;
+  --z-sidebar: 30;
+  --z-navbar: 40;
+  --z-overlay: 45;
+  --z-dropdown: 50;
+  --z-modal: 60;
+  --z-toast: 70;
+  --z-max: 9999;
 }
 
 body {
@@ -39,10 +53,8 @@ body {
 
   --c: #556270 25%, #0000 0;
   background:
-    conic-gradient(at var(--g) var(--t), var(--c)) calc((var(--s) / var(--n) - var(--g) + var(--t)) / 2) 0 /
-      calc(var(--s) / var(--n)) var(--s),
-    conic-gradient(from 180deg at var(--t) var(--g), var(--c)) 0 calc((var(--s) / var(--n) - var(--g) + var(--t)) / 2) /
-      var(--s) calc(var(--s) / var(--n));
+    conic-gradient(at var(--g) var(--t), var(--c)) calc((var(--s) / var(--n) - var(--g) + var(--t)) / 2) 0 / calc(var(--s) / var(--n)) var(--s),
+    conic-gradient(from 180deg at var(--t) var(--g), var(--c)) 0 calc((var(--s) / var(--n) - var(--g) + var(--t)) / 2) / var(--s) calc(var(--s) / var(--n));
   /* you probably don't need to set any size in your case */
   width: calc(round(down, 100%, var(--s)) + var(--t));
   height: calc(4 * var(--s) + var(--t));
@@ -115,8 +127,7 @@ body {
   background: #bf4d28;
   width: calc(var(--b) + var(--s) / (2 * tan(var(--a) / 2)));
   min-height: 250px;
-  --_g: 100% var(--s) repeat-y
-    conic-gradient(from calc(90deg - var(--a) / 2) at left, #0000, #000 1deg calc(var(--a) - 1deg), #0000 var(--a));
+  --_g: 100% var(--s) repeat-y conic-gradient(from calc(90deg - var(--a) / 2) at left, #0000, #000 1deg calc(var(--a) - 1deg), #0000 var(--a));
   mask:
     var(--b) 50% / var(--_g) exclude,
     0 50% / var(--_g);
@@ -132,8 +143,7 @@ body {
 
   height: calc(var(--b) + var(--s) / (2 * tan(var(--a) / 2)));
   width: 100%;
-  --_g: var(--s) repeat-x
-    conic-gradient(from calc(var(--a) / -2) at bottom, #0000, #000 1deg calc(var(--a) - 1deg), #0000 var(--a));
+  --_g: var(--s) repeat-x conic-gradient(from calc(var(--a) / -2) at bottom, #0000, #000 1deg calc(var(--a) - 1deg), #0000 var(--a));
   mask:
     50% calc(-1 * var(--b)) / var(--_g) exclude,
     50% / var(--_g);
@@ -184,6 +194,7 @@ body {
 }
 
 @keyframes bounce {
+
   0%,
   100% {
     transform: translateY(0);

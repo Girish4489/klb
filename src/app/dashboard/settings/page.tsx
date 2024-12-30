@@ -1,8 +1,8 @@
 'use client';
-import SettingsFont from '@/app/dashboard/settings/components/SettingsFont';
-import SettingsProfile from '@/app/dashboard/settings/components/SettingsProfile';
 import ThemerPage from '@components/themer/ThemerPage';
 import { useUser } from '@context/userContext';
+import SettingsFont from '@dashboard/settings/components/SettingsFont';
+import SettingsProfile from '@dashboard/settings/components/SettingsProfile';
 import { IUser } from '@models/userModel';
 import handleError from '@utils/error/handleError';
 import { ApiPost, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';
@@ -53,9 +53,9 @@ export default function SettingsPage(): JSX.Element {
 
   const CollapseComponent = ({ title, children, defaultChecked = true }: CollapseComponentProps): JSX.Element => {
     return (
-      <div className="join-item collapse-arrow border-base-300 collapse border">
+      <div className="join-item collapse-arrow bg-base-200 border-base-300 collapse border">
         <input type="checkbox" name="collapse" defaultChecked={defaultChecked} />
-        <div className="collapse-title bg-base-300/40 pb-2 font-medium">{title}</div>
+        <div className="collapse-title bg-base-300 font-medium">{title}</div>
         <div className="collapse-content">{children}</div>
       </div>
     );
@@ -64,6 +64,9 @@ export default function SettingsPage(): JSX.Element {
   return (
     <div className="max-sm:m-2 md:m-5">
       <div className="join join-vertical **:rounded-box w-full gap-3">
+        <div className="flex w-full justify-center">
+          <span className="badge badge-soft badge-success font-medium">Settings</span>
+        </div>
         <CollapseComponent title="User Profile">
           <SettingsProfile user={user} updateUserAction={updateUser} />
         </CollapseComponent>

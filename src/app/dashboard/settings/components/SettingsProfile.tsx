@@ -122,7 +122,7 @@ export default function SettingsProfile({
   }, []);
 
   return (
-    <div className="card lg:card-side flex flex-col items-center gap-4">
+    <div className="card lg:card-side flex flex-col items-center gap-4 pt-4">
       {isLoading ? (
         <LoadingSkeleton />
       ) : (
@@ -149,13 +149,7 @@ export default function SettingsProfile({
               <div className="avatar h-full w-full flex-col items-center justify-center gap-2">
                 <div className="mask mask-squircle w-48">
                   <Image
-                    src={
-                      user.profileImage &&
-                      user.profileImage.__filename !== 'USER_PROFILE_404_ERROR' &&
-                      user.profileImage.data
-                        ? `data:${user.profileImage.contentType};base64,${user.profileImage?.data}`
-                        : '/klm.webp'
-                    }
+                    src={getProfileImageSrc(user.profileImage)}
                     alt="Landscape picture"
                     className="h-48 w-48 cursor-pointer"
                     width="192"
@@ -200,7 +194,7 @@ export default function SettingsProfile({
               </div>
             </div>
           </Modal>
-          <div className="card-body rounded-box border-base-100 my-4 border p-4 shadow-2xl">
+          <div className="card-body rounded-box border-base-100 border px-2 py-4 shadow-2xl">
             <BadgeItem label="Username" content={user.username} badgeClass="badge-primary" />
             <BadgeItem label="Email" content={user.email} badgeClass="badge-primary" />
             <BadgeItem

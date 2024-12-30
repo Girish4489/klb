@@ -52,8 +52,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }): 
         onChange={toggleSidebar}
       />
       <div className="drawer-content flex h-screen flex-col">
-        {/* Navbar */}
-        <div className="navbar bg-base-100 h-12 max-h-12 min-h-12 py-4 shadow-2xl">
+        {/* Fixed navbar with glass effect */}
+        <div className="navbar bg-base-100/70 fixed inset-x-0 top-0 z-[var(--z-navbar)] h-12 max-h-12 min-h-12 w-full py-4 shadow-lg backdrop-blur">
           <div className="flex-none">
             <button className="btn btn-square btn-ghost btn-sm lg:hidden" onClick={toggleSidebar}>
               <Bars3BottomLeftIcon className="text-base-content h-6 w-6" />
@@ -61,16 +61,17 @@ export default function DashboardLayout({ children }: { children: ReactNode }): 
           </div>
           <div className="flex-1">
             <Link href="/dashboard" className="btn btn-ghost btn-sm font-semibold">
-              {company?.name ? company.name : 'Kalamandir'}
+              {company?.name ?? 'Kalamandir'}
             </Link>
           </div>
+          {/* Notifications and profile container */}
           <div className="flex flex-row items-center justify-between gap-3">
-            <Notifications notifications={user?.notifications || []} />
-            <HeaderProfilePage user={user} isLoading={isLoading} />
+            <Notifications notifications={user?.notifications ?? []} />
+            <HeaderProfilePage user={user ?? null} isLoading={isLoading} />
           </div>
         </div>
-        {/* Page content */}
-        <div className="grow overflow-y-auto px-0 py-2">{children}</div>
+        {/* Main content area that flows under the navbar */}
+        <main className="relative flex-1 overflow-y-auto pt-12">{children}</main>
       </div>
       <div className="drawer-side">
         <label htmlFor="my-drawer-2" aria-label="close sidebar" className="drawer-overlay"></label>
