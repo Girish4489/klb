@@ -91,6 +91,9 @@ export const FormModal: FC<FormModalProps> = ({
           </form>
         </div>
       </div>
+      <form method="dialog" className="modal-backdrop">
+        <button>close</button>
+      </form>
     </dialog>
   );
 };
