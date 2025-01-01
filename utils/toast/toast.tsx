@@ -13,30 +13,30 @@ const getDefaultDuration = (): number => {
 };
 
 export const toast = {
-  success: (message: string, duration?: number): void => {
+  success: (message: ReactNode, duration?: number): void => {
     const event = new CustomEvent('toast', {
       detail: { message, type: 'success', duration: duration || getDefaultDuration() },
     });
     window.dispatchEvent(event);
   },
 
-  error: (message: string, duration?: number): void => {
+  error: (message: ReactNode, duration?: number): void => {
     const event = new CustomEvent('toast', {
       detail: { message, type: 'error', duration: duration || getDefaultDuration() },
     });
     window.dispatchEvent(event);
   },
 
-  info: (message: string, duration = 4000): void => {
+  info: (message: ReactNode, duration?: number): void => {
     const event = new CustomEvent('toast', {
-      detail: { message, type: 'info', duration },
+      detail: { message, type: 'info', duration: duration || getDefaultDuration() },
     });
     window.dispatchEvent(event);
   },
 
-  warning: (message: string, duration = 4000): void => {
+  warning: (message: ReactNode, duration?: number): void => {
     const event = new CustomEvent('toast', {
-      detail: { message, type: 'warning', duration },
+      detail: { message, type: 'warning', duration: duration || getDefaultDuration() },
     });
     window.dispatchEvent(event);
   },

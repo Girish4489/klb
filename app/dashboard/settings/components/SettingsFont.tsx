@@ -1,5 +1,4 @@
 'use client';
-import { InformationCircleIcon } from '@heroicons/react/24/solid';
 import { IUser } from '@models/userModel';
 import { userConfirmation } from '@utils/confirmation/confirmationUtil';
 import { fontWeightMap, type FontWeight } from '@utils/fonts/fontConfig';
@@ -89,9 +88,7 @@ export default function SettingsFont({
             if (!confirmed) return;
             await updateFontPreferences({ name: 'Roboto', weight: 400 });
           } else {
-            toast.info('Already in default mode', {
-              icon: <InformationCircleIcon className="text-info h-5 w-5" />,
-            });
+            toast.info('Already in default mode');
           }
         }}
       >
