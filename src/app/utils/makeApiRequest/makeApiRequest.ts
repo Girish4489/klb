@@ -1,5 +1,5 @@
 // /src/app/util/makeApiRequest/makeApiRequest.ts
-import { default as apiPath } from '@/app/constants/api-constants';
+import { default as apiPath } from '@constants/api-constants';
 import { ICompany } from '@models/companyModel';
 import { IBill, IReceipt, ITax } from '@models/klm';
 import { IUser, RoleType } from '@models/userModel';
