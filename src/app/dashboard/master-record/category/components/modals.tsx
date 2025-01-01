@@ -55,14 +55,12 @@ export const FormModal: FC<FormModalProps> = ({
         <div className="flex flex-col items-center p-1 pt-4">
           <form onSubmit={handleSubmit} className="form flex w-max flex-col items-start gap-2">
             {fields.map((field) => (
-              <div key={field.name}>
-                <label htmlFor={field.name} className="label label-text">
-                  {field.label}
-                </label>
+              <label key={field.name} htmlFor={field.name} className="input-sm input-bordered input-primary input">
+                {field.label}
                 <input
                   type={field.type || 'text'}
                   placeholder={field.placeholder}
-                  className="input input-sm input-bordered input-primary w-full max-w-xs max-sm:w-full max-sm:max-w-full"
+                  className="grow"
                   required={field.required}
                   spellCheck="true"
                   name={field.name}
@@ -71,7 +69,7 @@ export const FormModal: FC<FormModalProps> = ({
                   onChange={handleChange}
                   onFocus={(e) => e.currentTarget.select()}
                 />
-              </div>
+              </label>
             ))}
             <div className="form-control w-full items-center">
               <button className="btn btn-primary btn-sm w-full grow" type="submit">
@@ -85,7 +83,7 @@ export const FormModal: FC<FormModalProps> = ({
             <button className="btn btn-circle btn-ghost btn-sm absolute right-2 top-2" onClick={handleClickClose}>
               ✕
             </button>
-            <button className="btn btn-info btn-sm" onClick={handleClickClose}>
+            <button className="btn btn-ghost btn-soft btn-sm" onClick={handleClickClose}>
               Close
             </button>
           </form>
