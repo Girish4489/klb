@@ -10,7 +10,7 @@ import {
 import { JSX, useEffect, useRef, useState } from 'react';
 
 export const DaisyToast = (): JSX.Element => {
-  const { toasts, removeToast, addToast, updateToast } = useToast();
+  const { toasts, removeToast, addToast, updateToast, pauseToast, resumeToast } = useToast();
   const [mounted, setMounted] = useState(false);
   const loadingToastId = useRef<string | null>(null);
 
@@ -110,6 +110,8 @@ export const DaisyToast = (): JSX.Element => {
             md:max-w-[500px]
           `}
           role="alert"
+          onMouseEnter={() => toast.type !== 'loading' && pauseToast(toast.id)}
+          onMouseLeave={() => toast.type !== 'loading' && resumeToast(toast.id)}
         >
           {getIcon(toast.type)}
           <span className="flex-1 break-words">{toast.message}</span>

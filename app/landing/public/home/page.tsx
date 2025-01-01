@@ -1,5 +1,4 @@
 'use client';
-import { toast } from '@/utils/toast/toast';
 import { NavbarWithProgress } from '@components/Navbar';
 import constants from '@constants/constants';
 import {
@@ -198,11 +197,6 @@ export default function Home(): JSX.Element {
     <div className="bg-linear-to-br from-base-100 to-base-300 min-h-screen">
       <NavbarWithProgress />
 
-      <div className="pt-18">
-        <button className="btn btn-success" onClick={() => toast.success('toast success test!')}>
-          Toast
-        </button>
-      </div>
       {/* Enhanced Hero Section */}
       <div className="hero bg-linear-to-br from-primary/5 to-accent/5 min-h-screen via-transparent">
         <motion.div

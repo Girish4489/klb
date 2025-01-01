@@ -7,7 +7,9 @@ interface Toast {
   message: ReactNode;
   type: StandardToastType | 'loading';
   duration?: number;
-  timeoutId?: ReturnType<typeof setTimeout>; // This fixes the type issue
+  timeoutId?: ReturnType<typeof setTimeout>;
+  remainingTime?: number;
+  pauseTime?: number;
 }
 
 interface ToastContextType {
@@ -15,6 +17,8 @@ interface ToastContextType {
   addToast: (message: ReactNode, type: StandardToastType | 'loading', duration?: number) => string;
   updateToast: (id: string, message: ReactNode, type: StandardToastType) => void;
   removeToast: (id: string) => void;
+  pauseToast: (id: string) => void;
+  resumeToast: (id: string) => void;
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
@@ -36,7 +40,9 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }): JSX.
   const startRemovalTimeout = useCallback(
     (id: string, duration: number) => {
       const timeoutId = setTimeout(() => removeToast(id), duration) as ReturnType<typeof setTimeout>;
-      setToasts((prev) => prev.map((toast) => (toast.id === id ? { ...toast, timeoutId } : toast)));
+      setToasts((prev) =>
+        prev.map((toast) => (toast.id === id ? { ...toast, timeoutId, duration, remainingTime: duration } : toast)),
+      );
     },
     [removeToast],
   );
@@ -74,8 +80,39 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }): JSX.
     [startRemovalTimeout],
   );
 
+  const pauseToast = useCallback((id: string) => {
+    setToasts((prev) => {
+      const toast = prev.find((t) => t.id === id);
+      if (toast?.timeoutId) {
+        clearTimeout(toast.timeoutId);
+        const pauseTime = Date.now();
+        const elapsedTime = pauseTime - (toast.pauseTime || pauseTime);
+        const remainingTime = (toast.remainingTime || 0) - elapsedTime;
+
+        return prev.map((t) => (t.id === id ? { ...t, timeoutId: undefined, remainingTime, pauseTime } : t));
+      }
+      return prev;
+    });
+  }, []);
+
+  const resumeToast = useCallback(
+    (id: string) => {
+      setToasts((prev) => {
+        const toast = prev.find((t) => t.id === id);
+        if (toast?.remainingTime && toast?.remainingTime > 0) {
+          const timeoutId = setTimeout(() => removeToast(id), toast.remainingTime);
+          return prev.map((t) => (t.id === id ? { ...t, timeoutId, pauseTime: undefined } : t));
+        }
+        return prev;
+      });
+    },
+    [removeToast],
+  );
+
   return (
-    <ToastContext.Provider value={{ toasts, addToast, updateToast, removeToast }}>{children}</ToastContext.Provider>
+    <ToastContext.Provider value={{ toasts, addToast, updateToast, removeToast, pauseToast, resumeToast }}>
+      {children}
+    </ToastContext.Provider>
   );
 };
 
