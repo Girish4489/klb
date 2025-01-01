@@ -47,6 +47,12 @@ interface IUser extends Document {
       enabled: boolean;
       intensity: number; // 1-10 scale
     };
+    toast: {
+      position: {
+        vertical: 'top' | 'bottom';
+        horizontal: 'start' | 'center' | 'end';
+      };
+    };
   };
   notifications: INotification[];
   isCompanyMember: boolean; // Changed from newUser
@@ -144,6 +150,12 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
       animations: {
         enabled: { type: Boolean, default: true },
         intensity: { type: Number, default: 10, min: 1, max: 10 },
+      },
+      toast: {
+        position: {
+          vertical: { type: String, enum: ['top', 'bottom'], default: 'top' },
+          horizontal: { type: String, enum: ['start', 'center', 'end'], default: 'center' },
+        },
       },
     },
     notifications: [

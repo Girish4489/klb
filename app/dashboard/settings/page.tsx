@@ -8,6 +8,7 @@ import { toast } from '@utils/toast/toast';
 import { JSX } from 'react';
 import SettingsFont from './components/SettingsFont';
 import SettingsProfile from './components/SettingsProfile';
+import ToastPreferences from './components/ToastPreferences';
 
 interface PreferencesResponse extends ApiResponse {
   preferences?: IUser['preferences'];
@@ -62,7 +63,7 @@ export default function SettingsPage(): JSX.Element {
   };
 
   return (
-    <div className="max-sm:m-2 md:m-5">
+    <div className="p-5 max-sm:p-2 md:p-3 lg:p-4">
       <div className="join join-vertical **:rounded-box w-full gap-3">
         <div className="flex w-full justify-center">
           <span className="badge badge-soft badge-success font-medium">Settings</span>
@@ -71,19 +72,17 @@ export default function SettingsPage(): JSX.Element {
           <SettingsProfile user={user} updateUserAction={updateUser} />
         </CollapseComponent>
 
-        <CollapseComponent title="Theme">
-          <ThemerPage user={user} setUserAction={setUser} />
-        </CollapseComponent>
-
-        <CollapseComponent title="Font Settings">
-          <SettingsFont user={user} updatePreferences={updatePreferences} />
+        <CollapseComponent title="Preferences">
+          <div className="flex flex-col py-2">
+            <ThemerPage user={user} setUserAction={setUser} />
+            <div className="divider" />
+            <SettingsFont user={user} updatePreferences={updatePreferences} />
+            <div className="divider" />
+            <ToastPreferences user={user} updatePreferences={updatePreferences} />
+          </div>
         </CollapseComponent>
 
         <CollapseComponent title="Notification">
-          <p>hello</p>
-        </CollapseComponent>
-
-        <CollapseComponent title="Preferences">
           <p>hello</p>
         </CollapseComponent>
       </div>

@@ -42,6 +42,7 @@ export default function SettingsFont({
 
   return (
     <div className="flex flex-col gap-4">
+      <h2 className="textarea-md font-semibold">Font Settings</h2>
       <div className="flex flex-wrap items-center justify-between">
         <label htmlFor="fontNameSelect" className="label grow">
           Select Font

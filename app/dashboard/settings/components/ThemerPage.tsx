@@ -72,7 +72,8 @@ export default function ThemerPage({
   };
 
   return (
-    <form onSubmit={handleThemeChange} className="flex w-full flex-col items-end gap-3 pt-4 max-sm:items-center">
+    <form onSubmit={handleThemeChange} className="flex w-full flex-col items-start gap-3 pt-4 max-sm:items-center">
+      <h2 className="textarea-md font-semibold">Themes Settings</h2>
       <div className="grid w-full grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
         {themes.map((themeOption) => {
           const isApplied = user.preferences?.theme === themeOption;
@@ -173,7 +174,6 @@ export default function ThemerPage({
           );
         })}
       </div>
-      <div className="divider my-1" />
       <div className="flex gap-2 self-end">
         <button
           type="button"
