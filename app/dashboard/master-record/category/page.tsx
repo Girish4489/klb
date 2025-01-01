@@ -866,7 +866,7 @@ export default function CategoryPage(): JSX.Element {
   }
 
   return (
-    <div className="h-full w-full">
+    <div className="flex h-full w-full flex-col gap-2 p-2">
       {/* modals */}
       <FormModals
         AddCategory={AddCategory}
@@ -880,38 +880,36 @@ export default function CategoryPage(): JSX.Element {
         EditDimension={EditDimension}
         EditCategory={EditCategory}
       />
-      <div className="container flex h-full w-full flex-col gap-2 p-2">
-        {/* category header for adding */}
-        <div className="rounded-box border-base-300 w-full border p-2 shadow-lg">
-          <div className="flex items-center justify-between gap-2">
-            <h2 className="label text-center font-bold">Category</h2>
-            <button className="btn btn-primary btn-soft btn-sm" onClick={() => openModal('addCategory')}>
-              <PlusCircleIcon className="h-5 w-5" />
-              Add
-            </button>
-          </div>
-          <p className="text-warning text-start font-thin max-sm:hidden">
-            Note: General users can view this page for informational purposes. Edits are reserved for authorized
-            personnel.
-          </p>
+      {/* category header for adding */}
+      <div className="rounded-box border-base-300 w-full border p-2 shadow-lg">
+        <div className="flex items-center justify-between gap-2">
+          <h2 className="label text-center font-bold">Category</h2>
+          <button className="btn btn-primary btn-soft btn-sm" onClick={() => openModal('addCategory')}>
+            <PlusCircleIcon className="h-5 w-5" />
+            Add
+          </button>
         </div>
-        {/* category list */}
-        <div className="rounded-box border-base-300 flex flex-1 grow flex-col items-center gap-2 border pb-2 shadow-2xl">
-          <h1 className="py-1 text-center font-bold text-base">Categories</h1>
-          <div className="flex h-full w-full flex-col gap-1 overflow-y-auto px-1">
-            {category.map((cat: ICategory, catIndex: number) => (
-              <CategoryItem
-                key={catIndex}
-                category={cat}
-                setIdsState={setIdsState}
-                DelCategory={DelCategory}
-                DelProcess={DelProcess}
-                DelStyle={DelStyle}
-                DelDimensionType={DelDimensionType}
-                DelDimension={DelDimension}
-              />
-            ))}
-          </div>
+        <p className="text-warning text-start font-thin max-sm:hidden">
+          Note: General users can view this page for informational purposes. Edits are reserved for authorized
+          personnel.
+        </p>
+      </div>
+      {/* category list */}
+      <div className="rounded-box border-base-300 flex flex-1 grow flex-col items-center gap-2 border pb-2 shadow-2xl">
+        <h1 className="py-1 text-center font-bold text-base">Categories</h1>
+        <div className="flex h-full w-full flex-col gap-1 overflow-y-auto px-1">
+          {category.map((cat: ICategory, catIndex: number) => (
+            <CategoryItem
+              key={catIndex}
+              category={cat}
+              setIdsState={setIdsState}
+              DelCategory={DelCategory}
+              DelProcess={DelProcess}
+              DelStyle={DelStyle}
+              DelDimensionType={DelDimensionType}
+              DelDimension={DelDimension}
+            />
+          ))}
         </div>
       </div>
     </div>
