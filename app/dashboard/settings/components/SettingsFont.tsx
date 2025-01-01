@@ -35,7 +35,9 @@ export default function SettingsFont({
   }, [fonts]);
 
   const updateFontPreferences = async (updatedFonts: Fonts): Promise<void> => {
+    const currentPreferences = user.preferences ?? {};
     await updatePreferences({
+      ...currentPreferences,
       fonts: updatedFonts,
     });
   };

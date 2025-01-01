@@ -36,7 +36,7 @@
   --z-overlay: 45;
   --z-dropdown: 50;
   --z-modal: 60;
-  --z-toast: 70;
+  --z-toast: 100;
   --z-max: 9999;
 }
 

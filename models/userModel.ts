@@ -52,6 +52,7 @@ interface IUser extends Document {
         vertical: 'top' | 'bottom';
         horizontal: 'start' | 'center' | 'end';
       };
+      duration: number;
     };
   };
   notifications: INotification[];
@@ -156,6 +157,7 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
           vertical: { type: String, enum: ['top', 'bottom'], default: 'top' },
           horizontal: { type: String, enum: ['start', 'center', 'end'], default: 'center' },
         },
+        duration: { type: Number, default: 4000, min: 1000, max: 10000 },
       },
     },
     notifications: [

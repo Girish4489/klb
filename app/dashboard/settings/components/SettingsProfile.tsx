@@ -122,7 +122,7 @@ export default function SettingsProfile({
   }, []);
 
   return (
-    <div className="card lg:card-side flex flex-col items-center gap-4 pt-4">
+    <div className="card lg:card-side flex flex-col items-center gap-4">
       {isLoading ? (
         <LoadingSkeleton />
       ) : (

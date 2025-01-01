@@ -8,7 +8,23 @@ import globals from 'globals';
 export default [
   js.configs.recommended,
   {
-    files: ['**/*.{js,jsx,ts,tsx,mjs,cjs}'],
+    files: [
+      '**/*.{js,jsx,ts,tsx,mjs,cjs}',
+      'next-env.d.ts',
+      '**/*.ts',
+      '**/*.tsx',
+      '.next/types/**/*.ts',
+      '*.mjs',
+      '*.config.mjs',
+      '*.config.js',
+      'next.config.ts',
+      'app/**/*',
+      'utils/**/*',
+      'dbConfig/**/*',
+      'helpers/**/*',
+      'models/**/*',
+      'types/**/*',
+    ],
     ignores: [
       '**/node_modules/**',
       '**/.next/**',

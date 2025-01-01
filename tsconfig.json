@@ -43,7 +43,13 @@
     "*.mjs",
     "*.config.mjs",
     "*.config.js",
-    "src/types/**/*.d.ts"
+    "next.config.ts",
+    "app/**/*",
+    "utils/**/*",
+    "dbConfig/**/*",
+    "helpers/**/*",
+    "models/**/*",
+    "types/**/*"
   ],
   "exclude": ["node_modules"]
 }

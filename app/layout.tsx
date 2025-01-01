@@ -1,9 +1,10 @@
 'use client';
 import '@app/globals.css';
 import { SpeedInsightsWrapper } from '@components/SpeedInsights';
-import { ToastContainer } from '@components/Toast/ToastContainer';
+import { DaisyToast } from '@components/Toast/DaisyToast';
 import TopbarLoader from '@components/topbarLoader/page';
 import { ThemeProvider } from '@context/ThemeContext';
+import { ToastProvider } from '@context/ToastContext';
 import { CompanyProvider } from '@context/companyContext';
 import { AuthProvider, UserProvider } from '@context/userContext';
 import { roboto } from '@utils/fonts/fontConfig';
@@ -49,13 +50,15 @@ export default function RootLayout({ children }: { children: ReactNode }): JSX.E
         <AuthProvider>
           <UserProvider>
             <CompanyProvider>
-              <body className={roboto.regular.className}>
-                <TopbarLoader />
-                <ToastContainer />
-                {children}
-                <SpeedInsightsWrapper />
-                <Analytics />
-              </body>
+              <ToastProvider>
+                <body className={roboto.regular.className}>
+                  <TopbarLoader />
+                  <DaisyToast />
+                  {children}
+                  <SpeedInsightsWrapper />
+                  <Analytics />
+                </body>
+              </ToastProvider>
             </CompanyProvider>
           </UserProvider>
         </AuthProvider>

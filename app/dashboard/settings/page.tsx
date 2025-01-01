@@ -57,7 +57,7 @@ export default function SettingsPage(): JSX.Element {
       <div className="join-item collapse-arrow bg-base-200 border-base-300 collapse border">
         <input type="checkbox" name="collapse" defaultChecked={defaultChecked} />
         <div className="collapse-title bg-base-300 font-medium">{title}</div>
-        <div className="collapse-content">{children}</div>
+        <div className="collapse-content py-4">{children}</div>
       </div>
     );
   };
@@ -73,7 +73,7 @@ export default function SettingsPage(): JSX.Element {
         </CollapseComponent>
 
         <CollapseComponent title="Preferences">
-          <div className="flex flex-col py-2">
+          <div className="flex flex-col">
             <ThemerPage user={user} setUserAction={setUser} />
             <div className="divider" />
             <SettingsFont user={user} updatePreferences={updatePreferences} />

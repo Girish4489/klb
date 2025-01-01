@@ -82,6 +82,13 @@ const initialUserState: IUser = {
       name: 'Roboto',
       weight: 400,
     },
+    toast: {
+      position: {
+        vertical: 'top',
+        horizontal: 'center',
+      },
+      duration: 4000,
+    },
   },
   isVerified: false,
   isAdmin: false,
@@ -166,6 +173,13 @@ export const UserProvider: FC<UserContextProps> = ({ children }) => {
     setUser((prevUser: IUser) => {
       const updatedUser: IUser = { ...prevUser, ...partialUpdate } as IUser;
       localStorage.setItem('user', JSON.stringify(updatedUser));
+      if (updatedUser.preferences) {
+        document.documentElement.setAttribute('data-theme', updatedUser.preferences.theme);
+        if (updatedUser.preferences.fonts) {
+          document.body.style.fontFamily = updatedUser.preferences.fonts.name ?? 'Roboto';
+          document.body.style.fontWeight = updatedUser.preferences.fonts.weight.toString() ?? '400';
+        }
+      }
       return updatedUser;
     });
   }, []);
@@ -413,4 +427,4 @@ export const useAuth = (): AuthState => {
 };
 
 // Make sure we export the interfaces and types that might be needed
-export type { AuthState, UserContextType };
+export type { AuthState, UserContextType, UserUpdateResponse };

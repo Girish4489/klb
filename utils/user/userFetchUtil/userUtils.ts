@@ -34,6 +34,13 @@ export async function fetchUserData(): Promise<IUser | undefined> {
               name: userData.preferences.fonts?.name || 'Roboto',
               weight: userData.preferences.fonts?.weight || 400,
             },
+            toast: {
+              position: {
+                vertical: userData.preferences.toast?.position?.vertical || 'top',
+                horizontal: userData.preferences.toast?.position?.horizontal || 'center',
+              },
+              duration: userData.preferences.toast?.duration || 4000,
+            },
           }
         : undefined,
       lastLogin: userData.lastLogin ? new Date(userData.lastLogin) : new Date(),

@@ -1,69 +1,91 @@
-import PromiseToast from '@components/Toast/PromiseToast';
-import StandardToast from '@components/Toast/StandardToast';
-import { StandardToastType, ToastMessages } from '@components/Toast/types';
-import { type ReactNode } from 'react';
-import { toast as hotToast, type ToastOptions } from 'react-hot-toast';
+import { ReactNode } from 'react';
 
-const DEFAULT_OPTIONS: ToastOptions = {
-  duration: 4000,
-  style: {
-    background: 'transparent',
-    boxShadow: 'none',
-    padding: 0,
-    minWidth: 'auto',
-  },
-};
+interface ToastMessages<T = unknown> {
+  loading: ReactNode;
+  success: ReactNode | ((data: T) => ReactNode);
+  error: ReactNode | ((error: Error) => ReactNode);
+}
 
-const createToast = (message: ReactNode, type: StandardToastType, options?: ToastOptions): string => {
-  return hotToast.custom(<StandardToast message={message} type={type} />, {
-    ...DEFAULT_OPTIONS,
-    ...options,
-  });
+const getDefaultDuration = (): number => {
+  const storedUser = localStorage.getItem('user');
+  const userPrefs = storedUser ? JSON.parse(storedUser).preferences?.toast : null;
+  return userPrefs?.duration || 4000; // fallback to 4000ms if not set
 };
 
 export const toast = {
-  success: (message: ReactNode, options?: ToastOptions): string => createToast(message, 'success', options),
-
-  error: (message: ReactNode, options?: ToastOptions): string => createToast(message, 'error', options),
-
-  info: (message: ReactNode, options?: ToastOptions): string => createToast(message, 'info', options),
-
-  warning: (message: ReactNode, options?: ToastOptions): string => createToast(message, 'warning', options),
-
-  promise: <T,>(promise: Promise<T>, messages: ToastMessages<T> = {}, options?: ToastOptions): Promise<T> => {
-    const toastId = 'promise-toast';
-
-    // Show loading toast
-    hotToast.custom(<PromiseToast message={messages.loading ?? 'Loading...'} state="loading" />, {
-      ...DEFAULT_OPTIONS,
-      ...options,
-      id: toastId,
+  success: (message: string, duration?: number): void => {
+    const event = new CustomEvent('toast', {
+      detail: { message, type: 'success', duration: duration || getDefaultDuration() },
     });
-
-    promise
-      .then((data) => {
-        const successMessage =
-          typeof messages.success === 'function' ? messages.success(data) : (messages.success ?? 'Success!');
-
-        hotToast.custom(<PromiseToast message={successMessage} state="success" />, {
-          ...DEFAULT_OPTIONS,
-          ...options,
-          id: toastId,
-        });
-      })
-      .catch((error) => {
-        const errorMessage =
-          typeof messages.error === 'function' ? messages.error(error) : (messages.error ?? 'Error!');
-
-        hotToast.custom(<PromiseToast message={errorMessage} state="error" />, {
-          ...DEFAULT_OPTIONS,
-          ...options,
-          id: toastId,
-        });
-      });
-
-    return promise;
+    window.dispatchEvent(event);
   },
 
-  dismiss: hotToast.dismiss,
+  error: (message: string, duration?: number): void => {
+    const event = new CustomEvent('toast', {
+      detail: { message, type: 'error', duration: duration || getDefaultDuration() },
+    });
+    window.dispatchEvent(event);
+  },
+
+  info: (message: string, duration = 4000): void => {
+    const event = new CustomEvent('toast', {
+      detail: { message, type: 'info', duration },
+    });
+    window.dispatchEvent(event);
+  },
+
+  warning: (message: string, duration = 4000): void => {
+    const event = new CustomEvent('toast', {
+      detail: { message, type: 'warning', duration },
+    });
+    window.dispatchEvent(event);
+  },
+
+  dismiss: (id: string): void => {
+    const event = new CustomEvent('toast-dismiss', {
+      detail: { id },
+    });
+    window.dispatchEvent(event);
+  },
+
+  promise: <T,>(promise: Promise<T>, messages: ToastMessages<T>): Promise<T> => {
+    const loadingEvent = new CustomEvent('toast-promise', {
+      detail: {
+        message: messages.loading,
+        type: 'loading',
+      },
+    });
+
+    window.dispatchEvent(loadingEvent);
+
+    return promise
+      .then((data) => {
+        const successMessage = typeof messages.success === 'function' ? messages.success(data) : messages.success;
+
+        const successEvent = new CustomEvent('toast-promise-success', {
+          detail: {
+            message: successMessage,
+            type: 'success',
+            duration: getDefaultDuration(),
+          },
+        });
+
+        window.dispatchEvent(successEvent);
+        return data;
+      })
+      .catch((error) => {
+        const errorMessage = typeof messages.error === 'function' ? messages.error(error) : messages.error;
+
+        const errorEvent = new CustomEvent('toast-promise-error', {
+          detail: {
+            message: errorMessage,
+            type: 'error',
+            duration: getDefaultDuration(),
+          },
+        });
+
+        window.dispatchEvent(errorEvent);
+        throw error;
+      });
+  },
 };
