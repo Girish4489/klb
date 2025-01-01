@@ -122,7 +122,9 @@ const UnpaidBills = ({ refresh }: UnpaidBillsProps): JSX.Element => {
       {error && <p>{error}</p>}
       <div className="overflow-auto">
         <table className="table w-full table-auto">
-          <caption>Unpaid Bills</caption>
+          <caption>
+            <span className="badge badge-soft badge-success font-bold">Unpaid Bills</span>
+          </caption>
           <thead>
             <tr className="cursor-pointer select-none text-center">
               <th onClick={() => handleHeaderClick('billNumber')}>
@@ -177,12 +179,14 @@ const UnpaidBills = ({ refresh }: UnpaidBillsProps): JSX.Element => {
           </tbody>
         </table>
       </div>
-      <Pagination
-        totalItems={sortedBills.length}
-        itemsPerPage={billsPerPage}
-        currentPage={currentPage}
-        paginate={paginate}
-      />
+      {sortedBills.length > billsPerPage && (
+        <Pagination
+          totalItems={sortedBills.length}
+          itemsPerPage={billsPerPage}
+          currentPage={currentPage}
+          paginate={paginate}
+        />
+      )}
     </div>
   );
 };

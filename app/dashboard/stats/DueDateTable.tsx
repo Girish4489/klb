@@ -150,7 +150,9 @@ const DueDateTable = ({ refresh }: DueDateTableProps): JSX.Element => {
       {error && <p>{error}</p>}
       <div className="overflow-auto">
         <table className="table w-full table-auto">
-          <caption>Due Date Bills</caption>
+          <caption>
+            <span className="badge badge-soft badge-success font-bold">Due Date Bills</span>
+          </caption>
           <thead>
             <tr className="cursor-pointer select-none text-center">
               <th onClick={() => handleHeaderClick('billNumber')}>
@@ -249,12 +251,14 @@ const DueDateTable = ({ refresh }: DueDateTableProps): JSX.Element => {
             })}
           </tbody>
         </table>
-        <Pagination
-          totalItems={filteredBills.length}
-          itemsPerPage={billsPerPage}
-          currentPage={currentPage}
-          paginate={paginate}
-        />
+        {filteredBills.length > billsPerPage && (
+          <Pagination
+            totalItems={filteredBills.length}
+            itemsPerPage={billsPerPage}
+            currentPage={currentPage}
+            paginate={paginate}
+          />
+        )}
       </div>
     </div>
   );

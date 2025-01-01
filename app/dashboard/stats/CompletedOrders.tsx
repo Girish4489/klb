@@ -126,7 +126,9 @@ const CompletedOrders = ({ refresh }: CompletedOrdersProps): JSX.Element => {
       {error && <p>{error}</p>}
       <div className="overflow-auto">
         <table className="table w-full table-auto">
-          <caption>Pending Deliveries</caption>
+          <caption>
+            <span className="badge badge-soft badge-success font-bold">Pending Deliveries</span>
+          </caption>
           <thead>
             <tr className="cursor-pointer select-none text-center">
               <th onClick={() => handleHeaderClick('billNumber')}>
@@ -187,12 +189,14 @@ const CompletedOrders = ({ refresh }: CompletedOrdersProps): JSX.Element => {
           </tbody>
         </table>
       </div>
-      <Pagination
-        totalItems={sortedOrders.length}
-        itemsPerPage={ordersPerPage}
-        currentPage={currentPage}
-        paginate={paginate}
-      />
+      {sortedOrders.length > ordersPerPage && (
+        <Pagination
+          totalItems={sortedOrders.length}
+          itemsPerPage={ordersPerPage}
+          currentPage={currentPage}
+          paginate={paginate}
+        />
+      )}
     </div>
   );
 };

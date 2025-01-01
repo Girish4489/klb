@@ -11,8 +11,8 @@ const Pagination = ({ totalItems, itemsPerPage, currentPage, paginate }: Paginat
   const pageNumbers = Array.from({ length: Math.ceil(totalItems / itemsPerPage) }, (_, index) => index + 1);
 
   return (
-    <span className="flex w-full justify-center">
-      <div className="join bg-base-300 pt-1.5">
+    <span className="flex w-full justify-center pt-1.5">
+      <div className="join bg-base-300">
         {pageNumbers.map((number) => (
           <button
             key={number}

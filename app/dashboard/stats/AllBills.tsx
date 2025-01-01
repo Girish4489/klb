@@ -121,7 +121,9 @@ const AllBills = ({ refresh }: AllBillsProps): JSX.Element => {
       ) : (
         <div className="overflow-auto">
           <table className="table w-full table-auto">
-            <caption>All Bills</caption>
+            <caption>
+              <span className="badge badge-soft badge-success font-bold">All Bills</span>
+            </caption>
             <thead>
               <tr className="cursor-pointer select-none text-center">
                 <th onClick={() => handleHeaderClick('billNumber')}>
@@ -177,7 +179,9 @@ const AllBills = ({ refresh }: AllBillsProps): JSX.Element => {
           </table>
         </div>
       )}
-      <Pagination totalItems={totalBills} itemsPerPage={billsPerPage} currentPage={currentPage} paginate={paginate} />
+      {totalBills > billsPerPage && (
+        <Pagination totalItems={totalBills} itemsPerPage={billsPerPage} currentPage={currentPage} paginate={paginate} />
+      )}
     </div>
   );
 };

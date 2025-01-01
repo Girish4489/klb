@@ -122,7 +122,9 @@ const DueBills = ({ refresh }: DueBillsProps): JSX.Element => {
       {error && <p>{error}</p>}
       <div className="overflow-auto">
         <table className="table w-full table-auto">
-          <caption>Bills with Incomplete Orders</caption>
+          <caption>
+            <span className="badge badge-soft badge-success font-bold">Bills with Incomplete Orders</span>
+          </caption>
           <thead>
             <tr className="cursor-pointer select-none text-center">
               <th onClick={() => handleHeaderClick('billNumber')}>
@@ -177,12 +179,14 @@ const DueBills = ({ refresh }: DueBillsProps): JSX.Element => {
           </tbody>
         </table>
       </div>
-      <Pagination
-        totalItems={sortedBills.length}
-        itemsPerPage={billsPerPage}
-        currentPage={currentPage}
-        paginate={paginate}
-      />
+      {sortedBills.length > billsPerPage && (
+        <Pagination
+          totalItems={sortedBills.length}
+          itemsPerPage={billsPerPage}
+          currentPage={currentPage}
+          paginate={paginate}
+        />
+      )}
     </div>
   );
 };

@@ -251,11 +251,11 @@ export default function DashboardClient(): JSX.Element {
             </label>
             <ul
               tabIndex={0}
-              className="menu dropdown-content menu-sm z-1 rounded-box bg-linear-to-bl from-base-100 to-base-300 ring-secondary w-52 p-2 shadow-sm ring-2"
+              className="menu dropdown-content menu-sm z-1 rounded-box bg-linear-to-bl from-base-100 to-base-300 ring-secondary mt-2 w-52 p-2 shadow-sm ring-2"
             >
               <li>
                 <label className="label cursor-pointer">
-                  <span className="label-text">Dashboard Stats</span>
+                  <span className="label-text flex-1">Dashboard Stats</span>
                   <input
                     type="checkbox"
                     checked={visibleComponents.dashboardStats}
@@ -266,7 +266,7 @@ export default function DashboardClient(): JSX.Element {
               </li>
               <li>
                 <label className="label cursor-pointer">
-                  <span className="label-text">Due Date Table</span>
+                  <span className="label-text flex-1">Due Date Table</span>
                   <input
                     type="checkbox"
                     checked={visibleComponents.dueDateTable}
@@ -277,7 +277,7 @@ export default function DashboardClient(): JSX.Element {
               </li>
               <li>
                 <label className="label cursor-pointer">
-                  <span className="label-text">All Bills</span>
+                  <span className="label-text flex-1">All Bills</span>
                   <input
                     type="checkbox"
                     checked={visibleComponents.allBills}
@@ -288,7 +288,7 @@ export default function DashboardClient(): JSX.Element {
               </li>
               <li>
                 <label className="label cursor-pointer">
-                  <span className="label-text">Due Bills</span>
+                  <span className="label-text flex-1">Due Bills</span>
                   <input
                     type="checkbox"
                     checked={visibleComponents.dueBills}
@@ -299,7 +299,7 @@ export default function DashboardClient(): JSX.Element {
               </li>
               <li>
                 <label className="label cursor-pointer">
-                  <span className="label-text">Completed Orders</span>
+                  <span className="label-text flex-1">Completed Orders</span>
                   <input
                     type="checkbox"
                     checked={visibleComponents.completedOrders}
@@ -310,7 +310,7 @@ export default function DashboardClient(): JSX.Element {
               </li>
               <li>
                 <label className="label cursor-pointer">
-                  <span className="label-text">Unpaid Bills</span>
+                  <span className="label-text flex-1">Unpaid Bills</span>
                   <input
                     type="checkbox"
                     checked={visibleComponents.unpaidBills}

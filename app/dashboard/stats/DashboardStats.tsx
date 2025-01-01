@@ -126,6 +126,9 @@ const DashboardStats = ({ refresh }: DashboardStatsProps): JSX.Element => {
   return (
     <div className="grow">
       {error && <p>{error}</p>}
+      <div className="flex items-center justify-center gap-2">
+        <span className="badge badge-soft badge-success font-bold">Stats</span>
+      </div>
       <div className="mt-4 flex grow flex-col lg:flex-row lg:space-x-4">
         <div className="flex grow place-items-center items-center">
           <Bar data={data} options={chartOptions} />
