@@ -128,7 +128,7 @@ export default function ThemerPage({
                     className="tooltip tooltip-right tooltip-info bg-base-300 col-span-1 col-start-1 row-span-1 row-start-4"
                     data-tip="base 300"
                   />
-                  <div className="tooltip tooltip-top col-span-3 col-start-2 row-span-3 row-start-2 flex flex-col items-center justify-center gap-1 p-2">
+                  <div className="col-span-3 col-start-2 row-span-3 row-start-2 flex flex-col items-center justify-center gap-1 p-2">
                     <div className={`font-bold ${isApplied ? 'text-success' : ''}`}>
                       {themeOption.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())}
                     </div>

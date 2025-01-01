@@ -1,6 +1,6 @@
 'use client';
-import ThemerPage from '@components/themer/ThemerPage';
 import { useUser } from '@context/userContext';
+import ThemerPage from '@dashboard/settings/components/ThemerPage';
 import { IUser } from '@models/userModel';
 import handleError from '@utils/error/handleError';
 import { ApiPost, ApiResponse } from '@utils/makeApiRequest/makeApiRequest';

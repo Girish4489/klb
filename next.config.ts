@@ -4,7 +4,7 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   eslint: {
-    dirs: ['src', 'data'],
+    dirs: ['./app', './data', './constants', './dbConfig', './helpers', './models', './public', './utils'],
   },
   images: {
     remotePatterns: [
