@@ -27,7 +27,6 @@ import {
   fetchInitialData,
   handleColorSelect,
   searchRowClicked,
-  updateBillAmounts,
   updateUrlWithBillNumber,
   validateBill,
 } from './utils/billUtils';
@@ -249,42 +248,35 @@ export default function BillPage(): JSX.Element {
     try {
       if (!bill) throw new Error('Bill data is undefined');
 
-      // Calculate the total amount before validating the bill
       const orderAmount = calculateTotalAmount(bill.order ?? []);
-      setBill(
-        (prevBill) =>
-          ({
-            ...prevBill,
-            totalAmount: orderAmount,
-          }) as IBill | undefined,
-      );
-
-      await validateBill({
-        ...bill,
-        totalAmount: orderAmount,
-      } as IBill);
-
-      const updatedBill: Partial<IBill> = updateBillAmounts({
-        ...bill,
+      // Create a plain object without Mongoose Document properties
+      const billData = {
+        ...JSON.parse(JSON.stringify(bill)), // Strip Mongoose specific fields
         order: bill.order.map((order) => ({ ...order, status: 'Pending' })),
         paymentStatus: 'Unpaid',
         deliveryStatus: 'Pending',
-      });
+        totalAmount: orderAmount,
+      };
 
-      // Type assertion here since we know the bill has all required fields
-      await toast.promise(ApiPost.Bill<BillResponse>(updatedBill as IBill), {
+      await validateBill(billData);
+
+      await toast.promise(ApiPost.Bill<BillResponse>(billData), {
         loading: 'Saving bill...',
         success: (res) => {
-          if (res) {
-            setTodayBill([...todayBill, res.today!]);
-            setNewBill(false);
-            setBill(res.bill![0]);
-            return res.message ?? 'Bill saved successfully';
-          }
+          if (!res?.success) throw new Error(res?.message ?? 'Failed to save bill');
+
+          // Update today's bills by adding the new bill at the beginning
+          setTodayBill((prev) => [res.today!, ...prev]);
+          setNewBill(false);
+          // Update current bill with full data
+          setBill(res.bill![0]);
+
+          // Update URL with new bill number
+          updateUrlWithBillNumber(res.bill![0].billNumber.toString());
+
+          return res.message ?? 'Bill saved successfully';
         },
-        error: (error) => {
-          throw new Error(error?.message ?? 'Failed to save bill');
-        },
+        error: (err) => err.message,
       });
     } catch (error) {
       handleError.toast(error);
@@ -299,30 +291,31 @@ export default function BillPage(): JSX.Element {
     if (!update) return;
 
     try {
-      const orderAmount = await calculateTotalAmount(bill?.order ?? []);
-      setBill(
-        (prevBill) =>
-          ({
-            ...prevBill,
-            totalAmount: orderAmount ?? 0,
-          }) as IBill,
-      );
-      await validateBill(bill);
-      if (!(bill ?? {})._id) throw new Error('No bill ID found to update');
+      if (!bill?._id) throw new Error('No bill ID found to update');
 
-      await toast.promise(ApiPut.Bill<BillResponse>(bill?._id?.toString() ?? '', bill as IBill), {
+      const orderAmount = calculateTotalAmount(bill.order ?? []);
+      // Create a plain object without Mongoose Document properties
+      const billData = {
+        ...JSON.parse(JSON.stringify(bill)), // Strip Mongoose specific fields
+        totalAmount: orderAmount,
+      };
+
+      await validateBill(billData);
+
+      await toast.promise(ApiPut.Bill<BillResponse>(bill._id.toString(), billData), {
         loading: 'Updating bill...',
         success: (res) => {
-          if (res) {
-            setTodayBill([...todayBill, res.today!]);
-            console.log('Updated bill:', res.bill);
-            setBill(res.bill ? res.bill[0] : undefined);
-            return res.message ?? 'Bill updated successfully';
-          }
+          if (!res?.success) throw new Error(res?.message ?? 'Failed to update bill');
+
+          // Update today's bills by replacing the updated bill
+          setTodayBill((prev) => prev.map((b) => (b._id === res.today!._id ? res.today! : b)));
+
+          // Update current bill with full data
+          setBill(res.bill![0]);
+
+          return res.message ?? 'Bill updated successfully';
         },
-        error: (error) => {
-          throw new Error(error?.message ?? 'Failed to update bill');
-        },
+        error: (err) => err.message,
       });
     } catch (error) {
       handleError.toast(error);

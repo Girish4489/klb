@@ -14,7 +14,9 @@ const BillTable: React.FC<BillTableProps> = ({ caption, bills }) => {
       className={`rounded-box bg-base-100 ring-neutral/40 max-h-96 overflow-x-auto ring-2 ${bills.length === 0 && 'min-h-24'}`}
     >
       <table className="table-zebra table-pin-rows table">
-        <caption className="text-base-content px-1 py-2 font-bold">{caption}</caption>
+        <caption className="text-base-content px-1 py-2 font-bold">
+          <span className="badge badge-soft badge-success">{caption}</span>
+        </caption>
         {bills.length === 0 ? (
           <tbody>
             <tr>
@@ -51,7 +53,7 @@ const BillTable: React.FC<BillTableProps> = ({ caption, bills }) => {
                   </td>
                   <td>
                     {bill?.billBy?.name && (
-                      <span className="badge badge-accent badge-outline items-center justify-around gap-2 py-3 font-bold">
+                      <span className="badge badge-accent badge-soft items-center justify-around gap-2 py-3 font-bold">
                         <UserIcon className="text-accent h-4 w-4" />
                         <span>{bill.billBy?.name}</span>
                       </span>

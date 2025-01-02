@@ -84,15 +84,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const billExists = await Bill.findOne({ billNumber: data.billNumber });
     if (billExists) throw new Error('Bill number already exists');
 
-    const bill = new Bill(data);
-
-    // Set bill creator info
-    if (!bill.billBy) {
-      bill.billBy = {
+    const bill = new Bill({
+      ...data,
+      billBy: {
         _id: user._id,
         name: user.username,
-      };
-    }
+      },
+    });
 
     // Calculate total amount
     const totalAmount = bill.order.reduce((sum, order) => sum + (order.amount || 0), 0);
@@ -103,11 +101,18 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     await bill.save();
 
-    const today = await Bill.findOne({
-      billNumber: bill.billNumber,
-    }).select('-__v -updatedAt -createdAt -_id -order -paymentStatus -email -tax');
+    // Get full bill data after save
+    const savedBill = await Bill.find({ _id: bill._id });
+    const todayBill = await Bill.findOne({ _id: bill._id }).select(
+      '-__v -updatedAt -createdAt -_id -order -paymentStatus -email -tax',
+    );
 
-    return NextResponse.json({ message: 'Bill created', success: true, bill: bill, today: today });
+    return NextResponse.json({
+      message: 'Bill created',
+      success: true,
+      bill: savedBill, // Return full bill data
+      today: todayBill,
+    });
   } catch (error) {
     return handleError.api(error);
   }
@@ -129,36 +134,56 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
     const billExists = await Bill.findOne({ _id: billId });
     if (!billExists) throw new Error('Bill not found');
 
+    // Preserve the original billBy if it exists, otherwise set it
+    const updatedData = {
+      ...data,
+      billBy: billExists.billBy || {
+        _id: user._id,
+        name: user.username,
+      },
+    };
+
     // Calculate total amount
-    const totalAmount = data.order.reduce((sum, order) => sum + (order.amount || 0), 0);
-    data.totalAmount = totalAmount;
+    const totalAmount = updatedData.order.reduce((sum, order) => sum + (order.amount || 0), 0);
+    updatedData.totalAmount = totalAmount;
 
     // Update payment status
-    data.paymentStatus = 'Unpaid';
+    updatedData.paymentStatus = 'Unpaid';
 
     // Use the existing bill and receipt data
-    const receipts = await Receipt.find({ 'bill.billNumber': data.billNumber });
+    const receipts = await Receipt.find({ 'bill.billNumber': updatedData.billNumber });
     if (receipts && receipts.length > 0) {
       const { dueAmount } = calculateDetailsFromReceipts(receipts, totalAmount);
 
       // Update payment status based on due amount
       if (dueAmount <= 0) {
-        data.paymentStatus = 'Paid';
+        updatedData.paymentStatus = 'Paid';
       } else if (dueAmount < totalAmount) {
-        data.paymentStatus = 'Partially Paid';
+        updatedData.paymentStatus = 'Partially Paid';
       } else {
-        data.paymentStatus = 'Unpaid';
+        updatedData.paymentStatus = 'Unpaid';
       }
     } else {
-      data.paymentStatus = 'Unpaid';
+      updatedData.paymentStatus = 'Unpaid';
     }
 
-    data.updatedAt = new Date();
+    updatedData.updatedAt = new Date();
 
-    const bill = await Bill.findByIdAndUpdate(billId, data, { new: true });
+    const bill = await Bill.findByIdAndUpdate(billId, updatedData, { new: true });
     if (!bill) throw new Error('Bill not found');
 
-    return NextResponse.json({ message: 'Bill updated', success: true, bill: bill });
+    // Get full bill data after update
+    const updatedBill = await Bill.find({ _id: bill._id });
+    const todayBill = await Bill.findOne({ _id: bill._id }).select(
+      '-__v -updatedAt -createdAt -_id -order -paymentStatus -email -tax',
+    );
+
+    return NextResponse.json({
+      message: 'Bill updated',
+      success: true,
+      bill: updatedBill, // Return full bill data
+      today: todayBill,
+    });
   } catch (error) {
     return handleError.api(error);
   }
