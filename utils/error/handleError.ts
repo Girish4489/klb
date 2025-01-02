@@ -2,6 +2,9 @@ import { toast } from '@utils/toast/toast';
 import { NextResponse } from 'next/server';
 
 const handleErrorToast = (error: unknown): void => {
+  if (error instanceof Error && error.message === 'No token found') {
+    return; // Ignore this specific error
+  }
   if (error instanceof Error && error.message) {
     toast.error(error.message);
   } else {
@@ -10,10 +13,13 @@ const handleErrorToast = (error: unknown): void => {
 };
 
 const handleErrorLog = (error: unknown): void => {
+  if (error instanceof Error && error.message === 'No token found') {
+    return; // Ignore this specific error
+  }
   if (error instanceof Error && error.message) {
     console.error(error.message);
   } else {
-    console.error('An unknown error occurred');
+    console.error('An unknown error occurred', error);
   }
 };
 

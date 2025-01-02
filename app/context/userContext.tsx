@@ -135,9 +135,12 @@ export const UserProvider: FC<UserContextProps> = ({ children }) => {
         }
       }
     } catch (error) {
-      console.error('Failed to fetch user data:', error);
+      handleError.log(error);
       await logoutUtils.logout({
-        onLogoutSuccess: () => setUser(initialUserState),
+        onLogoutSuccess: () => {
+          setUser(initialUserState);
+          localStorage.removeItem('user');
+        },
       });
     }
   }, []);
@@ -150,18 +153,25 @@ export const UserProvider: FC<UserContextProps> = ({ children }) => {
       const storedUser = localStorage.getItem('user');
 
       if (storedUser) {
-        const parsedUser = JSON.parse(storedUser);
-        setUser(parsedUser);
+        try {
+          const parsedUser = JSON.parse(storedUser);
+          setUser(parsedUser);
 
-        // Apply user preferences if available
-        if (parsedUser.preferences) {
-          document.documentElement.setAttribute('data-theme', parsedUser.preferences.theme);
-          if (parsedUser.preferences.fonts) {
-            document.body.style.fontFamily = parsedUser.preferences.fonts.name ?? 'Roboto';
-            document.body.style.fontWeight = parsedUser.preferences.fonts.weight.toString() ?? '400';
+          if (parsedUser.preferences) {
+            document.documentElement.setAttribute('data-theme', parsedUser.preferences.theme);
+            if (parsedUser.preferences.fonts) {
+              document.body.style.fontFamily = parsedUser.preferences.fonts.name ?? 'Roboto';
+              document.body.style.fontWeight = parsedUser.preferences.fonts.weight.toString() ?? '400';
+            }
+          }
+        } catch (error) {
+          handleError.log(error);
+          localStorage.removeItem('user'); // Clear invalid stored user data
+          if (!pathname?.startsWith('/auth/') && !pathname.startsWith('/landing/public/')) {
+            await fetchAndSetUser();
           }
         }
-      } else if (pathname && !pathname.startsWith('/auth/')) {
+      } else if (pathname && !pathname.startsWith('/auth/') && !pathname.startsWith('/landing/public/')) {
         await fetchAndSetUser();
       }
     };
