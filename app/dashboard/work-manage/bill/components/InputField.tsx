@@ -65,27 +65,24 @@ const TextInput: React.FC<TextInputFieldProps> = ({
   placeholder,
   readOnly,
   autoComplete,
-  className,
   label,
   labelClass,
   inputClass,
 }) => (
-  <div className={`flex select-none items-center ${className}`}>
-    <label htmlFor={id} className={`input input-sm label-text input-bordered flex items-center gap-2 ${labelClass}`}>
-      {label}:
-      <input
-        type="text"
-        id={id}
-        name={id}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        readOnly={readOnly}
-        autoComplete={autoComplete}
-        className={`${inputClass}`}
-      />
-    </label>
-  </div>
+  <label htmlFor={id} className={`input input-sm label-text input-primary input-bordered gap-2 ${labelClass}`}>
+    {label}:
+    <input
+      type="text"
+      id={id}
+      name={id}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      readOnly={readOnly}
+      autoComplete={autoComplete}
+      className={`${inputClass}`}
+    />
+  </label>
 );
 
 const CheckboxInput: React.FC<CheckboxInputFieldProps> = ({
@@ -117,23 +114,20 @@ const SelectInput: React.FC<SelectInputFieldProps> = ({
   value,
   onChange,
   options,
-  className,
   label,
   labelClass,
   selectClass,
 }) => (
-  <div className={`flex select-none items-center gap-1 ${className}`}>
-    <label htmlFor={id} className={`flex items-center ${labelClass}`}>
-      {label}:
-    </label>
-    <select id={id} name={id} value={value} onChange={onChange} className={`select select-sm max-w-sm ${selectClass}`}>
+  <label htmlFor={id} className={`select select-sm select-primary max-w-sm ${labelClass}`}>
+    {label}:
+    <select id={id} name={id} value={value} onChange={onChange} className={`${selectClass}`}>
       {options.map((option) => (
         <option key={option.value} value={option.value} data-itemid={option.dataItemId}>
           {option.label}
         </option>
       ))}
     </select>
-  </div>
+  </label>
 );
 
 const DateInput: React.FC<DateInputFieldProps> = ({
@@ -188,6 +182,7 @@ const TextAreaInput: React.FC<TextAreaInputFieldProps> = ({
         onChange={onChange}
         placeholder={placeholder}
         readOnly={readOnly}
+        rows={3}
         autoComplete={autoComplete}
         className={`px-2 py-1 ${textareaClass}`}
       />

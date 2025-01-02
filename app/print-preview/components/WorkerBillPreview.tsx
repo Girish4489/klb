@@ -41,7 +41,7 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, company, is
                       priority
                     />
                   </span>
-                  <hr className="divider divider-horizontal rounded-box m-0 w-0.5 bg-black" />
+                  <hr className="divider divider-horizontal rounded-box mx-0 w-px bg-black" />
                 </div>
                 <div className="item-center flex grow flex-col justify-between">
                   <span className="field">
@@ -127,9 +127,7 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, company, is
                               className="item-center font-base rounded-box flex w-fit flex-col justify-start border border-black px-2 py-0.5"
                             >
                               <span className="flex w-fit flex-row items-center justify-around gap-8">
-                                <h1>
-                                  {styleIndex + 1}. {style.styleProcessName}:{' '}
-                                </h1>
+                                <h1>{style.styleProcessName}: </h1>
                                 <hr />
                                 <p>{style.styleName}</p>
                               </span>
@@ -177,9 +175,7 @@ const WorkerBillPreview: React.FC<WorkerBillPreviewProps> = ({ bill, company, is
                               className="item-center rounded-box flex w-fit flex-col items-center justify-start border border-black"
                             >
                               <span className="flex flex-row items-center justify-around gap-0.5 text-base">
-                                <h1 className="px-1 py-0.5 text-base">
-                                  {dimensionIndex + 1}. {dimension.dimensionTypeName}:{' '}
-                                </h1>
+                                <h1 className="px-1 py-0.5 text-base">{dimension.dimensionTypeName}: </h1>
                                 <p className="content-center px-2 text-center">{dimension.dimensionName}</p>
                               </span>
                               <hr className="m-auto h-0.5 w-full border border-solid border-black" />

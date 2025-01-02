@@ -88,7 +88,7 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
               readOnly
               onChange={() => {}}
               className="w-fit"
-              labelClass="input-primary min-w-16 max-w-28 text-nowrap"
+              labelClass="max-w-28 text-nowrap"
               inputClass="grow"
             />
             <InputField
@@ -109,9 +109,6 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
                   dataItemId: cat._id.toString(),
                 })),
               ]}
-              className=""
-              labelClass=""
-              selectClass="select-primary min-w-sm"
             />
             <InputField
               label="Work"
@@ -195,9 +192,6 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
                         label: dim.dimensionName,
                       })),
                     ]}
-                    className=""
-                    labelClass=""
-                    selectClass="select-primary min-w-sm"
                   />
                   <InputField
                     label={`${typ.dimensionTypeName} Note`}
@@ -215,7 +209,6 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
                         cat.dimensionTypes?.length ?? 0,
                       );
                     }}
-                    labelClass="text-nowrap input-primary"
                   />
                 </div>
               ));
@@ -241,7 +234,7 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
                   label="Measure"
                   id={`measure_${orderIndex}`}
                   type="textarea"
-                  placeholder='Enter "measure" here'
+                  placeholder="Enter measure here"
                   value={order.measurement || ''}
                   onChange={(e) =>
                     setBill({
@@ -260,7 +253,7 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
                 label="Order Notes"
                 id={`orderNotes_${orderIndex}`}
                 type="text"
-                placeholder='Enter "order notes" here'
+                placeholder="Enter order notes here"
                 value={order.orderNotes || ''}
                 onChange={(e) =>
                   setBill({
@@ -268,21 +261,17 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
                     order: bill.order?.map((o, i) => (i === orderIndex ? { ...o, orderNotes: e.target.value } : o)),
                   } as IBill)
                 }
-                labelClass="input-primary"
-                inputClass="grow"
               />
               <InputField
                 label="Amount"
                 id={`amount_${orderIndex}`}
                 type="number"
-                placeholder='Enter "amount" here'
+                placeholder="Enter amount here"
                 value={order.amount || ''}
                 onChange={(e) => {
                   const amount = parseFloat(e.currentTarget.value) || 0;
                   updateOrderAmount(bill, orderIndex, amount, setBill);
                 }}
-                labelClass="input-primary"
-                inputClass="grow"
               />
             </span>
           </div>
@@ -328,9 +317,6 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
                           label: styles.styleName,
                         })),
                       ]}
-                      className=""
-                      labelClass=""
-                      selectClass="select-primary min-w-sm"
                     />
                   </div>
                 ));
