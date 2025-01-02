@@ -69,6 +69,7 @@ export default [
         },
       ],
       '@typescript-eslint/explicit-function-return-type': 'warn',
+      'no-console': ['error', { allow: ['warn', 'error'] }],
     },
   },
   prettier,

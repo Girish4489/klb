@@ -23,6 +23,7 @@ async function connectWithRetry(mongoURI: string, retries: number = MAX_RETRIES)
     const connection = mongoose.connection as mongoose.Connection;
 
     connection.on('connected', () => {
+      // eslint-disable-next-line no-console
       console.log('MongoDB connected successfully');
     });
 

@@ -55,7 +55,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       companyAccess: user.companyAccess,
       lastLogin: user.lastLogin,
     };
-    console.log('Token data:', tokenData);
 
     // Create token
     const authToken = await token.create(tokenData, '1d');
@@ -67,7 +66,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (!tokenExpiry) {
       throw new Error('Failed to get token expiry');
     }
-    console.log('Token expiry:', tokenExpiry);
 
     const response = NextResponse.json({
       message: 'Login successful',
