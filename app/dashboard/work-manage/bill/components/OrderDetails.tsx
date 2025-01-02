@@ -1,4 +1,4 @@
-import ColorPickerButton from '@components/ColorPickerButton/ColorPickerButton';
+import ColorPickerButton from '@/app/dashboard/work-manage/bill/components/ColorPickerButton';
 import { MinusCircleIcon } from '@heroicons/react/24/outline';
 import { IBill, ICategory, IColor, IDimensionTypes, IDimensions, IStyle, IStyleProcess } from '@models/klm';
 import { Types } from 'mongoose';

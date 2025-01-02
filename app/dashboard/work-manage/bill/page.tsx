@@ -272,15 +272,20 @@ export default function BillPage(): JSX.Element {
       });
 
       // Type assertion here since we know the bill has all required fields
-      const res = await ApiPost.Bill<BillResponse>(updatedBill as IBill);
-      if (res?.success) {
-        setTodayBill([...todayBill, res.today!]);
-        setBill(res.bill![0]);
-        setNewBill(false);
-        toast.success(res.message ?? 'Bill saved successfully');
-      } else {
-        throw new Error(res?.message ?? 'Failed to save bill');
-      }
+      await toast.promise(ApiPost.Bill<BillResponse>(updatedBill as IBill), {
+        loading: 'Saving bill...',
+        success: (res) => {
+          if (res) {
+            setTodayBill([...todayBill, res.today!]);
+            setNewBill(false);
+            setBill(res.bill![0]);
+            return res.message ?? 'Bill saved successfully';
+          }
+        },
+        error: (error) => {
+          throw new Error(error?.message ?? 'Failed to save bill');
+        },
+      });
     } catch (error) {
       handleError.toast(error);
     }
@@ -305,14 +310,20 @@ export default function BillPage(): JSX.Element {
       await validateBill(bill);
       if (!(bill ?? {})._id) throw new Error('No bill ID found to update');
 
-      const res = await ApiPut.Bill<BillResponse>(bill?._id?.toString() ?? '', bill as IBill);
-      if (res?.success) {
-        setTodayBill([...todayBill, res.today!]);
-        setBill(res.bill![0]);
-        toast.success(res.message ?? 'Bill updated successfully');
-      } else {
-        throw new Error(res?.message ?? 'Failed to update bill');
-      }
+      await toast.promise(ApiPut.Bill<BillResponse>(bill?._id?.toString() ?? '', bill as IBill), {
+        loading: 'Updating bill...',
+        success: (res) => {
+          if (res) {
+            setTodayBill([...todayBill, res.today!]);
+            console.log('Updated bill:', res.bill);
+            setBill(res.bill ? res.bill[0] : undefined);
+            return res.message ?? 'Bill updated successfully';
+          }
+        },
+        error: (error) => {
+          throw new Error(error?.message ?? 'Failed to update bill');
+        },
+      });
     } catch (error) {
       handleError.toast(error);
     }

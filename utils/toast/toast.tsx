@@ -49,10 +49,17 @@ export const toast = {
   },
 
   promise: <T,>(promise: Promise<T>, messages: ToastMessages<T>): Promise<T> => {
+    let loadingToastId: string | undefined;
+
     const loadingEvent = new CustomEvent('toast-promise', {
       detail: {
         message: messages.loading,
         type: 'loading',
+        duration: null, // Make loading toast persist
+        className: 'animate-pulse', // Add pulse animation
+        onOpen: (id: string): void => {
+          loadingToastId = id;
+        },
       },
     });
 
@@ -61,6 +68,13 @@ export const toast = {
     return promise
       .then((data) => {
         const successMessage = typeof messages.success === 'function' ? messages.success(data) : messages.success;
+
+        if (loadingToastId) {
+          const dismissEvent = new CustomEvent('toast-dismiss', {
+            detail: { id: loadingToastId },
+          });
+          window.dispatchEvent(dismissEvent);
+        }
 
         const successEvent = new CustomEvent('toast-promise-success', {
           detail: {
@@ -75,6 +89,13 @@ export const toast = {
       })
       .catch((error) => {
         const errorMessage = typeof messages.error === 'function' ? messages.error(error) : messages.error;
+
+        if (loadingToastId) {
+          const dismissEvent = new CustomEvent('toast-dismiss', {
+            detail: { id: loadingToastId },
+          });
+          window.dispatchEvent(dismissEvent);
+        }
 
         const errorEvent = new CustomEvent('toast-promise-error', {
           detail: {
