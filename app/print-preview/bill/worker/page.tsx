@@ -52,23 +52,24 @@ const WorkerBillPage: React.FC = () => {
     fetchData();
   }, [type]);
 
+  if (!bill || !company) {
+    return null;
+  }
+  if (!isDataLoaded) {
+    return <LoadingSpinner classStyle="h-screen" />;
+  }
+
   return (
     <>
-      {!isDataLoaded ? (
-        <LoadingSpinner classStyle="h-screen" />
-      ) : (
-        <>
-          <PrintHeader backUrl={backUrl} isLoading={!isDataLoaded} />
-          <WorkerBillPreview
-            bill={bill}
-            company={company}
-            isDataLoaded={isDataLoaded}
-            klm={klm}
-            style={getStyle(type)}
-            type={type}
-          />
-        </>
-      )}
+      <PrintHeader backUrl={backUrl} isLoading={!isDataLoaded} />
+      <WorkerBillPreview
+        bill={bill}
+        company={company}
+        isDataLoaded={isDataLoaded}
+        klm={klm}
+        style={getStyle(type)}
+        type={type}
+      />
     </>
   );
 };

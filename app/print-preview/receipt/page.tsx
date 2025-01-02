@@ -81,24 +81,25 @@ const ReceiptPage: React.FC = () => {
     fetchData();
   }, []);
 
+  if (!receipts || !company) {
+    return null;
+  }
+  if (!isDataLoaded) {
+    return <LoadingSpinner classStyle="h-screen" />;
+  }
+
   return (
     <>
-      {!isDataLoaded ? (
-        <LoadingSpinner classStyle="h-screen" />
-      ) : (
-        <>
-          <PrintHeader backUrl={backUrl} isLoading={!isDataLoaded} />
-          <ReceiptPreview
-            receipts={receipts}
-            cal={cal}
-            isDataLoaded={isDataLoaded}
-            klm={klm}
-            company={company}
-            style={getStyle('Receipt')}
-            highlightReceiptNumber={receiptNumberToHighlight}
-          />
-        </>
-      )}
+      <PrintHeader backUrl={backUrl} isLoading={!isDataLoaded} />
+      <ReceiptPreview
+        receipts={receipts}
+        cal={cal}
+        isDataLoaded={isDataLoaded}
+        klm={klm}
+        company={company}
+        style={getStyle('Receipt')}
+        highlightReceiptNumber={receiptNumberToHighlight}
+      />
     </>
   );
 };

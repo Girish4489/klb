@@ -53,31 +53,32 @@ const BothBillPage: React.FC = () => {
     fetchData();
   }, [type]);
 
+  if (!bill || !company) {
+    return null;
+  }
+  if (!isDataLoaded) {
+    return <LoadingSpinner classStyle="h-screen" />;
+  }
+
   return (
     <>
-      {!isDataLoaded ? (
-        <LoadingSpinner classStyle="h-screen" />
-      ) : (
-        <>
-          <PrintHeader backUrl={backUrl} isLoading={!isDataLoaded} />
-          <CustomerBillPreview
-            bill={bill}
-            company={company}
-            isDataLoaded={isDataLoaded}
-            klm={klm}
-            style={getStyle('Customer Bill')}
-          />
-          <div style={{ pageBreakBefore: 'always' }}></div>
-          <WorkerBillPreview
-            bill={bill}
-            company={company}
-            isDataLoaded={isDataLoaded}
-            klm={klm}
-            style={getStyle('Worker Bill')}
-            type={type}
-          />
-        </>
-      )}
+      <PrintHeader backUrl={backUrl} isLoading={!isDataLoaded} />
+      <CustomerBillPreview
+        bill={bill}
+        company={company}
+        isDataLoaded={isDataLoaded}
+        klm={klm}
+        style={getStyle('Customer Bill')}
+      />
+      <div style={{ pageBreakBefore: 'always' }}></div>
+      <WorkerBillPreview
+        bill={bill}
+        company={company}
+        isDataLoaded={isDataLoaded}
+        klm={klm}
+        style={getStyle('Worker Bill')}
+        type={type}
+      />
     </>
   );
 };

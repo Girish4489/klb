@@ -52,22 +52,17 @@ const CustomerBillPage: React.FC = () => {
     fetchData();
   }, []);
 
+  if (!bill || !company) {
+    return null;
+  }
+  if (!isDataLoaded) {
+    return <LoadingSpinner classStyle="h-screen" />;
+  }
+
   return (
     <>
-      {!isDataLoaded ? (
-        <LoadingSpinner classStyle="h-screen" />
-      ) : (
-        <>
-          <PrintHeader backUrl={backUrl} isLoading={!isDataLoaded} />
-          <CustomerBillPreview
-            bill={bill}
-            company={company}
-            isDataLoaded={isDataLoaded}
-            klm={klm}
-            style={getStyle(type)}
-          />
-        </>
-      )}
+      <PrintHeader backUrl={backUrl} isLoading={!isDataLoaded} />
+      <CustomerBillPreview bill={bill} company={company} isDataLoaded={isDataLoaded} klm={klm} style={getStyle(type)} />
     </>
   );
 };
