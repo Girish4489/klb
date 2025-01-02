@@ -123,6 +123,14 @@ const LabellingPage: FC = () => {
     if (bill) {
       const selectedOrderDetails = selectedOrders.map((index) => bill.order[index]);
       sessionStorage.setItem('selectedOrderDetails', JSON.stringify(selectedOrderDetails));
+      sessionStorage.setItem(
+        'billDetails',
+        JSON.stringify({
+          billNumber: bill.billNumber,
+          billBy: bill.billBy,
+          date: bill.date,
+        }),
+      );
       const query = `billNumber=${bill.billNumber}`;
       router.push(`/print-preview/label?${query}`);
     }
