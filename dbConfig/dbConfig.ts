@@ -17,30 +17,62 @@ const config = {
 const MAX_RETRIES = 5;
 const RETRY_DELAY = 5000; // 5 seconds
 
-async function connectWithRetry(mongoURI: string, retries: number = MAX_RETRIES): Promise<void> {
-  try {
-    await mongoose.connect(mongoURI);
-    const connection = mongoose.connection as mongoose.Connection;
+let isConnecting = false;
+let connectionPromise: Promise<void> | null = null;
 
-    connection.on('connected', () => {
+// Add cleanup handler at module level
+process.on('SIGINT', async () => {
+  try {
+    if (mongoose.connection.readyState === 1) {
+      // Only close if connected
+      await mongoose.connection.close();
+      // eslint-disable-next-line no-console
+      console.log('MongoDB connection closed through app termination');
+    }
+    process.exit(0);
+  } catch (err) {
+    console.error('Error during MongoDB cleanup:', err);
+    process.exit(1);
+  }
+});
+
+async function connectWithRetry(mongoURI: string, retries: number = MAX_RETRIES): Promise<void | null> {
+  if (mongoose.connection.readyState === 1) {
+    return; // Already connected
+  }
+
+  if (isConnecting) {
+    return connectionPromise; // Return existing connection promise if connecting
+  }
+
+  try {
+    isConnecting = true;
+    // Set higher max listeners limit
+    mongoose.connection.setMaxListeners(15);
+
+    // Remove existing listeners before adding new ones
+    mongoose.connection.removeAllListeners();
+
+    connectionPromise = mongoose.connect(mongoURI).then(() => {
       // eslint-disable-next-line no-console
       console.log('MongoDB connected successfully');
     });
 
-    connection.on('error', (err) => {
-      console.error('MongoDB connection error. Please make sure MongoDB is running. ' + err);
-      process.exit();
-    });
+    await connectionPromise;
   } catch (error) {
     if (retries > 0) {
       console.error(
         `MongoDB connection failed. Retrying in ${RETRY_DELAY / 1000} seconds... (${retries} retries left)`,
       );
-      setTimeout(() => connectWithRetry(mongoURI, retries - 1), RETRY_DELAY);
+      await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
+      return connectWithRetry(mongoURI, retries - 1);
     } else {
       handleError.log(error);
       throw new Error('Could not connect to MongoDB after multiple attempts.');
     }
+  } finally {
+    isConnecting = false;
+    connectionPromise = null;
   }
 }
 
