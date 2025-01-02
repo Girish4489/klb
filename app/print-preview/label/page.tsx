@@ -37,7 +37,7 @@ const BillOrderLabels: React.FC = () => {
         <PrintHeader backUrl={`/dashboard/work-manage/labelling?billNumber=${billNumber}`} isLoading={false} />
         <LabelSelector selectedType={labelType} onChange={setLabelType} />
       </div>
-      <div className="grid grid-cols-1 gap-4 p-4 print:grid-cols-2 print:gap-0 print:p-0">
+      <div className="grid grid-cols-1 gap-4 p-4 print:grid-cols-2 print:gap-0 print:px-1 print:py-2">
         {orderList.map((order, index) => (
           <LabelCard
             key={index}
