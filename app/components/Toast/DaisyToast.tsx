@@ -100,15 +100,11 @@ export const DaisyToast = (): JSX.Element => {
   };
 
   return (
-    <div className={`toast ${toastPositionClasses} z-[100] space-y-1`}>
+    <div className={`toast ${toastPositionClasses} z-[var(--z-toast)] space-y-1`}>
       {toasts.map((toast) => (
         <div
           key={toast.id}
-          className={`alert ${getAlertClasses(toast.type)} alert-soft w-[calc(100vw-2rem)]
-            max-w-[90vw] shadow-lg
-            sm:w-auto sm:min-w-[300px] sm:max-w-[400px]
-            md:max-w-[500px]
-          `}
+          className={`alert ${getAlertClasses(toast.type)} alert-soft w-[calc(100vw-2rem)] max-w-[90vw] shadow-lg sm:w-auto sm:min-w-[300px] sm:max-w-[400px] md:max-w-[500px] lg:max-w-[600px]`}
           role="alert"
           onMouseEnter={() => toast.type !== 'loading' && pauseToast(toast.id)}
           onMouseLeave={() => toast.type !== 'loading' && resumeToast(toast.id)}
