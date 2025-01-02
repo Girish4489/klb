@@ -25,7 +25,7 @@ const DueDateTable = ({ refresh }: DueDateTableProps): JSX.Element => {
   const [error, setError] = useState<string | null>(null);
   const [sortConfig, setSortConfig] = useState<{ key: keyof Bill; direction: 'ascending' | 'descending' }>({
     key: 'dueDate',
-    direction: 'descending',
+    direction: 'ascending',
   }); // Initialize with default sort config
   const [tolerance, setTolerance] = useState<number>(2);
   const [showToleranceInput, setShowToleranceInput] = useState<boolean>(false);
@@ -135,7 +135,7 @@ const DueDateTable = ({ refresh }: DueDateTableProps): JSX.Element => {
     try {
       const response = await axios.get(`/api/dashboard/stats/dueDateBills?page=${currentPage}&limit=${billsPerPage}`);
       setDueDateBills(response.data.dueDateBills);
-      setSortConfig({ key: 'dueDate', direction: 'descending' }); // Default sort by due date
+      setSortConfig({ key: 'dueDate', direction: 'ascending' }); // Default sort by due date
     } catch (err) {
       setError('Failed to fetch due date bills' + err);
     }
